@@ -4,3 +4,5 @@ DELETE FROM "strain_culture_medium_data_info";
 DELETE FROM "strain_freezing_box_info";
 
 DELETE FROM "strain_freezing_tube_info";
+
+DELETE FROM "strain_storage_area_info";

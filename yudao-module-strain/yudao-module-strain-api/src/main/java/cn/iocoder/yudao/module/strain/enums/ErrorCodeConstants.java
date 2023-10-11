@@ -18,4 +18,12 @@ public interface ErrorCodeConstants {
     // ========== 冷冻管 98_003_001 ==========
     ErrorCode FREEZING_TUBE_INFO_NOT_EXISTS = new ErrorCode(98_003_001, "冷冻管基本信息不存在");
 
+
+    // ========== 存放区域信息 98_004_001 ==========
+    ErrorCode STORAGE_AREA_INFO_NOT_EXISTS = new ErrorCode(98_004_001, "存放区域信息不存在");
+
+    // ========== 冷冻设备信息 98_005_001 ==========
+    ErrorCode FREEZING_DEVICE_INFO_NOT_EXISTS = new ErrorCode(98_005_001, "冷冻设备信息不存在");
+
+
 }
