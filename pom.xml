@@ -16,11 +16,11 @@
         <module>yudao-module-member</module>
         <module>yudao-module-system</module>
         <module>yudao-module-infra</module>
-<!--        <module>yudao-module-bpm</module>-->
-<!--        <module>yudao-module-report</module>-->
-<!--        <module>yudao-module-mp</module>-->
-<!--        <module>yudao-module-pay</module>-->
-<!--        <module>yudao-module-mall</module>-->
+        <!--        <module>yudao-module-bpm</module>-->
+        <!--        <module>yudao-module-report</module>-->
+        <!--        <module>yudao-module-mp</module>-->
+        <!--        <module>yudao-module-pay</module>-->
+        <!--        <module>yudao-module-mall</module>-->
         <!-- 示例项目 -->
         <module>yudao-example</module>
         <module>yudao-module-strain</module>
@@ -40,7 +40,8 @@
         <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
         <flatten-maven-plugin.version>1.5.0</flatten-maven-plugin.version>
         <!-- 看看咋放到 bom 里 -->
-        <lombok.version>1.18.28</lombok.version>
+        <lombok.version>1.18.30</lombok.version>
+        <lombok.mapstruct.binding.version>0.2.0</lombok.mapstruct.binding.version>
         <spring.boot.version>3.1.3</spring.boot.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -82,16 +83,34 @@
                                 <version>${spring.boot.version}</version>
                             </path>
                             <path>
+                                <groupId>org.mapstruct</groupId>
+                                <artifactId>mapstruct-processor</artifactId>
+                                <version>${mapstruct.version}</version>
+                            </path>
+                            <path>
                                 <groupId>org.projectlombok</groupId>
                                 <artifactId>lombok</artifactId>
                                 <version>${lombok.version}</version>
                             </path>
                             <path>
-                                <groupId>org.mapstruct</groupId>
-                                <artifactId>mapstruct-processor</artifactId>
-                                <version>${mapstruct.version}</version>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok-mapstruct-binding</artifactId>
+                                <version>${lombok.mapstruct.binding.version}</version>
                             </path>
                         </annotationProcessorPaths>
+
+                        <showWarnings>true</showWarnings>
+                        <compilerArgs>
+                            <arg>
+                                -Amapstruct.suppressGeneratorTimestamp=true
+                            </arg>
+                            <arg>
+                                -Amapstruct.suppressGeneratorVersionInfoComment=true
+                            </arg>
+                            <arg>
+                                -Amapstruct.verbose=true
+                            </arg>
+                        </compilerArgs>
                     </configuration>
                 </plugin>
                 <plugin>
