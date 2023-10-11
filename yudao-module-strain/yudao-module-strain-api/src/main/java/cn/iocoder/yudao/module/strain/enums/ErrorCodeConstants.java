@@ -15,4 +15,7 @@ public interface ErrorCodeConstants {
     // ========== 冷冻盒信息 98_002_001 ==========
     ErrorCode FREEZING_BOX_INFO_NOT_EXISTS = new ErrorCode(98_002_001, "冷冻盒信息不存在");
 
+    // ========== 冷冻管 98_003_001 ==========
+    ErrorCode FREEZING_TUBE_INFO_NOT_EXISTS = new ErrorCode(98_003_001, "冷冻管基本信息不存在");
+
 }

@@ -31,7 +31,9 @@ import static ${DateUtilsClassName}.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 public class ${sceneEnum.prefixClass}${table.className}BaseVO {
 
 #foreach ($column in $columns)
-#if (${column.createOperation} && ${column.updateOperation} && ${column.listOperationResult})##通用操作
+##    如果是字段名为id，则也生成这个字段
+
+#if ((${column.createOperation} && ${column.updateOperation} && ${column.listOperationResult} )  || ${column.columnName} == "id")##通用操作
     #parse("codegen/java/controller/vo/_column.vm")
 
 #end
