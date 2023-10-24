@@ -6,3 +6,7 @@ DELETE FROM "strain_freezing_box_info";
 DELETE FROM "strain_freezing_tube_info";
 
 DELETE FROM "strain_storage_area_info";
+
+DELETE FROM "strain_freezing_device_info";
+
+DELETE FROM "strain_freezing_device_hierarchy";

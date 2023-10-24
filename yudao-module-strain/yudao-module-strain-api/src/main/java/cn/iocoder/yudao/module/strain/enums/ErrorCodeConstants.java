@@ -25,5 +25,7 @@ public interface ErrorCodeConstants {
     // ========== 冷冻设备信息 98_005_001 ==========
     ErrorCode FREEZING_DEVICE_INFO_NOT_EXISTS = new ErrorCode(98_005_001, "冷冻设备信息不存在");
 
+    // ========== 冷冻设备层级 98_006_001 ==========
+    ErrorCode FREEZING_DEVICE_HIERARCHY_NOT_EXISTS = new ErrorCode(98_006_001, "冷冻设备层级不存在");
 
 }
