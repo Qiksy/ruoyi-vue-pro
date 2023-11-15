@@ -230,3 +230,8 @@ debug: false
 minidao :
   base-package: org.jeecg.modules.jmreport.desreport.dao*
   db-type: mysql
+tencent:
+  work:
+    corp-id: ww1bec1ba79db2f7a0
+    agent-id: 1000002
+    secret: EnBmjP6VC63DozIh5L7YRxgsY-1K4AWNS3fZ04ZYxLQ

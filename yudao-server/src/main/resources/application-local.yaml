@@ -242,3 +242,8 @@ justauth:
     prefix: 'social_auth_state:' # 缓存前缀，目前只对 Redis 缓存生效，默认 JUSTAUTH::STATE::
     timeout: 24h # 超时时长，目前只对 Redis 缓存生效，默认 3 分钟
 
+tencent:
+  work:
+    corp-id: ww1bec1ba79db2f7a0
+    agent-id: 1000002
+    secret: EnBmjP6VC63DozIh5L7YRxgsY-1K4AWNS3fZ04ZYxLQ
