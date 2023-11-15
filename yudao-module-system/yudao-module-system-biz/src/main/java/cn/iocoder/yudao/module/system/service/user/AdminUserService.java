@@ -124,6 +124,9 @@ public interface AdminUserService {
      */
     AdminUserDO getUser(Long id);
 
+
+    AdminUserDO getUser(String username);
+
     /**
      * 获得指定部门的用户数组
      *

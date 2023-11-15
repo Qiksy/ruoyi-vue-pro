@@ -32,6 +32,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -160,4 +161,16 @@ public class AuthController {
         return success(authService.socialLogin(reqVO));
     }
 
+    // ============ 企业微信单点登录相关 ============
+    @GetMapping("/work-wechat-auth-redirect")
+    @PermitAll
+    @Operation(summary = "企业微信登录")
+    @Parameters({
+            @Parameter(name = "code", description = "用户对应的唯一code", required = true),
+            @Parameter(name = "state", description = "状态，自定义")
+    })
+    public CommonResult<AuthLoginRespVO> workWechatLogin(@RequestParam("code") String code,
+                                                         @RequestParam(value = "state", required = false) String state) throws IOException {
+        return CommonResult.success(authService.workWechatLogin(code, state));
+    }
 }

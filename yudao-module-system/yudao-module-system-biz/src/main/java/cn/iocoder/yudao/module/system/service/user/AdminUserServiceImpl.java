@@ -224,6 +224,11 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
+    public AdminUserDO getUser(String username) {
+        return userMapper.selectByUsername(username);
+    }
+
+    @Override
     public List<AdminUserDO> getUserListByDeptIds(Collection<Long> deptIds) {
         if (CollUtil.isEmpty(deptIds)) {
             return Collections.emptyList();
