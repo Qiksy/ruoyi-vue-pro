@@ -103,6 +103,13 @@
             <artifactId>yudao-spring-boot-starter-protection</artifactId>
         </dependency>
 
+        <!-- 营销模块 -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-module-sale</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
