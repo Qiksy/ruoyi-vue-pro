@@ -43,6 +43,13 @@
 <!--            <version>${revision}</version>-->
 <!--        </dependency>-->
 
+        <!-- 营销模块 -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-module-sale-biz</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
         <!-- 数据报表。默认注释，保证编译速度 -->
 <!--        <dependency>-->
 <!--            <groupId>cn.iocoder.boot</groupId>-->
@@ -103,12 +110,7 @@
             <artifactId>yudao-spring-boot-starter-protection</artifactId>
         </dependency>
 
-        <!-- 营销模块 -->
-        <dependency>
-            <groupId>cn.iocoder.boot</groupId>
-            <artifactId>yudao-module-sale</artifactId>
-            <version>${revision}</version>
-        </dependency>
+
 
     </dependencies>
 
