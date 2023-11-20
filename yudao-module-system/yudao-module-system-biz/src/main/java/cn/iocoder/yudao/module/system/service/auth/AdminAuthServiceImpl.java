@@ -254,10 +254,10 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                 }
             }
         }
-        String userid = jsonNode.get("userid").asText();
+        String pkPsndoc = jsonNode.get("pkPsndoc").asText();
 
         //后续的登录按照原本的逻辑
-        AdminUserDO user = userService.getUser(userid);
+        AdminUserDO user = userService.getUserByPkPsndoc(pkPsndoc);
         if (user == null) {
             throw exception(USER_NOT_EXISTS);
         }

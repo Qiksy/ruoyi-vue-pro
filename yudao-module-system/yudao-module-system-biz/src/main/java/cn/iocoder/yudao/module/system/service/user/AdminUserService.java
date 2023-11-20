@@ -215,4 +215,5 @@ public interface AdminUserService {
      */
     boolean isPasswordMatch(String rawPassword, String encodedPassword);
 
+    AdminUserDO getUserByPkPsndoc(String pkPsndoc);
 }

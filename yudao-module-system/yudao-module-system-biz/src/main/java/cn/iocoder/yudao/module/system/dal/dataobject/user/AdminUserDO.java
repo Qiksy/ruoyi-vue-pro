@@ -93,4 +93,10 @@ public class AdminUserDO extends TenantBaseDO {
      */
     private LocalDateTime loginDate;
 
+    /**
+     * bd_psndoc.pk_psndoc
+     * 附加的主键
+     */
+    private String pkPsndoc;
+
 }
