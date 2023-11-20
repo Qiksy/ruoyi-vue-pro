@@ -9,6 +9,7 @@ import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.framework.datapermission.core.util.DataPermissionUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.infra.api.file.FileApi;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.profile.UserProfileUpdatePasswordReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.profile.UserProfileUpdateReqVO;
@@ -23,6 +24,7 @@ import cn.iocoder.yudao.module.system.service.dept.DeptService;
 import cn.iocoder.yudao.module.system.service.dept.PostService;
 import cn.iocoder.yudao.module.system.service.permission.PermissionService;
 import cn.iocoder.yudao.module.system.service.tenant.TenantService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.annotations.VisibleForTesting;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -458,4 +460,13 @@ public class AdminUserServiceImpl implements AdminUserService {
         return passwordEncoder.encode(password);
     }
 
+
+    @Override
+    public AdminUserDO getUserByPkPsndoc(String pkPsndoc) {
+
+        //查询用户
+        LambdaQueryWrapperX<AdminUserDO> lambdaQueryWrapper = new LambdaQueryWrapperX<AdminUserDO>()
+                .eq(AdminUserDO::getPkPsndoc, pkPsndoc);
+        return userMapper.selectOne(lambdaQueryWrapper);
+    }
 }
