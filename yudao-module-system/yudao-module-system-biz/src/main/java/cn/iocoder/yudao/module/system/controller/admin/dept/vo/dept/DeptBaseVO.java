@@ -19,6 +19,10 @@ public class DeptBaseVO {
     @Size(max = 30, message = "部门名称长度不能超过30个字符")
     private String name;
 
+
+    @Schema(description = "部门编码", requiredMode = Schema.RequiredMode.NOT_REQUIRED,example = "1023")
+    private String code;
+
     @Schema(description = "父菜单 ID", example = "1024")
     private Long parentId;
 
