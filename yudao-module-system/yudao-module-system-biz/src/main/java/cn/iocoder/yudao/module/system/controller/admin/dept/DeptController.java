@@ -87,8 +87,8 @@ public class DeptController {
     //    /system/dept/sync
     @PostMapping("/sync")
     @Operation(summary = "同步部门")
-//    @PreAuthorize("@ss.hasPermission('system:dept:sync')")
-    @PermitAll
+    @PreAuthorize("@ss.hasPermission('system:dept:sync')")
+//    @PermitAll
     public CommonResult<Boolean> syncDept() {
         deptService.syncDept();
         return success(true);
