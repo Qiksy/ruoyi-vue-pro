@@ -32,6 +32,11 @@ public class DeptDO extends TenantBaseDO {
      * 部门名称
      */
     private String name;
+
+    /**
+     * 编码
+     */
+    private String code;
     /**
      * 父部门ID
      *

@@ -11,11 +11,15 @@ import cn.iocoder.yudao.module.system.convert.dept.DeptConvert;
 import cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO;
 import cn.iocoder.yudao.module.system.dal.mysql.dept.DeptMapper;
 import cn.iocoder.yudao.module.system.dal.redis.RedisKeyConstants;
+import cn.iocoder.yudao.module.system.enums.dept.DeptIdEnum;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.google.common.annotations.VisibleForTesting;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -34,6 +38,10 @@ import static cn.iocoder.yudao.module.system.enums.ErrorCodeConstants.*;
 @Validated
 @Slf4j
 public class DeptServiceImpl implements DeptService {
+
+    @Autowired
+    @Lazy
+    DeptService deptService; //引入自己，使得数据源切换生效
 
     @Resource
     private DeptMapper deptMapper;
@@ -214,4 +222,21 @@ public class DeptServiceImpl implements DeptService {
         });
     }
 
+    @Override
+    public void syncDept() {
+        //1. 先去获取NC所有的部门
+        List<DeptDO> deptDOList = deptService.getDeptFromNC();
+
+        //2. 给status一个默认值
+        deptDOList.forEach(v->v.setStatus(0));
+
+        //3. 有则更新，无则插入
+        deptMapper.saveOrUpdateBatch(deptDOList);
+    }
+
+    @Override
+    @DS("nc65")
+    public List<DeptDO> getDeptFromNC() {
+        return deptMapper.selectFromNC();
+    }
 }
