@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +26,7 @@ import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.EXPORT;
+import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.OTHER;
 import static java.util.Collections.singleton;
 
 @Tag(name = "管理后台 - 角色")
@@ -101,6 +103,16 @@ public class RoleController {
         List<RoleExcelVO> data = RoleConvert.INSTANCE.convertList03(list);
         // 输出
         ExcelUtils.write(response, "角色数据.xls", "角色列表", RoleExcelVO.class, data);
+    }
+
+    // 同步角色 /system/role/sync
+    @PostMapping("/sync")
+    @OperateLog(type = OTHER,name= "同步角色")
+    @PreAuthorize("@ss.hasPermission('system:role:sync')")
+    @PermitAll
+    public CommonResult<Boolean> sync() {
+        roleService.syncRole();
+        return success(true);
     }
 
 }

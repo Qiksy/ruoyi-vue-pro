@@ -45,4 +45,5 @@ public interface RoleMapper extends BaseMapperX<RoleDO> {
         return selectList(RoleDO::getStatus, statuses);
     }
 
+    List<String> selectRoleNameListFromNc65();
 }

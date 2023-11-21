@@ -115,6 +115,20 @@
             <artifactId>yudao-spring-boot-starter-protection</artifactId>
         </dependency>
 
+        <!-- 引入Oracle jdbc驱动 -->
+        <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
+            <version>21.9.0.0</version>
+        </dependency>
+
+        <!-- 引入拼音库 -->
+        <dependency>
+            <groupId>io.github.biezhi</groupId>
+            <artifactId>TinyPinyin</artifactId>
+            <version>2.0.3.RELEASE</version>
+        </dependency>
+
 
 
     </dependencies>
