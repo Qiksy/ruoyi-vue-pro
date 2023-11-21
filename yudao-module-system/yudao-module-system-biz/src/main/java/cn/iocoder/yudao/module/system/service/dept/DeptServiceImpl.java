@@ -11,7 +11,6 @@ import cn.iocoder.yudao.module.system.convert.dept.DeptConvert;
 import cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO;
 import cn.iocoder.yudao.module.system.dal.mysql.dept.DeptMapper;
 import cn.iocoder.yudao.module.system.dal.redis.RedisKeyConstants;
-import cn.iocoder.yudao.module.system.enums.dept.DeptIdEnum;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.google.common.annotations.VisibleForTesting;
 import jakarta.annotation.Resource;
@@ -231,7 +230,7 @@ public class DeptServiceImpl implements DeptService {
         deptDOList.forEach(v->v.setStatus(0));
 
         //3. 有则更新，无则插入
-        deptMapper.saveOrUpdateBatch(deptDOList);
+        deptMapper.insertOrUpdateBatch(deptDOList);
     }
 
     @Override
