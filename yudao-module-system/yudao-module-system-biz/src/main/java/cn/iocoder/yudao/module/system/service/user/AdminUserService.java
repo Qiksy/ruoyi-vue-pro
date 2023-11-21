@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.system.service.user;
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserNcDTO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.profile.UserProfileUpdatePasswordReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.profile.UserProfileUpdateReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.user.*;
@@ -216,4 +217,11 @@ public interface AdminUserService {
     boolean isPasswordMatch(String rawPassword, String encodedPassword);
 
     AdminUserDO getUserByPkPsndoc(String pkPsndoc);
+
+    /**
+     * 同步用户
+     */
+    void syncUser();
+
+    List<AdminUserNcDTO> getUserListByNc();
 }

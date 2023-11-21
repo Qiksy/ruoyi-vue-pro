@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -189,4 +190,13 @@ public class UserController {
         return success(userService.importUserList(list, updateSupport));
     }
 
+//    /system/user/sync 同步用户
+    @PostMapping("/sync")
+    @Operation(summary = "同步用户")
+    @PreAuthorize("@ss.hasPermission('system:user:sync')")
+//    @PermitAll
+    public CommonResult<Boolean> syncUser() {
+        userService.syncUser();
+        return success(true);
+    }
 }

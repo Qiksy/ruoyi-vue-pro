@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.system.dal.mysql.user;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserNcDTO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.user.UserExportReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.user.UserPageReqVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.user.AdminUserDO;
@@ -57,4 +58,8 @@ public interface AdminUserMapper extends BaseMapperX<AdminUserDO> {
         return selectList(AdminUserDO::getDeptId, deptIds);
     }
 
+    /**
+     * @return 从NC返回用户信息
+     */
+    List<AdminUserNcDTO> selectUserFromNC();
 }
