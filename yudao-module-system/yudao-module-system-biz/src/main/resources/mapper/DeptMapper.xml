@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.system.dal.mysql.dept.DeptMapper">
+
+    <!--返回结果映射到DeptDO-->
+    <resultMap id="base" type="cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="parent_id" property="parentId" />
+        <result column="sort" property="sort" />
+        <result column="code" property="code" />
+    </resultMap>
+
+    <select id="selectFromNC" resultMap="base">
+        SELECT
+            t1.code                    id,
+            CASE
+                WHEN t1.businessunit = '0' THEN
+                    concat(t1.name, '-业务单元')
+                WHEN t1.businessunit = 1   THEN
+                    concat(t1.name, '-部门')
+                ELSE
+                    t1.name
+                END                        AS name,
+            t2.code                    parent_id,
+            TO_NUMBER(t1.businessunit) sort,
+            to_char(t1.code) code
+        FROM
+            (
+                SELECT
+                    code,
+                    name,
+                    pk_org,
+                    decode(nvl(pk_fatherorg, '~'),
+                           '~',
+                           pk_corp,
+                           pk_fatherorg) pk_fatherorg,
+                    '0'                  businessunit
+                FROM
+                    nc65.org_orgs
+                WHERE
+                    dr = 0
+                  AND isbusinessunit = 'Y'
+                  AND pk_group = '0001E1100000000007QU'
+                  AND islastversion = 'Y'
+                  AND ( enablestate = 1
+                    OR enablestate = 2 )
+                UNION
+                SELECT
+                    code,
+                    name,
+                    pk_dept                                         pk_org,
+                    decode(pk_fatherorg, '~', pk_org, pk_fatherorg) pk_fatherorg,
+                    '1'                                             businessunit
+                FROM
+                    nc65.org_dept
+                WHERE
+                    ( enablestate = 1
+                        OR enablestate = 2 )
+                  AND dr = 0
+            ) t1
+                LEFT JOIN (
+                SELECT
+                    code,
+                    name,
+                    pk_org,
+                    decode(nvl(pk_fatherorg, '~'),
+                           '~',
+                           pk_corp,
+                           pk_fatherorg) pk_fatherorg
+                FROM
+                    nc65.org_orgs
+                WHERE
+                    dr = 0
+                  AND isbusinessunit = 'Y'
+                  AND pk_group = '0001E1100000000007QU'
+                  AND islastversion = 'Y'
+                  AND ( enablestate = 1
+                    OR enablestate = 2 )
+                UNION
+                SELECT
+                    code,
+                    name,
+                    pk_dept                                         pk_org,
+                    decode(pk_fatherorg, '~', pk_org, pk_fatherorg) pk_fatherorg
+                FROM
+                    nc65.org_dept
+                WHERE
+                    ( enablestate = 1
+                        OR enablestate = 2 )
+                  AND dr = 0
+            ) t2 ON t2.pk_org = t1.pk_fatherorg
+    </select>
+</mapper>

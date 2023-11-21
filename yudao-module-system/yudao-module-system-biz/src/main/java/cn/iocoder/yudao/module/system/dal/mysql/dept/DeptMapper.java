@@ -30,4 +30,5 @@ public interface DeptMapper extends BaseMapperX<DeptDO> {
         return selectList(DeptDO::getParentId, parentIds);
     }
 
+    List<DeptDO> selectFromNC();
 }
