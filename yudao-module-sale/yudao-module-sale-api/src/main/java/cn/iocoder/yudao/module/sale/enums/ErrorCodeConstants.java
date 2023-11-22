@@ -23,4 +23,11 @@ public interface ErrorCodeConstants {
     ErrorCode PRODUCTION_MARSALECLASS_NAME_DUPLICATE = new ErrorCode(70_001_05, "已经存在该名称的销售分类");
     ErrorCode PRODUCTION_MARSALECLASS_PARENT_IS_CHILD = new ErrorCode(70_001_06, "不能设置自己的子ProductionMarsaleclass为父ProductionMarsaleclass");
 
+    ErrorCode PRODUCTION_MARBASCLASS_NOT_EXISTS = new ErrorCode(80_001_01, "物料分类不存在");
+    ErrorCode PRODUCTION_MARBASCLASS_EXITS_CHILDREN = new ErrorCode(80_001_02, "存在存在子物料分类，无法删除");
+    ErrorCode PRODUCTION_MARBASCLASS_PARENT_NOT_EXITS = new ErrorCode(80_001_03,"父级物料分类不存在");
+    ErrorCode PRODUCTION_MARBASCLASS_PARENT_ERROR = new ErrorCode(80_001_04, "不能设置自己为父物料分类");
+    ErrorCode PRODUCTION_MARBASCLASS_NAME_DUPLICATE = new ErrorCode(80_001_05, "已经存在该名称的物料分类");
+    ErrorCode PRODUCTION_MARBASCLASS_PARENT_IS_CHILD = new ErrorCode(80_001_06, "不能设置自己的子ProductionMarbasclass为父ProductionMarbasclass");
+
     }
