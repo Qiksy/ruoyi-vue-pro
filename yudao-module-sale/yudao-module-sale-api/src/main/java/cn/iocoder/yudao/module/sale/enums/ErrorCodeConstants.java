@@ -30,4 +30,7 @@ public interface ErrorCodeConstants {
     ErrorCode PRODUCTION_MARBASCLASS_NAME_DUPLICATE = new ErrorCode(80_001_05, "已经存在该名称的物料分类");
     ErrorCode PRODUCTION_MARBASCLASS_PARENT_IS_CHILD = new ErrorCode(80_001_06, "不能设置自己的子ProductionMarbasclass为父ProductionMarbasclass");
 
+
+    ErrorCode PRODUCTION_INFO_NOT_EXISTS = new ErrorCode(90_001_01, "物料信息不存在");
+
     }
