@@ -33,4 +33,8 @@ public interface ErrorCodeConstants {
 
     ErrorCode PRODUCTION_INFO_NOT_EXISTS = new ErrorCode(90_001_01, "物料信息不存在");
 
+
+
+    ErrorCode PRODUCTION_COMPETE_INFO_NOT_EXISTS = new ErrorCode(99_001_01, "工厂竞品管理不存在");
+
     }
