@@ -33,4 +33,7 @@ public interface ProductionMarbasclassMapper extends BaseMapperX<ProductionMarba
         return selectCount(ProductionMarbasclassDO::getParentId, parentId);
     }
 
+    default List<ProductionMarbasclassDO> selectListByParentId(Collection<Long> parentIds){
+        return selectList(ProductionMarbasclassDO::getParentId, parentIds);
+    }
 }

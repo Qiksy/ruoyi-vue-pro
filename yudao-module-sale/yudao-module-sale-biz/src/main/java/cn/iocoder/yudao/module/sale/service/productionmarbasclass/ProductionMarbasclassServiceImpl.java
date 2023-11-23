@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.sale.service.productionmarbasclass;
 
+import cn.hutool.core.collection.CollUtil;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -15,6 +16,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.sale.dal.mysql.productionmarbasclass.ProductionMarbasclassMapper;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertSet;
 import static cn.iocoder.yudao.module.sale.enums.ErrorCodeConstants.*;
 
 /**
@@ -133,4 +135,23 @@ public class ProductionMarbasclassServiceImpl implements ProductionMarbasclassSe
         return productionMarbasclassMapper.selectList(listReqVO);
     }
 
+
+    @Override
+    public List<ProductionMarbasclassDO> getChildMarbasclassIdList(Long marbasclassId) {
+        List<ProductionMarbasclassDO> list = new ArrayList<>();
+        // 遍历每一层
+        Collection<Long> parentIds = Collections.singleton(marbasclassId);
+        for (int i = 0; i < Short.MAX_VALUE; i++) {
+            // 获得子物料分类列表
+            List<ProductionMarbasclassDO> childList = productionMarbasclassMapper.selectListByParentId(parentIds);
+            if (CollUtil.isEmpty(childList)) {
+                break;
+            }
+            // 添加到返回结果中
+            list.addAll(childList);
+            // 继续遍历下一层
+            parentIds = convertSet(childList, ProductionMarbasclassDO::getId);
+        }
+        return list;
+    }
 }

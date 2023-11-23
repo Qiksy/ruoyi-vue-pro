@@ -30,4 +30,17 @@ public interface ProductionInfoMapper extends BaseMapperX<ProductionInfoDO> {
                 .orderByDesc(ProductionInfoDO::getId));
     }
 
+    default PageResult<ProductionInfoDO> selectPage(ProductionInfoPageReqVO reqVO, Collection<Long> marbasclassIds) {
+        return selectPage(reqVO, new LambdaQueryWrapperX<ProductionInfoDO>()
+                .likeIfPresent(ProductionInfoDO::getName, reqVO.getName())
+                .eqIfPresent(ProductionInfoDO::getMarsaleclassId, reqVO.getMarsaleclassId())
+                .inIfPresent(ProductionInfoDO::getMarbasclassId, marbasclassIds)
+                .eqIfPresent(ProductionInfoDO::getProdlineId, reqVO.getProdlineId())
+                .eqIfPresent(ProductionInfoDO::getSpec, reqVO.getSpec())
+                .eqIfPresent(ProductionInfoDO::getPrice, reqVO.getPrice())
+                .eqIfPresent(ProductionInfoDO::getProtein, reqVO.getProtein())
+                .betweenIfPresent(ProductionInfoDO::getCreateTime, reqVO.getCreateTime())
+                .orderByDesc(ProductionInfoDO::getId));
+    }
+
 }

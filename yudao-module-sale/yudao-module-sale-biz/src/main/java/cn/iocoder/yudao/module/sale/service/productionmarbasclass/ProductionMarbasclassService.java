@@ -52,4 +52,10 @@ public interface ProductionMarbasclassService {
      */
     List<ProductionMarbasclassDO> getProductionMarbasclassList(ProductionMarbasclassListReqVO listReqVO);
 
+    /**
+     * 获取子物料分类
+     * @param marbasclassId 物料分类编号
+     * @return
+     */
+    List<ProductionMarbasclassDO> getChildMarbasclassIdList(Long marbasclassId);
 }

@@ -1,5 +1,9 @@
 package cn.iocoder.yudao.module.sale.service.productioninfo;
 
+import cn.iocoder.yudao.module.sale.dal.dataobject.productionmarbasclass.ProductionMarbasclassDO;
+import cn.iocoder.yudao.module.sale.service.productionmarbasclass.ProductionMarbasclassService;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -15,6 +19,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.sale.dal.mysql.productioninfo.ProductionInfoMapper;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertSet;
 import static cn.iocoder.yudao.module.sale.enums.ErrorCodeConstants.*;
 
 /**
@@ -24,10 +29,14 @@ import static cn.iocoder.yudao.module.sale.enums.ErrorCodeConstants.*;
  */
 @Service
 @Validated
+@Slf4j
 public class ProductionInfoServiceImpl implements ProductionInfoService {
 
     @Resource
     private ProductionInfoMapper productionInfoMapper;
+
+    @Resource
+    private ProductionMarbasclassService marbasclassService;
 
     @Override
     public Long createProductionInfo(ProductionInfoSaveReqVO createReqVO) {
@@ -68,7 +77,24 @@ public class ProductionInfoServiceImpl implements ProductionInfoService {
 
     @Override
     public PageResult<ProductionInfoDO> getProductionInfoPage(ProductionInfoPageReqVO pageReqVO) {
-        return productionInfoMapper.selectPage(pageReqVO);
+        Set<Long> basClassCondition = getBasClassCondition(pageReqVO.getMarbasclassId());
+        log.info("getProductionInfoPage basClassCondition:{}",basClassCondition.size());
+        return productionInfoMapper.selectPage(pageReqVO,basClassCondition);
+    }
+
+    /**
+     * 获取物料的子分类和他的自身
+     * @param marbasclassId 物料基本分类
+     * @return
+     */
+    private Set<Long> getBasClassCondition(Long marbasclassId) {
+        if (marbasclassId == null) {
+            return Collections.emptySet();
+        }
+
+        Set<Long> deptIds = convertSet(marbasclassService.getChildMarbasclassIdList(marbasclassId), ProductionMarbasclassDO::getId);
+        deptIds.add(marbasclassId); // 包括自身
+        return deptIds;
     }
 
 }
