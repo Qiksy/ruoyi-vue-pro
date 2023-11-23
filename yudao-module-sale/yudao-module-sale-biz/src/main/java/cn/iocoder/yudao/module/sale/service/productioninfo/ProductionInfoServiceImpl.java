@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.sale.service.productioninfo;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.sale.dal.dataobject.productionmarbasclass.ProductionMarbasclassDO;
@@ -88,6 +89,9 @@ public class ProductionInfoServiceImpl implements ProductionInfoService {
 
     @Override
     public Map<Long, ProductionInfoDO> getProductionMap(List<Long> productionIds) {
+        if (CollUtil.isEmpty(productionIds)) {
+            return Collections.emptyMap();
+        }
         LambdaQueryWrapper<ProductionInfoDO> queryWrapper = new LambdaQueryWrapper<ProductionInfoDO>()
                 .select(ProductionInfoDO::getId, ProductionInfoDO::getName)
                 .in(ProductionInfoDO::getId, productionIds);
