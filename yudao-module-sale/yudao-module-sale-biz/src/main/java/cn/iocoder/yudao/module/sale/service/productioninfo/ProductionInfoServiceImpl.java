@@ -82,7 +82,6 @@ public class ProductionInfoServiceImpl implements ProductionInfoService {
     @Override
     public PageResult<ProductionInfoDO> getProductionInfoPage(ProductionInfoPageReqVO pageReqVO) {
         Set<Long> basClassCondition = getBasClassCondition(pageReqVO.getMarbasclassId());
-        log.info("getProductionInfoPage basClassCondition:{}",basClassCondition.size());
         return productionInfoMapper.selectPage(pageReqVO,basClassCondition);
     }
 

@@ -40,7 +40,7 @@ public interface ProductionInfoMapper extends BaseMapperX<ProductionInfoDO> {
                 .eqIfPresent(ProductionInfoDO::getPrice, reqVO.getPrice())
                 .eqIfPresent(ProductionInfoDO::getProtein, reqVO.getProtein())
                 .betweenIfPresent(ProductionInfoDO::getCreateTime, reqVO.getCreateTime())
-                .orderByDesc(ProductionInfoDO::getId));
+                .orderByAsc(ProductionInfoDO::getMarbasclassId,ProductionInfoDO::getId));
     }
 
 }
