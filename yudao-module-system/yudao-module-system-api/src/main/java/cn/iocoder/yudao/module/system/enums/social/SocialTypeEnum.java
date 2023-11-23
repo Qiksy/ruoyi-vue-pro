@@ -25,7 +25,7 @@ public enum SocialTypeEnum implements IntArrayValuable {
     /**
      * 钉钉
      *
-     * @see <a href="https://developers.dingtalk.com/document/app/obtain-identity-credentials">接入文档</a>
+     * @see <a href="https://developsers.dingtalk.com/document/app/obtain-identity-credentials">接入文档</a>
      */
     DINGTALK(20, "DINGTALK"),
 
