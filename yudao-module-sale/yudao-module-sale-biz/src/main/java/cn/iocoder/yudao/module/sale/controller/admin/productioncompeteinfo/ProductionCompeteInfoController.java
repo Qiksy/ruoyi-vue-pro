@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.sale.controller.admin.productioncompeteinfo;
 
+import cn.iocoder.yudao.module.sale.dal.dataobject.productioninfo.ProductionInfoDO;
+import cn.iocoder.yudao.module.sale.service.productioninfo.ProductionInfoService;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -13,6 +15,7 @@ import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -37,6 +40,9 @@ public class ProductionCompeteInfoController {
 
     @Resource
     private ProductionCompeteInfoService productionCompeteInfoService;
+
+    @Resource
+    private ProductionInfoService productionInfoService;
 
     @PostMapping("/create")
     @Operation(summary = "创建工厂竞品管理")
@@ -76,7 +82,17 @@ public class ProductionCompeteInfoController {
     @PreAuthorize("@ss.hasPermission('sale:production-compete-info:query')")
     public CommonResult<PageResult<ProductionCompeteInfoRespVO>> getProductionCompeteInfoPage(@Valid ProductionCompeteInfoPageReqVO pageReqVO) {
         PageResult<ProductionCompeteInfoDO> pageResult = productionCompeteInfoService.getProductionCompeteInfoPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, ProductionCompeteInfoRespVO.class));
+        // 顺便吧物料名称也查询出来
+        List<Long> productionIds = pageResult.getList().stream().map(ProductionCompeteInfoDO::getProductionId).distinct().collect(Collectors.toList());
+        Map<Long, ProductionInfoDO> productionMap = productionInfoService.getProductionMap(productionIds);
+        List<ProductionCompeteInfoRespVO> list = new ArrayList<>(pageResult.getList().size());
+        for (ProductionCompeteInfoDO productionCompeteInfo : pageResult.getList()) {
+            ProductionCompeteInfoRespVO respVO = BeanUtils.toBean(productionCompeteInfo, ProductionCompeteInfoRespVO.class);
+            respVO.setProductionName(productionMap.get(productionCompeteInfo.getProductionId()).getName());
+            list.add(respVO);
+        }
+
+        return success(new PageResult<>(list, pageResult.getTotal()));
     }
 
     @GetMapping("/export-excel")

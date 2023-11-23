@@ -1,8 +1,11 @@
 package cn.iocoder.yudao.module.sale.service.productioninfo;
 
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.sale.dal.dataobject.productionmarbasclass.ProductionMarbasclassDO;
 import cn.iocoder.yudao.module.sale.service.productionmarbasclass.ProductionMarbasclassService;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -80,6 +83,17 @@ public class ProductionInfoServiceImpl implements ProductionInfoService {
         Set<Long> basClassCondition = getBasClassCondition(pageReqVO.getMarbasclassId());
         log.info("getProductionInfoPage basClassCondition:{}",basClassCondition.size());
         return productionInfoMapper.selectPage(pageReqVO,basClassCondition);
+    }
+
+
+    @Override
+    public Map<Long, ProductionInfoDO> getProductionMap(List<Long> productionIds) {
+        LambdaQueryWrapper<ProductionInfoDO> queryWrapper = new LambdaQueryWrapper<ProductionInfoDO>()
+                .select(ProductionInfoDO::getId, ProductionInfoDO::getName)
+                .in(ProductionInfoDO::getId, productionIds);
+        List<ProductionInfoDO> productionInfoDOS = productionInfoMapper.selectList(queryWrapper);
+
+        return CollectionUtils.convertMap(productionInfoDOS, ProductionInfoDO::getId);
     }
 
     /**

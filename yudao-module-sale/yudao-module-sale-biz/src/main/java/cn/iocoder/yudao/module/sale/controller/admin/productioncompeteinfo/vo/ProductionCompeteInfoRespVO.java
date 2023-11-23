@@ -22,6 +22,10 @@ public class ProductionCompeteInfoRespVO {
     @ExcelProperty("物料id")
     private Long productionId;
 
+    @Schema(description = "物料名称", example = "物料名称")
+    @ExcelProperty("物料名称")
+    private String productionName;
+
     @Schema(description = "工厂id", example = "3374")
     @ExcelProperty("工厂id")
     private Long deptId;

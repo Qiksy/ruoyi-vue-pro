@@ -52,4 +52,5 @@ public interface ProductionInfoService {
      */
     PageResult<ProductionInfoDO> getProductionInfoPage(ProductionInfoPageReqVO pageReqVO);
 
+    Map<Long, ProductionInfoDO> getProductionMap(List<Long> productionIds);
 }
