@@ -11,9 +11,11 @@ import cn.iocoder.yudao.module.system.controller.admin.socail.vo.user.SocialUser
 import cn.iocoder.yudao.module.system.convert.social.SocialUserConvert;
 import cn.iocoder.yudao.module.system.dal.dataobject.social.SocialUserBindDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.social.SocialUserDO;
+import cn.iocoder.yudao.module.system.dal.dataobject.user.AdminUserDO;
 import cn.iocoder.yudao.module.system.dal.mysql.social.SocialUserBindMapper;
 import cn.iocoder.yudao.module.system.dal.mysql.social.SocialUserMapper;
 import cn.iocoder.yudao.module.system.enums.social.SocialTypeEnum;
+import cn.iocoder.yudao.module.system.service.user.AdminUserService;
 import com.xingyuv.jushauth.model.AuthUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertSet;
@@ -48,6 +51,9 @@ public class SocialUserServiceImpl implements SocialUserService {
 
     @Resource
     private SocialClientService socialClientService;
+
+    @Resource
+    private AdminUserService userService;
 
     @Override
     public List<SocialUserDO> getSocialUserList(Long userId, Integer userType) {
@@ -100,6 +106,13 @@ public class SocialUserServiceImpl implements SocialUserService {
         // 获得社交用户
         SocialUserDO socialUser = authSocialUser(socialType, userType, code, state);
         Assert.notNull(socialUser, "社交用户不能为空");
+        if (Objects.equals(socialType, SocialTypeEnum.WECHAT_ENTERPRISE_WEB.getType())){
+            AdminUserDO userByPkPsndoc = userService.getUserByPkPsndoc(socialUser.getOpenid());
+            if (userByPkPsndoc==null){
+                throw exception(USER_NOT_EXISTS);
+            }
+            return new SocialUserRespDTO(socialUser.getOpenid(), userByPkPsndoc.getId());
+        }
 
         // 如果未绑定的社交用户，则无法自动登录，进行报错
         SocialUserBindDO socialUserBind = socialUserBindMapper.selectByUserTypeAndSocialUserId(userType,
@@ -133,6 +146,13 @@ public class SocialUserServiceImpl implements SocialUserService {
         // 请求获取
         AuthUser authUser = socialClientService.getAuthUser(socialType, userType, code, state);
         Assert.notNull(authUser, "三方用户不能为空");
+
+        // 是企业微信免扫码登录
+        if (Objects.equals(socialType, SocialTypeEnum.WECHAT_ENTERPRISE_WEB.getType())) {
+            SocialUserDO userDO = new SocialUserDO();
+            userDO.setOpenid(authUser.getUuid());
+            return userDO;
+        }
 
         // 保存到 DB 中
         socialUser = socialUserMapper.selectByTypeAndOpenid(socialType, authUser.getUuid());
