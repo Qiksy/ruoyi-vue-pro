@@ -210,9 +210,9 @@ justauth:
       client-secret: i8E6iZyDvZj51JIb0tYsYfVQYOks9Cq1lgryEjFRqC79P3iJcrxEwT6Qk2QvLrLI
       ignore-check-redirect-uri: true
     WECHAT_ENTERPRISE: # 企业微信
-      client-id: ww1bec1ba79db2f7a0
-      client-secret: EnBmjP6VC63DozIh5L7YRxgsY-1K4AWNS3fZ04ZYxLQ
-      agent-id: 1000002
+      client-id: ww8652fdb50bcfb76b
+      client-secret: SeCmkJrYK-meLVCcaXHRX4XvMoqPfXMfZqmTXqvbbV4
+      agent-id: 1000037
       ignore-check-redirect-uri: true
   cache:
     type: REDIS
