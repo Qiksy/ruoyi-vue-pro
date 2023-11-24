@@ -1,11 +1,13 @@
 package cn.iocoder.yudao.module.sale.service.productioncompeteinfo;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+
 import cn.iocoder.yudao.module.sale.controller.admin.productioncompeteinfo.vo.*;
 import cn.iocoder.yudao.module.sale.dal.dataobject.productioncompeteinfo.ProductionCompeteInfoDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -33,15 +35,20 @@ public class ProductionCompeteInfoServiceImpl implements ProductionCompeteInfoSe
     public Long createProductionCompeteInfo(ProductionCompeteInfoSaveReqVO createReqVO) {
         // 插入
         ProductionCompeteInfoDO productionCompeteInfo = BeanUtils.toBean(createReqVO, ProductionCompeteInfoDO.class);
-        try {
-            productionCompeteInfoMapper.insert(productionCompeteInfo);
-        } catch (Exception e) {
-            // 判断是否违反唯一约束
-            if (e.getMessage().contains("SQLIntegrityConstraintViolationException")) {
-                throw exception(PRODUCTION_COMPETE_INFO_DUPLICATE);
-            }
-            throw new RuntimeException(e);
+
+        // 因为使用了逻辑删除，所以不再使用唯一索引，插入之前先判断是否存在
+        LambdaQueryWrapper<ProductionCompeteInfoDO> queryWrapper = new LambdaQueryWrapper<ProductionCompeteInfoDO>()
+                .eq(ProductionCompeteInfoDO::getProductionId, productionCompeteInfo.getProductionId())
+                .eq(ProductionCompeteInfoDO::getDeptId, productionCompeteInfo.getDeptId())
+                .eq(ProductionCompeteInfoDO::getDeleted, 0);
+
+        Long count = productionCompeteInfoMapper.selectCount(queryWrapper);
+        if (count > 0) {
+            throw exception(PRODUCTION_COMPETE_INFO_DUPLICATE);
         }
+
+        productionCompeteInfoMapper.insert(productionCompeteInfo);
+
         // 返回
         return productionCompeteInfo.getId();
     }
@@ -52,15 +59,20 @@ public class ProductionCompeteInfoServiceImpl implements ProductionCompeteInfoSe
         validateProductionCompeteInfoExists(updateReqVO.getId());
         // 更新
         ProductionCompeteInfoDO updateObj = BeanUtils.toBean(updateReqVO, ProductionCompeteInfoDO.class);
-        try {
-            productionCompeteInfoMapper.updateById(updateObj);
-        } catch (Exception e) {
-            // 判断是否违反唯一约束
-            if (e.getMessage().contains("SQLIntegrityConstraintViolationException")) {
-                throw exception(PRODUCTION_COMPETE_INFO_DUPLICATE);
-            }
-            throw new RuntimeException(e);
+
+        // 因为使用了逻辑删除，所以不再使用唯一索引，插入之前先判断是否存在
+        LambdaQueryWrapper<ProductionCompeteInfoDO> queryWrapper = new LambdaQueryWrapper<ProductionCompeteInfoDO>()
+                .eq(ProductionCompeteInfoDO::getProductionId, updateObj.getProductionId())
+                .eq(ProductionCompeteInfoDO::getDeptId, updateObj.getDeptId())
+                .eq(ProductionCompeteInfoDO::getDeleted, 0);
+
+        Long count = productionCompeteInfoMapper.selectCount(queryWrapper);
+        if (count > 0) {
+            throw exception(PRODUCTION_COMPETE_INFO_DUPLICATE);
         }
+
+        productionCompeteInfoMapper.updateById(updateObj);
+
     }
 
     @Override
