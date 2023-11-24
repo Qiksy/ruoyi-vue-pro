@@ -33,7 +33,15 @@ public class ProductionCompeteInfoServiceImpl implements ProductionCompeteInfoSe
     public Long createProductionCompeteInfo(ProductionCompeteInfoSaveReqVO createReqVO) {
         // 插入
         ProductionCompeteInfoDO productionCompeteInfo = BeanUtils.toBean(createReqVO, ProductionCompeteInfoDO.class);
-        productionCompeteInfoMapper.insert(productionCompeteInfo);
+        try {
+            productionCompeteInfoMapper.insert(productionCompeteInfo);
+        } catch (Exception e) {
+            // 判断是否违反唯一约束
+            if (e.getMessage().contains("SQLIntegrityConstraintViolationException")) {
+                throw exception(PRODUCTION_COMPETE_INFO_DUPLICATE);
+            }
+            throw new RuntimeException(e);
+        }
         // 返回
         return productionCompeteInfo.getId();
     }
@@ -44,7 +52,15 @@ public class ProductionCompeteInfoServiceImpl implements ProductionCompeteInfoSe
         validateProductionCompeteInfoExists(updateReqVO.getId());
         // 更新
         ProductionCompeteInfoDO updateObj = BeanUtils.toBean(updateReqVO, ProductionCompeteInfoDO.class);
-        productionCompeteInfoMapper.updateById(updateObj);
+        try {
+            productionCompeteInfoMapper.updateById(updateObj);
+        } catch (Exception e) {
+            // 判断是否违反唯一约束
+            if (e.getMessage().contains("SQLIntegrityConstraintViolationException")) {
+                throw exception(PRODUCTION_COMPETE_INFO_DUPLICATE);
+            }
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

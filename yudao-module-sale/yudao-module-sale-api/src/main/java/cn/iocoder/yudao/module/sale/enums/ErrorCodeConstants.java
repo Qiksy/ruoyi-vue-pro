@@ -35,7 +35,8 @@ public interface ErrorCodeConstants {
 
 
 
-    ErrorCode PRODUCTION_COMPETE_INFO_NOT_EXISTS = new ErrorCode(99_001_01, "工厂竞品管理不存在");
+    ErrorCode PRODUCTION_COMPETE_INFO_NOT_EXISTS = new ErrorCode(99_001_01, "工厂竞品不存在");
+    ErrorCode PRODUCTION_COMPETE_INFO_DUPLICATE = new ErrorCode(99_001_02, "工厂竞品重复或违反约束");
 
 
     ErrorCode COMPETE_INFO_NOT_EXISTS = new ErrorCode(58_001_01, "竞品信息不存在");
