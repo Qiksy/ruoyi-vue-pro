@@ -74,7 +74,14 @@ public class ProductionCompeteInfoController {
     @PreAuthorize("@ss.hasPermission('sale:production-compete-info:query')")
     public CommonResult<ProductionCompeteInfoRespVO> getProductionCompeteInfo(@RequestParam("id") Long id) {
         ProductionCompeteInfoDO productionCompeteInfo = productionCompeteInfoService.getProductionCompeteInfo(id);
-        return success(BeanUtils.toBean(productionCompeteInfo, ProductionCompeteInfoRespVO.class));
+
+        // 把物料名称也查询出来
+
+        Map<Long, ProductionInfoDO> productionMap = productionInfoService.getProductionMap(Collections.singletonList(productionCompeteInfo.getProductionId()));
+
+        ProductionCompeteInfoRespVO respVO = BeanUtils.toBean(productionCompeteInfo, ProductionCompeteInfoRespVO.class);
+        respVO.setProductionName(productionMap.get(productionCompeteInfo.getProductionId()).getName());
+        return success(respVO);
     }
 
     @GetMapping("/page")
