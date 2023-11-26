@@ -42,4 +42,20 @@ public class CompeteInfoRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
+
+    @Schema(description = "销售分类", example = "乳猪料")
+    @ExcelProperty("销售分类")
+    private String saleClassName;
+
+
+    @Schema(description = "物料名称", example = "TTT")
+    @ExcelProperty("物料名称")
+    private String materialName;
+
+    @Schema(description = "工厂ID", example = "乳猪料")
+    private Long deptId;
+
+    @Schema(description = "产品id",example = "1")
+    private Long productionId;
+
 }

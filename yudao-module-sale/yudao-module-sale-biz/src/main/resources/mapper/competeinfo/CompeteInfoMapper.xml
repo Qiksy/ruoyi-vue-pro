@@ -8,5 +8,56 @@
         代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
+    <resultMap id="respVo" type="cn.iocoder.yudao.module.sale.controller.admin.competeinfo.vo.CompeteInfoRespVO">
+        <result column="id" property="id" />
+        <result column="brand" property="brand" />
+        <result column="prod_name" property="prodName" />
+        <result column="spec" property="spec" />
+        <result column="compete_id" property="competeId" />
+        <result column="price" property="price" />
+        <result column="dept_id" property="deptId" />
+        <result column="sale_class_name" property="saleClassName" />
+        <result column="prodution_name" property="materialName" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
 
+    <!--这里进行分页查询，查询字段设计的表查询太多了，使用代码进行关联的话，非常的麻烦-->
+    <select id="selectPage2"
+            resultMap="respVo">
+        SELECT
+        t1.id,
+        t1.brand,
+        t1.prod_name,
+        t1.spec,
+        t1.compete_id,
+        t1.price,
+        t3.name prodution_name,
+        t4.name sale_class_name,
+        t2.dept_id,
+        t1.create_time
+        FROM
+          sale_compete_info t1 /** 竞品的信息 */
+        left join sale_production_compete_info t2 /**工厂设置的竞品*/
+          on t1.compete_id = t2.id and t2.deleted=0
+        left join sale_production_info t3 /**物料基本信息*/
+          on t3.id = t2.production_id and t3.deleted=0
+        left join sale_production_marsaleclass t4 /**销售分类*/
+          on t4.id = t3.marsaleclass_id and t4.deleted=0
+        where t1.deleted = 0
+            <if test="req.prodName != null">
+                and t1.prod_name like concat('%',#{req.prodName},'%')
+            </if>
+            <if test="req.brand != null">
+                and t1.brand like concat('%',#{req.brand},'%')
+            </if>
+            <if test="req.spec != null">
+                and t1.spec = #{req.spec}
+            </if>
+            <if test="req.productionId != null">
+                and t3.id = #{req.productionId}
+            </if>
+            <if test="req.competeId != null">
+                and t2.id = #{req.competeId}
+            </if>
+    </select>
 </mapper>

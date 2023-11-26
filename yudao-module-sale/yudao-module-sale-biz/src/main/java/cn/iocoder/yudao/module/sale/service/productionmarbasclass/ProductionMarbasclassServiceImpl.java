@@ -1,12 +1,16 @@
 package cn.iocoder.yudao.module.sale.service.productionmarbasclass;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.iocoder.yudao.module.sale.dal.dataobject.productionmarsaleclass.ProductionMarsaleclassDO;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
 import cn.iocoder.yudao.module.sale.controller.admin.productionmarbasclass.vo.*;
 import cn.iocoder.yudao.module.sale.dal.dataobject.productionmarbasclass.ProductionMarbasclassDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;

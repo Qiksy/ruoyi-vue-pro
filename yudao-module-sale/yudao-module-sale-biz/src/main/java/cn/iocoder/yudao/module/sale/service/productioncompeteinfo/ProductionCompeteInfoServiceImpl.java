@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.sale.service.productioncompeteinfo;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -7,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import cn.iocoder.yudao.module.sale.controller.admin.productioncompeteinfo.vo.*;
 import cn.iocoder.yudao.module.sale.dal.dataobject.productioncompeteinfo.ProductionCompeteInfoDO;
@@ -99,4 +101,21 @@ public class ProductionCompeteInfoServiceImpl implements ProductionCompeteInfoSe
         return productionCompeteInfoMapper.selectPage(pageReqVO);
     }
 
+
+    @Override
+    public Map<Long, ProductionCompeteInfoDO> getProductionCompeteInfoMap(Set<Long> competeIds) {
+
+
+        LambdaQueryWrapper<ProductionCompeteInfoDO> queryWrapper = new LambdaQueryWrapper<ProductionCompeteInfoDO>()
+                .in(ProductionCompeteInfoDO::getId, competeIds)
+                .eq(ProductionCompeteInfoDO::getDeleted, 0);
+        List<ProductionCompeteInfoDO> productionCompeteInfoDOS = productionCompeteInfoMapper.selectList(queryWrapper);
+
+        if (CollUtil.isEmpty(productionCompeteInfoDOS)){
+            return Collections.emptyMap();
+        }
+
+        return productionCompeteInfoDOS.stream().collect(Collectors.toMap(ProductionCompeteInfoDO::getId, productionCompeteInfoDO -> productionCompeteInfoDO));
+
+    }
 }

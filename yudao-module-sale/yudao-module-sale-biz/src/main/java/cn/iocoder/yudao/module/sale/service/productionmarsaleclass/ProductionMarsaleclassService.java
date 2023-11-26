@@ -52,4 +52,5 @@ public interface ProductionMarsaleclassService {
      */
     List<ProductionMarsaleclassDO> getProductionMarsaleclassList(ProductionMarsaleclassListReqVO listReqVO);
 
+    Map<Long, ProductionMarsaleclassDO> getMarsaleclassMap(Collection<Long> collect);
 }

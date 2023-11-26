@@ -1,11 +1,15 @@
 package cn.iocoder.yudao.module.sale.service.productionmarsaleclass;
 
+import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
 import cn.iocoder.yudao.module.sale.controller.admin.productionmarsaleclass.vo.*;
 import cn.iocoder.yudao.module.sale.dal.dataobject.productionmarsaleclass.ProductionMarsaleclassDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -133,4 +137,20 @@ public class ProductionMarsaleclassServiceImpl implements ProductionMarsaleclass
         return productionMarsaleclassMapper.selectList(listReqVO);
     }
 
+    @Override
+    public Map<Long, ProductionMarsaleclassDO> getMarsaleclassMap(Collection<Long> collect) {
+
+        if (CollUtil.isEmpty(collect)) {
+            return Collections.emptyMap();
+        }
+        LambdaQueryWrapper<ProductionMarsaleclassDO> queryWrapper = new LambdaQueryWrapper<ProductionMarsaleclassDO>()
+                .select(ProductionMarsaleclassDO::getId, ProductionMarsaleclassDO::getName)
+                .in(ProductionMarsaleclassDO::getId, collect);
+        List<ProductionMarsaleclassDO> productionMarsaleclassDOS = productionMarsaleclassMapper.selectList(queryWrapper);
+
+
+
+        return productionMarsaleclassDOS.stream().
+                collect(Collectors.toMap(ProductionMarsaleclassDO::getId, ProductionMarsaleclassDO -> ProductionMarsaleclassDO));
+    }
 }

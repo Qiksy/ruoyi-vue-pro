@@ -35,4 +35,12 @@ public class CompeteInfoPageReqVO extends PageParam {
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
+
+    @Schema(description = "产品id ")
+    private Long productionId;
+
+
+//    @Schema(description = "竞品范围di")
+//    private Long competeId;
+
 }

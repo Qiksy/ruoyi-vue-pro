@@ -2,12 +2,13 @@ package cn.iocoder.yudao.module.sale.dal.mysql.productionmarbasclass;
 
 import java.util.*;
 
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.module.sale.controller.admin.productionmarbasclass.vo.ProductionMarbasclassListReqVO;
 import cn.iocoder.yudao.module.sale.dal.dataobject.productionmarbasclass.ProductionMarbasclassDO;
+import cn.iocoder.yudao.module.sale.dal.dataobject.productionmarsaleclass.ProductionMarsaleclassDO;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.ibatis.annotations.Mapper;
-import cn.iocoder.yudao.module.sale.controller.admin.productionmarbasclass.vo.*;
 
 /**
  * 物料分类 Mapper

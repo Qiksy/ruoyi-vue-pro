@@ -1,5 +1,8 @@
 package cn.iocoder.yudao.module.sale.service.competeinfo;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -71,4 +74,11 @@ public class CompeteInfoServiceImpl implements CompeteInfoService {
         return competeInfoMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public PageResult<CompeteInfoRespVO> getCompeteInfoPage2(CompeteInfoPageReqVO pageReqVO) {
+        // 进行分页查询
+        IPage<CompeteInfoRespVO> iPage = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        IPage<CompeteInfoRespVO> page = competeInfoMapper.selectPage2(iPage,pageReqVO); // 转为PageResult
+        return new PageResult<>(page.getRecords(), page.getTotal());
+    }
 }

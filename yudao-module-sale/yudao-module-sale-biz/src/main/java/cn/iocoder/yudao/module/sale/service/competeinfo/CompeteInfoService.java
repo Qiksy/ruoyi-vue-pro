@@ -52,4 +52,10 @@ public interface CompeteInfoService {
      */
     PageResult<CompeteInfoDO> getCompeteInfoPage(CompeteInfoPageReqVO pageReqVO);
 
+    /**
+     * 使用mybatis xml实现查询和分页
+     * @param pageReqVO
+     * @return
+     */
+    PageResult<CompeteInfoRespVO> getCompeteInfoPage2(CompeteInfoPageReqVO pageReqVO);
 }

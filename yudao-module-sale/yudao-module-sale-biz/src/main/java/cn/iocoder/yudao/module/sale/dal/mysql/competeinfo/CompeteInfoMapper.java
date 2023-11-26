@@ -6,8 +6,11 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.sale.dal.dataobject.competeinfo.CompeteInfoDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.sale.controller.admin.competeinfo.vo.*;
+import org.apache.ibatis.annotations.Param;
+import org.apache.poi.ss.formula.functions.T;
 
 /**
  * 竞品信息 Mapper
@@ -28,4 +31,6 @@ public interface CompeteInfoMapper extends BaseMapperX<CompeteInfoDO> {
                 .orderByDesc(CompeteInfoDO::getId));
     }
 
+
+    IPage<CompeteInfoRespVO> selectPage2(IPage<CompeteInfoRespVO> page,@Param("req") CompeteInfoPageReqVO req);
 }

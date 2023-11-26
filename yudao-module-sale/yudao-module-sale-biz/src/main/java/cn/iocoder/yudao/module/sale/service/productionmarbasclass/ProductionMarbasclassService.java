@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.sale.service.productionmarbasclass;
 
 import java.util.*;
+
+import cn.iocoder.yudao.module.sale.dal.dataobject.productionmarsaleclass.ProductionMarsaleclassDO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.sale.controller.admin.productionmarbasclass.vo.*;
 import cn.iocoder.yudao.module.sale.dal.dataobject.productionmarbasclass.ProductionMarbasclassDO;

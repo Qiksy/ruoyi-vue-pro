@@ -87,12 +87,12 @@ public class ProductionInfoServiceImpl implements ProductionInfoService {
 
 
     @Override
-    public Map<Long, ProductionInfoDO> getProductionMap(List<Long> productionIds) {
+    public Map<Long, ProductionInfoDO> getProductionMap(Collection<Long> productionIds) {
         if (CollUtil.isEmpty(productionIds)) {
             return Collections.emptyMap();
         }
         LambdaQueryWrapper<ProductionInfoDO> queryWrapper = new LambdaQueryWrapper<ProductionInfoDO>()
-                .select(ProductionInfoDO::getId, ProductionInfoDO::getName)
+//                .select(ProductionInfoDO::getId, ProductionInfoDO::getName)
                 .in(ProductionInfoDO::getId, productionIds);
         List<ProductionInfoDO> productionInfoDOS = productionInfoMapper.selectList(queryWrapper);
 
