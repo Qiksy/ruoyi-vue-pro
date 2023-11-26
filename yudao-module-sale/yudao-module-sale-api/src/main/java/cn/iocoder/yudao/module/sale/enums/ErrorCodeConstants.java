@@ -41,4 +41,6 @@ public interface ErrorCodeConstants {
 
     ErrorCode COMPETE_INFO_NOT_EXISTS = new ErrorCode(58_001_01, "竞品信息不存在");
 
+    ErrorCode COMPETE_INFO_SUB_NOT_EXISTS = new ErrorCode(57_001_01, "竞品信息子不存在");
+
 }
