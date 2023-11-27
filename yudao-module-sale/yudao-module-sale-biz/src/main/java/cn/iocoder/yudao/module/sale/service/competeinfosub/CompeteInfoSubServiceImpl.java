@@ -1,11 +1,15 @@
 package cn.iocoder.yudao.module.sale.service.competeinfosub;
 
+import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
 import cn.iocoder.yudao.module.sale.controller.admin.competeinfosub.vo.*;
 import cn.iocoder.yudao.module.sale.dal.dataobject.competeinfosub.CompeteInfoSubDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -71,4 +75,24 @@ public class CompeteInfoSubServiceImpl implements CompeteInfoSubService {
         return competeInfoSubMapper.selectPage(pageReqVO);
     }
 
+    /**
+     * key: parentId
+     * value: List<CompeteInfoSubDO>
+     *
+     * @param parentIds
+     * @return
+     */
+    @Override
+    public Map<Long, List<CompeteInfoSubDO>> selectMapByCompeteInfoIdList(List<Long> parentIds) {
+        if (CollUtil.isEmpty(parentIds)){
+            return Collections.emptyMap();
+        }
+
+        LambdaQueryWrapper<CompeteInfoSubDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(CompeteInfoSubDO::getParentId, parentIds).eq(CompeteInfoSubDO::getDeleted, false);
+
+        List<CompeteInfoSubDO> list = competeInfoSubMapper.selectList(queryWrapper);
+
+        return list.stream().collect(Collectors.groupingBy(CompeteInfoSubDO::getParentId));
+    }
 }

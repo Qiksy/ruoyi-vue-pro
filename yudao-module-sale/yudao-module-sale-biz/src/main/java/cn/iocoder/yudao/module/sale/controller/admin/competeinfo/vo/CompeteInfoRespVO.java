@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.sale.controller.admin.competeinfo.vo;
 
+import cn.iocoder.yudao.module.sale.dal.dataobject.competeinfosub.CompeteInfoSubDO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import java.util.*;
@@ -58,4 +59,9 @@ public class CompeteInfoRespVO {
     @Schema(description = "产品id",example = "1")
     private Long productionId;
 
+
+    /**
+     * 子表行
+     */
+    private List<CompeteInfoSubDO> subRows;
 }

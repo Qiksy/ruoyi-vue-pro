@@ -52,4 +52,11 @@ public interface CompeteInfoSubService {
      */
     PageResult<CompeteInfoSubDO> getCompeteInfoSubPage(CompeteInfoSubPageReqVO pageReqVO);
 
+    /**
+     * key: parentId
+     * value: List<CompeteInfoSubDO>
+     * @param parentIds
+     * @return
+     */
+    Map<Long, List<CompeteInfoSubDO>> selectMapByCompeteInfoIdList(List<Long> parentIds);
 }

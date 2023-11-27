@@ -1,8 +1,11 @@
 package cn.iocoder.yudao.module.sale.controller.admin.competeinfo;
 
+import cn.iocoder.yudao.module.sale.controller.admin.competeinfosub.vo.CompeteInfoSubRespVO;
+import cn.iocoder.yudao.module.sale.dal.dataobject.competeinfosub.CompeteInfoSubDO;
 import cn.iocoder.yudao.module.sale.dal.dataobject.productioncompeteinfo.ProductionCompeteInfoDO;
 import cn.iocoder.yudao.module.sale.dal.dataobject.productioninfo.ProductionInfoDO;
 import cn.iocoder.yudao.module.sale.dal.dataobject.productionmarsaleclass.ProductionMarsaleclassDO;
+import cn.iocoder.yudao.module.sale.service.competeinfosub.CompeteInfoSubService;
 import cn.iocoder.yudao.module.sale.service.productioncompeteinfo.ProductionCompeteInfoService;
 import cn.iocoder.yudao.module.sale.service.productioninfo.ProductionInfoService;
 import cn.iocoder.yudao.module.sale.service.productionmarbasclass.ProductionMarbasclassService;
@@ -47,17 +50,7 @@ public class CompeteInfoController {
     private CompeteInfoService competeInfoService;
 
     @Resource
-    private ProductionCompeteInfoService productionCompeteInfoService;  //竞品范围
-
-
-    @Resource
-    private ProductionInfoService productionInfoService;  //物料信息
-
-    @Resource
-    private ProductionMarbasclassService marbasclassService;  //销售物料分类
-
-    @Resource
-    private ProductionMarsaleclassService marsaleclassService;  //销售分类
+    private CompeteInfoSubService competeInfoSubService;
 
     @PostMapping("/create")
     @Operation(summary = "创建竞品信息")
@@ -102,39 +95,19 @@ public class CompeteInfoController {
         //todo 带出 物料名称、产品线、工厂、当前价格
         PageResult<CompeteInfoRespVO> pageResult = competeInfoService.getCompeteInfoPage2(pageReqVO);
 
+        //竞品信息子信息
+        List<CompeteInfoRespVO> competeInfoRespVOList = pageResult.getList();
+        List<Long> competeInfoIdList = competeInfoRespVOList.stream().map(CompeteInfoRespVO::getId).toList();
 
-//        // 这里是所有竞品行的信息，根据id查询竞品的信息
-//        Set<Long> competeIds = list.stream().map(CompeteInfoDO::getCompeteId).collect(Collectors.toSet());
-//        Map<Long, ProductionCompeteInfoDO> dataMap = productionCompeteInfoService.getProductionCompeteInfoMap(competeIds);
-//
-//        //竞品行又有物料id
-//        Set<Long> materialIds = dataMap.entrySet().stream().map(entry -> entry.getValue().getProductionId()).collect(Collectors.toSet());
-//
-//        //物料id又关联 产品线，销售分类，物料基本分类
-//        Map<Long, ProductionInfoDO> materialMap = productionInfoService.getProductionMap(materialIds);
-//
-//        //获取产品线的名称
-//        Map<Long, ProductionMarsaleclassDO> saleeClassMap = marsaleclassService.getMarsaleclassMap(materialMap.values().stream().map(ProductionInfoDO::getMarsaleclassId).collect(Collectors.toSet())); //销售分类
-//
-//
-//        List<CompeteInfoRespVO> respVOList = new ArrayList<>();
-//        for (CompeteInfoDO competeInfoDO : list) {
-//            CompeteInfoRespVO respVO = BeanUtils.toBean(competeInfoDO, CompeteInfoRespVO.class);
-//            respVO.setMaterialName(materialMap.get(dataMap.get(competeInfoDO.getCompeteId()).getProductionId()).getName());// 物料名称
-//
-//            // 物料id 通过竞品id获取
-//            Long productionId = dataMap.get(respVO.getCompeteId()).getProductionId();
-//
-//            //销售分类id
-//            Long saleCalssId = materialMap.get(productionId).getMarsaleclassId();
-//            //销售分类名称
-//            String saleClassname = saleeClassMap.get(saleCalssId).getName();
-//
-//
-//            respVO.setSaleClassName(saleClassname); //销售分类
-//            respVO.setDeptId(dataMap.get(respVO.getCompeteId()).getDeptId()); //工厂
-//            respVOList.add(respVO);
-//        }
+        Map<Long,List<CompeteInfoSubDO>> dataMap =  competeInfoSubService.selectMapByCompeteInfoIdList(competeInfoIdList);
+
+        // 设置子表
+        for (CompeteInfoRespVO competeInfoRespVO : competeInfoRespVOList) {
+            List<CompeteInfoSubDO> subRows = Optional.ofNullable(dataMap.get(competeInfoRespVO.getId())).orElse(new ArrayList<>());
+            competeInfoRespVO.setSubRows(subRows);
+        }
+        pageResult.setList(competeInfoRespVOList);
+
         return success(pageResult);
     }
 
