@@ -211,8 +211,8 @@ justauth:
       ignore-check-redirect-uri: true
     WECHAT_ENTERPRISE: # 企业微信 扫码登录
       client-id: ww8652fdb50bcfb76b
-      client-secret: SeCmkJrYK-meLVCcaXHRX4XvMoqPfXMfZqmTXqvbbV4
-      agent-id: 1000037
+      client-secret: KHEiw7yaCJ1K7qL9xQeUutXru_uOk9P7ZUFoCQjE-Bo
+      agent-id: 1000038
       ignore-check-redirect-uri: true
     WECHAT_ENTERPRISE_WEB: # 企业微信 网页登录
       client-id: ww8652fdb50bcfb76b
