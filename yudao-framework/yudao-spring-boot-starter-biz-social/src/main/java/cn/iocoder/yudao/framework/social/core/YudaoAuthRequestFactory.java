@@ -9,11 +9,13 @@ import com.xingyuv.jushauth.cache.AuthStateCache;
 import com.xingyuv.jushauth.config.AuthConfig;
 import com.xingyuv.jushauth.config.AuthSource;
 import com.xingyuv.jushauth.request.AuthRequest;
+import com.xingyuv.jushauth.request.AuthWeChatEnterpriseWebRequest;
 import com.xingyuv.justauth.AuthRequestFactory;
 import com.xingyuv.justauth.autoconfigure.JustAuthProperties;
 
 import java.lang.reflect.Method;
 
+import static com.xingyuv.jushauth.config.AuthDefaultSource.WECHAT_ENTERPRISE_WEB;
 import static com.xingyuv.jushauth.config.AuthDefaultSource.WECHAT_MP;
 
 /**
@@ -62,6 +64,12 @@ public class YudaoAuthRequestFactory extends AuthRequestFactory {
         if (WECHAT_MP.name().equalsIgnoreCase(source)) {
             AuthConfig config = properties.getType().get(WECHAT_MP.name());
             return new AuthWeChatMpRequest(config, authStateCache);
+        }
+
+        if (WECHAT_ENTERPRISE_WEB.name().equals(source)) {
+            // 企业终端单点登录扩展，手动写一个
+            AuthConfig config = properties.getType().get(WECHAT_ENTERPRISE_WEB.name());
+            return new AuthWeChatEnterpriseWebRequest(config,authStateCache);
         }
 
         AuthExtendSource authExtendSource;

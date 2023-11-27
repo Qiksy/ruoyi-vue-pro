@@ -148,7 +148,7 @@ public class SocialUserServiceImpl implements SocialUserService {
         Assert.notNull(authUser, "三方用户不能为空");
 
         // 是企业微信免扫码登录
-        if (Objects.equals(socialType, SocialTypeEnum.WECHAT_ENTERPRISE_WEB.getType())) {
+        if (Objects.equals(socialType, SocialTypeEnum.WECHAT_ENTERPRISE_WEB.getType()) || Objects.equals(socialType, SocialTypeEnum.WECHAT_ENTERPRISE.getType())) {
             SocialUserDO userDO = new SocialUserDO();
             userDO.setOpenid(authUser.getUuid());
             return userDO;
