@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.sale.controller.admin.competeinfo.vo;
 
+import cn.iocoder.yudao.module.sale.controller.admin.competeinfosub.vo.CompeteInfoSubRespVO;
 import cn.iocoder.yudao.module.sale.dal.dataobject.competeinfosub.CompeteInfoSubDO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -39,6 +40,10 @@ public class CompeteInfoRespVO {
     @ExcelProperty("初始价格")
     private BigDecimal price;
 
+    @Schema(description = "当前价格")
+    @ExcelProperty("当前价格")
+    private BigDecimal currentPrice;
+
     @Schema(description = "创建时间")
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
@@ -63,5 +68,5 @@ public class CompeteInfoRespVO {
     /**
      * 子表行
      */
-    private List<CompeteInfoSubDO> subRows;
+    private List<CompeteInfoSubRespVO> subRows;
 }

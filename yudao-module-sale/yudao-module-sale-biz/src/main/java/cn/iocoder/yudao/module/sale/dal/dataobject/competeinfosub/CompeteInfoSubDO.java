@@ -1,11 +1,10 @@
 package cn.iocoder.yudao.module.sale.dal.dataobject.competeinfosub;
 
 import lombok.*;
-import java.util.*;
+
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.LocalDateTime;
+
 import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 
@@ -44,6 +43,6 @@ public class CompeteInfoSubDO extends BaseDO {
     /**
      * 附件列表
      */
-    private String fileUrl;
+    private String fileId;
 
 }

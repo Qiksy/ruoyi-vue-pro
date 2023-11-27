@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.sale.controller.admin.competeinfosub.vo;
 
+import cn.iocoder.yudao.module.infra.dal.dataobject.file.FileDO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import java.util.*;
@@ -32,10 +33,13 @@ public class CompeteInfoSubRespVO {
 
     @Schema(description = "附件列表", example = "https://www.iocoder.cn")
     @ExcelProperty("附件列表")
-    private String fileUrl;
+    private String fileId;
 
     @Schema(description = "创建时间")
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
+
+    @Schema(description = "附件信息")
+    private FileDO fileInfo;
 
 }

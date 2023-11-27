@@ -9,6 +9,7 @@ import cn.iocoder.yudao.framework.file.core.utils.FileTypeUtils;
 import cn.iocoder.yudao.module.infra.controller.admin.file.vo.file.FilePageReqVO;
 import cn.iocoder.yudao.module.infra.dal.dataobject.file.FileDO;
 import cn.iocoder.yudao.module.infra.dal.mysql.file.FileMapper;
+import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,17 @@ public class FileServiceImpl implements FileService {
     @Override
     @SneakyThrows
     public String createFile(String name, String path, byte[] content) {
+        return createFile(content, path, name).getUrl();
+    }
+
+    @Override
+    @SneakyThrows
+    public Long createFile2(String name, String path, byte[] content) {
+        FileDO file = createFile(content, path, name);
+        return file.getId();
+    }
+
+    private FileDO createFile(byte[] content, String path,String name ) throws Exception {
         // 计算默认的 path 名
         String type = FileTypeUtils.getMineType(content, name);
         if (StrUtil.isEmpty(path)) {
@@ -49,12 +61,13 @@ public class FileServiceImpl implements FileService {
         }
 
         // 上传到文件存储器
-        FileClient client = fileConfigService.getMasterFileClient();
+        FileClient client = fileConfigService. getMasterFileClient();
         Assert.notNull(client, "客户端(master) 不能为空");
         String url = client.upload(content, path, type);
 
         // 保存到数据库
         FileDO file = new FileDO();
+        file.setId(DefaultIdentifierGenerator.getInstance().nextId(null));
         file.setConfigId(client.getId());
         file.setName(name);
         file.setPath(path);
@@ -62,7 +75,8 @@ public class FileServiceImpl implements FileService {
         file.setType(type);
         file.setSize(content.length);
         fileMapper.insert(file);
-        return url;
+
+        return file;
     }
 
     @Override

@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS "sale_compete_info_sub" (
                                                        "parent_id" bigint NOT NULL,
                                                        "change_date" varchar NOT NULL,
                                                        "price_changes" varchar NOT NULL,
-                                                       "file_url" varchar,
+                                                       "file_id" varchar,
                                                        "creator" varchar DEFAULT '',
                                                        "create_time" datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                                        "updater" varchar DEFAULT '',

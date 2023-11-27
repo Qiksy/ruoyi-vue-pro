@@ -29,6 +29,6 @@ public class CompeteInfoSubSaveReqVO {
     private BigDecimal priceChanges;
 
     @Schema(description = "附件列表", example = "https://www.iocoder.cn")
-    private String fileUrl;
+    private String fileId;
 
 }

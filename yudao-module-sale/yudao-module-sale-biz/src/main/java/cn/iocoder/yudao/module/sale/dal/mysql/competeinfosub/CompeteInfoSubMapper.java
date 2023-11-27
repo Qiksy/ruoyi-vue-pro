@@ -1,7 +1,5 @@
 package cn.iocoder.yudao.module.sale.dal.mysql.competeinfosub;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
@@ -22,7 +20,7 @@ public interface CompeteInfoSubMapper extends BaseMapperX<CompeteInfoSubDO> {
                 .eqIfPresent(CompeteInfoSubDO::getParentId, reqVO.getParentId())
                 .betweenIfPresent(CompeteInfoSubDO::getChangeDate, reqVO.getChangeDate())
                 .eqIfPresent(CompeteInfoSubDO::getPriceChanges, reqVO.getPriceChanges())
-                .eqIfPresent(CompeteInfoSubDO::getFileUrl, reqVO.getFileUrl())
+                .eqIfPresent(CompeteInfoSubDO::getFileId, reqVO.getFileId())
                 .betweenIfPresent(CompeteInfoSubDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(CompeteInfoSubDO::getId));
     }

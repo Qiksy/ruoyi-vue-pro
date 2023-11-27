@@ -2,7 +2,6 @@ package cn.iocoder.yudao.module.sale.service.competeinfosub;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import jakarta.annotation.Resource;
 
@@ -13,20 +12,14 @@ import cn.iocoder.yudao.module.sale.dal.dataobject.competeinfosub.CompeteInfoSub
 import cn.iocoder.yudao.module.sale.dal.mysql.competeinfosub.CompeteInfoSubMapper;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 
-import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Import;
-import java.util.*;
-import java.time.LocalDateTime;
 
-import static cn.hutool.core.util.RandomUtil.*;
 import static cn.iocoder.yudao.module.sale.enums.ErrorCodeConstants.*;
 import static cn.iocoder.yudao.framework.test.core.util.AssertUtils.*;
 import static cn.iocoder.yudao.framework.test.core.util.RandomUtils.*;
 import static cn.iocoder.yudao.framework.common.util.date.LocalDateTimeUtils.*;
 import static cn.iocoder.yudao.framework.common.util.object.ObjectUtils.*;
-import static cn.iocoder.yudao.framework.common.util.date.DateUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 /**
  * {@link CompeteInfoSubServiceImpl} 的单元测试类
@@ -113,7 +106,7 @@ public class CompeteInfoSubServiceImplTest extends BaseDbUnitTest {
            o.setParentId(null);
            o.setChangeDate(null);
            o.setPriceChanges(null);
-           o.setFileUrl(null);
+           o.setFileId(null);
            o.setCreateTime(null);
        });
        competeInfoSubMapper.insert(dbCompeteInfoSub);
@@ -124,7 +117,7 @@ public class CompeteInfoSubServiceImplTest extends BaseDbUnitTest {
        // 测试 priceChanges 不匹配
        competeInfoSubMapper.insert(cloneIgnoreId(dbCompeteInfoSub, o -> o.setPriceChanges(null)));
        // 测试 fileUrl 不匹配
-       competeInfoSubMapper.insert(cloneIgnoreId(dbCompeteInfoSub, o -> o.setFileUrl(null)));
+       competeInfoSubMapper.insert(cloneIgnoreId(dbCompeteInfoSub, o -> o.setFileId(null)));
        // 测试 createTime 不匹配
        competeInfoSubMapper.insert(cloneIgnoreId(dbCompeteInfoSub, o -> o.setCreateTime(null)));
        // 准备参数
@@ -132,7 +125,7 @@ public class CompeteInfoSubServiceImplTest extends BaseDbUnitTest {
        reqVO.setParentId(null);
        reqVO.setChangeDate(buildBetweenTime(2023, 2, 1, 2023, 2, 28));
        reqVO.setPriceChanges(null);
-       reqVO.setFileUrl(null);
+       reqVO.setFileId(null);
        reqVO.setCreateTime(buildBetweenTime(2023, 2, 1, 2023, 2, 28));
 
        // 调用

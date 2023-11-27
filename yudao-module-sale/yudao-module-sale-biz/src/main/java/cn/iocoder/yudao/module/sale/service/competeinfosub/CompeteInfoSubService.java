@@ -42,7 +42,7 @@ public interface CompeteInfoSubService {
      * @param id 编号
      * @return 竞品信息子
      */
-    CompeteInfoSubDO getCompeteInfoSub(Long id);
+    CompeteInfoSubRespVO getCompeteInfoSub(Long id);
 
     /**
      * 获得竞品信息子分页
@@ -58,5 +58,5 @@ public interface CompeteInfoSubService {
      * @param parentIds
      * @return
      */
-    Map<Long, List<CompeteInfoSubDO>> selectMapByCompeteInfoIdList(List<Long> parentIds);
+    Map<Long, List<CompeteInfoSubRespVO>> selectMapByCompeteInfoIdList(List<Long> parentIds);
 }

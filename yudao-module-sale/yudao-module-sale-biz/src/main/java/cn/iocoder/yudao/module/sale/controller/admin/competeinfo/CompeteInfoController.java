@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.sale.controller.admin.competeinfo;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.sale.controller.admin.competeinfosub.vo.CompeteInfoSubRespVO;
 import cn.iocoder.yudao.module.sale.dal.dataobject.competeinfosub.CompeteInfoSubDO;
 import cn.iocoder.yudao.module.sale.dal.dataobject.productioncompeteinfo.ProductionCompeteInfoDO;
@@ -21,6 +22,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.io.IOException;
 import java.util.stream.Collectors;
@@ -99,13 +103,32 @@ public class CompeteInfoController {
         List<CompeteInfoRespVO> competeInfoRespVOList = pageResult.getList();
         List<Long> competeInfoIdList = competeInfoRespVOList.stream().map(CompeteInfoRespVO::getId).toList();
 
-        Map<Long,List<CompeteInfoSubDO>> dataMap =  competeInfoSubService.selectMapByCompeteInfoIdList(competeInfoIdList);
+        Map<Long,List<CompeteInfoSubRespVO>> dataMap =  competeInfoSubService.selectMapByCompeteInfoIdList(competeInfoIdList);
 
         // 设置子表
         for (CompeteInfoRespVO competeInfoRespVO : competeInfoRespVOList) {
-            List<CompeteInfoSubDO> subRows = Optional.ofNullable(dataMap.get(competeInfoRespVO.getId())).orElse(new ArrayList<>());
+            List<CompeteInfoSubRespVO> subRows = Optional.ofNullable(dataMap.get(competeInfoRespVO.getId())).orElse(new ArrayList<>());
+
+            if (!CollUtil.isEmpty(subRows)){
+                //如果子表不是为空的 subRows再按照changeDate排序，然后把priceChanges按照顺序加起来
+                subRows = subRows.stream().filter(v-> v.getChangeDate().isBefore(LocalDateTime.now())).sorted(Comparator.comparing(CompeteInfoSubRespVO::getChangeDate)).collect(Collectors.toList());
+                BigDecimal priceChanges = BigDecimal.ZERO;
+                for (CompeteInfoSubRespVO subRow : subRows) {
+                    priceChanges = priceChanges.add(subRow.getPriceChanges());
+                }
+                BigDecimal price = competeInfoRespVO.getPrice();
+                BigDecimal currentPrice = price.add(priceChanges);
+                competeInfoRespVO.setCurrentPrice(currentPrice);
+            }else {
+                //如果子表为空，那么当前价格就是初始价格
+                competeInfoRespVO.setCurrentPrice(competeInfoRespVO.getPrice());
+            }
+
             competeInfoRespVO.setSubRows(subRows);
         }
+
+
+
         pageResult.setList(competeInfoRespVOList);
 
         return success(pageResult);

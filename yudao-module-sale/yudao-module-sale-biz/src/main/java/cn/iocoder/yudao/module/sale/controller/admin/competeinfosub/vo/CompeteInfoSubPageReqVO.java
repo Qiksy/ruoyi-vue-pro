@@ -27,7 +27,7 @@ public class CompeteInfoSubPageReqVO extends PageParam {
     private BigDecimal priceChanges;
 
     @Schema(description = "附件列表", example = "https://www.iocoder.cn")
-    private String fileUrl;
+    private String fileId;
 
     @Schema(description = "创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)

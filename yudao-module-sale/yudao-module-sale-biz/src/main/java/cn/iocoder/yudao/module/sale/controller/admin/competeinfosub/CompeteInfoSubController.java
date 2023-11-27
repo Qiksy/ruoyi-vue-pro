@@ -67,8 +67,8 @@ public class CompeteInfoSubController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('sale:compete-info:query')")
     public CommonResult<CompeteInfoSubRespVO> getCompeteInfoSub(@RequestParam("id") Long id) {
-        CompeteInfoSubDO competeInfoSub = competeInfoSubService.getCompeteInfoSub(id);
-        return success(BeanUtils.toBean(competeInfoSub, CompeteInfoSubRespVO.class));
+        CompeteInfoSubRespVO competeInfoSub = competeInfoSubService.getCompeteInfoSub(id);
+        return success(competeInfoSub);
     }
 
     @GetMapping("/page")

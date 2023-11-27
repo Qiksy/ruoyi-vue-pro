@@ -1,7 +1,10 @@
 package cn.iocoder.yudao.module.sale.service.competeinfosub;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.iocoder.yudao.module.infra.dal.dataobject.file.FileDO;
+import cn.iocoder.yudao.module.infra.dal.mysql.file.FileMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -32,6 +35,9 @@ public class CompeteInfoSubServiceImpl implements CompeteInfoSubService {
 
     @Resource
     private CompeteInfoSubMapper competeInfoSubMapper;
+
+    @Resource
+    private FileMapper fileMapper;
 
     @Override
     public Long createCompeteInfoSub(CompeteInfoSubSaveReqVO createReqVO) {
@@ -66,8 +72,15 @@ public class CompeteInfoSubServiceImpl implements CompeteInfoSubService {
     }
 
     @Override
-    public CompeteInfoSubDO getCompeteInfoSub(Long id) {
-        return competeInfoSubMapper.selectById(id);
+    public CompeteInfoSubRespVO getCompeteInfoSub(Long id) {
+        CompeteInfoSubDO competeInfoSubDO = competeInfoSubMapper.selectById(id);
+
+        String fileId = competeInfoSubDO.getFileId();
+        FileDO fileDO = fileMapper.selectById(fileId);
+        CompeteInfoSubRespVO bean = BeanUtils.toBean(competeInfoSubDO, CompeteInfoSubRespVO.class);
+        bean.setFileInfo(fileDO);
+
+        return bean;
     }
 
     @Override
@@ -83,16 +96,36 @@ public class CompeteInfoSubServiceImpl implements CompeteInfoSubService {
      * @return
      */
     @Override
-    public Map<Long, List<CompeteInfoSubDO>> selectMapByCompeteInfoIdList(List<Long> parentIds) {
+    public Map<Long, List<CompeteInfoSubRespVO>> selectMapByCompeteInfoIdList(List<Long> parentIds) {
         if (CollUtil.isEmpty(parentIds)){
             return Collections.emptyMap();
         }
 
         LambdaQueryWrapper<CompeteInfoSubDO> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.in(CompeteInfoSubDO::getParentId, parentIds).eq(CompeteInfoSubDO::getDeleted, false);
+        queryWrapper.in(CompeteInfoSubDO::getParentId, parentIds).eq(CompeteInfoSubDO::getDeleted, false).orderByAsc(CompeteInfoSubDO::getChangeDate);
 
         List<CompeteInfoSubDO> list = competeInfoSubMapper.selectList(queryWrapper);
 
-        return list.stream().collect(Collectors.groupingBy(CompeteInfoSubDO::getParentId));
+        //带出附件信息
+        Set<String> collect = list.stream().map(CompeteInfoSubDO::getFileId).collect(Collectors.toSet());
+        Map<Long,FileDO> fileDOMap = new HashMap<>();
+        if (!CollUtil.isEmpty(collect)){
+            LambdaQueryWrapper<FileDO> qw = new LambdaQueryWrapper<>();
+            qw.in(FileDO::getId, collect).eq(FileDO::getDeleted, false)
+                    .select(FileDO::getId,FileDO::getName,FileDO::getUrl,FileDO::getType);
+            List<FileDO> fileDOS = fileMapper.selectList(qw);
+            fileDOMap = fileDOS.stream().collect(Collectors.toMap(FileDO::getId, fileDO -> fileDO));
+        }
+
+
+
+        List<CompeteInfoSubRespVO> respVOS = BeanUtils.toBean(list, CompeteInfoSubRespVO.class);
+
+        for (CompeteInfoSubRespVO respVO : respVOS) {
+            FileDO fileDO = fileDOMap.get(Long.valueOf(respVO.getFileId()));
+            respVO.setFileInfo(fileDO);
+        }
+
+        return respVOS.stream().collect(Collectors.groupingBy(CompeteInfoSubRespVO::getParentId));
     }
 }
