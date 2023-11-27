@@ -106,7 +106,7 @@ public class SocialUserServiceImpl implements SocialUserService {
         // 获得社交用户
         SocialUserDO socialUser = authSocialUser(socialType, userType, code, state);
         Assert.notNull(socialUser, "社交用户不能为空");
-        if (Objects.equals(socialType, SocialTypeEnum.WECHAT_ENTERPRISE_WEB.getType())){
+        if (Objects.equals(socialType, SocialTypeEnum.WECHAT_ENTERPRISE_WEB.getType())||Objects.equals(socialType, SocialTypeEnum.WECHAT_ENTERPRISE.getType())){
             AdminUserDO userByPkPsndoc = userService.getUserByPkPsndoc(socialUser.getOpenid());
             if (userByPkPsndoc==null){
                 throw exception(USER_NOT_EXISTS);
