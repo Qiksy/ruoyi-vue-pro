@@ -6,6 +6,7 @@ import cn.hutool.core.io.file.FileNameUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import lombok.SneakyThrows;
 
 import java.io.ByteArrayInputStream;
@@ -72,6 +73,9 @@ public class FileUtils {
      */
     public static String generatePath(byte[] content, String originalName) {
         String sha256Hex = DigestUtil.sha256Hex(content);
+        // 这里我认为不对，如果几个人上传相同的文件，然后删除的话，容易导致其他的数据会读取错误，所以这里应该使用唯一ID
+        Long id = DefaultIdentifierGenerator.getInstance().nextId(sha256Hex);
+        sha256Hex = String.valueOf(id);
         // 情况一：如果存在 name，则优先使用 name 的后缀
         if (StrUtil.isNotBlank(originalName)) {
             String extName = FileNameUtil.extName(originalName);
