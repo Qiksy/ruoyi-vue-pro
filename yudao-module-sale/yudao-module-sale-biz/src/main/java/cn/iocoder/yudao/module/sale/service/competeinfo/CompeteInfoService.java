@@ -58,4 +58,6 @@ public interface CompeteInfoService {
      * @return
      */
     PageResult<CompeteInfoRespVO> getCompeteInfoPage2(CompeteInfoPageReqVO pageReqVO);
+
+    CompeteInfoRespVO getCompeteInfo2(Long id);
 }

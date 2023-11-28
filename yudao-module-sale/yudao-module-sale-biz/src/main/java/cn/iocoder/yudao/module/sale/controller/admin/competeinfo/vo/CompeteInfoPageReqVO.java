@@ -39,6 +39,9 @@ public class CompeteInfoPageReqVO extends PageParam {
     @Schema(description = "产品id ")
     private Long productionId;
 
+    @Schema(description = "部门id")
+    private Long deptId;
+
 
 //    @Schema(description = "竞品范围di")
 //    private Long competeId;

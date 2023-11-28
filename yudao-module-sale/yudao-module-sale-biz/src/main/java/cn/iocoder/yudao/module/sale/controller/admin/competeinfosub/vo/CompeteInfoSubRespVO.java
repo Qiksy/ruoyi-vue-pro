@@ -42,4 +42,10 @@ public class CompeteInfoSubRespVO {
     @Schema(description = "附件信息")
     private FileDO fileInfo;
 
+    @Schema(description = "创建人")
+    private String creatorName;
+
+    @Schema(description = "创建人")
+    private String creator;
+
 }

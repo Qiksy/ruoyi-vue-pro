@@ -81,4 +81,9 @@ public class CompeteInfoServiceImpl implements CompeteInfoService {
         IPage<CompeteInfoRespVO> page = competeInfoMapper.selectPage2(iPage,pageReqVO); // 转为PageResult
         return new PageResult<>(page.getRecords(), page.getTotal());
     }
+
+    @Override
+    public CompeteInfoRespVO getCompeteInfo2(Long id) {
+        return competeInfoMapper.selectInfoById(id);
+    }
 }

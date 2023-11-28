@@ -3,6 +3,8 @@ package cn.iocoder.yudao.module.sale.service.competeinfosub;
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.infra.dal.dataobject.file.FileDO;
 import cn.iocoder.yudao.module.infra.dal.mysql.file.FileMapper;
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,9 @@ public class CompeteInfoSubServiceImpl implements CompeteInfoSubService {
 
     @Resource
     private FileMapper fileMapper;
+
+    @Resource
+    private AdminUserApi adminUserApi;
 
     @Override
     public Long createCompeteInfoSub(CompeteInfoSubSaveReqVO createReqVO) {
@@ -117,13 +122,30 @@ public class CompeteInfoSubServiceImpl implements CompeteInfoSubService {
             fileDOMap = fileDOS.stream().collect(Collectors.toMap(FileDO::getId, fileDO -> fileDO));
         }
 
+        // 带出创建人信息
+        Set<Long> userIds = list.stream().map(vo->Long.valueOf(vo.getCreator())).collect(Collectors.toSet());
+        List<AdminUserRespDTO> userList = adminUserApi.getUserList(userIds);
 
-
-        List<CompeteInfoSubRespVO> respVOS = BeanUtils.toBean(list, CompeteInfoSubRespVO.class);
+        List<CompeteInfoSubRespVO> respVOS = new ArrayList<>();
+        for (CompeteInfoSubDO competeInfoSubDO : list) {
+            CompeteInfoSubRespVO temp = BeanUtils.toBean(competeInfoSubDO,CompeteInfoSubRespVO.class);
+            temp.setCreator(competeInfoSubDO.getCreator());
+            respVOS.add(temp);
+        }
 
         for (CompeteInfoSubRespVO respVO : respVOS) {
             FileDO fileDO = fileDOMap.get(Long.valueOf(respVO.getFileId()));
             respVO.setFileInfo(fileDO);
+
+            Optional<String> first = userList.stream().
+                    filter(vo -> Objects.equals(vo.getId(), Long.valueOf(respVO.getCreator())))
+                    .map(AdminUserRespDTO::getNickname)
+                    .findFirst();
+
+            first.ifPresent(
+                    respVO::setCreatorName
+            );
+
         }
 
         return respVOS.stream().collect(Collectors.groupingBy(CompeteInfoSubRespVO::getParentId));

@@ -33,4 +33,6 @@ public interface CompeteInfoMapper extends BaseMapperX<CompeteInfoDO> {
 
 
     IPage<CompeteInfoRespVO> selectPage2(IPage<CompeteInfoRespVO> page,@Param("req") CompeteInfoPageReqVO req);
+
+    CompeteInfoRespVO selectInfoById(@Param("id") Long id);
 }

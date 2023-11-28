@@ -85,8 +85,31 @@ public class CompeteInfoController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('sale:compete-info:query')")
     public CommonResult<CompeteInfoRespVO> getCompeteInfo(@RequestParam("id") Long id) {
-        CompeteInfoDO competeInfo = competeInfoService.getCompeteInfo(id);
-        return success(BeanUtils.toBean(competeInfo, CompeteInfoRespVO.class));
+        CompeteInfoRespVO competeInfoRespVO = competeInfoService.getCompeteInfo2(id);
+        //带出物料名称等
+        Map<Long,List<CompeteInfoSubRespVO>> dataMap =  competeInfoSubService.selectMapByCompeteInfoIdList(Collections.singletonList(id));
+
+        if (CollUtil.isNotEmpty(dataMap)){
+            List<CompeteInfoSubRespVO> subRows = dataMap.get(id);
+
+            if (!CollUtil.isEmpty(subRows)){
+                competeInfoRespVO.setSubRows(subRows);
+                //如果子表不是为空的 subRows再按照changeDate排序，然后把priceChanges按照顺序加起来
+                subRows = subRows.stream().filter(v-> v.getChangeDate().isBefore(LocalDateTime.now())).sorted(Comparator.comparing(CompeteInfoSubRespVO::getChangeDate)).collect(Collectors.toList());
+                BigDecimal priceChanges = BigDecimal.ZERO;
+                for (CompeteInfoSubRespVO subRow : subRows) {
+                    priceChanges = priceChanges.add(subRow.getPriceChanges());
+                }
+                BigDecimal price = competeInfoRespVO.getPrice();
+                BigDecimal currentPrice = price.add(priceChanges);
+                competeInfoRespVO.setCurrentPrice(currentPrice);
+            }else {
+                //如果子表为空，那么当前价格就是初始价格
+                competeInfoRespVO.setCurrentPrice(competeInfoRespVO.getPrice());
+            }
+        }
+
+        return success(competeInfoRespVO);
     }
 
     @GetMapping("/page")
@@ -110,6 +133,8 @@ public class CompeteInfoController {
             List<CompeteInfoSubRespVO> subRows = Optional.ofNullable(dataMap.get(competeInfoRespVO.getId())).orElse(new ArrayList<>());
 
             if (!CollUtil.isEmpty(subRows)){
+                competeInfoRespVO.setSubRows(subRows);
+
                 //如果子表不是为空的 subRows再按照changeDate排序，然后把priceChanges按照顺序加起来
                 subRows = subRows.stream().filter(v-> v.getChangeDate().isBefore(LocalDateTime.now())).sorted(Comparator.comparing(CompeteInfoSubRespVO::getChangeDate)).collect(Collectors.toList());
                 BigDecimal priceChanges = BigDecimal.ZERO;
@@ -124,7 +149,7 @@ public class CompeteInfoController {
                 competeInfoRespVO.setCurrentPrice(competeInfoRespVO.getPrice());
             }
 
-            competeInfoRespVO.setSubRows(subRows);
+
         }
 
 
