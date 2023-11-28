@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -134,9 +135,10 @@ public class CompeteInfoSubServiceImpl implements CompeteInfoSubService {
         }
 
         for (CompeteInfoSubRespVO respVO : respVOS) {
-            FileDO fileDO = fileDOMap.get(Long.valueOf(respVO.getFileId()));
-            respVO.setFileInfo(fileDO);
-
+            if (StringUtils.hasText(respVO.getFileId())){
+                FileDO fileDO = fileDOMap.get(Long.valueOf(respVO.getFileId()));
+                respVO.setFileInfo(fileDO);
+            }
             Optional<String> first = userList.stream().
                     filter(vo -> Objects.equals(vo.getId(), Long.valueOf(respVO.getCreator())))
                     .map(AdminUserRespDTO::getNickname)
