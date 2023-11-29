@@ -69,4 +69,39 @@ public class TencentApiImpl implements TencentApi {
 
         return getAccessToken();
     }
+
+
+    /**
+     * @return 获取jsapi_ticket
+     * @throws IOException
+     */
+    @Override
+    public String getJsapiTicket() throws IOException {
+
+        //从Redis中获取
+        String tencentJsapiTicket = stringRedisTemplate.opsForValue().get("TENCENT_JSAPI_TICKET");
+        if (tencentJsapiTicket != null) {
+            return tencentJsapiTicket;
+        }
+
+        CloseableHttpClient client = HttpClients.createDefault();
+
+        String accessToken = this.getAccessToken();
+        String url = "https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket?access_token=" + accessToken;
+        HttpGet httpGet = new HttpGet(url);
+        CloseableHttpResponse response = client.execute(httpGet);
+        String content = EntityUtils.toString(response.getEntity(), "utf-8");//通过实体工具类转换实体输出格式
+        client.close();
+
+        HttpEntity entity = response.getEntity();//获得实体内容
+        ObjectMapper op = new ObjectMapper();
+        JsonNode jsonNode = op.readTree(content);
+        String ticket = jsonNode.get("ticket").asText();
+        int expiresIn = jsonNode.get("expires_in").asInt();
+
+        //将获取到的access_token设置到Redis中
+        stringRedisTemplate.opsForValue().set("TENCENT_JSAPI_TICKET",ticket, expiresIn, TimeUnit.SECONDS);
+
+        return null;
+    }
 }

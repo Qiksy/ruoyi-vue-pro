@@ -15,4 +15,10 @@ public interface TencentApi {
     String getAccessToken() throws IOException;
 
     String resetAccessToken() throws IOException;
+
+    /**
+     * @return 获取jsapi_ticket
+     * @throws IOException
+     */
+    String getJsapiTicket() throws IOException;
 }
