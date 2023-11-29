@@ -2,6 +2,10 @@ package cn.iocoder.yudao.module.sale.controller.admin.productioncompeteinfo;
 
 import cn.iocoder.yudao.module.sale.dal.dataobject.productioninfo.ProductionInfoDO;
 import cn.iocoder.yudao.module.sale.service.productioninfo.ProductionInfoService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -100,6 +104,56 @@ public class ProductionCompeteInfoController {
         }
 
         return success(new PageResult<>(list, pageResult.getTotal()));
+    }
+
+
+    @GetMapping("/list")
+    @Operation(summary = "获得工厂竞品管理列表")
+    @PreAuthorize("@ss.hasPermission('sale:production-compete-info:query')")
+    public CommonResult<ArrayNode> getProductionCompeteInfoList(@Valid ProductionCompeteInfoListReqVO listReqVO) {
+        List<ProductionCompeteInfoRespVO> list = productionCompeteInfoService.getProductionCompeteInfoList(listReqVO);
+
+        // 按照工厂id进行分组
+        Map<Long, List<ProductionCompeteInfoRespVO>> map = list.stream().collect(Collectors.groupingBy(ProductionCompeteInfoRespVO::getDeptId));
+        // 创建一个json数组
+        JsonNodeFactory factory = JsonNodeFactory.instance;
+        ArrayNode jsonNodes = factory.arrayNode();
+
+        for (Map.Entry<Long, List<ProductionCompeteInfoRespVO>> longListEntry : map.entrySet()) {
+            ObjectNode root = factory.objectNode();
+            root.put("text", getDeptName(longListEntry.getKey()));
+
+            ArrayNode children = factory.arrayNode();
+            for (ProductionCompeteInfoRespVO productionCompeteInfoRespVO : longListEntry.getValue()) {
+                ObjectNode child = factory.objectNode();
+                child.put("text", productionCompeteInfoRespVO.getProductionName());
+                child.put("id", productionCompeteInfoRespVO.getId());
+                children.add(child);
+            }
+
+            root.set("children", children);
+            jsonNodes.add(root);
+        }
+
+        return success(jsonNodes);
+    }
+
+    private String getDeptName(Long deptId) {
+        if (deptId == null){
+            return "未知";
+        }
+        switch (String.valueOf(deptId)){
+            case "10201":
+                return "播恩集团";
+            case "10202":
+                return "佛山播恩";
+            case "10203":
+                return "浙江播恩";
+            case "10214":
+                return "重庆八维";
+            default:
+                return "未知";
+        }
     }
 
     @GetMapping("/export-excel")

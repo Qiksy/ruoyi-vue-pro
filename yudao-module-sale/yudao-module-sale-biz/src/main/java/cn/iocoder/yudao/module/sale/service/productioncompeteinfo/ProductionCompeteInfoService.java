@@ -53,4 +53,6 @@ public interface ProductionCompeteInfoService {
     PageResult<ProductionCompeteInfoDO> getProductionCompeteInfoPage(ProductionCompeteInfoPageReqVO pageReqVO);
 
     Map<Long, ProductionCompeteInfoDO> getProductionCompeteInfoMap(Set<Long> competeIds);
+
+    List<ProductionCompeteInfoRespVO> getProductionCompeteInfoList(ProductionCompeteInfoListReqVO listReqVO);
 }

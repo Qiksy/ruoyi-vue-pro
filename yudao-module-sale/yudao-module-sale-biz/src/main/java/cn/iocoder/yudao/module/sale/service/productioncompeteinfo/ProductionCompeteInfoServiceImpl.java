@@ -101,6 +101,10 @@ public class ProductionCompeteInfoServiceImpl implements ProductionCompeteInfoSe
         return productionCompeteInfoMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public List<ProductionCompeteInfoRespVO> getProductionCompeteInfoList(ProductionCompeteInfoListReqVO listReqVO) {
+        return productionCompeteInfoMapper.selectListByCondition(listReqVO);
+    }
 
     @Override
     public Map<Long, ProductionCompeteInfoDO> getProductionCompeteInfoMap(Set<Long> competeIds) {

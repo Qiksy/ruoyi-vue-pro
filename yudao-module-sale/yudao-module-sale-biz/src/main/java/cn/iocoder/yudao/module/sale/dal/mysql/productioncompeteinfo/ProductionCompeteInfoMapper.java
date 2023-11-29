@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.sale.dal.dataobject.productioncompeteinfo.ProductionCompeteInfoDO;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.sale.controller.admin.productioncompeteinfo.vo.*;
 
@@ -26,4 +27,8 @@ public interface ProductionCompeteInfoMapper extends BaseMapperX<ProductionCompe
                 .orderByDesc(ProductionCompeteInfoDO::getId));
     }
 
+    /*
+      这里不能叫做 selectList，因为会和 MyBatis Plus 冲突
+     */
+    List<ProductionCompeteInfoRespVO> selectListByCondition(ProductionCompeteInfoListReqVO listReqVO);
 }
