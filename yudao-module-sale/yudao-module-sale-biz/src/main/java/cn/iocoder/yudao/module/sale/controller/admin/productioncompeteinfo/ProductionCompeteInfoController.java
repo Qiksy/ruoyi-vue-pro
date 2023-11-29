@@ -127,7 +127,7 @@ public class ProductionCompeteInfoController {
             for (ProductionCompeteInfoRespVO productionCompeteInfoRespVO : longListEntry.getValue()) {
                 ObjectNode child = factory.objectNode();
                 child.put("text", productionCompeteInfoRespVO.getProductionName());
-                child.put("id", productionCompeteInfoRespVO.getId());
+                child.put("id", String.valueOf(productionCompeteInfoRespVO.getId()));
                 children.add(child);
             }
 
