@@ -118,7 +118,7 @@ public class CompeteInfoSubServiceImpl implements CompeteInfoSubService {
         if (!CollUtil.isEmpty(collect)){
             LambdaQueryWrapper<FileDO> qw = new LambdaQueryWrapper<>();
             qw.in(FileDO::getId, collect).eq(FileDO::getDeleted, false)
-                    .select(FileDO::getId,FileDO::getName,FileDO::getUrl,FileDO::getType);
+                    .select(FileDO::getId,FileDO::getName,FileDO::getUrl,FileDO::getType,FileDO::getSize);
             List<FileDO> fileDOS = fileMapper.selectList(qw);
             fileDOMap = fileDOS.stream().collect(Collectors.toMap(FileDO::getId, fileDO -> fileDO));
         }
