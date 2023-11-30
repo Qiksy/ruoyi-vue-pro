@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.sale.service.customersalesdetail;
 
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
@@ -7,9 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
+
 import cn.iocoder.yudao.module.sale.controller.admin.customersalesdetail.vo.*;
 import cn.iocoder.yudao.module.sale.dal.dataobject.customersalesdetail.CustomerSalesDetailDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -79,6 +86,83 @@ public class CustomerSalesDetailServiceImpl implements CustomerSalesDetailServic
         return customerSalesDetailMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public PageResult<CustomerSalesDetailAnalysisRespVO> getCustomerSalesDetailAnalysisPage(CustomerSalesDetailPageReqVO pageReqVO) {
+        //  分析验证
+        LocalDate dateTime = LocalDate.now();
+        if (StringUtils.hasText(pageReqVO.getSaleDate())) {
+            dateTime = LocalDate.parse(pageReqVO.getSaleDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        }
+
+
+        String currStartDate = dateTime.toString().substring(0, 7) + "-01";  // 本月初 yyyy-MM-01格式的日期
+        String currEndDate = dateTime.toString().substring(0, 10);  // 今天 yyyy-MM-dd格式的日期
+
+        String lastStartDate = dateTime.minusMonths(1).toString().substring(0, 7) + "-01";  // 上个月初 yyyy-MM-01格式的日期
+        String lastEndDate = dateTime.minusMonths(1).toString().substring(0, 10);  // 上个月初 yyyy-MM-DD格式的日期
+
+
+        // 上个月的数据
+        pageReqVO.setStartDate(lastStartDate);
+        pageReqVO.setEndDate(lastEndDate);
+        List<CustomerSalesDetailDO> lastMonthList = customerSalesDetailMapper.selectListByMaxSale(pageReqVO);
+
+        // 本月的数据
+        pageReqVO.setStartDate(currStartDate);
+        pageReqVO.setEndDate(currEndDate);
+        List<CustomerSalesDetailDO> currMonthList = customerSalesDetailMapper.selectListByMaxSale(pageReqVO);
+        //转为Map
+        Map<String, CustomerSalesDetailDO> currMonthMap = new HashMap<>();
+        for (CustomerSalesDetailDO customerSalesDetailDO : currMonthList) {
+            currMonthMap.put(customerSalesDetailDO.getCustomerCode(), customerSalesDetailDO);
+        }
+
+
+        List<CustomerSalesDetailAnalysisRespVO> result = new ArrayList<>();
+
+        Integer pageNo = pageReqVO.getPageNo();
+        Integer pageSize = pageReqVO.getPageSize();
+
+
+        for (CustomerSalesDetailDO customerSalesDetailDO : lastMonthList) {
+            //转换相同的数据
+            CustomerSalesDetailAnalysisRespVO respVO = BeanUtils.toBean(customerSalesDetailDO, CustomerSalesDetailAnalysisRespVO.class);
+            respVO.setPreMonthSales(customerSalesDetailDO.getMonthlyCumulativeSales()); // 上个月的销量
+
+
+            //对比本月的销量数据
+            CustomerSalesDetailDO currMonth = currMonthMap.get(customerSalesDetailDO.getCustomerCode());
+            if (currMonth == null) {
+                //也就是在本次的对比期间内没有销售数据，也就是上一个月有，这个月没有
+                //这样的话，下降率就是100%
+                respVO.setDeclineRatio(1D);
+                respVO.setCurrMonthSales(0D);
+                respVO.setDeclineNum(customerSalesDetailDO.getMonthlyCumulativeSales()); // 下降数量等于上个月的全部销量
+            } else {
+                // 本月的销量
+                respVO.setCurrMonthSales(currMonth.getMonthlyCumulativeSales());
+                // 下降数量
+                respVO.setDeclineNum(customerSalesDetailDO.getMonthlyCumulativeSales() - currMonth.getMonthlyCumulativeSales());
+                // 下降率
+                respVO.setDeclineRatio((customerSalesDetailDO.getMonthlyCumulativeSales() - currMonth.getMonthlyCumulativeSales()) / customerSalesDetailDO.getMonthlyCumulativeSales());
+            }
+            result.add(respVO);
+        }
+
+        //结果序列进行排序，下降率从大到小，并且要大于0.3
+        List<CustomerSalesDetailAnalysisRespVO> collect = result.stream().filter(item -> item.getDeclineRatio() > 0.3)
+                .sorted(Comparator.comparing(CustomerSalesDetailAnalysisRespVO::getZoneName)
+                        .thenComparing(CustomerSalesDetailAnalysisRespVO::getAreaName)
+                        .thenComparing(CustomerSalesDetailAnalysisRespVO::getDeclineRatio, Comparator.reverseOrder()))
+                .collect(Collectors.toList());
+        //截取分页数据
+        List<CustomerSalesDetailAnalysisRespVO> pageList = collect.subList((pageNo - 1) * pageSize, Math.min(pageNo * pageSize, collect.size()));
+        int total = collect.size();
+
+
+        return new PageResult<>(pageList, (long) total);
+    }
+
     /**
      * 同步客户销售明细
      *
@@ -87,7 +171,7 @@ public class CustomerSalesDetailServiceImpl implements CustomerSalesDetailServic
     @Override
     public void syncCustomerSalesDetail(CustomerSalesDetailSyncReqVO syncReqVO) {
         // TODO 同步数据
-        List<CustomerSalesDetailDO> list =  detailService.getDoFromNc(syncReqVO);
+        List<CustomerSalesDetailDO> list = detailService.getDoFromNc(syncReqVO);
         log.info("同步客户销售明细数据大小：{}", list.size());
         // 插入或者更新
         for (CustomerSalesDetailDO detailDO : list) {

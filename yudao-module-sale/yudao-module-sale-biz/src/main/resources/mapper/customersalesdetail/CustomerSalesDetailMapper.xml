@@ -11,6 +11,7 @@
      -->
 
     <resultMap id="base" type="cn.iocoder.yudao.module.sale.dal.dataobject.customersalesdetail.CustomerSalesDetailDO">
+        <result column="id" property="id"/>
         <result column="customer_code" property="customerCode"/>
         <result column="customer_name" property="customerName"/>
         <result column="zone_code" property="zoneCode"/>
@@ -70,5 +71,31 @@
                  group by t5.code,t5.name,t7.code,t7.name,t6.code, t6.name,t8.name, t8.code,t4.code,t4.pk_psndoc,t4.name,substr(t2.dbizdate, 1, 10),substr(t2.dbizdate, 1, 7)
              ) t
 
+    </select>
+    <select id="selectListByMaxSale"
+            resultMap="base">
+        SELECT
+            *
+        FROM
+            ( SELECT t.*, rank() over ( PARTITION BY customer_code ORDER BY monthly_cumulative_sales DESC ) rk
+              FROM sale_customer_sales_detail t WHERE
+                 sale_date BETWEEN #{startDate} AND #{endDate}
+                 and deleted = '0'
+                <if test="customerName != null and customerName != ''">
+                    AND customer_name LIKE CONCAT('%', #{customerName}, '%')
+                </if>
+                <if test="zoneName != null and zoneName != ''">
+                    AND zone_name LIKE CONCAT('%', #{zoneName}, '%')
+                </if>
+                /*areaName*/
+                <if test="areaName != null and areaName != ''">
+                    AND area_name LIKE CONCAT('%', #{areaName}, '%')
+                </if>
+                <if test="employeeName != null and employeeName != ''">
+                    AND employee_name LIKE CONCAT('%', #{employeeName}, '%')
+                </if>
+            ) temp
+        WHERE
+            rk = 1
     </select>
 </mapper>

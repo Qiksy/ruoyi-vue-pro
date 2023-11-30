@@ -8,6 +8,7 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.sale.dal.dataobject.customersalesdetail.CustomerSalesDetailDO;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.sale.controller.admin.customersalesdetail.vo.*;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 客户销售明细 Mapper
@@ -39,4 +40,6 @@ public interface CustomerSalesDetailMapper extends BaseMapperX<CustomerSalesDeta
     }
 
     List<CustomerSalesDetailDO> getDoFromNc(CustomerSalesDetailSyncReqVO syncReqVO);
+
+    List<CustomerSalesDetailDO> selectListByMaxSale(CustomerSalesDetailPageReqVO pageReqVO);
 }

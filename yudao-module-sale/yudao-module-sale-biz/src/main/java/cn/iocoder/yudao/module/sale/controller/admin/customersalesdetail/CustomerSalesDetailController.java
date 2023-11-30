@@ -102,4 +102,14 @@ public class CustomerSalesDetailController {
         return success(true);
     }
 
+
+    @GetMapping("/analysis/page")
+    @Operation(summary = "获得客户下降分页")
+//    @PreAuthorize("@ss.hasPermission('sale:customer-sales-detail:query')")
+    @PermitAll
+    public CommonResult<PageResult<CustomerSalesDetailAnalysisRespVO>> getCustomerSalesDetailAnalysisPage(@Valid CustomerSalesDetailPageReqVO pageReqVO) {
+        PageResult<CustomerSalesDetailAnalysisRespVO> pageResult = customerSalesDetailService.getCustomerSalesDetailAnalysisPage(pageReqVO);
+        return success(pageResult);
+    }
+
 }

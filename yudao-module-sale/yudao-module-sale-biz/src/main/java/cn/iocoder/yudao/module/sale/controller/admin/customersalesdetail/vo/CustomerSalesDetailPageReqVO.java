@@ -64,4 +64,10 @@ public class CustomerSalesDetailPageReqVO extends PageParam {
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
+
+    /////////////// 分析用的字段 //////////////////
+    private String startDate;
+
+    private String endDate;
+
 }
