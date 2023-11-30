@@ -69,6 +69,8 @@ import static cn.iocoder.yudao.module.bpm.enums.ErrorCodeConstants.*;
 @Service
 public class BpmTaskServiceImpl implements BpmTaskService {
 
+    //todo 以后实现推送消息到企业微信
+
     @Resource
     private TaskService taskService;
     @Resource
@@ -538,8 +540,8 @@ public class BpmTaskServiceImpl implements BpmTaskService {
                     ProcessInstance processInstance =
                             processInstanceService.getProcessInstance(task.getProcessInstanceId());
                     AdminUserRespDTO startUser = adminUserApi.getUser(Long.valueOf(processInstance.getStartUserId()));
-                    messageService.sendMessageWhenTaskAssigned(
-                            BpmTaskConvert.INSTANCE.convert(processInstance, startUser, task));
+//                    messageService.sendMessageWhenTaskAssigned(
+//                            BpmTaskConvert.INSTANCE.convert(processInstance, startUser, task));
                 }
             }
         });
