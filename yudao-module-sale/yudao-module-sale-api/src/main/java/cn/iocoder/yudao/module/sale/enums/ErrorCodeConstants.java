@@ -46,5 +46,9 @@ public interface ErrorCodeConstants {
     // ========== 客户销售明细 66_001_01 ==========
     ErrorCode CUSTOMER_SALES_DETAIL_NOT_EXISTS = new ErrorCode(66_001_01, "客户销售明细不存在");
 
+    ErrorCode DECLINE_WARNING_NOT_EXISTS = new ErrorCode(67_001_01, "销量预警不存在");
+
+    ErrorCode DECLINE_WARNING_SUB_NOT_EXISTS = new ErrorCode(68_001_01, "销量下降预警子表不存在");
+
 
 }
