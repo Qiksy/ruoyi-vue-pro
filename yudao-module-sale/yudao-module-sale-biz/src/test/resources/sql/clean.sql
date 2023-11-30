@@ -15,3 +15,5 @@ DELETE FROM "sale_production_compete_info";
 DELETE FROM "sale_compete_info";
 
 DELETE FROM "sale_compete_info_sub";
+
+DELETE FROM "sale_customer_sales_detail";

@@ -43,4 +43,8 @@ public interface ErrorCodeConstants {
 
     ErrorCode COMPETE_INFO_SUB_NOT_EXISTS = new ErrorCode(57_001_01, "竞品信息子不存在");
 
+    // ========== 客户销售明细 66_001_01 ==========
+    ErrorCode CUSTOMER_SALES_DETAIL_NOT_EXISTS = new ErrorCode(66_001_01, "客户销售明细不存在");
+
+
 }
