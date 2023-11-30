@@ -2,7 +2,6 @@ package cn.iocoder.yudao.module.sale.service.customersalesdetail;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import jakarta.annotation.Resource;
 
@@ -13,20 +12,14 @@ import cn.iocoder.yudao.module.sale.dal.dataobject.customersalesdetail.CustomerS
 import cn.iocoder.yudao.module.sale.dal.mysql.customersalesdetail.CustomerSalesDetailMapper;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 
-import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Import;
-import java.util.*;
-import java.time.LocalDateTime;
 
-import static cn.hutool.core.util.RandomUtil.*;
 import static cn.iocoder.yudao.module.sale.enums.ErrorCodeConstants.*;
 import static cn.iocoder.yudao.framework.test.core.util.AssertUtils.*;
 import static cn.iocoder.yudao.framework.test.core.util.RandomUtils.*;
 import static cn.iocoder.yudao.framework.common.util.date.LocalDateTimeUtils.*;
 import static cn.iocoder.yudao.framework.common.util.object.ObjectUtils.*;
-import static cn.iocoder.yudao.framework.common.util.date.DateUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 /**
  * {@link CustomerSalesDetailServiceImpl} 的单元测试类
@@ -121,7 +114,7 @@ public class CustomerSalesDetailServiceImplTest extends BaseDbUnitTest {
            o.setEmployeePk(null);
            o.setEmployeeCode(null);
            o.setEmployeeName(null);
-           o.setYearMonth(null);
+           o.setSaleMonth(null);
            o.setSaleDate(null);
            o.setDailySales(null);
            o.setMonthlyCumulativeSales(null);
@@ -151,7 +144,7 @@ public class CustomerSalesDetailServiceImplTest extends BaseDbUnitTest {
        // 测试 employeeName 不匹配
        customerSalesDetailMapper.insert(cloneIgnoreId(dbCustomerSalesDetail, o -> o.setEmployeeName(null)));
        // 测试 yearMonth 不匹配
-       customerSalesDetailMapper.insert(cloneIgnoreId(dbCustomerSalesDetail, o -> o.setYearMonth(null)));
+       customerSalesDetailMapper.insert(cloneIgnoreId(dbCustomerSalesDetail, o -> o.setSaleMonth(null)));
        // 测试 saleDate 不匹配
        customerSalesDetailMapper.insert(cloneIgnoreId(dbCustomerSalesDetail, o -> o.setSaleDate(null)));
        // 测试 dailySales 不匹配
@@ -173,7 +166,7 @@ public class CustomerSalesDetailServiceImplTest extends BaseDbUnitTest {
        reqVO.setEmployeePk(null);
        reqVO.setEmployeeCode(null);
        reqVO.setEmployeeName(null);
-       reqVO.setYearMonth(null);
+       reqVO.setSaleMonth(null);
        reqVO.setSaleDate(null);
        reqVO.setDailySales(null);
        reqVO.setMonthlyCumulativeSales(null);

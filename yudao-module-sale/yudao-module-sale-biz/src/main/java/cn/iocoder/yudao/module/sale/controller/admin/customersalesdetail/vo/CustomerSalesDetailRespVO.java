@@ -63,7 +63,7 @@ public class CustomerSalesDetailRespVO {
 
     @Schema(description = "年月")
     @ExcelProperty("年月")
-    private String yearMonth;
+    private String saleMonth;
 
     @Schema(description = "年月日")
     @ExcelProperty("年月日")

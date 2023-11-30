@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 
-import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;
@@ -94,6 +93,13 @@ public class CustomerSalesDetailController {
     }
 
 
-
+    @PostMapping("/sync")
+    @Operation(summary = "同步客户销售明细")
+//    @PreAuthorize("@ss.hasPermission('sale:customer-sales-detail:create')")
+    @PermitAll
+    public CommonResult<Boolean> syncCustomerSalesDetail(@Valid @RequestBody CustomerSalesDetailSyncReqVO syncReqVO) {
+        customerSalesDetailService.syncCustomerSalesDetail(syncReqVO);
+        return success(true);
+    }
 
 }

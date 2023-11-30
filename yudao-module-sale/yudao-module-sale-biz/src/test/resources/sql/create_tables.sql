@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS "sale_customer_sales_detail" (
                                                             "employee_pk" varchar,
                                                             "employee_code" varchar,
                                                             "employee_name" varchar,
-                                                            "year_month" varchar,
+                                                            "sale_month" varchar,
                                                             "sale_date" varchar,
                                                             "daily_sales" varchar,
                                                             "monthly_cumulative_sales" varchar,

@@ -30,7 +30,7 @@ public interface CustomerSalesDetailMapper extends BaseMapperX<CustomerSalesDeta
                 .eqIfPresent(CustomerSalesDetailDO::getEmployeePk, reqVO.getEmployeePk())
                 .eqIfPresent(CustomerSalesDetailDO::getEmployeeCode, reqVO.getEmployeeCode())
                 .likeIfPresent(CustomerSalesDetailDO::getEmployeeName, reqVO.getEmployeeName())
-                .eqIfPresent(CustomerSalesDetailDO::getYearMonth, reqVO.getYearMonth())
+                .eqIfPresent(CustomerSalesDetailDO::getSaleMonth, reqVO.getSaleMonth())
                 .eqIfPresent(CustomerSalesDetailDO::getSaleDate, reqVO.getSaleDate())
                 .eqIfPresent(CustomerSalesDetailDO::getDailySales, reqVO.getDailySales())
                 .eqIfPresent(CustomerSalesDetailDO::getMonthlyCumulativeSales, reqVO.getMonthlyCumulativeSales())
@@ -38,4 +38,5 @@ public interface CustomerSalesDetailMapper extends BaseMapperX<CustomerSalesDeta
                 .orderByDesc(CustomerSalesDetailDO::getId));
     }
 
+    List<CustomerSalesDetailDO> getDoFromNc(CustomerSalesDetailSyncReqVO syncReqVO);
 }

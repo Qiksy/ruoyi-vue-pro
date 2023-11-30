@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.sale.service.customersalesdetail;
 
 import java.util.*;
+
+import com.baomidou.dynamic.datasource.annotation.DS;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.sale.controller.admin.customersalesdetail.vo.*;
 import cn.iocoder.yudao.module.sale.dal.dataobject.customersalesdetail.CustomerSalesDetailDO;
@@ -52,4 +54,12 @@ public interface CustomerSalesDetailService {
      */
     PageResult<CustomerSalesDetailDO> getCustomerSalesDetailPage(CustomerSalesDetailPageReqVO pageReqVO);
 
+    /**
+     * 同步客户销售明细
+     * @param syncReqVO
+     */
+    void syncCustomerSalesDetail(CustomerSalesDetailSyncReqVO syncReqVO);
+
+
+    List<CustomerSalesDetailDO> getDoFromNc(CustomerSalesDetailSyncReqVO syncReqVO);
 }
