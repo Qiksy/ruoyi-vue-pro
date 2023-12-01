@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.sale.controller.admin.declinewarning.vo;
 
+import cn.iocoder.yudao.module.sale.dal.dataobject.declinewarningsub.DeclineWarningSubDO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import java.util.*;
@@ -94,5 +95,8 @@ public class DeclineWarningRespVO {
     @Schema(description = "总下降比例")
     @ExcelProperty("总下降比例")
     Double totalDeclineRatio;
+
+
+    List<DeclineWarningSubDO> subRows;
 
 }

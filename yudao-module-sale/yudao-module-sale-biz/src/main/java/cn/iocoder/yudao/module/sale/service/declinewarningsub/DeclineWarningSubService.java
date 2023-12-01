@@ -52,4 +52,5 @@ public interface DeclineWarningSubService {
      */
     PageResult<DeclineWarningSubDO> getDeclineWarningSubPage(DeclineWarningSubPageReqVO pageReqVO);
 
+    Map<Long, List<DeclineWarningSubDO>> getDeclineWarningSubMap(Collection<Long> ids);
 }

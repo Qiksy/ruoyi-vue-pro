@@ -1,11 +1,15 @@
 package cn.iocoder.yudao.module.sale.service.declinewarningsub;
 
+import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
 import cn.iocoder.yudao.module.sale.controller.admin.declinewarningsub.vo.*;
 import cn.iocoder.yudao.module.sale.dal.dataobject.declinewarningsub.DeclineWarningSubDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -71,4 +75,17 @@ public class DeclineWarningSubServiceImpl implements DeclineWarningSubService {
         return declineWarningSubMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public Map<Long, List<DeclineWarningSubDO>> getDeclineWarningSubMap(Collection<Long> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return Collections.emptyMap();
+        }
+
+
+        LambdaQueryWrapper<DeclineWarningSubDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(DeclineWarningSubDO::getParentId, ids);
+        List<DeclineWarningSubDO> subDOList = declineWarningSubMapper.selectList(queryWrapper);
+
+        return subDOList.stream().collect(Collectors.groupingBy(DeclineWarningSubDO::getParentId));
+    }
 }

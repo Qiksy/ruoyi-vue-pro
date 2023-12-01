@@ -32,6 +32,9 @@ public class DeclineWarningPageReqVO extends PageParam {
     private LocalDateTime[] createTime;
 
 
+    private String competeTime;
+
+
 
 
 }

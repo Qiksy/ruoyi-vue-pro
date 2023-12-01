@@ -1,5 +1,8 @@
 package cn.iocoder.yudao.module.sale.controller.admin.declinewarning;
 
+import cn.iocoder.yudao.module.sale.controller.admin.declinewarningsub.vo.DeclineWarningSubRespVO;
+import cn.iocoder.yudao.module.sale.dal.dataobject.declinewarningsub.DeclineWarningSubDO;
+import cn.iocoder.yudao.module.sale.service.declinewarningsub.DeclineWarningSubService;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -37,6 +40,9 @@ public class DeclineWarningController {
 
     @Resource
     private DeclineWarningService declineWarningService;
+
+    @Resource
+    private DeclineWarningSubService declineWarningSubService;
 
     @PostMapping("/create")
     @Operation(summary = "创建销量预警")
@@ -76,7 +82,21 @@ public class DeclineWarningController {
     @PreAuthorize("@ss.hasPermission('sale:decline-warning:query')")
     public CommonResult<PageResult<DeclineWarningRespVO>> getDeclineWarningPage(@Valid DeclineWarningPageReqVO pageReqVO) {
         PageResult<DeclineWarningDO> pageResult = declineWarningService.getDeclineWarningPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, DeclineWarningRespVO.class));
+        //查询出来子表放进去
+        List<DeclineWarningDO> list = pageResult.getList();
+        List<Long> ids = list.stream().map(DeclineWarningDO::getId).toList();
+        Map<Long,List<DeclineWarningSubDO>> dataMap = declineWarningSubService.getDeclineWarningSubMap(ids);
+
+        //todo 将来这里转换成respVO
+        List<DeclineWarningRespVO> result = BeanUtils.toBean(list, DeclineWarningRespVO.class);
+        for (DeclineWarningRespVO item : result) {
+            List<DeclineWarningSubDO> subDOList = dataMap.get(item.getId());
+            if (subDOList!=null&&!subDOList.isEmpty()) {
+                item.setSubRows(subDOList);
+            }
+        }
+
+        return success(new PageResult<>(result, pageResult.getTotal()));
     }
 
     @GetMapping("/export-excel")

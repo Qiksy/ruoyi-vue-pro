@@ -23,6 +23,7 @@ public interface DeclineWarningMapper extends BaseMapperX<DeclineWarningDO> {
                 .likeIfPresent(DeclineWarningDO::getZoneName, reqVO.getZoneName())
                 .likeIfPresent(DeclineWarningDO::getAreaName, reqVO.getAreaName())
                 .eqIfPresent(DeclineWarningDO::getAreaCode, reqVO.getAreaCode())
+                .eqIfPresent(DeclineWarningDO::getCompeteTime, reqVO.getCompeteTime())
                 .betweenIfPresent(DeclineWarningDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(DeclineWarningDO::getId));
     }
