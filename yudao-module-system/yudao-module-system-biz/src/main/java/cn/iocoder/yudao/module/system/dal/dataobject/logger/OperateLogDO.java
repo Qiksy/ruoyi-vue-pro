@@ -36,6 +36,8 @@ public class OperateLogDO extends BaseDO {
      */
     public static final Integer RESULT_MAX_LENGTH = 4000;
 
+    public static final Integer RESULT_MSG_MAX_LENGTH = 512;
+
     /**
      * 日志主键
      */
