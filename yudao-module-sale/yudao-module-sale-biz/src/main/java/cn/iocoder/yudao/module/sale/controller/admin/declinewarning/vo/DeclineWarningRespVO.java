@@ -45,4 +45,54 @@ public class DeclineWarningRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
+    /**
+     * 原因分析
+     */
+    @Schema(description = "原因分析")
+    @ExcelProperty("原因分析")
+    private String reasonAnalysis;
+    /**
+     * 改进措施
+     */
+    @Schema(description = "改进措施")
+    @ExcelProperty("改进措施")
+    private String improvementMeasure;
+    /**
+     * 对比时间
+     */
+    @Schema(description = "对比时间")
+    @ExcelProperty("对比时间")
+    private String competeTime;
+
+    /**
+     * 客户数量
+     */
+    @Schema(description = "客户数量")
+    @ExcelProperty("客户数量")
+    int custCount;
+    /**
+     * 总下降量
+     */
+    @Schema(description = "总下降量")
+    @ExcelProperty("总下降量")
+    Double totalDeclineNum;
+    /**
+     * 总上月销量
+     */
+    @Schema(description = "总上月销量")
+    @ExcelProperty("总上月销量")
+    Double totalPreMonthSales;
+    /**
+     * 总当前月销量
+     */
+    @Schema(description = "总当前月销量")
+    @ExcelProperty("总当前月销量")
+    Double totalCurrMonthSales;
+    /**
+     * 总下降比例
+     */
+    @Schema(description = "总下降比例")
+    @ExcelProperty("总下降比例")
+    Double totalDeclineRatio;
+
 }
