@@ -92,4 +92,11 @@ public class DeclineWarningController {
                         BeanUtils.toBean(list, DeclineWarningRespVO.class));
     }
 
+    @PostMapping("/generate")
+    @Operation(summary = "生成预警")
+    @PreAuthorize("@ss.hasPermission('sale:decline-warning:create')")
+    public CommonResult<String> createDeclineWarning(@Valid @RequestBody DeclineWarningGenerateReqVO generateReqVO) {
+        return success(declineWarningService.generateDeclineWarning(generateReqVO));
+    }
+
 }

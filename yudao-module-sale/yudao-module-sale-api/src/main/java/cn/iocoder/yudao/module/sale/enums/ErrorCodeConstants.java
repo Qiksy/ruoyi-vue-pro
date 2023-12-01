@@ -50,5 +50,9 @@ public interface ErrorCodeConstants {
 
     ErrorCode DECLINE_WARNING_SUB_NOT_EXISTS = new ErrorCode(68_001_01, "销量下降预警子表不存在");
 
+    ErrorCode DECLINE_WARNING_GENERATE_TIME_ERROR = new ErrorCode(69_001_01, "当前时间未到预警的时间节点");
+    ErrorCode DECLINE_WARNING_GENERATE_TIME_ERROR2 = new ErrorCode(69_001_02, "时间必须为10号、20号、月末");
+    ErrorCode DECLINE_WARNING_GENERATE_TIME_PARAMS_ERROR = new ErrorCode(69_001_01, "时间参数错误！请正确填写时间");
+
 
 }

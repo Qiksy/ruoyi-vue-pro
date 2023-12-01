@@ -68,4 +68,25 @@ public class DeclineWarningDO extends BaseDO {
      */
     private Long processInstanceId;
 
+    /**
+     * 客户数量
+     */
+    int custCount;
+    /**
+     * 总下降量
+     */
+    Double totalDeclineNum;
+    /**
+     * 总上月销量
+     */
+    Double totalPreMonthSales;
+    /**
+     * 总当前月销量
+     */
+    Double totalCurrMonthSales;
+    /**
+     * 总下降比例
+     */
+    Double totalDeclineRatio;
+
 }

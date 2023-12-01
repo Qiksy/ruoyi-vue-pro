@@ -51,4 +51,12 @@ public interface DeptApi {
         return CollectionUtils.convertMap(list, DeptRespDTO::getId);
     }
 
+
+    /**
+     * 获取没有负责人的部门信息
+     * @param ids 部门id
+     * @return
+     */
+    List<DeptRespDTO> getNotExistsLeaderDepts(Collection<Long> ids);
+
 }

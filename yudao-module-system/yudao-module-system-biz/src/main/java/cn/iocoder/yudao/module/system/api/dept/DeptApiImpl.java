@@ -38,4 +38,16 @@ public class DeptApiImpl implements DeptApi {
         deptService.validateDeptList(ids);
     }
 
+    /**
+     * 获取没有负责人的部门信息
+     *
+     * @param ids 部门id
+     * @return
+     */
+    @Override
+    public List<DeptRespDTO> getNotExistsLeaderDepts(Collection<Long> ids) {
+        List<DeptDO> depts = deptService.getNotExistsLeaderDepts(ids);
+
+        return DeptConvert.INSTANCE.convertList03(depts);
+    }
 }

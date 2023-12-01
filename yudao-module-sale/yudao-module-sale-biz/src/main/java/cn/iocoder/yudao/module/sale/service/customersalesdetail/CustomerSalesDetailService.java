@@ -64,4 +64,6 @@ public interface CustomerSalesDetailService {
     List<CustomerSalesDetailDO> getDoFromNc(CustomerSalesDetailSyncReqVO syncReqVO);
 
     PageResult<CustomerSalesDetailAnalysisRespVO> getCustomerSalesDetailAnalysisPage(CustomerSalesDetailPageReqVO pageReqVO);
+
+    List<CustomerSalesDetailAnalysisRespVO> getCustomerSalesDetailAnalysisList(CustomerSalesDetailPageReqVO pageReqVO);
 }

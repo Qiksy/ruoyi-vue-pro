@@ -88,6 +88,22 @@ public class CustomerSalesDetailServiceImpl implements CustomerSalesDetailServic
 
     @Override
     public PageResult<CustomerSalesDetailAnalysisRespVO> getCustomerSalesDetailAnalysisPage(CustomerSalesDetailPageReqVO pageReqVO) {
+        Integer pageNo = pageReqVO.getPageNo();
+        Integer pageSize = pageReqVO.getPageSize();
+
+
+        List<CustomerSalesDetailAnalysisRespVO> collect = detailService.getCustomerSalesDetailAnalysisList(pageReqVO);
+
+        //截取分页数据
+        List<CustomerSalesDetailAnalysisRespVO> pageList = collect.subList((pageNo - 1) * pageSize, Math.min(pageNo * pageSize, collect.size()));
+        int total = collect.size();
+
+
+        return new PageResult<>(pageList, (long) total);
+    }
+
+    @Override
+    public List<CustomerSalesDetailAnalysisRespVO> getCustomerSalesDetailAnalysisList(CustomerSalesDetailPageReqVO pageReqVO) {
         //  分析验证
         LocalDate dateTime = LocalDate.now();
         if (StringUtils.hasText(pageReqVO.getSaleDate())) {
@@ -116,13 +132,7 @@ public class CustomerSalesDetailServiceImpl implements CustomerSalesDetailServic
         for (CustomerSalesDetailDO customerSalesDetailDO : currMonthList) {
             currMonthMap.put(customerSalesDetailDO.getCustomerCode(), customerSalesDetailDO);
         }
-
-
         List<CustomerSalesDetailAnalysisRespVO> result = new ArrayList<>();
-
-        Integer pageNo = pageReqVO.getPageNo();
-        Integer pageSize = pageReqVO.getPageSize();
-
 
         for (CustomerSalesDetailDO customerSalesDetailDO : lastMonthList) {
             //转换相同的数据
@@ -155,12 +165,9 @@ public class CustomerSalesDetailServiceImpl implements CustomerSalesDetailServic
                         .thenComparing(CustomerSalesDetailAnalysisRespVO::getAreaName)
                         .thenComparing(CustomerSalesDetailAnalysisRespVO::getDeclineRatio, Comparator.reverseOrder()))
                 .collect(Collectors.toList());
-        //截取分页数据
-        List<CustomerSalesDetailAnalysisRespVO> pageList = collect.subList((pageNo - 1) * pageSize, Math.min(pageNo * pageSize, collect.size()));
-        int total = collect.size();
 
 
-        return new PageResult<>(pageList, (long) total);
+        return collect;
     }
 
     /**

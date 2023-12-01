@@ -108,4 +108,6 @@ public interface DeptService {
 
 
     List<DeptDO> getDeptFromNC();
+
+    List<DeptDO> getNotExistsLeaderDepts(Collection<Long> ids);
 }

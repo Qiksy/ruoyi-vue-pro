@@ -52,4 +52,10 @@ public interface DeclineWarningService {
      */
     PageResult<DeclineWarningDO> getDeclineWarningPage(DeclineWarningPageReqVO pageReqVO);
 
+    /**
+     * 根据销售明细生成预警信息
+     * @param generateReqVO
+     * @return 返回生成是否成功的信息
+     */
+    String generateDeclineWarning(DeclineWarningGenerateReqVO generateReqVO);
 }
