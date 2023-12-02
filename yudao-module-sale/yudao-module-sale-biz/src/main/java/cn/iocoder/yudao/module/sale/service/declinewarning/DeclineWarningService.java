@@ -58,4 +58,6 @@ public interface DeclineWarningService {
      * @return 返回生成是否成功的信息
      */
     String generateDeclineWarning(DeclineWarningGenerateReqVO generateReqVO);
+
+    Boolean submitApproved(DeclineWarningSubmitApprovedReqVO submitApprovedReqVO);
 }

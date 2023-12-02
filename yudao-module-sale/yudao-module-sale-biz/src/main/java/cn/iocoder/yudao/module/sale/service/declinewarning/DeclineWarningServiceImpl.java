@@ -2,6 +2,9 @@ package cn.iocoder.yudao.module.sale.service.declinewarning;
 
 import cn.iocoder.yudao.framework.common.exception.ErrorCode;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.framework.operatelog.core.util.OperateLogUtils;
+import cn.iocoder.yudao.module.bpm.api.task.BpmProcessInstanceApi;
+import cn.iocoder.yudao.module.bpm.api.task.dto.BpmProcessInstanceCreateReqDTO;
 import cn.iocoder.yudao.module.sale.controller.admin.customersalesdetail.vo.CustomerSalesDetailAnalysisRespVO;
 import cn.iocoder.yudao.module.sale.controller.admin.customersalesdetail.vo.CustomerSalesDetailPageReqVO;
 import cn.iocoder.yudao.module.sale.dal.dataobject.declinewarningsub.DeclineWarningSubDO;
@@ -13,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
@@ -51,6 +55,14 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
 
     @Resource
     private DeptApi deptApi;
+
+    @Resource
+    private BpmProcessInstanceApi processInstanceApi;
+
+    /**
+     * 流程的key
+     */
+    public static final String PROCESS_KEY = "sale_decline";
 
     @Override
     public Long createDeclineWarning(DeclineWarningSaveReqVO createReqVO) {
@@ -103,7 +115,7 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
     @Override
     public String generateDeclineWarning(DeclineWarningGenerateReqVO generateReqVO) {
         //todo 获取对应的时间，然后分析 生成主表，然后生成子表信息，插入数据库
-        String saleDate  = getSaleDate(generateReqVO);
+        String saleDate = getSaleDate(generateReqVO);
 
         //获取完数据之后
         CustomerSalesDetailPageReqVO reqVO = new CustomerSalesDetailPageReqVO();
@@ -116,7 +128,7 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
         //主表信息
         List<DeclineWarningDO> declineWarningList = new ArrayList<>();
         // 子表信息
-        Map<String,List<DeclineWarningSubDO>> declineWarningSubMap = new HashMap<>();
+        Map<String, List<DeclineWarningSubDO>> declineWarningSubMap = new HashMap<>();
 
         //填充进主子表信息
         generateDO(warningSourceList, saleDate, declineWarningList, declineWarningSubMap);
@@ -128,11 +140,11 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
 
         for (DeclineWarningDO warningDO : declineWarningList) {
             LambdaQueryWrapperX<DeclineWarningDO> queryWrapperX = new LambdaQueryWrapperX<>();
-            queryWrapperX.eq(DeclineWarningDO::getCompeteTime,warningDO.getCompeteTime())
-                    .eq(DeclineWarningDO::getAreaCode,warningDO.getAreaCode());
+            queryWrapperX.eq(DeclineWarningDO::getCompeteTime, warningDO.getCompeteTime())
+                    .eq(DeclineWarningDO::getAreaCode, warningDO.getAreaCode());
             boolean exists = declineWarningMapper.exists(queryWrapperX);
-            if (exists){
-                log.info("当前时间：{}，大区：{}，已经生成过预警信息，无需再次生成",warningDO.getCompeteTime(),warningDO.getAreaName());
+            if (exists) {
+                log.info("当前时间：{}，大区：{}，已经生成过预警信息，无需再次生成", warningDO.getCompeteTime(), warningDO.getAreaName());
                 continue;
             }
 
@@ -153,8 +165,37 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
         return sb.toString();
     }
 
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean submitApproved(DeclineWarningSubmitApprovedReqVO submitApprovedReqVO) {
+        // 获取ids，然后批量创建流程，然后更新流程id到主表中
+        List<Long> ids = submitApprovedReqVO.getIds();
+
+        for (Long id : ids) {
+            DeclineWarningDO declineWarningDO = declineWarningMapper.selectById(id);
+
+            // 发起 BPM 流程
+            Map<String, Object> processInstanceVariables = new HashMap<>();
+            processInstanceVariables.put("zoneCode", Long.valueOf(declineWarningDO.getZoneCode()));
+            processInstanceVariables.put("areaCode", Long.valueOf(declineWarningDO.getAreaCode()));
+
+            String processInstanceId = processInstanceApi.createProcessInstance(submitApprovedReqVO.getLoginUserId(),
+                    new BpmProcessInstanceCreateReqDTO().setProcessDefinitionKey(PROCESS_KEY)
+                            .setVariables(processInstanceVariables).setBusinessKey(String.valueOf(declineWarningDO.getId())));
+
+            //会写流程id到主表中
+            declineWarningDO.setProcessInstanceId(processInstanceId);
+            declineWarningMapper.updateById(declineWarningDO);
+
+            log.info("插入流程实例成功，流程实例id为：{}，业务id为：{}", processInstanceId,id);
+        }
+        return true;
+    }
+
     /**
      * 判断大区、战区是否拥有对应的负责人，如果没有，则抛出异常信息
+     *
      * @param warningSourceList
      */
     private void checkDeptLeader(List<CustomerSalesDetailAnalysisRespVO> warningSourceList) {
@@ -176,9 +217,9 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
     }
 
     /**
-     * @param warningSourceList 销量下降分析的源数据
-     * @param saleDate  对比的时间
-     * @param declineWarningList 主表信息
+     * @param warningSourceList    销量下降分析的源数据
+     * @param saleDate             对比的时间
+     * @param declineWarningList   主表信息
      * @param declineWarningSubMap 子表信息
      */
     private void generateDO(List<CustomerSalesDetailAnalysisRespVO> warningSourceList, String saleDate, List<DeclineWarningDO> declineWarningList, Map<String, List<DeclineWarningSubDO>> declineWarningSubMap) {
@@ -200,10 +241,10 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
             mainDO.setCompeteTime(saleDate);
 
             int custCount = subSourceList.size(); // 上个月销量下降超过30%的客户数量cust_count
-            double totalDeclineNum =subSourceList.stream().mapToDouble(CustomerSalesDetailAnalysisRespVO::getDeclineNum).sum()/1000;  //下降的数量  total_decline_num
-            double totalPreMonthSales = subSourceList.stream().mapToDouble(CustomerSalesDetailAnalysisRespVO::getPreMonthSales).sum()/1000; //上个月的销量 total_pre_month_sales
-            double totalCurrMonthSales = subSourceList.stream().mapToDouble(CustomerSalesDetailAnalysisRespVO::getCurrMonthSales).sum()/1000; //本月的销量 total_curr_month_sales
-            double totalDeclineRatio = totalDeclineNum/totalPreMonthSales; //下降的比例 total_decline_ratio
+            double totalDeclineNum = subSourceList.stream().mapToDouble(CustomerSalesDetailAnalysisRespVO::getDeclineNum).sum() / 1000;  //下降的数量  total_decline_num
+            double totalPreMonthSales = subSourceList.stream().mapToDouble(CustomerSalesDetailAnalysisRespVO::getPreMonthSales).sum() / 1000; //上个月的销量 total_pre_month_sales
+            double totalCurrMonthSales = subSourceList.stream().mapToDouble(CustomerSalesDetailAnalysisRespVO::getCurrMonthSales).sum() / 1000; //本月的销量 total_curr_month_sales
+            double totalDeclineRatio = totalDeclineNum / totalPreMonthSales; //下降的比例 total_decline_ratio
             mainDO.setCustCount(custCount);
             mainDO.setTotalDeclineNum(totalDeclineNum);
             mainDO.setTotalPreMonthSales(totalPreMonthSales);
@@ -212,7 +253,7 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
 
 
             // 统计信息，生成总结
-            mainDO.setSummarize(generateSummarize(tempBaseVO.getAreaName(),saleDate,custCount,totalDeclineNum,totalPreMonthSales,totalCurrMonthSales,totalDeclineRatio));
+            mainDO.setSummarize(generateSummarize(tempBaseVO.getAreaName(), saleDate, custCount, totalDeclineNum, totalPreMonthSales, totalCurrMonthSales, totalDeclineRatio));
 
             declineWarningList.add(mainDO);
 
@@ -222,12 +263,13 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
                 DeclineWarningSubDO subDO = BeanUtils.toBean(subSourceDO, DeclineWarningSubDO.class);
                 subDOList.add(subDO);
             }
-            declineWarningSubMap.put(areaCode,subDOList);
+            declineWarningSubMap.put(areaCode, subDOList);
         }
     }
 
     /**
      * 获取销售时间
+     *
      * @param generateReqVO
      * @return
      */
@@ -241,17 +283,17 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
             if (now.getDayOfMonth() < 10) {
                 throw exception(DECLINE_WARNING_GENERATE_TIME_ERROR);
             }
-        }else if (type==1){
+        } else if (type == 1) {
             saleDate = now.getYear() + "-" + now.getMonthValue() + "-20";
             if (now.getDayOfMonth() < 20) {
                 throw exception(DECLINE_WARNING_GENERATE_TIME_ERROR);
             }
-        }else if (type==2) {
+        } else if (type == 2) {
             saleDate = now.getYear() + "-" + now.getMonthValue() + "-" + now.lengthOfMonth();
             if (now.getDayOfMonth() < now.lengthOfMonth()) {
                 throw exception(DECLINE_WARNING_GENERATE_TIME_ERROR);
             }
-        }else {
+        } else {
             saleDate = generateReqVO.getDate();
 
             LocalDate date = LocalDate.parse(saleDate);
@@ -274,19 +316,20 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
 
     /**
      * 统计信息，生成总结
+     *
      * @param areaName            大区名称
-     * @param saleDate           销售时间
-     * @param custCount         客户数量
-     * @param totalDeclineNum  下降的数量
-     * @param totalPreMonthSales 上个月的销量
+     * @param saleDate            销售时间
+     * @param custCount           客户数量
+     * @param totalDeclineNum     下降的数量
+     * @param totalPreMonthSales  上个月的销量
      * @param totalCurrMonthSales 本月的销量
-     * @param totalDeclineRatio 下降的比例
+     * @param totalDeclineRatio   下降的比例
      * @return
      */
-    private String generateSummarize(String areaName,String saleDate, int custCount,Double totalDeclineNum,Double totalPreMonthSales,Double totalCurrMonthSales,Double totalDeclineRatio) {
+    private String generateSummarize(String areaName, String saleDate, int custCount, Double totalDeclineNum, Double totalPreMonthSales, Double totalCurrMonthSales, Double totalDeclineRatio) {
 
-       //下降比例转为百分比
-        totalDeclineRatio = totalDeclineRatio*100;
+        //下降比例转为百分比
+        totalDeclineRatio = totalDeclineRatio * 100;
         String totalDeclineRatioStr = String.format("%.2f", totalDeclineRatio);
 
         StringBuffer sb = new StringBuffer();
@@ -296,7 +339,6 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
         sb.append("本月总销量为").append(totalCurrMonthSales).append("吨，");
         sb.append("总下降量为").append(totalDeclineNum).append("吨，");
         sb.append("总下降比例为").append(totalDeclineRatioStr).append("%。");
-
 
 
         return sb.toString();

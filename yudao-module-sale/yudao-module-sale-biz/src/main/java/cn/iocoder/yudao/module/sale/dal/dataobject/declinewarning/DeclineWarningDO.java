@@ -66,7 +66,7 @@ public class DeclineWarningDO extends BaseDO {
     /**
      * 流程实例id
      */
-    private Long processInstanceId;
+    private String processInstanceId;
 
     /**
      * 客户数量

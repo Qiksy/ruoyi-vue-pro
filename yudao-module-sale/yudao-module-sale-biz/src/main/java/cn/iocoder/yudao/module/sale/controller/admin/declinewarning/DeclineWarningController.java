@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.sale.controller.admin.declinewarning;
 import cn.iocoder.yudao.module.sale.controller.admin.declinewarningsub.vo.DeclineWarningSubRespVO;
 import cn.iocoder.yudao.module.sale.dal.dataobject.declinewarningsub.DeclineWarningSubDO;
 import cn.iocoder.yudao.module.sale.service.declinewarningsub.DeclineWarningSubService;
+import jakarta.annotation.security.PermitAll;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -27,6 +28,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
 import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.*;
+import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
 
 import cn.iocoder.yudao.module.sale.controller.admin.declinewarning.vo.*;
 import cn.iocoder.yudao.module.sale.dal.dataobject.declinewarning.DeclineWarningDO;
@@ -119,4 +121,13 @@ public class DeclineWarningController {
         return success(declineWarningService.generateDeclineWarning(generateReqVO));
     }
 
+    @PostMapping("/submit-approved")
+    @Operation(summary = "提交审核")
+//    @PreAuthorize("@ss.hasPermission('sale:decline-warning:submit-approved')")
+    @PermitAll
+    public CommonResult<Boolean> submitApproved(@Valid @RequestBody DeclineWarningSubmitApprovedReqVO submitApprovedReqVO) {
+        submitApprovedReqVO.setLoginUserId(getLoginUserId());
+        declineWarningService.submitApproved(submitApprovedReqVO);
+        return success(true);
+    }
 }
