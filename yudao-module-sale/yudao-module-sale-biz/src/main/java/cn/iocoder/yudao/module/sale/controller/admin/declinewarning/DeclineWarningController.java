@@ -6,6 +6,12 @@ import cn.iocoder.yudao.module.infra.dal.mysql.file.FileMapper;
 import cn.iocoder.yudao.module.sale.controller.admin.declinewarningsub.vo.DeclineWarningSubRespVO;
 import cn.iocoder.yudao.module.sale.dal.dataobject.declinewarningsub.DeclineWarningSubDO;
 import cn.iocoder.yudao.module.sale.service.declinewarningsub.DeclineWarningSubService;
+import cn.iocoder.yudao.module.system.api.tenant.dto.WecomeMessageRespDTO;
+import cn.iocoder.yudao.module.system.api.tencent.TencentApi;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
@@ -51,6 +57,9 @@ public class DeclineWarningController {
 
     @Resource
     private FileMapper fileMapper;
+
+    @Resource
+    private TencentApi tencentApi;
 
     @PostMapping("/create")
     @Operation(summary = "创建销量预警")
@@ -147,6 +156,31 @@ public class DeclineWarningController {
     public CommonResult<Boolean> submitApproved(@Valid @RequestBody DeclineWarningSubmitApprovedReqVO submitApprovedReqVO) {
         submitApprovedReqVO.setLoginUserId(getLoginUserId());
         declineWarningService.submitApproved(submitApprovedReqVO);
+        return success(true);
+    }
+
+
+    @GetMapping("/test")
+    @PermitAll
+    public CommonResult<Boolean> test() throws IOException {
+        ObjectNode jsonNode = JsonNodeFactory.instance.objectNode();
+
+        //设置消息类型
+        jsonNode.put("msgtype", "text");
+        jsonNode.put("touser", "0001E11000000007ND8O");
+        jsonNode.put("agentid", 1000037);
+
+        ObjectNode textNode = JsonNodeFactory.instance.objectNode();
+        textNode.put("content", "测试消息");
+
+        jsonNode.set("text", textNode);
+
+        WecomeMessageRespDTO wecomeMessageRespDTO = tencentApi.sendWelcomeMessage(jsonNode.asText());
+        //转为json
+        ObjectMapper op = new ObjectMapper();
+        op.writeValueAsString(wecomeMessageRespDTO);
+        System.out.println(op.writeValueAsString(wecomeMessageRespDTO));
+
         return success(true);
     }
 }
