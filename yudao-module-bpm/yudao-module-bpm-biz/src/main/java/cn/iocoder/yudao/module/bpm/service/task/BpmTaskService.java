@@ -27,6 +27,8 @@ public interface BpmTaskService {
      */
     PageResult<BpmTaskTodoPageItemRespVO> getTodoTaskPage(Long userId, BpmTaskTodoPageReqVO pageReqVO);
 
+    PageResult<BpmTaskTodoPageItemRespVO> getTodoTaskPage2(Long userId, BpmTaskTodoPageReqVO pageVO);
+
     /**
      * 获得已办的流程任务分页
      *

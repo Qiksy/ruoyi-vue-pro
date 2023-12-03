@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.bpm.controller.admin.task.vo.task;
 
+import cn.iocoder.yudao.module.sale.dal.dataobject.declinewarning.DeclineWarningDO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -49,5 +50,7 @@ public class BpmTaskTodoPageItemRespVO {
         private String processDefinitionId;
 
     }
+
+    private DeclineWarningDO declineWarningInfo;
 
 }

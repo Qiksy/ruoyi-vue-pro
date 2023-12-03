@@ -226,7 +226,12 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
 
     }
 
-
+    @Override
+    public List<DeclineWarningDO> getDeclineWarningByInstId(List<String> instIds) {
+        LambdaQueryWrapperX<DeclineWarningDO> queryWrapperX = new LambdaQueryWrapperX<>();
+        queryWrapperX.in(DeclineWarningDO::getProcessInstanceId, instIds);
+        return declineWarningMapper.selectList(queryWrapperX);
+    }
 
     /**
      * @param warningSourceList    销量下降分析的源数据

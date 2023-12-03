@@ -67,4 +67,6 @@ public interface DeclineWarningService {
      * @param result
      */
     void updateResult(Long businessKey, Integer result);
+
+    List<DeclineWarningDO> getDeclineWarningByInstId(List<String> instIds);
 }

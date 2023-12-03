@@ -34,6 +34,13 @@ public class BpmTaskController {
         return success(taskService.getTodoTaskPage(getLoginUserId(), pageVO));
     }
 
+    @GetMapping("todo-page2")
+    @Operation(summary = "获取 Todo 待办任务分页")
+    @PreAuthorize("@ss.hasPermission('bpm:task:query')")
+    public CommonResult<PageResult<BpmTaskTodoPageItemRespVO>> getTodoTaskPage2(@Valid BpmTaskTodoPageReqVO pageVO) {
+        return success(taskService.getTodoTaskPage2(getLoginUserId(), pageVO));
+    }
+
     @GetMapping("done-page")
     @Operation(summary = "获取 Done 已办任务分页")
     @PreAuthorize("@ss.hasPermission('bpm:task:query')")
