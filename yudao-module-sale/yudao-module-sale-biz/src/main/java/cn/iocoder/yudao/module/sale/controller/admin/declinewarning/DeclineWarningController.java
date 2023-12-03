@@ -161,7 +161,7 @@ public class DeclineWarningController {
 
 
     @GetMapping("/test")
-    @PermitAll
+    @PreAuthorize("@ss.hasRole('super_admin')")
     public CommonResult<Boolean> test() throws IOException {
         ObjectNode jsonNode = JsonNodeFactory.instance.objectNode();
 
