@@ -1,9 +1,11 @@
 package cn.iocoder.yudao.module.system.api.tencent;
 
+import cn.iocoder.yudao.module.system.api.tenant.dto.WecomeMessageRespDTO;
 import cn.iocoder.yudao.module.system.config.TencentProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -103,5 +105,26 @@ public class TencentApiImpl implements TencentApi {
         stringRedisTemplate.opsForValue().set("TENCENT_JSAPI_TICKET",ticket, expiresIn, TimeUnit.SECONDS);
 
         return null;
+    }
+
+
+    @Override
+    @SneakyThrows
+    public WecomeMessageRespDTO sendWelcomeMessage( String json) throws IOException {
+        String accessToken = this.getAccessToken();
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI("https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=" + accessToken))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        ObjectMapper op = new ObjectMapper();
+        JsonNode jsonNode = op.readTree(response.body());
+        //转为对象
+        return op.convertValue(jsonNode, WecomeMessageRespDTO.class);
     }
 }

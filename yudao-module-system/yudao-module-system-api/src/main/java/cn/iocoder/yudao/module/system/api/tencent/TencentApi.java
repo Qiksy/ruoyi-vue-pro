@@ -1,5 +1,8 @@
 package cn.iocoder.yudao.module.system.api.tencent;
 
+import cn.iocoder.yudao.module.system.api.tenant.dto.WecomeMessageRespDTO;
+import lombok.SneakyThrows;
+
 import java.io.IOException;
 
 /**
@@ -21,4 +24,6 @@ public interface TencentApi {
      * @throws IOException
      */
     String getJsapiTicket() throws IOException;
+    @SneakyThrows
+    WecomeMessageRespDTO sendWelcomeMessage(String json) throws IOException;
 }
