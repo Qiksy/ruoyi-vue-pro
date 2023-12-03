@@ -89,4 +89,9 @@ public class DeclineWarningDO extends BaseDO {
      */
     Double totalDeclineRatio;
 
+    /**
+     * 审批结果
+     */
+    int result;//审批结果
+
 }

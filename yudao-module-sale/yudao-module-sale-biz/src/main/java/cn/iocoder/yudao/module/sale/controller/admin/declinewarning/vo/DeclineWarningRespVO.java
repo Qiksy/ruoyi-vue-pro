@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.sale.controller.admin.declinewarning.vo;
 
+import cn.iocoder.yudao.module.infra.dal.dataobject.file.FileDO;
 import cn.iocoder.yudao.module.sale.dal.dataobject.declinewarningsub.DeclineWarningSubDO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -98,5 +99,17 @@ public class DeclineWarningRespVO {
 
 
     List<DeclineWarningSubDO> subRows;
+
+    /**
+     * 结果
+     */
+    int result;
+
+    /**
+     * 流程实例id
+     */
+    private String processInstanceId;
+
+    private FileDO fileInfo;
 
 }

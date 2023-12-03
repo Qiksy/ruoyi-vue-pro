@@ -60,4 +60,11 @@ public interface DeclineWarningService {
     String generateDeclineWarning(DeclineWarningGenerateReqVO generateReqVO);
 
     Boolean submitApproved(DeclineWarningSubmitApprovedReqVO submitApprovedReqVO);
+
+    /**
+     * 更新审批结果
+     * @param businessKey
+     * @param result
+     */
+    void updateResult(Long businessKey, Integer result);
 }

@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.bpm.framework.flowable.core.behavior.script.impl;
 
 import cn.iocoder.yudao.framework.common.exception.ErrorCode;
+import cn.iocoder.yudao.module.bpm.dal.dataobject.task.BpmProcessInstanceExtDO;
+import cn.iocoder.yudao.module.bpm.dal.mysql.task.BpmProcessInstanceExtMapper;
 import cn.iocoder.yudao.module.bpm.enums.definition.BpmTaskRuleScriptEnum;
 import cn.iocoder.yudao.module.bpm.framework.flowable.core.behavior.script.BpmTaskAssignScript;
 import cn.iocoder.yudao.module.bpm.service.task.BpmProcessInstanceService;
@@ -28,6 +30,9 @@ public abstract class BpmTaskAssignDeptLeaderAbstractScript implements BpmTaskAs
     @Lazy // 解决循环依赖
     private BpmProcessInstanceService bpmProcessInstanceService;
 
+    @Resource
+    private BpmProcessInstanceExtMapper processInstanceExtMapper;
+
     /**
      * @param execution
      * @param enumValue 参见 {@link BpmTaskRuleScriptEnum}
@@ -37,13 +42,19 @@ public abstract class BpmTaskAssignDeptLeaderAbstractScript implements BpmTaskAs
         // 获得部门id
         Long deptId;
         ProcessInstance processInstance = bpmProcessInstanceService.getProcessInstance(execution.getProcessInstanceId());
+
+        // todo 获取扩展表
+//        BpmProcessInstanceExtDO bpmProcessInstanceExtDO = processInstanceExtMapper.selectByProcessInstanceId(execution.getProcessInstanceId());
+//        Map<String, Object> processVariables = bpmProcessInstanceExtDO.getFormVariables();
         Map<String, Object> processVariables = processInstance.getProcessVariables();
         if (enumValue.equals(BpmTaskRuleScriptEnum.AREA_LEADER.getId())){
             //大区负责人
-            deptId = (Long) processVariables.get("areaId");
+            deptId = Long.valueOf(processVariables.get("areaCode").toString());
         }else{
+            BpmProcessInstanceExtDO bpmProcessInstanceExtDO = processInstanceExtMapper.selectByProcessInstanceId(execution.getProcessInstanceId());
+            processVariables = bpmProcessInstanceExtDO.getFormVariables();
             //部门负责人
-            deptId = (Long) processVariables.get("zoneId");
+            deptId = Long.valueOf(processVariables.get("zoneCode").toString());
         }
 
         // 获得部门负责人

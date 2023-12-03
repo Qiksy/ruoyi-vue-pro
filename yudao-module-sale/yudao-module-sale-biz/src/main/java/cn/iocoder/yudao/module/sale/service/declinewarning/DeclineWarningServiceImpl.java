@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.operatelog.core.util.OperateLogUtils;
 import cn.iocoder.yudao.module.bpm.api.task.BpmProcessInstanceApi;
 import cn.iocoder.yudao.module.bpm.api.task.dto.BpmProcessInstanceCreateReqDTO;
+import cn.iocoder.yudao.module.bpm.enums.task.BpmProcessInstanceResultEnum;
 import cn.iocoder.yudao.module.sale.controller.admin.customersalesdetail.vo.CustomerSalesDetailAnalysisRespVO;
 import cn.iocoder.yudao.module.sale.controller.admin.customersalesdetail.vo.CustomerSalesDetailPageReqVO;
 import cn.iocoder.yudao.module.sale.dal.dataobject.declinewarningsub.DeclineWarningSubDO;
@@ -62,7 +63,7 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
     /**
      * 流程的key
      */
-    public static final String PROCESS_KEY = "sale_decline";
+    public static final String PROCESS_KEY = "sale-decline";
 
     @Override
     public Long createDeclineWarning(DeclineWarningSaveReqVO createReqVO) {
@@ -166,19 +167,34 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
     }
 
 
+    /**
+     * @param submitApprovedReqVO
+     * @return
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean submitApproved(DeclineWarningSubmitApprovedReqVO submitApprovedReqVO) {
         // 获取ids，然后批量创建流程，然后更新流程id到主表中
         List<Long> ids = submitApprovedReqVO.getIds();
 
-        for (Long id : ids) {
-            DeclineWarningDO declineWarningDO = declineWarningMapper.selectById(id);
+        List<DeclineWarningDO> sourceList = declineWarningMapper.selectList(new LambdaQueryWrapperX<DeclineWarningDO>().in(DeclineWarningDO::getId, ids));
+
+        checkDeptLeaderByDO(sourceList);
+
+        for (DeclineWarningDO declineWarningDO : sourceList) {
+
+            Long id = declineWarningDO.getId();
 
             // 发起 BPM 流程
             Map<String, Object> processInstanceVariables = new HashMap<>();
             processInstanceVariables.put("zoneCode", Long.valueOf(declineWarningDO.getZoneCode()));
             processInstanceVariables.put("areaCode", Long.valueOf(declineWarningDO.getAreaCode()));
+
+            if (StringUtils.hasText(declineWarningDO.getProcessInstanceId())){
+                String areaName = declineWarningDO.getAreaName();
+//                throw exception(new ErrorCode(1023,areaName+"的预警信息已经发起过流程，无需再次发起"));
+                continue;
+            }
 
             String processInstanceId = processInstanceApi.createProcessInstance(submitApprovedReqVO.getLoginUserId(),
                     new BpmProcessInstanceCreateReqDTO().setProcessDefinitionKey(PROCESS_KEY)
@@ -186,6 +202,7 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
 
             //会写流程id到主表中
             declineWarningDO.setProcessInstanceId(processInstanceId);
+            declineWarningDO.setResult(BpmProcessInstanceResultEnum.PROCESS.getResult()); //正在处理
             declineWarningMapper.updateById(declineWarningDO);
 
             log.info("插入流程实例成功，流程实例id为：{}，业务id为：{}", processInstanceId,id);
@@ -193,28 +210,23 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
         return true;
     }
 
+
+
+
     /**
-     * 判断大区、战区是否拥有对应的负责人，如果没有，则抛出异常信息
+     * 更新审批结果
      *
-     * @param warningSourceList
+     * @param businessKey
+     * @param result
      */
-    private void checkDeptLeader(List<CustomerSalesDetailAnalysisRespVO> warningSourceList) {
-        //战区编码
-        List<Long> zoneCodeList = warningSourceList.stream().map(CustomerSalesDetailAnalysisRespVO::getZoneCode).map(Long::valueOf).distinct().toList();
-        //大区编码
-        List<Long> areaCodeList = warningSourceList.stream().map(CustomerSalesDetailAnalysisRespVO::getAreaCode).map(Long::valueOf).distinct().toList();
+    @Override
+    public void updateResult(Long businessKey, Integer result) {
+        DeclineWarningDO declineWarningDO = new DeclineWarningDO().setId(businessKey).setResult(result);
+        declineWarningMapper.updateById(declineWarningDO);
 
-        // 合并两个list
-        List<Long> deptIdList = new ArrayList<>();
-        deptIdList.addAll(zoneCodeList);
-        deptIdList.addAll(areaCodeList);
-
-        List<DeptRespDTO> notExistsLeaderDepts = deptApi.getNotExistsLeaderDepts(deptIdList);
-        if (!notExistsLeaderDepts.isEmpty()) {
-            String errorMessage = "以下部门没有负责人，请先设置负责人：" + notExistsLeaderDepts.stream().map(DeptRespDTO::getName).collect(Collectors.joining(","));
-            throw exception(new ErrorCode(88088, errorMessage));
-        }
     }
+
+
 
     /**
      * @param warningSourceList    销量下降分析的源数据
@@ -255,6 +267,9 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
             // 统计信息，生成总结
             mainDO.setSummarize(generateSummarize(tempBaseVO.getAreaName(), saleDate, custCount, totalDeclineNum, totalPreMonthSales, totalCurrMonthSales, totalDeclineRatio));
 
+            // 主表设置result为0，表示未开始
+            mainDO.setResult(BpmProcessInstanceResultEnum.UN_START.getResult());
+
             declineWarningList.add(mainDO);
 
             // 生成子表信息
@@ -264,6 +279,49 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
                 subDOList.add(subDO);
             }
             declineWarningSubMap.put(areaCode, subDOList);
+        }
+    }
+
+
+    /**
+     * 判断大区、战区是否拥有对应的负责人，如果没有，则抛出异常信息
+     *
+     * @param warningSourceList
+     */
+    private void checkDeptLeader(List<CustomerSalesDetailAnalysisRespVO> warningSourceList) {
+        //战区编码
+        List<Long> zoneCodeList = warningSourceList.stream().map(CustomerSalesDetailAnalysisRespVO::getZoneCode).map(Long::valueOf).distinct().toList();
+        //大区编码
+        List<Long> areaCodeList = warningSourceList.stream().map(CustomerSalesDetailAnalysisRespVO::getAreaCode).map(Long::valueOf).distinct().toList();
+
+        // 合并两个list
+        List<Long> deptIdList = new ArrayList<>();
+        deptIdList.addAll(zoneCodeList);
+        deptIdList.addAll(areaCodeList);
+
+        checkDeptLeader0(deptIdList);
+    }
+
+
+    private void checkDeptLeaderByDO(List<DeclineWarningDO> sourceList) {
+        //战区编码
+        List<Long> zoneCodeList = sourceList.stream().map(DeclineWarningDO::getZoneCode).map(Long::valueOf).distinct().toList();
+        //大区编码
+        List<Long> areaCodeList = sourceList.stream().map(DeclineWarningDO::getAreaCode).map(Long::valueOf).distinct().toList();
+
+        // 合并两个list
+        List<Long> deptIdList = new ArrayList<>();
+        deptIdList.addAll(zoneCodeList);
+        deptIdList.addAll(areaCodeList);
+
+        checkDeptLeader0(deptIdList);
+    }
+
+    private void checkDeptLeader0(List<Long> deptIdList) {
+        List<DeptRespDTO> notExistsLeaderDepts = deptApi.getNotExistsLeaderDepts(deptIdList);
+        if (!notExistsLeaderDepts.isEmpty()) {
+            String errorMessage = "以下部门没有负责人，请先设置负责人：" + notExistsLeaderDepts.stream().map(DeptRespDTO::getName).collect(Collectors.joining(","));
+            throw exception(new ErrorCode(88088, errorMessage));
         }
     }
 
@@ -334,7 +392,7 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
 
         StringBuffer sb = new StringBuffer();
         sb.append("截至至").append(saleDate).append("，");
-        sb.append(areaName).append("共有").append(custCount).append("个客户销量下降超过30%。这些用户");
+        sb.append(areaName).append("共有").append(custCount).append("个客户销量下降超过30%。这些客户");
         sb.append("上个月总销量为").append(totalPreMonthSales).append("吨，");
         sb.append("本月总销量为").append(totalCurrMonthSales).append("吨，");
         sb.append("总下降量为").append(totalDeclineNum).append("吨，");

@@ -1,5 +1,8 @@
 package cn.iocoder.yudao.module.sale.controller.admin.declinewarning;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.iocoder.yudao.module.infra.dal.dataobject.file.FileDO;
+import cn.iocoder.yudao.module.infra.dal.mysql.file.FileMapper;
 import cn.iocoder.yudao.module.sale.controller.admin.declinewarningsub.vo.DeclineWarningSubRespVO;
 import cn.iocoder.yudao.module.sale.dal.dataobject.declinewarningsub.DeclineWarningSubDO;
 import cn.iocoder.yudao.module.sale.service.declinewarningsub.DeclineWarningSubService;
@@ -46,6 +49,9 @@ public class DeclineWarningController {
     @Resource
     private DeclineWarningSubService declineWarningSubService;
 
+    @Resource
+    private FileMapper fileMapper;
+
     @PostMapping("/create")
     @Operation(summary = "创建销量预警")
     @PreAuthorize("@ss.hasPermission('sale:decline-warning:create')")
@@ -76,7 +82,20 @@ public class DeclineWarningController {
     @PreAuthorize("@ss.hasPermission('sale:decline-warning:query')")
     public CommonResult<DeclineWarningRespVO> getDeclineWarning(@RequestParam("id") Long id) {
         DeclineWarningDO declineWarning = declineWarningService.getDeclineWarning(id);
-        return success(BeanUtils.toBean(declineWarning, DeclineWarningRespVO.class));
+        DeclineWarningRespVO bean = BeanUtils.toBean(declineWarning, DeclineWarningRespVO.class);
+        //查询子表
+        Map<Long,List<DeclineWarningSubDO>> dataMap = declineWarningSubService.getDeclineWarningSubMap(CollUtil.newArrayList(id));
+
+        List<DeclineWarningSubDO> subDOList = dataMap.get(bean.getId());
+        if (subDOList!=null&&!subDOList.isEmpty()) {
+            bean.setSubRows(subDOList);
+        }
+
+        // 查询出附件
+        FileDO fileDO = fileMapper.selectOne("id", bean.getFileId());
+        bean.setFileInfo(fileDO);
+
+        return success(bean);
     }
 
     @GetMapping("/page")

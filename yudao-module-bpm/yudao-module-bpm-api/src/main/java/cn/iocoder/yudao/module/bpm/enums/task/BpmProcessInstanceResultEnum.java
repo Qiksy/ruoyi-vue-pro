@@ -15,6 +15,9 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public enum BpmProcessInstanceResultEnum {
+//    未开始
+
+    UN_START(0, "未开始"),
 
     PROCESS(1, "处理中"),
     APPROVE(2, "通过"),
