@@ -67,6 +67,11 @@ spring:
           #          url: jdbc:sqlserver://127.0.0.1:1433;DatabaseName=${spring.datasource.dynamic.datasource.slave.name} # SQLServer 连接的示例
           username: root
           password: 123456
+        nc65:
+          lazy: true # 开启懒加载，保证启动速度
+          url: jdbc:oracle:thin:@10.18.10.80:1521/rac
+          username: nciq
+          password: Ad#min#65
 
   # Redis 配置。Redisson 默认的配置足够使用，一般不需要进行调优
   data:
