@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.annotation.security.PermitAll;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -47,6 +48,7 @@ import cn.iocoder.yudao.module.sale.service.declinewarning.DeclineWarningService
 @RestController
 @RequestMapping("/sale/decline-warning")
 @Validated
+@Slf4j
 public class DeclineWarningController {
 
     @Resource
@@ -174,10 +176,13 @@ public class DeclineWarningController {
         textNode.put("content", "测试消息");
 
         jsonNode.set("text", textNode);
-
-        WecomeMessageRespDTO wecomeMessageRespDTO = tencentApi.sendWelcomeMessage(jsonNode.asText());
-        //转为json
         ObjectMapper op = new ObjectMapper();
+
+
+        log.info("jsonNode:{}",op.writeValueAsString(jsonNode));
+
+        WecomeMessageRespDTO wecomeMessageRespDTO = tencentApi.sendWelcomeMessage(op.writeValueAsString(jsonNode));
+        //转为json
         op.writeValueAsString(wecomeMessageRespDTO);
         System.out.println(op.writeValueAsString(wecomeMessageRespDTO));
 
