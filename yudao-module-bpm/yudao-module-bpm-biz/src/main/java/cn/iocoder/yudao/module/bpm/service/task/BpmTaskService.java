@@ -39,6 +39,15 @@ public interface BpmTaskService {
     PageResult<BpmTaskDonePageItemRespVO> getDoneTaskPage(Long userId, BpmTaskDonePageReqVO pageReqVO);
 
     /**
+     * 获得已办的流程任务分页
+     *
+     * @param userId    用户编号
+     * @param pageReqVO 分页请求
+     * @return 流程任务分页
+     */
+    PageResult<BpmTaskDonePageItemRespVO> getDoneTaskPage2(Long userId, BpmTaskDonePageReqVO pageReqVO);
+
+    /**
      * 获得流程任务 Map
      *
      * @param processInstanceIds 流程实例的编号数组
