@@ -192,8 +192,8 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
 
             if (StringUtils.hasText(declineWarningDO.getProcessInstanceId())){
                 String areaName = declineWarningDO.getAreaName();
-//                throw exception(new ErrorCode(1023,areaName+"的预警信息已经发起过流程，无需再次发起"));
-                continue;
+                throw exception(new ErrorCode(1023,areaName+"的预警信息已经发起过流程，无需再次发起"));
+
             }
 
             String processInstanceId = processInstanceApi.createProcessInstance(submitApprovedReqVO.getLoginUserId(),

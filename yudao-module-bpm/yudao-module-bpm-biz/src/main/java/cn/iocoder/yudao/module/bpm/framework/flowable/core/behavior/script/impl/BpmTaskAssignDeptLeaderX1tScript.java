@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.bpm.framework.flowable.core.behavior.script.impl
 
 import cn.iocoder.yudao.module.bpm.enums.definition.BpmTaskRuleScriptEnum;
 import cn.iocoder.yudao.module.bpm.framework.flowable.core.behavior.script.BpmTaskAssignScript;
+import lombok.extern.slf4j.Slf4j;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ import java.util.Set;
  * @since 2023/12/2 23:01
  */
 @Component
+@Slf4j
 public class BpmTaskAssignDeptLeaderX1tScript extends BpmTaskAssignDeptLeaderAbstractScript {
 
 
