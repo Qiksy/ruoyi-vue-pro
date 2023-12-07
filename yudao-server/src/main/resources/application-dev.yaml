@@ -219,6 +219,9 @@ yudao:
   error-code: # 错误码相关配置项
     enable: false
   demo: false # 关闭演示模式
+  remote: # 远程调用相关配置项
+    url: https://openai.bo-en.com # 远程调用的地址
+    secret: boen219689120231207 # 远程调用的密钥
 
 justauth:
   enabled: true

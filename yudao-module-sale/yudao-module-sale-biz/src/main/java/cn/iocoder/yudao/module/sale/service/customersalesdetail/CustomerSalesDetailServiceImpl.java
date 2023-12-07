@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.sale.service.customersalesdetail;
 
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.sale.service.remote.RemoteService;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,9 @@ public class CustomerSalesDetailServiceImpl implements CustomerSalesDetailServic
 
     @Resource
     private CustomerSalesDetailMapper customerSalesDetailMapper;
+
+    @Resource
+    private RemoteService remoteService;
 
     @Override
     public Long createCustomerSalesDetail(CustomerSalesDetailSaveReqVO createReqVO) {
@@ -178,7 +182,9 @@ public class CustomerSalesDetailServiceImpl implements CustomerSalesDetailServic
     @Override
     public void syncCustomerSalesDetail(CustomerSalesDetailSyncReqVO syncReqVO) {
         // TODO 同步数据
-        List<CustomerSalesDetailDO> list = detailService.getDoFromNc(syncReqVO);
+//        List<CustomerSalesDetailDO> list = detailService.getDoFromNc(syncReqVO);
+        List<CustomerSalesDetailDO> list = remoteService.getCustomerSalesDetail(syncReqVO);
+
         log.info("同步客户销售明细数据大小：{}", list.size());
         // 插入或者更新
         for (CustomerSalesDetailDO detailDO : list) {
@@ -202,7 +208,7 @@ public class CustomerSalesDetailServiceImpl implements CustomerSalesDetailServic
     }
 
     @Override
-    @DS("nc65")
+//    @DS("nc65")
     public List<CustomerSalesDetailDO> getDoFromNc(CustomerSalesDetailSyncReqVO syncReqVO) {
         // 从NC获取数据
         return customerSalesDetailMapper.getDoFromNc(syncReqVO);
