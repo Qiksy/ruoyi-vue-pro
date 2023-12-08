@@ -176,8 +176,8 @@ public abstract class AbstractWxPayClient extends AbstractPayClient<WxPayClientC
 
     private PayOrderRespDTO doParseOrderNotifyV3(String body) throws WxPayException {
         // 1. 解析回调
-        WxPayOrderNotifyV3Result response = client.parseOrderNotifyV3Result(body, null);
-        WxPayOrderNotifyV3Result.DecryptNotifyResult result = response.getResult();
+        WxPayNotifyV3Result response = client.parseOrderNotifyV3Result(body, null);
+        WxPayNotifyV3Result.DecryptNotifyResult result = response.getResult();
         // 2. 构建结果
         Integer status = parseStatus(result.getTradeState());
         String openid = result.getPayer() != null ? result.getPayer().getOpenid() : null;
