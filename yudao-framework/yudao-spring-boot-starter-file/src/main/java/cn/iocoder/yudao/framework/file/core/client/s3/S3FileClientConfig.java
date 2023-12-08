@@ -3,10 +3,11 @@ package cn.iocoder.yudao.framework.file.core.client.s3;
 import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.file.core.client.FileClientConfig;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.validator.constraints.URL;
+
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * S3 文件客户端的配置类

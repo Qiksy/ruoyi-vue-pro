@@ -1,12 +1,12 @@
 package cn.iocoder.yudao.module.system.api.dept;
 
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.system.api.dept.dto.DeptRespDTO;
-import cn.iocoder.yudao.module.system.convert.dept.DeptConvert;
 import cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO;
 import cn.iocoder.yudao.module.system.service.dept.DeptService;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
 
@@ -24,13 +24,13 @@ public class DeptApiImpl implements DeptApi {
     @Override
     public DeptRespDTO getDept(Long id) {
         DeptDO dept = deptService.getDept(id);
-        return DeptConvert.INSTANCE.convert03(dept);
+        return BeanUtils.toBean(dept, DeptRespDTO.class);
     }
 
     @Override
     public List<DeptRespDTO> getDeptList(Collection<Long> ids) {
         List<DeptDO> depts = deptService.getDeptList(ids);
-        return DeptConvert.INSTANCE.convertList03(depts);
+        return BeanUtils.toBean(depts, DeptRespDTO.class);
     }
 
     @Override
@@ -48,6 +48,6 @@ public class DeptApiImpl implements DeptApi {
     public List<DeptRespDTO> getNotExistsLeaderDepts(Collection<Long> ids) {
         List<DeptDO> depts = deptService.getNotExistsLeaderDepts(ids);
 
-        return DeptConvert.INSTANCE.convertList03(depts);
+        return  BeanUtils.toBean(depts, DeptRespDTO.class);
     }
 }

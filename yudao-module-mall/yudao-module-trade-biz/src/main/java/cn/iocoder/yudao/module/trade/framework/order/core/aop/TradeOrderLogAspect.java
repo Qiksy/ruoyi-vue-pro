@@ -8,13 +8,13 @@ import cn.iocoder.yudao.module.trade.dal.dataobject.order.TradeOrderLogDO;
 import cn.iocoder.yudao.module.trade.framework.order.core.annotations.TradeOrderLog;
 import cn.iocoder.yudao.module.trade.service.order.TradeOrderLogService;
 import cn.iocoder.yudao.module.trade.service.order.bo.TradeOrderLogCreateReqBO;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.Resource;
 import java.util.Map;
 
 import static cn.iocoder.yudao.framework.common.util.json.JsonUtils.toJsonString;

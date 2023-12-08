@@ -10,10 +10,11 @@ import cn.iocoder.yudao.module.bpm.controller.admin.definition.vo.group.BpmUserG
 import cn.iocoder.yudao.module.bpm.controller.admin.definition.vo.group.BpmUserGroupUpdateReqVO;
 import cn.iocoder.yudao.module.bpm.dal.dataobject.definition.BpmUserGroupDO;
 import cn.iocoder.yudao.module.bpm.dal.mysql.definition.BpmUserGroupMapper;
-import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Import;
+
+import jakarta.annotation.Resource;
 
 import java.time.LocalDateTime;
 

@@ -5,9 +5,10 @@ import cn.iocoder.yudao.module.member.controller.app.address.vo.AppAddressCreate
 import cn.iocoder.yudao.module.member.controller.app.address.vo.AppAddressUpdateReqVO;
 import cn.iocoder.yudao.module.member.dal.dataobject.address.MemberAddressDO;
 import cn.iocoder.yudao.module.member.dal.mysql.address.MemberAddressMapper;
-import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Import;
+
+import jakarta.annotation.Resource;
 
 import static cn.iocoder.yudao.framework.test.core.util.AssertUtils.assertPojoEquals;
 import static cn.iocoder.yudao.framework.test.core.util.AssertUtils.assertServiceException;

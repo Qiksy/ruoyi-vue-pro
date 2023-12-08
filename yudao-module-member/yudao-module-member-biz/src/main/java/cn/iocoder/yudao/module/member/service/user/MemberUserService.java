@@ -10,8 +10,8 @@ import cn.iocoder.yudao.module.member.controller.app.user.vo.AppMemberUserUpdate
 import cn.iocoder.yudao.module.member.controller.app.user.vo.AppMemberUserUpdatePasswordReqVO;
 import cn.iocoder.yudao.module.member.controller.app.user.vo.AppMemberUserUpdateReqVO;
 import cn.iocoder.yudao.module.member.dal.dataobject.user.MemberUserDO;
-import jakarta.validation.Valid;
 
+import jakarta.validation.Valid;
 import java.util.Collection;
 import java.util.List;
 

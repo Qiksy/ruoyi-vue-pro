@@ -4,10 +4,10 @@ import cn.iocoder.yudao.module.statistics.dal.mysql.trade.BrokerageStatisticsMap
 import cn.iocoder.yudao.module.trade.enums.brokerage.BrokerageRecordBizTypeEnum;
 import cn.iocoder.yudao.module.trade.enums.brokerage.BrokerageRecordStatusEnum;
 import cn.iocoder.yudao.module.trade.enums.brokerage.BrokerageWithdrawStatusEnum;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.time.LocalDateTime;
 
 /**

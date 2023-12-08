@@ -11,10 +11,10 @@ import cn.iocoder.yudao.module.statistics.dal.mysql.trade.TradeOrderStatisticsMa
 import cn.iocoder.yudao.module.statistics.enums.TimeRangeTypeEnum;
 import cn.iocoder.yudao.module.statistics.service.member.bo.MemberAreaStatisticsRespBO;
 import cn.iocoder.yudao.module.statistics.service.trade.bo.TradeOrderSummaryRespBO;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;

@@ -4,12 +4,13 @@ import cn.iocoder.yudao.framework.common.util.validation.ValidationUtils;
 import cn.iocoder.yudao.framework.common.validation.InEnum;
 import cn.iocoder.yudao.module.trade.enums.brokerage.BrokerageWithdrawTypeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import org.hibernate.validator.constraints.URL;
+
 import jakarta.validation.Validator;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
-import lombok.Data;
-import org.hibernate.validator.constraints.URL;
 
 @Schema(description = "用户 App - 分销提现创建 Request VO")
 @Data

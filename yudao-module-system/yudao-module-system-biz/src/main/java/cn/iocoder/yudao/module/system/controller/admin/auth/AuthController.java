@@ -7,6 +7,7 @@ import cn.iocoder.yudao.framework.common.enums.UserTypeEnum;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
 import cn.iocoder.yudao.framework.security.config.SecurityProperties;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.system.controller.admin.auth.vo.*;
 import cn.iocoder.yudao.module.system.convert.auth.AuthConvert;
 import cn.iocoder.yudao.module.system.dal.dataobject.permission.MenuDO;
@@ -23,24 +24,21 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Resource;
-import jakarta.annotation.security.PermitAll;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
+import jakarta.annotation.Resource;
+import jakarta.annotation.security.PermitAll;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.util.Collections;
-import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertSet;
 import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
-import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.obtainAuthorization;
 
 @Tag(name = "管理后台 - 认证")
 @RestController
@@ -78,7 +76,8 @@ public class AuthController {
     @Operation(summary = "登出系统")
     @OperateLog(enable = false) // 避免 Post 请求被记录操作日志
     public CommonResult<Boolean> logout(HttpServletRequest request) {
-        String token = obtainAuthorization(request, securityProperties.getTokenHeader());
+        String token = SecurityFrameworkUtils.obtainAuthorization(request,
+                securityProperties.getTokenHeader(), securityProperties.getTokenParameter());
         if (StrUtil.isNotBlank(token)) {
             authService.logout(token, LoginLogTypeEnum.LOGOUT_SELF.getType());
         }
@@ -162,16 +161,4 @@ public class AuthController {
         return success(authService.socialLogin(reqVO));
     }
 
-    // ============ 企业微信单点登录相关 ============
-    @GetMapping("/work-wechat-auth-redirect")
-    @PermitAll
-    @Operation(summary = "企业微信登录")
-    @Parameters({
-            @Parameter(name = "code", description = "用户对应的唯一code", required = true),
-            @Parameter(name = "state", description = "状态，自定义")
-    })
-    public CommonResult<AuthLoginRespVO> workWechatLogin(@RequestParam("code") String code,
-                                                         @RequestParam(value = "state", required = false) String state) throws IOException {
-        return CommonResult.success(authService.workWechatLogin(code, state));
-    }
 }

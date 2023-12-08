@@ -2,11 +2,12 @@ package cn.iocoder.yudao.module.system.mq.consumer.mail;
 
 import cn.iocoder.yudao.module.system.mq.message.mail.MailSendMessage;
 import cn.iocoder.yudao.module.system.service.mail.MailSendService;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+
+import jakarta.annotation.Resource;
 
 /**
  * 针对 {@link MailSendMessage} 的消费者

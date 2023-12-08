@@ -5,9 +5,9 @@ import cn.iocoder.yudao.module.product.api.sku.ProductSkuApi;
 import cn.iocoder.yudao.module.trade.convert.order.TradeOrderConvert;
 import cn.iocoder.yudao.module.trade.dal.dataobject.order.TradeOrderDO;
 import cn.iocoder.yudao.module.trade.dal.dataobject.order.TradeOrderItemDO;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.Resource;
 import java.util.List;
 
 import static java.util.Collections.singletonList;

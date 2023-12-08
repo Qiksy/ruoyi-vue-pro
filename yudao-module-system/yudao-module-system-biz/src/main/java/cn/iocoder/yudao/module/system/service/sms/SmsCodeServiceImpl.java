@@ -10,10 +10,10 @@ import cn.iocoder.yudao.module.system.dal.dataobject.sms.SmsCodeDO;
 import cn.iocoder.yudao.module.system.dal.mysql.sms.SmsCodeMapper;
 import cn.iocoder.yudao.module.system.enums.sms.SmsSceneEnum;
 import cn.iocoder.yudao.module.system.framework.sms.SmsCodeProperties;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.time.LocalDateTime;
 
 import static cn.hutool.core.util.RandomUtil.randomInt;

@@ -4,9 +4,9 @@ import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.file.core.client.db.DBFileContentFrameworkDAO;
 import cn.iocoder.yudao.module.infra.dal.dataobject.file.FileContentDO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Repository;
 
+import jakarta.annotation.Resource;
 import java.util.List;
 import java.util.Optional;
 

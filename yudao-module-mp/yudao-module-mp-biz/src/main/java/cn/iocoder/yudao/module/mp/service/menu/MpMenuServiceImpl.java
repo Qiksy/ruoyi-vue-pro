@@ -12,8 +12,6 @@ import cn.iocoder.yudao.module.mp.framework.mp.core.util.MpUtils;
 import cn.iocoder.yudao.module.mp.service.account.MpAccountService;
 import cn.iocoder.yudao.module.mp.service.message.MpMessageService;
 import cn.iocoder.yudao.module.mp.service.message.bo.MpMessageSendOutReqBO;
-import jakarta.annotation.Resource;
-import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.menu.WxMenu;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -24,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
+import jakarta.validation.Validator;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;

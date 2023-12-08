@@ -3,10 +3,10 @@ package cn.iocoder.yudao.module.statistics.service.trade;
 import cn.iocoder.yudao.module.statistics.dal.mysql.trade.AfterSaleStatisticsMapper;
 import cn.iocoder.yudao.module.statistics.service.trade.bo.AfterSaleSummaryRespBO;
 import cn.iocoder.yudao.module.trade.enums.aftersale.AfterSaleStatusEnum;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.time.LocalDateTime;
 
 /**

@@ -13,11 +13,11 @@ import cn.iocoder.yudao.module.statistics.service.trade.bo.AfterSaleSummaryRespB
 import cn.iocoder.yudao.module.statistics.service.trade.bo.TradeOrderSummaryRespBO;
 import cn.iocoder.yudao.module.statistics.service.trade.bo.TradeSummaryRespBO;
 import cn.iocoder.yudao.module.statistics.service.trade.bo.WalletSummaryRespBO;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;

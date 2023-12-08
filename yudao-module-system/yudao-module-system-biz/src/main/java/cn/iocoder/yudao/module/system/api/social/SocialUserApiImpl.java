@@ -4,9 +4,10 @@ import cn.iocoder.yudao.module.system.api.social.dto.SocialUserBindReqDTO;
 import cn.iocoder.yudao.module.system.api.social.dto.SocialUserRespDTO;
 import cn.iocoder.yudao.module.system.api.social.dto.SocialUserUnbindReqDTO;
 import cn.iocoder.yudao.module.system.service.social.SocialUserService;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import jakarta.annotation.Resource;
 
 /**
  * 社交用户的 API 实现类

@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.trade.service.config;
 
 import cn.iocoder.yudao.module.trade.controller.admin.config.vo.TradeConfigSaveReqVO;
 import cn.iocoder.yudao.module.trade.dal.dataobject.config.TradeConfigDO;
+
 import jakarta.validation.Valid;
 
 /**

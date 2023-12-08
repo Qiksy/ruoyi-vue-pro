@@ -4,10 +4,10 @@ import cn.iocoder.yudao.module.bpm.controller.admin.definition.vo.rule.BpmTaskAs
 import cn.iocoder.yudao.module.bpm.controller.admin.definition.vo.rule.BpmTaskAssignRuleRespVO;
 import cn.iocoder.yudao.module.bpm.controller.admin.definition.vo.rule.BpmTaskAssignRuleUpdateReqVO;
 import cn.iocoder.yudao.module.bpm.dal.dataobject.definition.BpmTaskAssignRuleDO;
-import jakarta.validation.Valid;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.springframework.lang.Nullable;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Set;
 

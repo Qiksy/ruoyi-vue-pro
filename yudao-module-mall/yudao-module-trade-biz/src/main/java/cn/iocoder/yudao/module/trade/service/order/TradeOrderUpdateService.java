@@ -10,6 +10,7 @@ import cn.iocoder.yudao.module.trade.controller.app.order.vo.AppTradeOrderSettle
 import cn.iocoder.yudao.module.trade.controller.app.order.vo.AppTradeOrderSettlementRespVO;
 import cn.iocoder.yudao.module.trade.controller.app.order.vo.item.AppTradeOrderItemCommentCreateReqVO;
 import cn.iocoder.yudao.module.trade.dal.dataobject.order.TradeOrderDO;
+
 import jakarta.validation.constraints.NotNull;
 
 /**
@@ -189,7 +190,6 @@ public interface TradeOrderUpdateService {
     void updateOrderCombinationInfo(Long orderId, Long activityId, Long combinationRecordId, Long headId);
 
     // TODO 芋艿：拼团取消，不调这个接口哈；
-
     /**
      * 取消支付订单
      *

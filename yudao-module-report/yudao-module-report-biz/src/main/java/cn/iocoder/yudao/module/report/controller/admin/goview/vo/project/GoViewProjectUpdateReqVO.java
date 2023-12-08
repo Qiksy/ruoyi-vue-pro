@@ -3,8 +3,9 @@ package cn.iocoder.yudao.module.report.controller.admin.goview.vo.project;
 import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.validation.InEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.*;
+
+import jakarta.validation.constraints.*;
 
 @Schema(description = "管理后台 - GoView 项目更新 Request VO")
 @Data

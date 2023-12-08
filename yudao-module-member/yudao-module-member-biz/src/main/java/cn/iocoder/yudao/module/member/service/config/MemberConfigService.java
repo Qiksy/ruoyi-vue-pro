@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.member.service.config;
 
 import cn.iocoder.yudao.module.member.controller.admin.config.vo.MemberConfigSaveReqVO;
 import cn.iocoder.yudao.module.member.dal.dataobject.config.MemberConfigDO;
+
 import jakarta.validation.Valid;
 
 /**

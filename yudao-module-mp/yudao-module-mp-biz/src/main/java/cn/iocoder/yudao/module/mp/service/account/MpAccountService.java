@@ -5,8 +5,8 @@ import cn.iocoder.yudao.module.mp.controller.admin.account.vo.MpAccountCreateReq
 import cn.iocoder.yudao.module.mp.controller.admin.account.vo.MpAccountPageReqVO;
 import cn.iocoder.yudao.module.mp.controller.admin.account.vo.MpAccountUpdateReqVO;
 import cn.iocoder.yudao.module.mp.dal.dataobject.account.MpAccountDO;
-import jakarta.validation.Valid;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;

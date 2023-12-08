@@ -4,9 +4,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.member.controller.admin.level.vo.record.MemberLevelRecordPageReqVO;
 import cn.iocoder.yudao.module.member.dal.dataobject.level.MemberLevelRecordDO;
 import cn.iocoder.yudao.module.member.dal.mysql.level.MemberLevelRecordMapper;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import jakarta.annotation.Resource;
 
 /**
  * 会员等级记录 Service 实现类

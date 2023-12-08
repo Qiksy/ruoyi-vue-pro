@@ -4,49 +4,40 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.extra.pinyin.PinyinUtil;
 import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.datapermission.core.util.DataPermissionUtils;
-import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.infra.api.file.FileApi;
-import cn.iocoder.yudao.module.system.api.user.dto.AdminUserNcDTO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.profile.UserProfileUpdatePasswordReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.profile.UserProfileUpdateReqVO;
-import cn.iocoder.yudao.module.system.controller.admin.user.vo.user.*;
-import cn.iocoder.yudao.module.system.convert.user.UserConvert;
+import cn.iocoder.yudao.module.system.controller.admin.user.vo.user.UserImportExcelVO;
+import cn.iocoder.yudao.module.system.controller.admin.user.vo.user.UserImportRespVO;
+import cn.iocoder.yudao.module.system.controller.admin.user.vo.user.UserPageReqVO;
+import cn.iocoder.yudao.module.system.controller.admin.user.vo.user.UserSaveReqVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.dept.UserPostDO;
-import cn.iocoder.yudao.module.system.dal.dataobject.permission.RoleDO;
-import cn.iocoder.yudao.module.system.dal.dataobject.permission.UserRoleDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.user.AdminUserDO;
 import cn.iocoder.yudao.module.system.dal.mysql.dept.UserPostMapper;
-import cn.iocoder.yudao.module.system.dal.mysql.permission.RoleMapper;
-import cn.iocoder.yudao.module.system.dal.mysql.permission.UserRoleMapper;
 import cn.iocoder.yudao.module.system.dal.mysql.user.AdminUserMapper;
-import cn.iocoder.yudao.module.system.enums.permission.RoleTypeEnum;
 import cn.iocoder.yudao.module.system.service.dept.DeptService;
 import cn.iocoder.yudao.module.system.service.dept.PostService;
 import cn.iocoder.yudao.module.system.service.permission.PermissionService;
 import cn.iocoder.yudao.module.system.service.tenant.TenantService;
-import com.baomidou.dynamic.datasource.annotation.DS;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.annotations.VisibleForTesting;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.annotation.Resource;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
@@ -86,19 +77,9 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Resource
     private FileApi fileApi;
 
-    @Autowired
-    @Lazy
-    private AdminUserService adminUserService;
-
-    @Resource
-    private RoleMapper roleMapper;
-
-    @Resource
-    private UserRoleMapper userRoleMapper;
-
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Long createUser(UserCreateReqVO reqVO) {
+    public Long createUser(UserSaveReqVO createReqVO) {
         // 校验账户配合
         tenantService.handleTenantInfo(tenant -> {
             long count = userMapper.selectCount();
@@ -107,12 +88,12 @@ public class AdminUserServiceImpl implements AdminUserService {
             }
         });
         // 校验正确性
-        validateUserForCreateOrUpdate(null, reqVO.getUsername(), reqVO.getMobile(), reqVO.getEmail(),
-                reqVO.getDeptId(), reqVO.getPostIds());
+        validateUserForCreateOrUpdate(null, createReqVO.getUsername(),
+                createReqVO.getMobile(), createReqVO.getEmail(), createReqVO.getDeptId(), createReqVO.getPostIds());
         // 插入用户
-        AdminUserDO user = UserConvert.INSTANCE.convert(reqVO);
+        AdminUserDO user = BeanUtils.toBean(createReqVO, AdminUserDO.class);
         user.setStatus(CommonStatusEnum.ENABLE.getStatus()); // 默认开启
-        user.setPassword(encodePassword(reqVO.getPassword())); // 加密密码
+        user.setPassword(encodePassword(createReqVO.getPassword())); // 加密密码
         userMapper.insert(user);
         // 插入关联岗位
         if (CollectionUtil.isNotEmpty(user.getPostIds())) {
@@ -124,22 +105,23 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateUser(UserUpdateReqVO reqVO) {
+    public void updateUser(UserSaveReqVO updateReqVO) {
+        updateReqVO.setPassword(null); // 特殊：此处不更新密码
         // 校验正确性
-        validateUserForCreateOrUpdate(reqVO.getId(), reqVO.getUsername(), reqVO.getMobile(), reqVO.getEmail(),
-                reqVO.getDeptId(), reqVO.getPostIds());
+        validateUserForCreateOrUpdate(updateReqVO.getId(), updateReqVO.getUsername(),
+                updateReqVO.getMobile(), updateReqVO.getEmail(), updateReqVO.getDeptId(), updateReqVO.getPostIds());
         // 更新用户
-        AdminUserDO updateObj = UserConvert.INSTANCE.convert(reqVO);
+        AdminUserDO updateObj = BeanUtils.toBean(updateReqVO, AdminUserDO.class);
         userMapper.updateById(updateObj);
         // 更新岗位
-        updateUserPost(reqVO, updateObj);
+        updateUserPost(updateReqVO, updateObj);
     }
 
-    private void updateUserPost(UserUpdateReqVO reqVO, AdminUserDO updateObj) {
+    private void updateUserPost(UserSaveReqVO reqVO, AdminUserDO updateObj) {
         Long userId = reqVO.getId();
         Set<Long> dbPostIds = convertSet(userPostMapper.selectListByUserId(userId), UserPostDO::getPostId);
         // 计算新增和删除的岗位编号
-        Set<Long> postIds = updateObj.getPostIds();
+        Set<Long> postIds = CollUtil.emptyIfNull(updateObj.getPostIds());
         Collection<Long> createPostIds = CollUtil.subtract(postIds, dbPostIds);
         Collection<Long> deletePostIds = CollUtil.subtract(dbPostIds, postIds);
         // 执行新增和删除。对于已经授权的菜单，不用做任何处理
@@ -164,7 +146,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         validateEmailUnique(id, reqVO.getEmail());
         validateMobileUnique(id, reqVO.getMobile());
         // 执行更新
-        userMapper.updateById(UserConvert.INSTANCE.convert(reqVO).setId(id));
+        userMapper.updateById(BeanUtils.toBean(reqVO, AdminUserDO.class).setId(id));
     }
 
     @Override
@@ -178,7 +160,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
-    public String updateUserAvatar(Long id, InputStream avatarFile) throws Exception {
+    public String updateUserAvatar(Long id, InputStream avatarFile) {
         validateUserExists(id);
         // 存储文件
         String avatar = fileApi.createFile(IoUtil.readBytes(avatarFile));
@@ -246,11 +228,6 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
-    public AdminUserDO getUser(String username) {
-        return userMapper.selectByUsername(username);
-    }
-
-    @Override
     public List<AdminUserDO> getUserListByDeptIds(Collection<Long> deptIds) {
         if (CollUtil.isEmpty(deptIds)) {
             return Collections.emptyList();
@@ -296,11 +273,6 @@ public class AdminUserServiceImpl implements AdminUserService {
                 throw exception(USER_IS_DISABLE, user.getNickname());
             }
         });
-    }
-
-    @Override
-    public List<AdminUserDO> getUserList(UserExportReqVO reqVO) {
-        return userMapper.selectList(reqVO, getDeptCondition(reqVO.getDeptId()));
     }
 
     @Override
@@ -442,7 +414,7 @@ public class AdminUserServiceImpl implements AdminUserService {
             // 判断如果不存在，在进行插入
             AdminUserDO existUser = userMapper.selectByUsername(importUser.getUsername());
             if (existUser == null) {
-                userMapper.insert(UserConvert.INSTANCE.convert(importUser)
+                userMapper.insert(BeanUtils.toBean(importUser, AdminUserDO.class)
                         .setPassword(encodePassword(userInitPassword)).setPostIds(new HashSet<>())); // 设置默认密码及空岗位编号数组
                 respVO.getCreateUsernames().add(importUser.getUsername());
                 return;
@@ -452,7 +424,7 @@ public class AdminUserServiceImpl implements AdminUserService {
                 respVO.getFailureUsernames().put(importUser.getUsername(), USER_USERNAME_EXISTS.getMsg());
                 return;
             }
-            AdminUserDO updateUser = UserConvert.INSTANCE.convert(importUser);
+            AdminUserDO updateUser = BeanUtils.toBean(importUser, AdminUserDO.class);
             updateUser.setId(existUser.getId());
             userMapper.updateById(updateUser);
             respVO.getUpdateUsernames().add(importUser.getUsername());
@@ -480,101 +452,4 @@ public class AdminUserServiceImpl implements AdminUserService {
         return passwordEncoder.encode(password);
     }
 
-
-    @Override
-    public AdminUserDO getUserByPkPsndoc(String pkPsndoc) {
-
-        //查询用户
-        LambdaQueryWrapperX<AdminUserDO> lambdaQueryWrapper = new LambdaQueryWrapperX<AdminUserDO>()
-                .eq(AdminUserDO::getPkPsndoc, pkPsndoc);
-        return userMapper.selectOne(lambdaQueryWrapper);
-    }
-
-    @Override
-    public void syncUser() {
-        //查询nc用户
-        List<AdminUserNcDTO> userListByNc = adminUserService.getUserListByNc();
-        //处理数据
-        List<AdminUserDO> sysUserList =  new ArrayList<>();
-
-        List<RoleDO> roleDOList = roleMapper.selectList();  //角色列表
-
-
-        List<UserRoleDO> userRoleDOList = new ArrayList<>(); //用户与角色的关系
-
-        Map<String, String>  roleMap = new HashMap<>(); //角色名字和id的映射
-
-
-        for (AdminUserNcDTO ncUser : userListByNc) {
-            AdminUserDO adminUserDO = new AdminUserDO();
-            adminUserDO.setNickname(ncUser.getName());
-            adminUserDO.setPkPsndoc(ncUser.getPkPsndoc());
-            adminUserDO.setUsername(PinyinUtil.getPinyin(ncUser.getName(),""));
-            adminUserDO.setDeptId(Long.valueOf(ncUser.getDeptcode())); //设置部门
-            adminUserDO.setStatus(CommonStatusEnum.ENABLE.getStatus());
-            adminUserDO.setPassword(encodePassword(userInitPassword)); //设置默认密码
-            sysUserList.add(adminUserDO);
-            roleMap.put(ncUser.getPkPsndoc(),ncUser.getPostName());
-        }
-
-
-        for (AdminUserDO adminUserDO : sysUserList) {
-            // 查询是否已经存在这个用户
-            LambdaQueryWrapperX<AdminUserDO> lambdaQuery = new LambdaQueryWrapperX<>();
-            lambdaQuery.eq(AdminUserDO::getPkPsndoc, adminUserDO.getPkPsndoc());
-            AdminUserDO temp = userMapper.selectOne(lambdaQuery);
-            if (temp == null) {
-                // 不存在，新增
-
-                //新增也要分情况，如果已经有 username相同的，pkPsndoc不同的客户，我们需要给他加上一个后缀
-                lambdaQuery = new LambdaQueryWrapperX<>();
-                lambdaQuery.likeLeft(AdminUserDO::getUsername, adminUserDO.getUsername());
-                Long count = userMapper.selectCount(lambdaQuery);
-
-                if (count==0){
-                    //没有相同的username
-                    userMapper.insert(adminUserDO);
-                    // 增用户角色关系
-                    // 根据postname，找出第一个角色
-                    String postname = roleMap.get(adminUserDO.getPkPsndoc());
-                    // 这里有可能报错 晚点处理
-                    RoleDO roleDO = roleDOList.stream().filter(role -> role.getName().equals(postname)).findFirst().get();
-                    UserRoleDO userRoleDO = new UserRoleDO();
-                    userRoleDO.setUserId(adminUserDO.getId());
-                    userRoleDO.setRoleId(roleDO.getId());
-
-                    userRoleDOList.add(userRoleDO);
-
-                }else {
-                    //有相同的username
-                    adminUserDO.setUsername(adminUserDO.getUsername()+count);
-                    userMapper.insert(adminUserDO);
-
-                    // 增用户角色关系
-                    // 根据postname，找出第一个角色
-                    String postname = roleMap.get(adminUserDO.getPkPsndoc());
-                    // 这里有可能报错 晚点处理
-                    RoleDO roleDO = roleDOList.stream().filter(role -> role.getName().equals(postname)).findFirst().get();
-                    UserRoleDO userRoleDO = new UserRoleDO();
-                    userRoleDO.setUserId(adminUserDO.getId());
-                    userRoleDO.setRoleId(roleDO.getId());
-
-                    userRoleDOList.add(userRoleDO);
-                }
-            } else {
-                // 存在，更新以下部门就好了
-                temp.setDeptId(adminUserDO.getDeptId());
-                userMapper.updateById(temp);
-            }
-        }
-
-        userRoleMapper.insertBatch(userRoleDOList);
-
-    }
-
-    @Override
-    @DS("nc65")
-    public List<AdminUserNcDTO> getUserListByNc() {
-        return userMapper.selectUserFromNC();
-    }
 }

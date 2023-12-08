@@ -2,9 +2,10 @@ package cn.iocoder.yudao.module.pay.api.transfer;
 
 import cn.iocoder.yudao.module.pay.api.transfer.dto.PayTransferCreateReqDTO;
 import cn.iocoder.yudao.module.pay.service.transfer.PayTransferService;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import jakarta.annotation.Resource;
 
 /**
  * 转账单 API 实现类

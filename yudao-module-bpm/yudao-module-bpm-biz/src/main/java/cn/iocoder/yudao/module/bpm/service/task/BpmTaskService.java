@@ -4,9 +4,9 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.module.bpm.controller.admin.task.vo.task.*;
 import cn.iocoder.yudao.module.bpm.dal.dataobject.task.BpmTaskExtDO;
-import jakarta.validation.Valid;
 import org.flowable.task.api.Task;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -27,8 +27,6 @@ public interface BpmTaskService {
      */
     PageResult<BpmTaskTodoPageItemRespVO> getTodoTaskPage(Long userId, BpmTaskTodoPageReqVO pageReqVO);
 
-    PageResult<BpmTaskTodoPageItemRespVO> getTodoTaskPage2(Long userId, BpmTaskTodoPageReqVO pageVO);
-
     /**
      * 获得已办的流程任务分页
      *
@@ -37,15 +35,6 @@ public interface BpmTaskService {
      * @return 流程任务分页
      */
     PageResult<BpmTaskDonePageItemRespVO> getDoneTaskPage(Long userId, BpmTaskDonePageReqVO pageReqVO);
-
-    /**
-     * 获得已办的流程任务分页
-     *
-     * @param userId    用户编号
-     * @param pageReqVO 分页请求
-     * @return 流程任务分页
-     */
-    PageResult<BpmTaskDonePageItemRespVO> getDoneTaskPage2(Long userId, BpmTaskDonePageReqVO pageReqVO);
 
     /**
      * 获得流程任务 Map

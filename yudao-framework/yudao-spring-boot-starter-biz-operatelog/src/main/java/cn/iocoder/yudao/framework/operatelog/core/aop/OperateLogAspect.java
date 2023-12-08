@@ -14,11 +14,8 @@ import cn.iocoder.yudao.framework.operatelog.core.service.OperateLog;
 import cn.iocoder.yudao.framework.operatelog.core.service.OperateLogFrameworkService;
 import cn.iocoder.yudao.framework.web.core.util.WebFrameworkUtils;
 import com.google.common.collect.Maps;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -30,6 +27,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.time.LocalDateTime;
@@ -238,7 +238,8 @@ public class OperateLogAspect {
         }
         operateLogObj.setDuration((int) (LocalDateTimeUtil.between(startTime, LocalDateTime.now()).toMillis()));
         // （正常）处理 resultCode 和 resultMsg 字段
-        if (result instanceof CommonResult<?> commonResult) {
+        if (result instanceof CommonResult) {
+            CommonResult<?> commonResult = (CommonResult<?>) result;
             operateLogObj.setResultCode(commonResult.getCode());
             operateLogObj.setResultMsg(commonResult.getMsg());
         } else {
@@ -295,13 +296,18 @@ public class OperateLogAspect {
         if (requestMethod == null) {
             return null;
         }
-        return switch (requestMethod) {
-            case GET -> OperateTypeEnum.GET;
-            case POST -> OperateTypeEnum.CREATE;
-            case PUT -> OperateTypeEnum.UPDATE;
-            case DELETE -> OperateTypeEnum.DELETE;
-            default -> OperateTypeEnum.OTHER;
-        };
+        switch (requestMethod) {
+            case GET:
+                return OperateTypeEnum.GET;
+            case POST:
+                return OperateTypeEnum.CREATE;
+            case PUT:
+                return OperateTypeEnum.UPDATE;
+            case DELETE:
+                return OperateTypeEnum.DELETE;
+            default:
+                return OperateTypeEnum.OTHER;
+        }
     }
 
     private static RequestMethod[] obtainRequestMethod(ProceedingJoinPoint joinPoint) {
@@ -338,8 +344,8 @@ public class OperateLogAspect {
 
     private static String obtainResultData(Object result) {
         // TODO 提升：结果脱敏和忽略
-        if (result instanceof CommonResult commonResult) {
-            result = commonResult.getData();
+        if (result instanceof CommonResult) {
+            result = ((CommonResult<?>) result).getData();
         }
         return JsonUtils.toJsonString(result);
     }

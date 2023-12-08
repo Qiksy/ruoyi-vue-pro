@@ -7,9 +7,9 @@ import cn.iocoder.yudao.module.promotion.api.bargain.BargainRecordApi;
 import cn.iocoder.yudao.module.trade.dal.dataobject.order.TradeOrderDO;
 import cn.iocoder.yudao.module.trade.dal.dataobject.order.TradeOrderItemDO;
 import cn.iocoder.yudao.module.trade.enums.order.TradeOrderTypeEnum;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.Resource;
 import java.util.List;
 
 /**

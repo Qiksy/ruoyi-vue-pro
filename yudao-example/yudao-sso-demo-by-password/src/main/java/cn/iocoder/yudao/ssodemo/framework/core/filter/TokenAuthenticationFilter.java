@@ -5,15 +5,15 @@ import cn.iocoder.yudao.ssodemo.client.dto.CommonResult;
 import cn.iocoder.yudao.ssodemo.client.dto.oauth2.OAuth2CheckTokenRespDTO;
 import cn.iocoder.yudao.ssodemo.framework.core.LoginUser;
 import cn.iocoder.yudao.ssodemo.framework.core.util.SecurityUtils;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
+
 import jakarta.annotation.Resource;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
 
 /**

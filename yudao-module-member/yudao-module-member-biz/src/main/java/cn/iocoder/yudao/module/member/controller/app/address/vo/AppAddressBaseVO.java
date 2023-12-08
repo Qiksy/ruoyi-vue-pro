@@ -1,8 +1,8 @@
 package cn.iocoder.yudao.module.member.controller.app.address.vo;
-
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+
+import jakarta.validation.constraints.NotNull;
 
 // TODO 芋艿：example 缺失
 /**

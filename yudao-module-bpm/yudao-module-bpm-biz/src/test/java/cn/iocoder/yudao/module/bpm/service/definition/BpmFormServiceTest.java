@@ -10,10 +10,10 @@ import cn.iocoder.yudao.module.bpm.controller.admin.definition.vo.form.BpmFormUp
 import cn.iocoder.yudao.module.bpm.dal.dataobject.definition.BpmFormDO;
 import cn.iocoder.yudao.module.bpm.dal.mysql.definition.BpmFormMapper;
 import cn.iocoder.yudao.module.bpm.service.definition.dto.BpmFormFieldRespDTO;
-import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Import;
 
+import jakarta.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

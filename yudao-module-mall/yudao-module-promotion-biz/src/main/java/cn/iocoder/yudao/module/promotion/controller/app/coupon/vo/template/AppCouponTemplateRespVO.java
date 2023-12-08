@@ -1,9 +1,9 @@
 package cn.iocoder.yudao.module.promotion.controller.app.coupon.vo.template;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Min;
 import lombok.Data;
 
+import jakarta.validation.constraints.Min;
 import java.time.LocalDateTime;
 
 @Schema(description = "用户 App - 优惠劵模板 Response VO")

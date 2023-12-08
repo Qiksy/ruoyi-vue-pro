@@ -2,9 +2,10 @@ package cn.iocoder.yudao.module.system.api.mail;
 
 import cn.iocoder.yudao.module.system.api.mail.dto.MailSendSingleToUserReqDTO;
 import cn.iocoder.yudao.module.system.service.mail.MailSendService;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import jakarta.annotation.Resource;
 
 /**
  * 邮件发送 API 实现类

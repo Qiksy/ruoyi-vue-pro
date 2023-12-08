@@ -2,14 +2,15 @@ package cn.iocoder.yudao.module.member.controller.app.user.vo;
 
 import cn.iocoder.yudao.framework.common.validation.Mobile;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 
 @Schema(description = "用户 APP - 修改手机 Request VO")
 @Data

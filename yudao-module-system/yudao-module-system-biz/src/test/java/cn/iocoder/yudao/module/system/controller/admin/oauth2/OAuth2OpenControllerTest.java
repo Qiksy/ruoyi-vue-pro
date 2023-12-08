@@ -21,12 +21,12 @@ import cn.iocoder.yudao.module.system.service.oauth2.OAuth2ApproveService;
 import cn.iocoder.yudao.module.system.service.oauth2.OAuth2ClientService;
 import cn.iocoder.yudao.module.system.service.oauth2.OAuth2GrantService;
 import cn.iocoder.yudao.module.system.service.oauth2.OAuth2TokenService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;

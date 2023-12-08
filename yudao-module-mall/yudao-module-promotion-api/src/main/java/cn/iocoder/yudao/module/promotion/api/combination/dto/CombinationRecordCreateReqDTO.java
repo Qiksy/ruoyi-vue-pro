@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.promotion.api.combination.dto;
 
 import lombok.Data;
+
 import jakarta.validation.constraints.NotNull;
 
 /**

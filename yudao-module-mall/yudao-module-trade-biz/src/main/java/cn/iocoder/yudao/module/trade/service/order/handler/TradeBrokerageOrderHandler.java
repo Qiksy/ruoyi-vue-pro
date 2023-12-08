@@ -16,9 +16,9 @@ import cn.iocoder.yudao.module.trade.enums.brokerage.BrokerageRecordBizTypeEnum;
 import cn.iocoder.yudao.module.trade.service.brokerage.BrokerageRecordService;
 import cn.iocoder.yudao.module.trade.service.brokerage.BrokerageUserService;
 import cn.iocoder.yudao.module.trade.service.brokerage.bo.BrokerageAddReqBO;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.Resource;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;

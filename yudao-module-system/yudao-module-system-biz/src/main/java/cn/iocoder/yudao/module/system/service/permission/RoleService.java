@@ -1,13 +1,11 @@
 package cn.iocoder.yudao.module.system.service.permission;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.system.controller.admin.permission.vo.role.RoleCreateReqVO;
-import cn.iocoder.yudao.module.system.controller.admin.permission.vo.role.RoleExportReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.permission.vo.role.RolePageReqVO;
-import cn.iocoder.yudao.module.system.controller.admin.permission.vo.role.RoleUpdateReqVO;
+import cn.iocoder.yudao.module.system.controller.admin.permission.vo.role.RoleSaveReqVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.permission.RoleDO;
-import jakarta.validation.Valid;
 
+import jakarta.validation.Valid;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -22,18 +20,18 @@ public interface RoleService {
     /**
      * 创建角色
      *
-     * @param reqVO 创建角色信息
+     * @param createReqVO 创建角色信息
      * @param type 角色类型
      * @return 角色编号
      */
-    Long createRole(@Valid RoleCreateReqVO reqVO, Integer type);
+    Long createRole(@Valid RoleSaveReqVO createReqVO, Integer type);
 
     /**
      * 更新角色
      *
-     * @param reqVO 更新角色信息
+     * @param updateReqVO 更新角色信息
      */
-    void updateRole(@Valid RoleUpdateReqVO reqVO);
+    void updateRole(@Valid RoleSaveReqVO updateReqVO);
 
     /**
      * 删除角色
@@ -115,14 +113,6 @@ public interface RoleService {
     PageResult<RoleDO> getRolePage(RolePageReqVO reqVO);
 
     /**
-     * 获得角色列表
-     *
-     * @param reqVO 列表查询
-     * @return 角色列表
-     */
-    List<RoleDO> getRoleList(RoleExportReqVO reqVO);
-
-    /**
      * 判断角色编号数组中，是否有管理员
      *
      * @param ids 角色编号数组
@@ -139,14 +129,4 @@ public interface RoleService {
      */
     void validateRoleList(Collection<Long> ids);
 
-    /**
-     * 从nc65提取岗位名称，然后同步到本地
-     *
-     */
-    void syncRole();
-
-    /**
-     * 从NC65中获取岗位名称列表
-     */
-    List<String> getRoleNameListFromNc65();
 }

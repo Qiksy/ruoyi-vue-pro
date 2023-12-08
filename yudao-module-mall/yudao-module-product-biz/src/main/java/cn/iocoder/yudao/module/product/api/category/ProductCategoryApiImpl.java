@@ -1,10 +1,10 @@
 package cn.iocoder.yudao.module.product.api.category;
 
 import cn.iocoder.yudao.module.product.service.category.ProductCategoryService;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.util.Collection;
 
 /**

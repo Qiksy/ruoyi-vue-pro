@@ -5,10 +5,10 @@ import cn.iocoder.yudao.module.member.controller.admin.config.vo.MemberConfigSav
 import cn.iocoder.yudao.module.member.convert.config.MemberConfigConvert;
 import cn.iocoder.yudao.module.member.dal.dataobject.config.MemberConfigDO;
 import cn.iocoder.yudao.module.member.dal.mysql.config.MemberConfigMapper;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.util.List;
 
 /**

@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.member.service.auth;
 
 import cn.iocoder.yudao.framework.common.enums.TerminalEnum;
 import cn.iocoder.yudao.module.member.controller.app.auth.vo.*;
+
 import jakarta.validation.Valid;
 
 /**

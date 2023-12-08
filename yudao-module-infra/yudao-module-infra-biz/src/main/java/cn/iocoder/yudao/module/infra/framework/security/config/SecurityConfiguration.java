@@ -6,8 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
-import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 
 /**
  * Infra 模块的 Security 配置
@@ -18,36 +17,32 @@ public class SecurityConfiguration {
     @Value("${spring.boot.admin.context-path:''}")
     private String adminSeverContextPath;
 
-    @Bean
-    MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
-        return new MvcRequestMatcher.Builder(introspector);
-    }
-
     @Bean("infraAuthorizeRequestsCustomizer")
-    public AuthorizeRequestsCustomizer authorizeRequestsCustomizer(MvcRequestMatcher.Builder mvc) {
+    public AuthorizeRequestsCustomizer authorizeRequestsCustomizer() {
         return new AuthorizeRequestsCustomizer() {
 
             @Override
             public void customize(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry registry) {
                 // Swagger 接口文档
-                registry.requestMatchers(mvc.pattern("/v3/api-docs/**")).permitAll()
-                        .requestMatchers(mvc.pattern("/swagger-ui.html")).permitAll()
-                        .requestMatchers(mvc.pattern("/swagger-ui/**")).permitAll()
-                        .requestMatchers(mvc.pattern("/swagger-resources/**")).anonymous()
-                        .requestMatchers(mvc.pattern("/webjars/**")).anonymous()
-                        .requestMatchers(mvc.pattern("/*/api-docs")).anonymous();
+                registry.requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui.html").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/swagger-resources/**").permitAll()
+                        .requestMatchers("/webjars/**").permitAll()
+                        .requestMatchers("/*/api-docs").permitAll();
                 // Spring Boot Actuator 的安全配置
-                registry.requestMatchers(mvc.pattern("/actuator")).anonymous()
-                        .requestMatchers(mvc.pattern("/actuator/**")).anonymous();
+                registry.requestMatchers("/actuator").permitAll()
+                        .requestMatchers("/actuator/**").permitAll();
                 // Druid 监控
-                registry.requestMatchers(mvc.pattern("/druid/**")).anonymous();
+                registry.requestMatchers("/druid/**").permitAll();
                 // Spring Boot Admin Server 的安全配置
-                registry.requestMatchers(mvc.pattern(adminSeverContextPath)).anonymous()
-                        .requestMatchers(mvc.pattern(adminSeverContextPath + "/**")).anonymous();
+                registry.requestMatchers(adminSeverContextPath).permitAll()
+                        .requestMatchers(adminSeverContextPath + "/**").permitAll();
                 // 文件读取
-                registry.requestMatchers(mvc.pattern(buildAdminApi("/infra/file/*/get/**"))).permitAll();
+                registry.requestMatchers(buildAdminApi("/infra/file/*/get/**")).permitAll();
             }
 
         };
     }
+
 }

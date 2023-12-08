@@ -10,10 +10,11 @@ import cn.iocoder.yudao.module.pay.dal.mysql.wallet.PayWalletTransactionMapper;
 import cn.iocoder.yudao.module.pay.dal.redis.no.PayNoRedisDAO;
 import cn.iocoder.yudao.module.pay.enums.wallet.PayWalletBizTypeEnum;
 import cn.iocoder.yudao.module.pay.service.wallet.bo.WalletTransactionCreateReqBO;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import jakarta.annotation.Resource;
 
 /**
  * 钱包流水 Service 实现类

@@ -24,9 +24,9 @@ import cn.iocoder.yudao.module.trade.framework.delivery.core.client.dto.ExpressT
 import cn.iocoder.yudao.module.trade.framework.delivery.core.client.dto.ExpressTrackRespDTO;
 import cn.iocoder.yudao.module.trade.service.delivery.DeliveryExpressService;
 import org.springframework.cache.annotation.Cacheable;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.Resource;
 import java.util.*;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;

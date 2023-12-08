@@ -20,11 +20,11 @@ import cn.iocoder.yudao.module.promotion.enums.coupon.CouponStatusEnum;
 import cn.iocoder.yudao.module.promotion.enums.coupon.CouponTakeTypeEnum;
 import cn.iocoder.yudao.module.promotion.enums.coupon.CouponTemplateValidityTypeEnum;
 import lombok.extern.slf4j.Slf4j;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -111,7 +111,7 @@ public class CouponServiceImpl implements CouponService {
             throw exception(COUPON_NOT_EXISTS);
         }
         // 校验状态
-        if (ObjectUtil.notEqual(coupon.getTemplateId(), CouponStatusEnum.USED.getStatus())) {
+        if (ObjectUtil.notEqual(coupon.getStatus(), CouponStatusEnum.USED.getStatus())) {
             throw exception(COUPON_STATUS_NOT_USED);
         }
 

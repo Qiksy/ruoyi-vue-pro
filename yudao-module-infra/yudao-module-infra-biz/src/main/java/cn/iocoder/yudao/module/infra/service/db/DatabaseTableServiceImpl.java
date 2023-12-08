@@ -10,9 +10,9 @@ import com.baomidou.mybatisplus.generator.config.StrategyConfig;
 import com.baomidou.mybatisplus.generator.config.builder.ConfigBuilder;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.config.rules.DateType;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.Resource;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;

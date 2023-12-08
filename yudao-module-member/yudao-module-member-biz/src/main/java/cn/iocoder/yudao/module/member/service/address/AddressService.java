@@ -3,8 +3,8 @@ package cn.iocoder.yudao.module.member.service.address;
 import cn.iocoder.yudao.module.member.controller.app.address.vo.AppAddressCreateReqVO;
 import cn.iocoder.yudao.module.member.controller.app.address.vo.AppAddressUpdateReqVO;
 import cn.iocoder.yudao.module.member.dal.dataobject.address.MemberAddressDO;
-import jakarta.validation.Valid;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 /**

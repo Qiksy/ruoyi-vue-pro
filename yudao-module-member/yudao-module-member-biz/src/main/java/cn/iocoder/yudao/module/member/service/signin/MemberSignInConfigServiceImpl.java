@@ -5,10 +5,10 @@ import cn.iocoder.yudao.module.member.controller.admin.signin.vo.config.MemberSi
 import cn.iocoder.yudao.module.member.convert.signin.MemberSignInConfigConvert;
 import cn.iocoder.yudao.module.member.dal.dataobject.signin.MemberSignInConfigDO;
 import cn.iocoder.yudao.module.member.dal.mysql.signin.MemberSignInConfigMapper;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.util.Comparator;
 import java.util.List;
 

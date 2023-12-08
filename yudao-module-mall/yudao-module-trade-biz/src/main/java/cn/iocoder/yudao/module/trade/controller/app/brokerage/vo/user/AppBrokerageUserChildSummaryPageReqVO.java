@@ -3,9 +3,10 @@ package cn.iocoder.yudao.module.trade.controller.app.brokerage.vo.user;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.SortingField;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
+
+import jakarta.validation.constraints.NotNull;
 
 @Schema(description = "用户 App - 下级分销统计分页 Request VO")
 @Data

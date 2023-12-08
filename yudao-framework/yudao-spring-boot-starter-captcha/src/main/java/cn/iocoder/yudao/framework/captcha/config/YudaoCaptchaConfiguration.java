@@ -4,10 +4,11 @@ import cn.iocoder.yudao.framework.captcha.core.service.RedisCaptchaServiceImpl;
 import com.xingyuv.captcha.properties.AjCaptchaProperties;
 import com.xingyuv.captcha.service.CaptchaCacheService;
 import com.xingyuv.captcha.service.impl.CaptchaServiceFactory;
-import jakarta.annotation.Resource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.StringRedisTemplate;
+
+import jakarta.annotation.Resource;
 
 @AutoConfiguration
 public class YudaoCaptchaConfiguration {

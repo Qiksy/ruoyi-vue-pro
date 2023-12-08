@@ -2,9 +2,10 @@ package cn.iocoder.yudao.module.promotion.api.seckill;
 
 import cn.iocoder.yudao.module.promotion.api.seckill.dto.SeckillValidateJoinRespDTO;
 import cn.iocoder.yudao.module.promotion.service.seckill.SeckillActivityService;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import jakarta.annotation.Resource;
 
 /**
  * 秒杀活动接口 Api 接口实现类

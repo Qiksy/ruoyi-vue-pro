@@ -5,9 +5,10 @@ import cn.iocoder.yudao.module.mp.controller.admin.message.vo.message.MpMessageP
 import cn.iocoder.yudao.module.mp.controller.admin.message.vo.message.MpMessageSendReqVO;
 import cn.iocoder.yudao.module.mp.dal.dataobject.message.MpMessageDO;
 import cn.iocoder.yudao.module.mp.service.message.bo.MpMessageSendOutReqBO;
-import jakarta.validation.Valid;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlMessage;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlOutMessage;
+
+import jakarta.validation.Valid;
 
 /**
  * 公众号消息 Service 接口

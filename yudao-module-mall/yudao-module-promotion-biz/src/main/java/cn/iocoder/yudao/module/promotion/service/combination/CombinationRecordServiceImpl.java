@@ -25,12 +25,12 @@ import cn.iocoder.yudao.module.promotion.enums.combination.CombinationRecordStat
 import cn.iocoder.yudao.module.trade.api.order.TradeOrderApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
-import jakarta.annotation.Nullable;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Nullable;
+import jakarta.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.*;
 

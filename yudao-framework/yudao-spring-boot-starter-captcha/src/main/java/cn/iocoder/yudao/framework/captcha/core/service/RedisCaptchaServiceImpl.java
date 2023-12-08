@@ -1,11 +1,11 @@
 package cn.iocoder.yudao.framework.captcha.core.service;
 
 import com.xingyuv.captcha.service.CaptchaCacheService;
-import jakarta.annotation.Resource;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
+import jakarta.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
 /**

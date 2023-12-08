@@ -2,10 +2,10 @@ package cn.iocoder.yudao.module.promotion.api.bargain;
 
 import cn.iocoder.yudao.module.promotion.api.bargain.dto.BargainValidateJoinRespDTO;
 import cn.iocoder.yudao.module.promotion.service.bargain.BargainRecordService;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 
 /**
  * 砍价活动 API 实现类

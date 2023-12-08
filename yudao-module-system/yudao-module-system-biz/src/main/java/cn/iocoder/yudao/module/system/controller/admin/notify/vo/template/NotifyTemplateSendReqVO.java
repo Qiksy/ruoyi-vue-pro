@@ -1,10 +1,10 @@
 package cn.iocoder.yudao.module.system.controller.admin.notify.vo.template;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.util.Map;
 
 @Schema(description = "管理后台 - 站内信模板的发送 Request VO")
@@ -25,4 +25,5 @@ public class NotifyTemplateSendReqVO {
 
     @Schema(description = "模板参数")
     private Map<String, Object> templateParams;
+
 }

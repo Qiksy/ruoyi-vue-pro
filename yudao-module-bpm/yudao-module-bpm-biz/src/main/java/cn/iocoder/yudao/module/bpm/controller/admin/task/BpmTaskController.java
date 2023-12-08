@@ -7,12 +7,12 @@ import cn.iocoder.yudao.module.bpm.service.task.BpmTaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
@@ -34,25 +34,11 @@ public class BpmTaskController {
         return success(taskService.getTodoTaskPage(getLoginUserId(), pageVO));
     }
 
-    @GetMapping("todo-page2")
-    @Operation(summary = "获取 Todo 待办任务分页")
-    @PreAuthorize("@ss.hasPermission('bpm:task:query')")
-    public CommonResult<PageResult<BpmTaskTodoPageItemRespVO>> getTodoTaskPage2(@Valid BpmTaskTodoPageReqVO pageVO) {
-        return success(taskService.getTodoTaskPage2(getLoginUserId(), pageVO));
-    }
-
     @GetMapping("done-page")
     @Operation(summary = "获取 Done 已办任务分页")
     @PreAuthorize("@ss.hasPermission('bpm:task:query')")
     public CommonResult<PageResult<BpmTaskDonePageItemRespVO>> getDoneTaskPage(@Valid BpmTaskDonePageReqVO pageVO) {
         return success(taskService.getDoneTaskPage(getLoginUserId(), pageVO));
-    }
-
-    @GetMapping("done-page2")
-    @Operation(summary = "获取 Done 已办任务分页")
-    @PreAuthorize("@ss.hasPermission('bpm:task:query')")
-    public CommonResult<PageResult<BpmTaskDonePageItemRespVO>> getDoneTaskPage2(@Valid BpmTaskDonePageReqVO pageVO) {
-        return success(taskService.getDoneTaskPage2(getLoginUserId(), pageVO));
     }
 
     @GetMapping("/list-by-process-instance-id")

@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.promotion.api.combination;
 import cn.iocoder.yudao.module.promotion.api.combination.dto.CombinationRecordCreateReqDTO;
 import cn.iocoder.yudao.module.promotion.api.combination.dto.CombinationRecordCreateRespDTO;
 import cn.iocoder.yudao.module.promotion.api.combination.dto.CombinationValidateJoinRespDTO;
+
 import jakarta.validation.Valid;
 
 /**

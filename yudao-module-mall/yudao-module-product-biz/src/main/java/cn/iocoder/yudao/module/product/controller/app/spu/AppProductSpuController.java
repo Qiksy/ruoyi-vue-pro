@@ -20,16 +20,17 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
@@ -63,6 +64,25 @@ public class AppProductSpuController {
             @RequestParam("recommendType") String recommendType,
             @RequestParam(value = "count", defaultValue = "10") Integer count) {
         List<ProductSpuDO> list = productSpuService.getSpuList(recommendType, count);
+        if (CollUtil.isEmpty(list)) {
+            return success(Collections.emptyList());
+        }
+
+        // 拼接返回
+        List<AppProductSpuPageRespVO> voList = ProductSpuConvert.INSTANCE.convertListForGetSpuList(list);
+        // 处理 vip 价格
+        MemberLevelRespDTO memberLevel = getMemberLevel();
+        voList.forEach(vo -> vo.setVipPrice(calculateVipPrice(vo.getPrice(), memberLevel)));
+        return success(voList);
+    }
+
+    @GetMapping("/list-by-ids")
+    @Operation(summary = "获得商品 SPU 列表")
+    @Parameters({
+            @Parameter(name = "ids", description = "编号列表", required = true)
+    })
+    public CommonResult<List<AppProductSpuPageRespVO>> getSpuList(@RequestParam("ids") Set<Long> ids) {
+        List<ProductSpuDO> list = productSpuService.getSpuList(ids);
         if (CollUtil.isEmpty(list)) {
             return success(Collections.emptyList());
         }

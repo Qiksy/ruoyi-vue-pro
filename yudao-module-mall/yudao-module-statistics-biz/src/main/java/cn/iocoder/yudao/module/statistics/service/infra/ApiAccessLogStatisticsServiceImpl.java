@@ -1,10 +1,10 @@
 package cn.iocoder.yudao.module.statistics.service.infra;
 
 import cn.iocoder.yudao.module.statistics.dal.mysql.infra.ApiAccessLogStatisticsMapper;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.time.LocalDateTime;
 
 /**

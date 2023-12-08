@@ -1,8 +1,9 @@
 package cn.iocoder.yudao.module.product.controller.admin.property.vo.property;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * 商品属性项 Base VO，提供给添加、修改、详细的子 VO 使用

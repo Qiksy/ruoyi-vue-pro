@@ -3,9 +3,10 @@ package cn.iocoder.yudao.module.promotion.controller.admin.decorate.vo;
 import cn.iocoder.yudao.framework.common.validation.InEnum;
 import cn.iocoder.yudao.module.promotion.enums.decorate.DecoratePageEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 
 @Schema(description = "管理后台 - 页面装修的保存 Request VO ")
 @Data

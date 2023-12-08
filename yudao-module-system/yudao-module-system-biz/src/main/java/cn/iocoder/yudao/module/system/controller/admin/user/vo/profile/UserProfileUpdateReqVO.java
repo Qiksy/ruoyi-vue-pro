@@ -1,10 +1,11 @@
 package cn.iocoder.yudao.module.system.controller.admin.user.vo.profile;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 
 
 @Schema(description = "管理后台 - 用户个人信息更新 Request VO")

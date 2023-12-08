@@ -1,12 +1,13 @@
 package cn.iocoder.yudao.module.system.api.sms;
 
+import cn.iocoder.yudao.module.system.api.sms.dto.code.SmsCodeValidateReqDTO;
 import cn.iocoder.yudao.module.system.api.sms.dto.code.SmsCodeSendReqDTO;
 import cn.iocoder.yudao.module.system.api.sms.dto.code.SmsCodeUseReqDTO;
-import cn.iocoder.yudao.module.system.api.sms.dto.code.SmsCodeValidateReqDTO;
 import cn.iocoder.yudao.module.system.service.sms.SmsCodeService;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import jakarta.annotation.Resource;
 
 /**
  * 短信验证码 API 实现类

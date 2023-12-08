@@ -13,10 +13,11 @@ import com.google.common.collect.Maps;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.annotation.Resource;
 
 import java.util.Map;
 import java.util.Objects;
@@ -49,7 +50,8 @@ public class AppPayOrderController {
     public CommonResult<AppPayOrderSubmitRespVO> submitPayOrder(@RequestBody AppPayOrderSubmitReqVO reqVO) {
         // 1. 钱包支付事，需要额外传 user_id 和 user_type
         if (Objects.equals(reqVO.getChannelCode(), PayChannelEnum.WALLET.getCode())) {
-            Map<String, String> channelExtras = reqVO.getChannelExtras() == null ? Maps.newHashMapWithExpectedSize(2) : reqVO.getChannelExtras();
+            Map<String, String> channelExtras = reqVO.getChannelExtras() == null ?
+                    Maps.newHashMapWithExpectedSize(2) : reqVO.getChannelExtras();
             channelExtras.put(WalletPayClient.USER_ID_KEY, String.valueOf(getLoginUserId()));
             channelExtras.put(WalletPayClient.USER_TYPE_KEY, String.valueOf(getLoginUserType()));
             reqVO.setChannelExtras(channelExtras);

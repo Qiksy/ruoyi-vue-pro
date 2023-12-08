@@ -6,11 +6,11 @@ import cn.iocoder.yudao.module.member.controller.app.address.vo.AppAddressUpdate
 import cn.iocoder.yudao.module.member.convert.address.AddressConvert;
 import cn.iocoder.yudao.module.member.dal.dataobject.address.MemberAddressDO;
 import cn.iocoder.yudao.module.member.dal.mysql.address.MemberAddressMapper;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;

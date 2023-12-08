@@ -10,11 +10,11 @@ import cn.iocoder.yudao.module.product.convert.category.ProductCategoryConvert;
 import cn.iocoder.yudao.module.product.dal.dataobject.category.ProductCategoryDO;
 import cn.iocoder.yudao.module.product.dal.mysql.category.ProductCategoryMapper;
 import cn.iocoder.yudao.module.product.service.spu.ProductSpuService;
-import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;

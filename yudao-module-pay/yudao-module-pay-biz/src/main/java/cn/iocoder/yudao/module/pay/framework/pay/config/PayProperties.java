@@ -1,10 +1,11 @@
 package cn.iocoder.yudao.module.pay.framework.pay.config;
 
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import org.hibernate.validator.constraints.URL;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
+
+import jakarta.validation.constraints.NotEmpty;
 
 @ConfigurationProperties(prefix = "yudao.pay")
 @Validated

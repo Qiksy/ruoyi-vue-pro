@@ -6,11 +6,11 @@ import cn.iocoder.yudao.module.member.api.config.MemberConfigApi;
 import cn.iocoder.yudao.module.member.api.config.dto.MemberConfigRespDTO;
 import cn.iocoder.yudao.module.trade.service.price.bo.TradePriceCalculateReqBO;
 import cn.iocoder.yudao.module.trade.service.price.bo.TradePriceCalculateRespBO;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.Resource;
 import java.util.List;
 import java.util.Optional;
 

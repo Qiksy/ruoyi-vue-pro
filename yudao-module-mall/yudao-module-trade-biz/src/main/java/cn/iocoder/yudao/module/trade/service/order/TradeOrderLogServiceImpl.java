@@ -4,9 +4,9 @@ import cn.iocoder.yudao.module.trade.convert.order.TradeOrderLogConvert;
 import cn.iocoder.yudao.module.trade.dal.dataobject.order.TradeOrderLogDO;
 import cn.iocoder.yudao.module.trade.dal.mysql.order.TradeOrderLogMapper;
 import cn.iocoder.yudao.module.trade.service.order.bo.TradeOrderLogCreateReqBO;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.Resource;
 import java.util.List;
 
 /**

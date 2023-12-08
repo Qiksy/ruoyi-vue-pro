@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.member.api.point;
 
 import cn.iocoder.yudao.module.member.enums.point.MemberPointBizTypeEnum;
+
 import jakarta.validation.constraints.Min;
 
 /**

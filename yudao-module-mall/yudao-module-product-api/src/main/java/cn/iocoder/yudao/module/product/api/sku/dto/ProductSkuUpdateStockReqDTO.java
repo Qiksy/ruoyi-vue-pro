@@ -1,10 +1,10 @@
 package cn.iocoder.yudao.module.product.api.sku.dto;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 /**

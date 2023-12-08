@@ -4,18 +4,14 @@ import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
-import cn.iocoder.yudao.module.system.controller.admin.sensitiveword.vo.SensitiveWordCreateReqVO;
-import cn.iocoder.yudao.module.system.controller.admin.sensitiveword.vo.SensitiveWordExportReqVO;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.system.controller.admin.sensitiveword.vo.SensitiveWordPageReqVO;
-import cn.iocoder.yudao.module.system.controller.admin.sensitiveword.vo.SensitiveWordUpdateReqVO;
-import cn.iocoder.yudao.module.system.convert.sensitiveword.SensitiveWordConvert;
+import cn.iocoder.yudao.module.system.controller.admin.sensitiveword.vo.SensitiveWordSaveVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.sensitiveword.SensitiveWordDO;
 import cn.iocoder.yudao.module.system.dal.mysql.sensitiveword.SensitiveWordMapper;
 import cn.iocoder.yudao.module.system.util.collection.SimpleTrie;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -141,12 +139,12 @@ public class SensitiveWordServiceImpl implements SensitiveWordService {
     }
 
     @Override
-    public Long createSensitiveWord(SensitiveWordCreateReqVO createReqVO) {
+    public Long createSensitiveWord(SensitiveWordSaveVO createReqVO) {
         // 校验唯一性
         validateSensitiveWordNameUnique(null, createReqVO.getName());
 
         // 插入
-        SensitiveWordDO sensitiveWord = SensitiveWordConvert.INSTANCE.convert(createReqVO);
+        SensitiveWordDO sensitiveWord = BeanUtils.toBean(createReqVO, SensitiveWordDO.class);
         sensitiveWordMapper.insert(sensitiveWord);
 
         // 刷新缓存
@@ -155,13 +153,13 @@ public class SensitiveWordServiceImpl implements SensitiveWordService {
     }
 
     @Override
-    public void updateSensitiveWord(SensitiveWordUpdateReqVO updateReqVO) {
+    public void updateSensitiveWord(SensitiveWordSaveVO updateReqVO) {
         // 校验唯一性
         validateSensitiveWordExists(updateReqVO.getId());
         validateSensitiveWordNameUnique(updateReqVO.getId(), updateReqVO.getName());
 
         // 更新
-        SensitiveWordDO updateObj = SensitiveWordConvert.INSTANCE.convert(updateReqVO);
+        SensitiveWordDO updateObj = BeanUtils.toBean(updateReqVO, SensitiveWordDO.class);
         sensitiveWordMapper.updateById(updateObj);
 
         // 刷新缓存
@@ -212,11 +210,6 @@ public class SensitiveWordServiceImpl implements SensitiveWordService {
     @Override
     public PageResult<SensitiveWordDO> getSensitiveWordPage(SensitiveWordPageReqVO pageReqVO) {
         return sensitiveWordMapper.selectPage(pageReqVO);
-    }
-
-    @Override
-    public List<SensitiveWordDO> getSensitiveWordList(SensitiveWordExportReqVO exportReqVO) {
-        return sensitiveWordMapper.selectList(exportReqVO);
     }
 
     @Override

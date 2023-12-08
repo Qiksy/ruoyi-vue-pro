@@ -5,10 +5,10 @@ import cn.iocoder.yudao.module.trade.controller.admin.config.vo.TradeConfigSaveR
 import cn.iocoder.yudao.module.trade.convert.config.TradeConfigConvert;
 import cn.iocoder.yudao.module.trade.dal.dataobject.config.TradeConfigDO;
 import cn.iocoder.yudao.module.trade.dal.mysql.config.TradeConfigMapper;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.util.List;
 
 /**

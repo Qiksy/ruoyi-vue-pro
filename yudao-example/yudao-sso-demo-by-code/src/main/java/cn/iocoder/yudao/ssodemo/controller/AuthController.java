@@ -5,12 +5,13 @@ import cn.iocoder.yudao.ssodemo.client.OAuth2Client;
 import cn.iocoder.yudao.ssodemo.client.dto.CommonResult;
 import cn.iocoder.yudao.ssodemo.client.dto.oauth2.OAuth2AccessTokenRespDTO;
 import cn.iocoder.yudao.ssodemo.framework.core.util.SecurityUtils;
-import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/auth")

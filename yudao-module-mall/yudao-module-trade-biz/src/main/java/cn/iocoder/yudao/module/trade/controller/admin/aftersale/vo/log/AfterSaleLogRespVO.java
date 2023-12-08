@@ -1,9 +1,9 @@
 package cn.iocoder.yudao.module.trade.controller.admin.aftersale.vo.log;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 交易售后日志 Response VO")

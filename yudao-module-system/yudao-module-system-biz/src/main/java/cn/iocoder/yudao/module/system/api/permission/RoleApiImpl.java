@@ -1,9 +1,9 @@
 package cn.iocoder.yudao.module.system.api.permission;
 
 import cn.iocoder.yudao.module.system.service.permission.RoleService;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.Resource;
 import java.util.Collection;
 
 /**

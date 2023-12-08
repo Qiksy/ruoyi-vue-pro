@@ -17,12 +17,12 @@ import cn.iocoder.yudao.module.member.dal.mysql.level.MemberLevelMapper;
 import cn.iocoder.yudao.module.member.enums.MemberExperienceBizTypeEnum;
 import cn.iocoder.yudao.module.member.service.user.MemberUserService;
 import com.google.common.annotations.VisibleForTesting;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
