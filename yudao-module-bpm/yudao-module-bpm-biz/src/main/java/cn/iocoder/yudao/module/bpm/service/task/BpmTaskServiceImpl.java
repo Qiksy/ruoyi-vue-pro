@@ -21,6 +21,8 @@ import cn.iocoder.yudao.module.bpm.enums.task.BpmProcessInstanceResultEnum;
 import cn.iocoder.yudao.module.bpm.enums.task.BpmTaskAddSignTypeEnum;
 import cn.iocoder.yudao.module.bpm.service.definition.BpmModelService;
 import cn.iocoder.yudao.module.bpm.service.message.BpmMessageService;
+import cn.iocoder.yudao.module.sale.dal.dataobject.declinewarning.DeclineWarningDO;
+import cn.iocoder.yudao.module.sale.service.declinewarning.DeclineWarningService;
 import cn.iocoder.yudao.module.system.api.dept.DeptApi;
 import cn.iocoder.yudao.module.system.api.dept.dto.DeptRespDTO;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
@@ -53,6 +55,7 @@ import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -68,6 +71,8 @@ import static cn.iocoder.yudao.module.bpm.enums.ErrorCodeConstants.*;
 @Slf4j
 @Service
 public class BpmTaskServiceImpl implements BpmTaskService {
+
+    //todo 以后实现推送消息到企业微信
 
     @Resource
     private TaskService taskService;
@@ -93,6 +98,9 @@ public class BpmTaskServiceImpl implements BpmTaskService {
 
     @Resource
     private ManagementService managementService;
+
+    @Resource
+    private DeclineWarningService declineWarningService;
 
     @Override
     public PageResult<BpmTaskTodoPageItemRespVO> getTodoTaskPage(Long userId, BpmTaskTodoPageReqVO pageVO) {
@@ -124,6 +132,62 @@ public class BpmTaskServiceImpl implements BpmTaskService {
         return new PageResult<>(BpmTaskConvert.INSTANCE.convertList1(tasks, processInstanceMap, userMap),
                 taskQuery.count());
     }
+
+    /**
+     * 这里只查询销售掉量流程的任务
+     *
+     * @param userId
+     * @param pageVO
+     * @return
+     */
+    @Override
+    public PageResult<BpmTaskTodoPageItemRespVO> getTodoTaskPage2(Long userId, BpmTaskTodoPageReqVO pageVO) {
+        TaskQuery taskQuery = taskService.createTaskQuery().processDefinitionName("销售掉量")
+                .taskAssignee(String.valueOf(userId))
+                .orderByTaskCreateTime().desc();
+
+        if (StrUtil.isNotBlank(pageVO.getName())) {
+            taskQuery.taskNameLike("%" + pageVO.getName() + "%");
+        }
+        if (ArrayUtil.get(pageVO.getCreateTime(), 0) != null) {
+            taskQuery.taskCreatedAfter(DateUtils.of(pageVO.getCreateTime()[0]));
+        }
+        if (ArrayUtil.get(pageVO.getCreateTime(), 1) != null) {
+            taskQuery.taskCreatedBefore(DateUtils.of(pageVO.getCreateTime()[1]));
+        }
+// 执行查询
+        List<Task> tasks = taskQuery.listPage(PageUtils.getStart(pageVO), pageVO.getPageSize());
+        if (CollUtil.isEmpty(tasks)) {
+            return PageResult.empty(taskQuery.count());
+        }
+
+        // 获得 ProcessInstance Map
+        Map<String, ProcessInstance> processInstanceMap =
+                processInstanceService.getProcessInstanceMap(convertSet(tasks, Task::getProcessInstanceId));
+        // 获得 User Map
+        Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(
+                convertSet(processInstanceMap.values(), instance -> Long.valueOf(instance.getStartUserId())));
+        // 拼接结果
+
+        //todo 后面再优化代码
+        List<BpmTaskTodoPageItemRespVO> bpmTaskTodoPageItemRespVOS = BpmTaskConvert.INSTANCE.convertList1(tasks, processInstanceMap, userMap);
+
+        // 获取流程信息
+        List<String> instIds = tasks.stream().map(Task::getProcessInstanceId).toList();
+        List<DeclineWarningDO> declineWarningDOs = declineWarningService.getDeclineWarningByInstId(instIds);
+        Map<String, List<DeclineWarningDO>> collect = declineWarningDOs.stream().collect(Collectors.groupingBy(DeclineWarningDO::getProcessInstanceId));
+
+        for (BpmTaskTodoPageItemRespVO bpmTaskTodoPageItemRespVO : bpmTaskTodoPageItemRespVOS) {
+            List<DeclineWarningDO> declineWarningDOList = collect.get(bpmTaskTodoPageItemRespVO.getProcessInstance().getId());
+            if (declineWarningDOList != null && !declineWarningDOList.isEmpty()) {
+                bpmTaskTodoPageItemRespVO.setDeclineWarningInfo(declineWarningDOList.get(0));
+            }
+        }
+
+        return new PageResult<>(bpmTaskTodoPageItemRespVOS,
+                taskQuery.count());
+    }
+    // 查询待办任务
 
     @Override
     public PageResult<BpmTaskDonePageItemRespVO> getDoneTaskPage(Long userId, BpmTaskDonePageReqVO pageVO) {
@@ -161,6 +225,65 @@ public class BpmTaskServiceImpl implements BpmTaskService {
         return new PageResult<>(
                 BpmTaskConvert.INSTANCE.convertList2(tasks, bpmTaskExtDOMap, historicProcessInstanceMap, userMap),
                 taskQuery.count());
+    }
+
+
+    /**
+     * 获得已办的流程任务分页
+     *
+     * @param userId    用户编号
+     * @param pageReqVO 分页请求
+     * @return 流程任务分页
+     */
+    @Override
+    public PageResult<BpmTaskDonePageItemRespVO> getDoneTaskPage2(Long userId, BpmTaskDonePageReqVO pageVO) {
+        // 查询已办任务
+        HistoricTaskInstanceQuery taskQuery = historyService.createHistoricTaskInstanceQuery().processDefinitionName("销售掉量").finished() // 已完成
+                .taskAssignee(String.valueOf(userId)) // 分配给自己
+                .orderByTaskCreateTime().desc();
+
+        if (StrUtil.isNotBlank(pageVO.getName())) {
+            taskQuery.taskNameLike("%" + pageVO.getName() + "%");
+        }
+        if (pageVO.getBeginCreateTime() != null) {
+            taskQuery.taskCreatedAfter(DateUtils.of(pageVO.getBeginCreateTime()));
+        }
+        if (pageVO.getEndCreateTime() != null) {
+            taskQuery.taskCreatedBefore(DateUtils.of(pageVO.getEndCreateTime()));
+        }
+        // 执行查询
+        List<HistoricTaskInstance> tasks = taskQuery.listPage(PageUtils.getStart(pageVO), pageVO.getPageSize());
+        if (CollUtil.isEmpty(tasks)) {
+            return PageResult.empty(taskQuery.count());
+        }
+
+        // 获得 TaskExtDO Map
+        List<BpmTaskExtDO> bpmTaskExtDOs =
+                taskExtMapper.selectListByTaskIds(convertSet(tasks, HistoricTaskInstance::getId));
+        Map<String, BpmTaskExtDO> bpmTaskExtDOMap = convertMap(bpmTaskExtDOs, BpmTaskExtDO::getTaskId);
+        // 获得 ProcessInstance Map
+        Map<String, HistoricProcessInstance> historicProcessInstanceMap =
+                processInstanceService.getHistoricProcessInstanceMap(
+                        convertSet(tasks, HistoricTaskInstance::getProcessInstanceId));
+        // 获得 User Map
+        Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(
+                convertSet(historicProcessInstanceMap.values(), instance -> Long.valueOf(instance.getStartUserId())));
+        // 拼接结果
+
+        List<BpmTaskDonePageItemRespVO> bpmTaskDonePageItemRespVOS = BpmTaskConvert.INSTANCE.convertList2(tasks, bpmTaskExtDOMap, historicProcessInstanceMap, userMap);
+
+        // 获取流程信息
+        List<String> instIds = tasks.stream().map(HistoricTaskInstance::getProcessInstanceId).toList();
+        List<DeclineWarningDO> declineWarningDOs = declineWarningService.getDeclineWarningByInstId(instIds);
+        Map<String, List<DeclineWarningDO>> collect = declineWarningDOs.stream().collect(Collectors.groupingBy(DeclineWarningDO::getProcessInstanceId));
+
+        for (BpmTaskTodoPageItemRespVO bpmTaskTodoPageItemRespVO : bpmTaskDonePageItemRespVOS) {
+            List<DeclineWarningDO> declineWarningDOList = collect.get(bpmTaskTodoPageItemRespVO.getProcessInstance().getId());
+            if (declineWarningDOList != null && !declineWarningDOList.isEmpty()) {
+                bpmTaskTodoPageItemRespVO.setDeclineWarningInfo(declineWarningDOList.get(0));
+            }
+        }
+        return new PageResult<>(bpmTaskDonePageItemRespVOS,taskQuery.count());
     }
 
     @Override
@@ -284,7 +407,7 @@ public class BpmTaskServiceImpl implements BpmTaskService {
 
         // 3. 处理加签情况
         String scopeType = parentTask.getScopeType();
-        if(!validateSignType(scopeType)){
+        if (!validateSignType(scopeType)) {
             return;
         }
         // 3.1 情况一：处理向前加签
@@ -538,8 +661,8 @@ public class BpmTaskServiceImpl implements BpmTaskService {
                     ProcessInstance processInstance =
                             processInstanceService.getProcessInstance(task.getProcessInstanceId());
                     AdminUserRespDTO startUser = adminUserApi.getUser(Long.valueOf(processInstance.getStartUserId()));
-                    messageService.sendMessageWhenTaskAssigned(
-                            BpmTaskConvert.INSTANCE.convert(processInstance, startUser, task));
+//                    messageService.sendMessageWhenTaskAssigned(
+//                            BpmTaskConvert.INSTANCE.convert(processInstance, startUser, task));
                 }
             }
         });
@@ -881,11 +1004,12 @@ public class BpmTaskServiceImpl implements BpmTaskService {
 
     /**
      * 判断当前类型是否为加签
+     *
      * @param scopeType 任务的 scopeType
      * @return 当前 scopeType 为加签则返回 true
      */
-    private boolean validateSignType(String scopeType){
-        return StrUtil.equalsAny(scopeType,BpmTaskAddSignTypeEnum.BEFORE.getType(),scopeType, BpmTaskAddSignTypeEnum.AFTER.getType());
+    private boolean validateSignType(String scopeType) {
+        return StrUtil.equalsAny(scopeType, BpmTaskAddSignTypeEnum.BEFORE.getType(), scopeType, BpmTaskAddSignTypeEnum.AFTER.getType());
     }
 
     /**
@@ -903,7 +1027,7 @@ public class BpmTaskServiceImpl implements BpmTaskService {
         //控制遍历的次数不超过 Byte.MAX_VALUE，避免脏数据造成死循环
         int count = 0;
         // TODO @海：< 的前后空格，要注意哈；
-        while (!stack.isEmpty() && count<Byte.MAX_VALUE) {
+        while (!stack.isEmpty() && count < Byte.MAX_VALUE) {
             // 1.2 弹出栈顶任务ID
             String taskId = stack.pop();
             // 1.3 将任务ID添加到结果集合中

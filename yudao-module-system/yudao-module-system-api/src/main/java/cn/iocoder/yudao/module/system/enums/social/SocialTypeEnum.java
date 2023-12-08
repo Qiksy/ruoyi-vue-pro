@@ -25,16 +25,20 @@ public enum SocialTypeEnum implements IntArrayValuable {
     /**
      * 钉钉
      *
-     * @see <a href="https://developers.dingtalk.com/document/app/obtain-identity-credentials">接入文档</a>
+     * @see <a href="https://developsers.dingtalk.com/document/app/obtain-identity-credentials">接入文档</a>
      */
     DINGTALK(20, "DINGTALK"),
 
     /**
-     * 企业微信
+     * 企业微信 扫码登录
      *
      * @see <a href="https://xkcoding.com/2019/08/06/use-justauth-integration-wechat-enterprise.html">接入文档</a>
      */
     WECHAT_ENTERPRISE(30, "WECHAT_ENTERPRISE"),
+    /**
+     * 企业微信 网页授权登录
+     */
+    WECHAT_ENTERPRISE_WEB(33, "WECHAT_ENTERPRISE_WEB"),
     /**
      * 微信公众平台 - 移动端 H5
      *

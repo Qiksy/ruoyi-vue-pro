@@ -48,6 +48,16 @@ public class FileController {
         return success(fileService.createFile(file.getOriginalFilename(), path, IoUtil.readBytes(file.getInputStream())));
     }
 
+
+    @PostMapping("/upload2")
+    @Operation(summary = "上传文件")
+    @OperateLog(logArgs = false) // 上传文件，没有记录操作日志的必要
+    public CommonResult<Long> uploadFile2(FileUploadReqVO uploadReqVO) throws Exception {
+        MultipartFile file = uploadReqVO.getFile();
+        String path = uploadReqVO.getPath();
+        return success(fileService.createFile2(file.getOriginalFilename(), path, IoUtil.readBytes(file.getInputStream())));
+    }
+
     @DeleteMapping("/delete")
     @Operation(summary = "删除文件")
     @Parameter(name = "id", description = "编号", required = true)

@@ -101,4 +101,13 @@ public interface DeptService {
      */
     void validateDeptList(Collection<Long> ids);
 
+    /**
+     * 同步部门
+     */
+    void syncDept();
+
+
+    List<DeptDO> getDeptFromNC();
+
+    List<DeptDO> getNotExistsLeaderDepts(Collection<Long> ids);
 }

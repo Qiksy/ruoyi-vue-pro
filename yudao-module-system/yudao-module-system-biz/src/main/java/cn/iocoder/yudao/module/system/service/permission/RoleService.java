@@ -139,4 +139,14 @@ public interface RoleService {
      */
     void validateRoleList(Collection<Long> ids);
 
+    /**
+     * 从nc65提取岗位名称，然后同步到本地
+     *
+     */
+    void syncRole();
+
+    /**
+     * 从NC65中获取岗位名称列表
+     */
+    List<String> getRoleNameListFromNc65();
 }

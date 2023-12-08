@@ -16,19 +16,19 @@ public class YudaoFlowableConfiguration {
      *
      * 如果不创建，会导致项目启动时，Flowable 报错的问题
      */
-    @Bean
-    public AsyncTaskExecutor taskExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(8);
-        executor.setMaxPoolSize(8);
-        executor.setQueueCapacity(100);
-        executor.setThreadNamePrefix("flowable-task-Executor-");
-        executor.setAwaitTerminationSeconds(30);
-        executor.setWaitForTasksToCompleteOnShutdown(true);
-        executor.setAllowCoreThreadTimeOut(true);
-        executor.initialize();
-        return executor;
-    }
+//    @Bean
+//    public AsyncTaskExecutor taskExecutor() {
+//        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+//        executor.setCorePoolSize(8);
+//        executor.setMaxPoolSize(8);
+//        executor.setQueueCapacity(100);
+//        executor.setThreadNamePrefix("flowable-task-Executor-");
+//        executor.setAwaitTerminationSeconds(30);
+//        executor.setWaitForTasksToCompleteOnShutdown(true);
+//        executor.setAllowCoreThreadTimeOut(true);
+//        executor.initialize();
+//        return executor;
+//    }
 
     /**
      * 配置 flowable Web 过滤器

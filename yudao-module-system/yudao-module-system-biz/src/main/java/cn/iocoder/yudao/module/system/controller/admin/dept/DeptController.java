@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -83,4 +84,13 @@ public class DeptController {
         return success(DeptConvert.INSTANCE.convert(deptService.getDept(id)));
     }
 
+    //    /system/dept/sync
+    @PostMapping("/sync")
+    @Operation(summary = "同步部门")
+    @PreAuthorize("@ss.hasPermission('system:dept:sync')")
+//    @PermitAll
+    public CommonResult<Boolean> syncDept() {
+        deptService.syncDept();
+        return success(true);
+    }
 }

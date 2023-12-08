@@ -118,7 +118,8 @@ public class SocialClientServiceImpl implements SocialClientService {
         AuthRequest authRequest = buildAuthRequest(socialType, userType);
         // 生成跳转地址
         String authorizeUri = authRequest.authorize(AuthStateUtils.createState());
-        return HttpUtils.replaceUrlQuery(authorizeUri, "redirect_uri", redirectUri);
+        String redirect_uri = HttpUtils.replaceUrlQuery(authorizeUri, "redirect_uri", redirectUri);
+        return redirect_uri;
     }
 
     @Override

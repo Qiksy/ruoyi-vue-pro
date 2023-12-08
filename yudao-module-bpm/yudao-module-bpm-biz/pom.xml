@@ -68,5 +68,11 @@
             <groupId>cn.iocoder.boot</groupId>
             <artifactId>yudao-spring-boot-starter-flowable</artifactId>
         </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-module-sale-biz</artifactId>
+            <version>1.8.3-snapshot</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>

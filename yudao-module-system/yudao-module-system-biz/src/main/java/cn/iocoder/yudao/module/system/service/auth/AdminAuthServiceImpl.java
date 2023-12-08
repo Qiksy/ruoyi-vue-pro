@@ -10,6 +10,7 @@ import cn.iocoder.yudao.module.system.api.logger.dto.LoginLogCreateReqDTO;
 import cn.iocoder.yudao.module.system.api.sms.SmsCodeApi;
 import cn.iocoder.yudao.module.system.api.social.dto.SocialUserBindReqDTO;
 import cn.iocoder.yudao.module.system.api.social.dto.SocialUserRespDTO;
+import cn.iocoder.yudao.module.system.api.tencent.TencentApi;
 import cn.iocoder.yudao.module.system.controller.admin.auth.vo.*;
 import cn.iocoder.yudao.module.system.convert.auth.AuthConvert;
 import cn.iocoder.yudao.module.system.dal.dataobject.oauth2.OAuth2AccessTokenDO;
@@ -23,6 +24,8 @@ import cn.iocoder.yudao.module.system.service.member.MemberService;
 import cn.iocoder.yudao.module.system.service.oauth2.OAuth2TokenService;
 import cn.iocoder.yudao.module.system.service.social.SocialUserService;
 import cn.iocoder.yudao.module.system.service.user.AdminUserService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import com.xingyuv.captcha.model.common.ResponseModel;
 import com.xingyuv.captcha.model.vo.CaptchaVO;
@@ -30,9 +33,15 @@ import com.xingyuv.captcha.service.CaptchaService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Objects;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -64,6 +73,9 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     private CaptchaService captchaService;
     @Resource
     private SmsCodeApi smsCodeApi;
+
+    @Resource
+    private TencentApi tencentApi;
 
     /**
      * 验证码的开关，默认为 true
@@ -216,6 +228,55 @@ public class AdminAuthServiceImpl implements AdminAuthService {
         }
         // 删除成功，则记录登出日志
         createLogoutLog(accessTokenDO.getUserId(), accessTokenDO.getUserType(), logType);
+    }
+
+
+    @Override
+    public AuthLoginRespVO workWechatLogin(String code, String state) throws IOException {
+        String tencentAccessToken;
+        try {
+            //获取accesstoken
+            tencentAccessToken = tencentApi.getAccessToken();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        JsonNode jsonNode = getWeChatUserInfo(code, tencentAccessToken);
+
+        if (jsonNode.get("errcode").asInt()!=0){
+            //如果失败了，则重试几次
+            //需要清除旧的access_token
+            for (int i = 0; i < 3; i++) {
+                tencentAccessToken = tencentApi.resetAccessToken();
+                jsonNode = getWeChatUserInfo(code, tencentAccessToken);
+                if (jsonNode.get("errcode").asInt()==0){
+                    //如果成功了，跳出循环
+                    break;
+                }
+            }
+        }
+        String pkPsndoc = jsonNode.get("").asText();
+
+        //后续的登录按照原本的逻辑
+        AdminUserDO user = userService.getUserByPkPsndoc(pkPsndoc);
+        if (user == null) {
+            throw exception(USER_NOT_EXISTS);
+        }
+
+        // 创建 Token 令牌，记录登录日志
+        return createTokenAfterLoginSuccess(user.getId(), user.getUsername(), LoginLogTypeEnum.LOGIN_WORK_WECHAT);
+    }
+
+    private static JsonNode getWeChatUserInfo(String code, String tencentAccessToken) throws IOException {
+        //获取用户id
+        CloseableHttpClient client = HttpClients.createDefault();
+        String url = "https://qyapi.weixin.qq.com/cgi-bin/auth/getuserinfo?access_token=" + tencentAccessToken + "&code="+ code;
+        HttpGet httpGet = new HttpGet(url);
+        CloseableHttpResponse response = client.execute(httpGet);
+        String content = EntityUtils.toString(response.getEntity(), "utf-8");
+
+        ObjectMapper op = new ObjectMapper();
+        JsonNode jsonNode = op.readTree(content);
+        return jsonNode;
     }
 
     private void createLogoutLog(Long userId, Integer userType, Integer logType) {

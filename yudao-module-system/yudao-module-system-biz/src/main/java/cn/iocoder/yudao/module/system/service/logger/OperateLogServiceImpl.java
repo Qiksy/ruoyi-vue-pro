@@ -22,8 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertSet;
-import static cn.iocoder.yudao.module.system.dal.dataobject.logger.OperateLogDO.JAVA_METHOD_ARGS_MAX_LENGTH;
-import static cn.iocoder.yudao.module.system.dal.dataobject.logger.OperateLogDO.RESULT_MAX_LENGTH;
+import static cn.iocoder.yudao.module.system.dal.dataobject.logger.OperateLogDO.*;
 
 @Service
 @Validated
@@ -41,6 +40,7 @@ public class OperateLogServiceImpl implements OperateLogService {
         OperateLogDO logDO = OperateLogConvert.INSTANCE.convert(createReqDTO);
         logDO.setJavaMethodArgs(StrUtils.maxLength(logDO.getJavaMethodArgs(), JAVA_METHOD_ARGS_MAX_LENGTH));
         logDO.setResultData(StrUtils.maxLength(logDO.getResultData(), RESULT_MAX_LENGTH));
+        logDO.setResultMsg(StrUtils.maxLength(logDO.getResultMsg(), RESULT_MSG_MAX_LENGTH));
         operateLogMapper.insert(logDO);
     }
 

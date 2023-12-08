@@ -1,0 +1,146 @@
+package cn.iocoder.yudao.module.sale.service.declinewarning;
+
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
+import jakarta.annotation.Resource;
+
+import cn.iocoder.yudao.framework.test.core.ut.BaseDbUnitTest;
+
+import cn.iocoder.yudao.module.sale.controller.admin.declinewarning.vo.*;
+import cn.iocoder.yudao.module.sale.dal.dataobject.declinewarning.DeclineWarningDO;
+import cn.iocoder.yudao.module.sale.dal.mysql.declinewarning.DeclineWarningMapper;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+
+import jakarta.annotation.Resource;
+import org.springframework.context.annotation.Import;
+import java.util.*;
+import java.time.LocalDateTime;
+
+import static cn.hutool.core.util.RandomUtil.*;
+import static cn.iocoder.yudao.module.sale.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.framework.test.core.util.AssertUtils.*;
+import static cn.iocoder.yudao.framework.test.core.util.RandomUtils.*;
+import static cn.iocoder.yudao.framework.common.util.date.LocalDateTimeUtils.*;
+import static cn.iocoder.yudao.framework.common.util.object.ObjectUtils.*;
+import static cn.iocoder.yudao.framework.common.util.date.DateUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+/**
+ * {@link DeclineWarningServiceImpl} 的单元测试类
+ *
+ * @author 播恩超级管理员
+ */
+@Import(DeclineWarningServiceImpl.class)
+public class DeclineWarningServiceImplTest extends BaseDbUnitTest {
+
+    @Resource
+    private DeclineWarningServiceImpl declineWarningService;
+
+    @Resource
+    private DeclineWarningMapper declineWarningMapper;
+
+    @Test
+    public void testCreateDeclineWarning_success() {
+        // 准备参数
+        DeclineWarningSaveReqVO createReqVO = randomPojo(DeclineWarningSaveReqVO.class).setId(null);
+
+        // 调用
+        Long declineWarningId = declineWarningService.createDeclineWarning(createReqVO);
+        // 断言
+        assertNotNull(declineWarningId);
+        // 校验记录的属性是否正确
+        DeclineWarningDO declineWarning = declineWarningMapper.selectById(declineWarningId);
+        assertPojoEquals(createReqVO, declineWarning, "id");
+    }
+
+    @Test
+    public void testUpdateDeclineWarning_success() {
+        // mock 数据
+        DeclineWarningDO dbDeclineWarning = randomPojo(DeclineWarningDO.class);
+        declineWarningMapper.insert(dbDeclineWarning);// @Sql: 先插入出一条存在的数据
+        // 准备参数
+        DeclineWarningSaveReqVO updateReqVO = randomPojo(DeclineWarningSaveReqVO.class, o -> {
+            o.setId(dbDeclineWarning.getId()); // 设置更新的 ID
+        });
+
+        // 调用
+        declineWarningService.updateDeclineWarning(updateReqVO);
+        // 校验是否更新正确
+        DeclineWarningDO declineWarning = declineWarningMapper.selectById(updateReqVO.getId()); // 获取最新的
+        assertPojoEquals(updateReqVO, declineWarning);
+    }
+
+    @Test
+    public void testUpdateDeclineWarning_notExists() {
+        // 准备参数
+        DeclineWarningSaveReqVO updateReqVO = randomPojo(DeclineWarningSaveReqVO.class);
+
+        // 调用, 并断言异常
+        assertServiceException(() -> declineWarningService.updateDeclineWarning(updateReqVO), DECLINE_WARNING_NOT_EXISTS);
+    }
+
+    @Test
+    public void testDeleteDeclineWarning_success() {
+        // mock 数据
+        DeclineWarningDO dbDeclineWarning = randomPojo(DeclineWarningDO.class);
+        declineWarningMapper.insert(dbDeclineWarning);// @Sql: 先插入出一条存在的数据
+        // 准备参数
+        Long id = dbDeclineWarning.getId();
+
+        // 调用
+        declineWarningService.deleteDeclineWarning(id);
+       // 校验数据不存在了
+       assertNull(declineWarningMapper.selectById(id));
+    }
+
+    @Test
+    public void testDeleteDeclineWarning_notExists() {
+        // 准备参数
+        Long id = randomLongId();
+
+        // 调用, 并断言异常
+        assertServiceException(() -> declineWarningService.deleteDeclineWarning(id), DECLINE_WARNING_NOT_EXISTS);
+    }
+
+    @Test
+    @Disabled  // TODO 请修改 null 为需要的值，然后删除 @Disabled 注解
+    public void testGetDeclineWarningPage() {
+       // mock 数据
+       DeclineWarningDO dbDeclineWarning = randomPojo(DeclineWarningDO.class, o -> { // 等会查询到
+           o.setZoneCode(null);
+           o.setZoneName(null);
+           o.setAreaName(null);
+           o.setAreaCode(null);
+           o.setCreateTime(null);
+       });
+       declineWarningMapper.insert(dbDeclineWarning);
+       // 测试 zoneCode 不匹配
+       declineWarningMapper.insert(cloneIgnoreId(dbDeclineWarning, o -> o.setZoneCode(null)));
+       // 测试 zoneName 不匹配
+       declineWarningMapper.insert(cloneIgnoreId(dbDeclineWarning, o -> o.setZoneName(null)));
+       // 测试 areaName 不匹配
+       declineWarningMapper.insert(cloneIgnoreId(dbDeclineWarning, o -> o.setAreaName(null)));
+       // 测试 areaCode 不匹配
+       declineWarningMapper.insert(cloneIgnoreId(dbDeclineWarning, o -> o.setAreaCode(null)));
+       // 测试 createTime 不匹配
+       declineWarningMapper.insert(cloneIgnoreId(dbDeclineWarning, o -> o.setCreateTime(null)));
+       // 准备参数
+       DeclineWarningPageReqVO reqVO = new DeclineWarningPageReqVO();
+       reqVO.setZoneCode(null);
+       reqVO.setZoneName(null);
+       reqVO.setAreaName(null);
+       reqVO.setAreaCode(null);
+       reqVO.setCreateTime(buildBetweenTime(2023, 2, 1, 2023, 2, 28));
+
+       // 调用
+       PageResult<DeclineWarningDO> pageResult = declineWarningService.getDeclineWarningPage(reqVO);
+       // 断言
+       assertEquals(1, pageResult.getTotal());
+       assertEquals(1, pageResult.getList().size());
+       assertPojoEquals(dbDeclineWarning, pageResult.getList().get(0));
+    }
+
+}

@@ -3,9 +3,11 @@ package cn.iocoder.yudao.module.system.service.permission;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.extra.pinyin.PinyinUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.system.controller.admin.permission.vo.role.RoleCreateReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.permission.vo.role.RoleExportReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.permission.vo.role.RolePageReqVO;
@@ -17,11 +19,14 @@ import cn.iocoder.yudao.module.system.dal.redis.RedisKeyConstants;
 import cn.iocoder.yudao.module.system.enums.permission.DataScopeEnum;
 import cn.iocoder.yudao.module.system.enums.permission.RoleCodeEnum;
 import cn.iocoder.yudao.module.system.enums.permission.RoleTypeEnum;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.google.common.annotations.VisibleForTesting;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -47,6 +52,10 @@ public class RoleServiceImpl implements RoleService {
 
     @Resource
     private RoleMapper roleMapper;
+
+    @Autowired
+    @Lazy
+    RoleService roleService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -243,6 +252,47 @@ public class RoleServiceImpl implements RoleService {
                 throw exception(ROLE_IS_DISABLE, role.getName());
             }
         });
+    }
+
+    @Override
+    public void syncRole() {
+        //1. 从NC65中获取数据
+        List<String> roleNameList = roleService.getRoleNameListFromNc65();
+        List<RoleDO> roleDOList = new ArrayList<>();
+
+        // 拼接数据
+        for (String roleName : roleNameList) {
+            //角色名的拼音，作为code
+            String code = PinyinUtil.getPinyin(roleName, "_");
+            RoleDO roleDO = new RoleDO();
+            roleDO.setName(roleName);
+            roleDO.setCode(code);
+            roleDO.setSort(1);
+            roleDO.setStatus(CommonStatusEnum.ENABLE.getStatus()); //启用
+            roleDO.setType(RoleTypeEnum.SYSTEM.getType());  //系统角色，不让随便删除
+            roleDO.setDataScope(DataScopeEnum.DEPT_AND_CHILD.getScope()); // 默认查看自己部门下面的角色
+            roleDO.setDataScopeDeptIds(new HashSet<>()); //默认数据权限为空
+            roleDOList.add(roleDO);
+        }
+
+        // 根据code，name查询数据库是否存在数据，如果存在则更新，不存在则插入
+        for (RoleDO roleDO : roleDOList) {
+            LambdaQueryWrapperX<RoleDO> lambdaQuery = new LambdaQueryWrapperX<RoleDO>()
+                    .eq(RoleDO::getCode, roleDO.getCode())
+                    .eq(RoleDO::getName, roleDO.getName());
+            if(roleMapper.selectCount(lambdaQuery) > 0){
+                roleMapper.update(roleDO, lambdaQuery);
+            }else {
+                roleMapper.insert(roleDO);
+            }
+        }
+        log.info("同步角色数据成功：{}", roleDOList.size());
+    }
+
+    @Override
+    @DS("nc65")
+    public List<String> getRoleNameListFromNc65() {
+        return roleMapper.selectRoleNameListFromNc65();
     }
 
     /**

@@ -26,12 +26,23 @@ public class BpmActivityBehaviorFactory extends DefaultActivityBehaviorFactory {
     @Setter
     private BpmTaskAssignRuleService bpmTaskRuleService;
 
+    /**
+     * 创建用户任务的行为
+     * @param userTask
+     * @return
+     */
     @Override
     public UserTaskActivityBehavior createUserTaskActivityBehavior(UserTask userTask) {
         return new BpmUserTaskActivityBehavior(userTask)
                 .setBpmTaskRuleService(bpmTaskRuleService);
     }
 
+    /**
+     * 创建并行多实例的行为
+     * @param activity
+     * @param innerActivityBehavior
+     * @return
+     */
     @Override
     public ParallelMultiInstanceBehavior createParallelMultiInstanceBehavior(Activity activity,
                                                                              AbstractBpmnActivityBehavior innerActivityBehavior) {
