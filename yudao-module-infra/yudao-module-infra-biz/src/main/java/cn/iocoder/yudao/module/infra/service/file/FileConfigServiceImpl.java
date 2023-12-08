@@ -9,7 +9,6 @@ import cn.iocoder.yudao.framework.file.core.client.FileClient;
 import cn.iocoder.yudao.framework.file.core.client.FileClientConfig;
 import cn.iocoder.yudao.framework.file.core.client.FileClientFactory;
 import cn.iocoder.yudao.framework.file.core.enums.FileStorageEnum;
-import cn.iocoder.yudao.module.infra.controller.admin.file.vo.config.FileConfigCreateReqVO;
 import cn.iocoder.yudao.module.infra.controller.admin.file.vo.config.FileConfigPageReqVO;
 import cn.iocoder.yudao.module.infra.controller.admin.file.vo.config.FileConfigSaveReqVO;
 import cn.iocoder.yudao.module.infra.convert.file.FileConfigConvert;
@@ -84,7 +83,7 @@ public class FileConfigServiceImpl implements FileConfigService {
     }
 
     @Override
-    public void updateFileConfig(FileConfigUpdateReqVO updateReqVO) {
+    public void updateFileConfig(FileConfigSaveReqVO updateReqVO) {
         // 校验存在
         FileConfigDO config = validateFileConfigExists(updateReqVO.getId());
         // 更新

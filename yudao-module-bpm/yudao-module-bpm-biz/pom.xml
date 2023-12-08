@@ -71,7 +71,7 @@
         <dependency>
             <groupId>cn.iocoder.boot</groupId>
             <artifactId>yudao-module-sale-biz</artifactId>
-            <version>1.8.3-snapshot</version>
+            <version>${revision}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
