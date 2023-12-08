@@ -24,14 +24,16 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
 import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -161,4 +163,16 @@ public class AuthController {
         return success(authService.socialLogin(reqVO));
     }
 
+    // ============ 企业微信单点登录相关 ============
+    @GetMapping("/work-wechat-auth-redirect")
+    @PermitAll
+    @Operation(summary = "企业微信登录")
+    @Parameters({
+            @Parameter(name = "code", description = "用户对应的唯一code", required = true),
+            @Parameter(name = "state", description = "状态，自定义")
+    })
+    public CommonResult<AuthLoginRespVO> workWechatLogin(@RequestParam("code") String code,
+                                                         @RequestParam(value = "state", required = false) String state) throws IOException {
+        return CommonResult.success(authService.workWechatLogin(code, state));
+    }
 }

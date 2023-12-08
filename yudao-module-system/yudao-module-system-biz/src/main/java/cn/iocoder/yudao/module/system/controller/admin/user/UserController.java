@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.collection.MapUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.user.*;
@@ -106,6 +107,7 @@ public class UserController {
     @GetMapping({"/list-all-simple", "/simple-list"})
     @Operation(summary = "获取用户精简信息列表", description = "只包含被开启的用户，主要用于前端的下拉选项")
     public CommonResult<List<UserSimpleRespVO>> getSimpleUserList() {
+        // 获用户列表，只要开启状态的
         List<AdminUserDO> list = userService.getUserListByStatus(CommonStatusEnum.ENABLE.getStatus());
         // 拼接数据
         Map<Long, DeptDO> deptMap = deptService.getDeptMap(
@@ -149,6 +151,7 @@ public class UserController {
                 UserImportExcelVO.builder().username("yuanma").deptId(2L).email("yuanma@iocoder.cn").mobile("15601701300")
                         .nickname("源码").status(CommonStatusEnum.DISABLE.getStatus()).sex(SexEnum.FEMALE.getSex()).build()
         );
+
         // 输出
         ExcelUtils.write(response, "用户导入模板.xls", "用户列表", UserImportExcelVO.class, list);
     }
@@ -166,4 +169,13 @@ public class UserController {
         return success(userService.importUserList(list, updateSupport));
     }
 
+//    /system/user/sync 同步用户
+    @PostMapping("/sync")
+    @Operation(summary = "同步用户")
+    @PreAuthorize("@ss.hasPermission('system:user:sync')")
+//    @PermitAll
+    public CommonResult<Boolean> syncUser() {
+        userService.syncUser();
+        return success(true);
+    }
 }

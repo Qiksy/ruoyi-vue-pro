@@ -2,22 +2,22 @@ package cn.iocoder.yudao.module.system.controller.admin.dept;
 
 import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptListReqVO;
-import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptRespVO;
-import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptSaveReqVO;
-import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptSimpleRespVO;
+import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.*;
+import cn.iocoder.yudao.module.system.convert.dept.DeptConvert;
 import cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO;
 import cn.iocoder.yudao.module.system.service.dept.DeptService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import java.util.Comparator;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
@@ -67,8 +67,12 @@ public class DeptController {
     @GetMapping(value = {"/list-all-simple", "/simple-list"})
     @Operation(summary = "获取部门精简信息列表", description = "只包含被开启的部门，主要用于前端的下拉选项")
     public CommonResult<List<DeptSimpleRespVO>> getSimpleDeptList() {
-        List<DeptDO> list = deptService.getDeptList(
-                new DeptListReqVO().setStatus(CommonStatusEnum.ENABLE.getStatus()));
+        // 获得部门列表，只要开启状态的
+        DeptListReqVO reqVO = new DeptListReqVO();
+        reqVO.setStatus(CommonStatusEnum.ENABLE.getStatus());
+        List<DeptDO> list = deptService.getDeptList(reqVO);
+        // 排序后，返回给前端
+        list.sort(Comparator.comparing(DeptDO::getSort));
         return success(BeanUtils.toBean(list, DeptSimpleRespVO.class));
     }
 
@@ -81,4 +85,13 @@ public class DeptController {
         return success(BeanUtils.toBean(dept, DeptRespVO.class));
     }
 
+    //    /system/dept/sync
+    @PostMapping("/sync")
+    @Operation(summary = "同步部门")
+    @PreAuthorize("@ss.hasPermission('system:dept:sync')")
+//    @PermitAll
+    public CommonResult<Boolean> syncDept() {
+        deptService.syncDept();
+        return success(true);
+    }
 }

@@ -26,6 +26,7 @@ import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.EXPORT;
+import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.OTHER;
 import static java.util.Collections.singleton;
 
 @Tag(name = "管理后台 - 角色")
@@ -103,6 +104,16 @@ public class RoleController {
         // 输出
         ExcelUtils.write(response, "角色数据.xls", "数据", RoleRespVO.class,
                 BeanUtils.toBean(list, RoleRespVO.class));
+    }
+
+    // 同步角色 /system/role/sync
+    @PostMapping("/sync")
+    @OperateLog(type = OTHER,name= "同步角色")
+    @PreAuthorize("@ss.hasPermission('system:role:sync')")
+    @PermitAll
+    public CommonResult<Boolean> sync() {
+        roleService.syncRole();
+        return success(true);
     }
 
 }

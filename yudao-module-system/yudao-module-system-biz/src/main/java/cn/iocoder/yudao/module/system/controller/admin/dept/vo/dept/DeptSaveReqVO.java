@@ -22,6 +22,10 @@ public class DeptSaveReqVO {
     @Size(max = 30, message = "部门名称长度不能超过 30 个字符")
     private String name;
 
+
+    @Schema(description = "部门编码", requiredMode = Schema.RequiredMode.NOT_REQUIRED,example = "1023")
+    private String code;
+
     @Schema(description = "父部门 ID", example = "1024")
     private Long parentId;
 

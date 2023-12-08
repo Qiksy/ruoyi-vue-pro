@@ -5,6 +5,8 @@ import cn.iocoder.yudao.module.system.dal.dataobject.user.AdminUserDO;
 
 import jakarta.validation.Valid;
 
+import java.io.IOException;
+
 /**
  * 管理后台的认证 Service 接口
  *
@@ -70,4 +72,10 @@ public interface AdminAuthService {
      */
     AuthLoginRespVO refreshToken(String refreshToken);
 
+    /**
+     * @param code 企业微信登录code
+     * @param state 自定义参数
+     * @return 登录结果
+     */
+    AuthLoginRespVO workWechatLogin(String code, String state) throws IOException;
 }
