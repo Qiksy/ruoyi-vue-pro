@@ -572,6 +572,14 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
+    public AdminUserDO getUserByWecomeId(String openid) {
+        //查询用户
+        LambdaQueryWrapperX<AdminUserDO> lambdaQueryWrapper = new LambdaQueryWrapperX<AdminUserDO>()
+                .eq(AdminUserDO::getWecomeId, openid);
+        return userMapper.selectOne(lambdaQueryWrapper);
+    }
+
+    @Override
     @DS("nc65")
     public List<AdminUserNcDTO> getUserListByNc() {
         return userMapper.selectUserFromNC();

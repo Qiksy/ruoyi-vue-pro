@@ -103,8 +103,10 @@ public class SocialUserServiceImpl implements SocialUserService {
         // 获得社交用户
         SocialUserDO socialUser = authSocialUser(socialType, userType, code, state);
         Assert.notNull(socialUser, "社交用户不能为空");
+        //这里进行更改，如果是企业微信登录，则从用户表中，根据用户的企业微信id
         if (Objects.equals(socialType, SocialTypeEnum.WECHAT_ENTERPRISE_WEB.getType())||Objects.equals(socialType, SocialTypeEnum.WECHAT_ENTERPRISE.getType())){
-            AdminUserDO userByPkPsndoc = userService.getUserByPkPsndoc(socialUser.getOpenid());
+//            AdminUserDO userByPkPsndoc = userService.getUserByPkPsndoc(socialUser.getOpenid());
+            AdminUserDO userByPkPsndoc = userService.getUserByWecomeId(socialUser.getOpenid());
             if (userByPkPsndoc==null){
                 throw exception(USER_NOT_EXISTS);
             }

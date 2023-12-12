@@ -99,4 +99,9 @@ public class AdminUserDO extends TenantBaseDO {
      */
     private String pkPsndoc;
 
+    /**
+     * 企业微信的id
+     */
+    private String wecomeId;
+
 }

@@ -216,4 +216,6 @@ public interface AdminUserService {
     void syncUser();
 
     List<AdminUserNcDTO> getUserListByNc();
+
+    AdminUserDO getUserByWecomeId(String openid);
 }
