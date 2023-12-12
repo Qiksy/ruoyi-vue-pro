@@ -147,6 +147,7 @@ public class SocialUserServiceImpl implements SocialUserService {
         if (Objects.equals(socialType, SocialTypeEnum.WECHAT_ENTERPRISE_WEB.getType()) || Objects.equals(socialType, SocialTypeEnum.WECHAT_ENTERPRISE.getType())) {
             SocialUserDO userDO = new SocialUserDO();
             userDO.setOpenid(authUser.getUuid());
+            userDO.setType(socialType);
             return userDO;
         }
 
