@@ -262,7 +262,7 @@ debug: false
 
 # 积木报表配置
 minidao :
-  base-package: org.jeecg.modules.jmreport.desreport.dao*
+  base-package: org.jeecg.modules.jmreport.desreport.*
   db-type: mysql
 tencent:
   work:

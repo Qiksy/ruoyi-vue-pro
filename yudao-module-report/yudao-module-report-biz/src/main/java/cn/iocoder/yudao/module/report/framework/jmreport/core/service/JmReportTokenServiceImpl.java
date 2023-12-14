@@ -128,4 +128,14 @@ public class JmReportTokenServiceImpl implements JmReportTokenServiceI {
         return user;
     }
 
+    /**
+     * 获得用户角色
+     * 这个应该是新版本的接口，老版本的接口没有这个方法
+     * @param var1
+     * @return
+     */
+    @Override
+    public String[] getRoles(String var1) {
+        return new String[0];
+    }
 }

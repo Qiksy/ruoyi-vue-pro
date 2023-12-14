@@ -74,10 +74,10 @@
             <artifactId>xercesImpl</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.bstek.ureport</groupId>
-            <artifactId>ureport2-console</artifactId>
-        </dependency>
+        <!--<dependency>-->
+        <!--    <groupId>com.bstek.ureport</groupId>-->
+        <!--    <artifactId>ureport2-console</artifactId>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>cn.iocoder.boot</groupId>

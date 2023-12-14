@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author 赤焰
  */
 @Data
-@ConfigurationProperties(prefix = "ureport.provider.database")
+//@ConfigurationProperties(prefix = "ureport.provider.database")
 public class UReportProperties {
 
     // TODO @赤焰：每个字段的注释写下哈；
