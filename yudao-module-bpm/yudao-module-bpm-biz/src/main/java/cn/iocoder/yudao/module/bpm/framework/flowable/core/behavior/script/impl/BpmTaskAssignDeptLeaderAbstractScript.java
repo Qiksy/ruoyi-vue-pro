@@ -10,6 +10,7 @@ import cn.iocoder.yudao.module.system.api.dept.DeptApi;
 import cn.iocoder.yudao.module.system.api.dept.dto.DeptRespDTO;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.context.annotation.Lazy;
@@ -20,6 +21,7 @@ import java.util.Set;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.SetUtils.asSet;
 
+@Slf4j
 public abstract class BpmTaskAssignDeptLeaderAbstractScript implements BpmTaskAssignScript {
 
     @Resource
@@ -50,7 +52,9 @@ public abstract class BpmTaskAssignDeptLeaderAbstractScript implements BpmTaskAs
         if (enumValue.equals(BpmTaskRuleScriptEnum.AREA_LEADER.getId())){
             //大区负责人
             deptId = Long.valueOf(processVariables.get("areaCode").toString());
+            log.debug("审批角色：大区负责人，获取的变量为：{}",processVariables);
         }else{
+            log.debug("审批角色：部门负责人，获取的变量为：{}",processVariables);
             BpmProcessInstanceExtDO bpmProcessInstanceExtDO = processInstanceExtMapper.selectByProcessInstanceId(execution.getProcessInstanceId());
             processVariables = bpmProcessInstanceExtDO.getFormVariables();
             //部门负责人

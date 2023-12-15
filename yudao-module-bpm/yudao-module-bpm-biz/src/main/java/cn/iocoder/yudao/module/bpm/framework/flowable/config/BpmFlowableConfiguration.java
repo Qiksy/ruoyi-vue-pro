@@ -36,6 +36,11 @@ public class BpmFlowableConfiguration {
         };
     }
 
+    /**
+     * 活动前置监听器
+     * @param taskRuleService
+     * @return
+     */
     @Bean
     public BpmActivityBehaviorFactory bpmActivityBehaviorFactory(BpmTaskAssignRuleService taskRuleService) {
         BpmActivityBehaviorFactory bpmActivityBehaviorFactory = new BpmActivityBehaviorFactory();
