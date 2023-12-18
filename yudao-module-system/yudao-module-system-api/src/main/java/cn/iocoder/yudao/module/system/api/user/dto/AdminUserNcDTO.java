@@ -14,4 +14,6 @@ public class AdminUserNcDTO {
     private String pkPsndoc;
     private String postName;
     private String deptcode;
+    //手机号码
+    private String officephone;
 }
