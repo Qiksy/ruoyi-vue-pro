@@ -11,11 +11,13 @@
         <result column="pk_psndoc" property="pkPsndoc" />
         <result column="deptcode" property="deptcode" />
         <result column="postName" property="postName" />
+        <result column="officephone" property="officephone" />
     </resultMap>
     <select id="selectUserFromNC" resultMap="base">
         SELECT
             bd_psndoc.code,
             bd_psndoc.name,
+            bd_psndoc.officephone,
             bd_psndoc.pk_psndoc,
             org_dept.code deptcode,
             om_post.postname
@@ -26,7 +28,7 @@
                 inner join nc65.om_post on om_post.pk_post = hi_psnjob.pk_post
                 inner join nc65.org_dept on org_dept.pk_dept = hi_psnjob.pk_dept
         WHERE
-                hi_psnjob.pk_psnjob IN (
+            hi_psnjob.pk_psnjob IN (
                 SELECT
                     hi_psnjob.pk_psnjob
                 FROM
@@ -37,7 +39,8 @@
                   AND hi_psnorg.psntype = 0
                   AND hi_psnjob.lastflag = 'Y'
                   AND hi_psnjob.ismainjob = 'Y'
-                  and hi_psnjob.endflag = 'N')
+                  and hi_psnjob.endflag = 'N'
+                  and bd_psndoc.officephone is not null)
         ORDER BY
             hi_psnjob.showorder
     </select>
