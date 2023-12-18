@@ -4,6 +4,8 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.digest.DigestAlgorithm;
+import cn.hutool.crypto.digest.Digester;
 import cn.hutool.extra.pinyin.PinyinUtil;
 import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
@@ -37,15 +39,21 @@ import cn.iocoder.yudao.module.system.service.tenant.TenantService;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.annotations.VisibleForTesting;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.annotation.Resource;
+import org.springframework.web.client.RestTemplate;
+
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -87,6 +95,9 @@ public class AdminUserServiceImpl implements AdminUserService {
     private UserPostMapper userPostMapper;
 
     @Resource
+    private RestTemplate restTemplate;
+
+    @Resource
     private FileApi fileApi;
 
     @Autowired
@@ -98,6 +109,16 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Resource
     private UserRoleMapper userRoleMapper;
+
+    @Value("${yudao.remote.secret:boen219689120231207}")
+    @Getter
+    @Setter
+    private String secret;
+
+    @Value("${yudao.remote.url}")
+    @Getter
+    @Setter
+    private String remoteUrl;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -492,7 +513,9 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Override
     public void syncUser() {
         //查询nc用户
-        List<AdminUserNcDTO> userListByNc = adminUserService.getUserListByNc();
+//        List<AdminUserNcDTO> userListByNc = adminUserService.getUserListByNc();
+        List<AdminUserNcDTO> userListByNc = getNcUserListByRemote();
+
         //处理数据
         List<AdminUserDO> sysUserList =  new ArrayList<>();
 
@@ -508,7 +531,7 @@ public class AdminUserServiceImpl implements AdminUserService {
             AdminUserDO adminUserDO = new AdminUserDO();
             adminUserDO.setNickname(ncUser.getName());
             adminUserDO.setPkPsndoc(ncUser.getPkPsndoc());
-            adminUserDO.setUsername(PinyinUtil.getPinyin(ncUser.getName(),""));
+            adminUserDO.setUsername(ncUser.getOfficephone());
             adminUserDO.setDeptId(Long.valueOf(ncUser.getDeptcode())); //设置部门
             adminUserDO.setStatus(CommonStatusEnum.ENABLE.getStatus());
             adminUserDO.setPassword(encodePassword(userInitPassword)); //设置默认密码
@@ -525,7 +548,7 @@ public class AdminUserServiceImpl implements AdminUserService {
             if (temp == null) {
                 // 不存在，新增
 
-                //新增也要分情况，如果已经有 username相同的，pkPsndoc不同的客户，我们需要给他加上一个后缀
+                //新增也要分情况，如果已经有 手机号相同的，pkPsndoc不同的客户，我们需要给他加上一个后缀
                 lambdaQuery = new LambdaQueryWrapperX<>();
                 lambdaQuery.likeLeft(AdminUserDO::getUsername, adminUserDO.getUsername());
                 Long count = userMapper.selectCount(lambdaQuery);
@@ -571,6 +594,45 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     }
 
+
+    /**
+     * 改造接口，通过远程调用的方式，获取nc用户列表
+     * @return
+     */
+    private List<AdminUserNcDTO> getNcUserListByRemote(){
+        long timestamp = System.currentTimeMillis();
+        String accesstoken = getAccessToken(timestamp);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", accesstoken);
+
+        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+        //这里的大括号是使用了匿名内部类来保留泛型信息
+        ParameterizedTypeReference<List<AdminUserNcDTO>> typeRef = new ParameterizedTypeReference<>() {};
+
+        String baseUrl = remoteUrl + "/server/data/ncUserDetail";
+        String fullUrl =String.format("%s?timestamp=%s",baseUrl,timestamp);
+
+        ResponseEntity<List<AdminUserNcDTO>> response = restTemplate.exchange(
+                fullUrl,
+                HttpMethod.GET,
+                entity,
+                typeRef,
+                1
+        );
+
+        return response.getBody();
+    }
+
+    private String getAccessToken(Long timestamp){
+        String temp = secret+ timestamp;
+
+        //进行SHA-1加密
+        Digester sha1 = new Digester(DigestAlgorithm.SHA1);
+
+        return sha1.digestHex(temp);
+    }
+
     @Override
     public AdminUserDO getUserByWecomeId(String openid) {
         //查询用户
@@ -579,9 +641,9 @@ public class AdminUserServiceImpl implements AdminUserService {
         return userMapper.selectOne(lambdaQueryWrapper);
     }
 
-    @Override
-    @DS("nc65")
-    public List<AdminUserNcDTO> getUserListByNc() {
-        return userMapper.selectUserFromNC();
-    }
+//    @Override
+//    @DS("nc65")
+//    public List<AdminUserNcDTO> getUserListByNc() {
+//        return userMapper.selectUserFromNC();
+//    }
 }
