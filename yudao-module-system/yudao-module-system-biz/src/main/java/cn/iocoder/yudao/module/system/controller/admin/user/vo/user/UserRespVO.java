@@ -72,4 +72,8 @@ public class UserRespVO{
     @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED, example = "时间戳格式")
     private LocalDateTime createTime;
 
+    private String wecomeId;
+
+    private String pkPsndoc;
+
 }
