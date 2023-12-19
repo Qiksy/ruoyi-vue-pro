@@ -80,6 +80,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     private AdminUserMapper userMapper;
 
     @Resource
+    @Lazy
     private DeptService deptService;
     @Resource
     private PostService postService;
@@ -100,9 +101,6 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Resource
     private FileApi fileApi;
 
-    @Autowired
-    @Lazy
-    private AdminUserService adminUserService;
 
     @Resource
     private RoleMapper roleMapper;
@@ -531,10 +529,11 @@ public class AdminUserServiceImpl implements AdminUserService {
             AdminUserDO adminUserDO = new AdminUserDO();
             adminUserDO.setNickname(ncUser.getName());
             adminUserDO.setPkPsndoc(ncUser.getPkPsndoc());
-            adminUserDO.setUsername(ncUser.getOfficephone());
+            adminUserDO.setUsername(ncUser.getOfficephone());  //手机号码当作用户名
             adminUserDO.setDeptId(Long.valueOf(ncUser.getDeptcode())); //设置部门
             adminUserDO.setStatus(CommonStatusEnum.ENABLE.getStatus());
             adminUserDO.setPassword(encodePassword(userInitPassword)); //设置默认密码
+            adminUserDO.setWecomeId(ncUser.getPkPsndoc());//设置微信id，默认是nc的pkPsndoc
             sysUserList.add(adminUserDO);
             roleMap.put(ncUser.getPkPsndoc(),ncUser.getPostName());
         }
@@ -548,41 +547,20 @@ public class AdminUserServiceImpl implements AdminUserService {
             if (temp == null) {
                 // 不存在，新增
 
-                //新增也要分情况，如果已经有 手机号相同的，pkPsndoc不同的客户，我们需要给他加上一个后缀
-                lambdaQuery = new LambdaQueryWrapperX<>();
-                lambdaQuery.likeLeft(AdminUserDO::getUsername, adminUserDO.getUsername());
-                Long count = userMapper.selectCount(lambdaQuery);
+                // 2023/12/19 已经更改了逻辑，以前是根据人员的拼音当作用户名的，所以有可能会有重复的
+                // 现在使用手机号，不会重复的
+                userMapper.insert(adminUserDO);
+                // 增用户角色关系
+                // 根据postname，找出第一个角色
+                String postname = roleMap.get(adminUserDO.getPkPsndoc());
+                // 这里有可能报错 晚点处理
+                RoleDO roleDO = roleDOList.stream().filter(role -> role.getName().equals(postname)).findFirst().get();
+                UserRoleDO userRoleDO = new UserRoleDO();
+                userRoleDO.setUserId(adminUserDO.getId());
+                userRoleDO.setRoleId(roleDO.getId());
 
-                if (count==0){
-                    //没有相同的username
-                    userMapper.insert(adminUserDO);
-                    // 增用户角色关系
-                    // 根据postname，找出第一个角色
-                    String postname = roleMap.get(adminUserDO.getPkPsndoc());
-                    // 这里有可能报错 晚点处理
-                    RoleDO roleDO = roleDOList.stream().filter(role -> role.getName().equals(postname)).findFirst().get();
-                    UserRoleDO userRoleDO = new UserRoleDO();
-                    userRoleDO.setUserId(adminUserDO.getId());
-                    userRoleDO.setRoleId(roleDO.getId());
+                userRoleDOList.add(userRoleDO);
 
-                    userRoleDOList.add(userRoleDO);
-
-                }else {
-                    //有相同的username
-                    adminUserDO.setUsername(adminUserDO.getUsername()+count);
-                    userMapper.insert(adminUserDO);
-
-                    // 增用户角色关系
-                    // 根据postname，找出第一个角色
-                    String postname = roleMap.get(adminUserDO.getPkPsndoc());
-                    // 这里有可能报错 晚点处理
-                    RoleDO roleDO = roleDOList.stream().filter(role -> role.getName().equals(postname)).findFirst().get();
-                    UserRoleDO userRoleDO = new UserRoleDO();
-                    userRoleDO.setUserId(adminUserDO.getId());
-                    userRoleDO.setRoleId(roleDO.getId());
-
-                    userRoleDOList.add(userRoleDO);
-                }
             } else {
                 // 存在，更新以下部门就好了
                 temp.setDeptId(adminUserDO.getDeptId());

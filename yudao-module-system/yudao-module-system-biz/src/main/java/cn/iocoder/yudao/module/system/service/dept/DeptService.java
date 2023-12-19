@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.system.service.dept;
 
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
+import cn.iocoder.yudao.module.system.api.dept.dto.DeptNcDTO;
 import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptListReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptSaveReqVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO;
@@ -105,7 +106,7 @@ public interface DeptService {
     void syncDept();
 
 
-    List<DeptDO> getDeptFromNC();
+    List<DeptNcDTO> getDeptFromNC();
 
     List<DeptDO> getNotExistsLeaderDepts(Collection<Long> ids);
 }

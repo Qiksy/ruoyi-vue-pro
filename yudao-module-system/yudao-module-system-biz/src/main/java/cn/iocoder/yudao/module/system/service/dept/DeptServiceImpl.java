@@ -2,26 +2,38 @@ package cn.iocoder.yudao.module.system.service.dept;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.crypto.digest.DigestAlgorithm;
+import cn.hutool.crypto.digest.Digester;
 import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.datapermission.core.annotation.DataPermission;
+import cn.iocoder.yudao.module.system.api.dept.dto.DeptNcDTO;
 import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptListReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptSaveReqVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO;
+import cn.iocoder.yudao.module.system.dal.dataobject.user.AdminUserDO;
 import cn.iocoder.yudao.module.system.dal.mysql.dept.DeptMapper;
 import cn.iocoder.yudao.module.system.dal.redis.RedisKeyConstants;
+import cn.iocoder.yudao.module.system.service.user.AdminUserService;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.annotations.VisibleForTesting;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import jakarta.annotation.Resource;
+import org.springframework.web.client.RestTemplate;
+
 import java.util.*;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -38,12 +50,30 @@ import static cn.iocoder.yudao.module.system.enums.ErrorCodeConstants.*;
 @Slf4j
 public class DeptServiceImpl implements DeptService {
 
-    @Autowired
-    @Lazy
-    DeptService deptService; //引入自己，使得数据源切换生效
+//    @Autowired
+//    @Lazy
+//    DeptService deptService; //引入自己，使得数据源切换生效
 
     @Resource
     private DeptMapper deptMapper;
+
+    @Value("${yudao.remote.secret:boen219689120231207}")
+    @Getter
+    @Setter
+    private String secret;
+
+    @Value("${yudao.remote.url}")
+    @Getter
+    @Setter
+    private String remoteUrl;
+
+    @Resource
+    private RestTemplate restTemplate;
+
+
+    @Resource
+    @Lazy
+    private AdminUserService adminUserService;
 
     @Override
     @CacheEvict(cacheNames = RedisKeyConstants.DEPT_CHILDREN_ID_LIST,
@@ -226,20 +256,97 @@ public class DeptServiceImpl implements DeptService {
     @Override
     public void syncDept() {
         //1. 先去获取NC所有的部门
-        List<DeptDO> deptDOList = deptService.getDeptFromNC();
+        List<DeptNcDTO> deptDOList = this.getDeptFromNC();
 
         //2. 给status一个默认值
         deptDOList.forEach(v->v.setStatus(0));
 
-        //3. 有则更新，无则插入
-        deptMapper.insertOrUpdateBatch(deptDOList);
+        //根据leaderUserPhone，查找对应的leaderUserId，如果没有leaderUserPhone，则查找上级的leaderUserPhone
+        //如果没有上级，则不处理
+        for (DeptNcDTO dto : deptDOList) {
+            setLeaderUserId(dto, deptDOList);
+        }
+
+        List<DeptDO> bean = BeanUtils.toBean(deptDOList, DeptDO.class);
+
+//        //3. 有则更新，无则插入
+        deptMapper.insertOrUpdateBatch(bean);
+    }
+
+    /**
+     * 一个递归方法
+     * @param dto
+     * @param deptDOList
+     */
+    private void setLeaderUserId(DeptNcDTO dto, List<DeptNcDTO> deptDOList) {
+        if (dto==null){
+            return;
+        }
+        String leaderUserPhone = dto.getLeaderUserPhone();
+
+        if (leaderUserPhone ==null) {
+            // 如果不为空，则设置为leaderUserId
+            //如果是空的 那就继续找上级的phone，如果找不到就继续找，所以是一个递归的问题
+            leaderUserPhone = findParentLeaderUserPhone(dto.getParentId(), deptDOList);
+
+        }
+        AdminUserDO user = adminUserService.getUser(leaderUserPhone);//根据用户名查询用户
+        if (user!=null){
+            dto.setLeaderUserId(user.getId());
+        }
+    }
+
+    private String findParentLeaderUserPhone(Long parentId, List<DeptNcDTO> deptDOList) {
+        if (parentId==null){
+            return null;
+        }
+        DeptNcDTO parentDept = deptDOList.stream().filter(v -> v.getId().equals(parentId)).findFirst().orElse(null);
+        if (parentDept==null){
+            return null;
+        }
+        if (parentDept.getLeaderUserPhone()!=null){
+            return parentDept.getLeaderUserPhone();
+        }else {
+            return findParentLeaderUserPhone(parentDept.getParentId(),deptDOList);
+        }
     }
 
     @Override
-    @DS("nc65")
-    public List<DeptDO> getDeptFromNC() {
-        return deptMapper.selectFromNC();
+//    @DS("nc65")
+    public List<DeptNcDTO> getDeptFromNC() {
+        long timestamp = System.currentTimeMillis();
+        String accessToken = getAccessToken(timestamp);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", accessToken);
+
+        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+        ParameterizedTypeReference<List<DeptNcDTO>> typeRef = new ParameterizedTypeReference<>() {
+        };
+
+        String baseUrl = remoteUrl + "/server/data/deptDetail";
+        String fullUrl =String.format("%s?timestamp=%s",baseUrl,timestamp);
+        ResponseEntity<List<DeptNcDTO>> response = restTemplate.exchange(
+                fullUrl,
+                HttpMethod.GET,
+                entity,
+                typeRef,
+                1
+        );
+
+        return response.getBody();
     }
+
+
+    private String getAccessToken(Long timestamp){
+        String temp = secret+ timestamp;
+
+        //进行SHA-1加密
+        Digester sha1 = new Digester(DigestAlgorithm.SHA1);
+
+        return sha1.digestHex(temp);
+    }
+
 
     @Override
     public List<DeptDO> getNotExistsLeaderDepts(Collection<Long> ids) {
