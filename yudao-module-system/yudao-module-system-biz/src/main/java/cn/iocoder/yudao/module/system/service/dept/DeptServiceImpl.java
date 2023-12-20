@@ -8,6 +8,7 @@ import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.datapermission.core.annotation.DataPermission;
 import cn.iocoder.yudao.module.system.api.dept.dto.DeptNcDTO;
+import cn.iocoder.yudao.module.system.api.openapi.BoenOpenApi;
 import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptListReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptSaveReqVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO;
@@ -39,6 +40,7 @@ import java.util.*;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertSet;
 import static cn.iocoder.yudao.module.system.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.system.enums.openapi.BoenApiUrlEnums.DEPT_DETAIL_URL;
 
 /**
  * 部门 Service 实现类
@@ -57,15 +59,9 @@ public class DeptServiceImpl implements DeptService {
     @Resource
     private DeptMapper deptMapper;
 
-    @Value("${yudao.remote.secret:boen219689120231207}")
-    @Getter
-    @Setter
-    private String secret;
+    @Resource
+    private BoenOpenApi boenOpenApi;
 
-    @Value("${yudao.remote.url}")
-    @Getter
-    @Setter
-    private String remoteUrl;
 
     @Resource
     private RestTemplate restTemplate;
@@ -314,38 +310,12 @@ public class DeptServiceImpl implements DeptService {
     @Override
 //    @DS("nc65")
     public List<DeptNcDTO> getDeptFromNC() {
-        long timestamp = System.currentTimeMillis();
-        String accessToken = getAccessToken(timestamp);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", accessToken);
-
-        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
         ParameterizedTypeReference<List<DeptNcDTO>> typeRef = new ParameterizedTypeReference<>() {
         };
 
-        String baseUrl = remoteUrl + "/server/data/deptDetail";
-        String fullUrl =String.format("%s?timestamp=%s",baseUrl,timestamp);
-        ResponseEntity<List<DeptNcDTO>> response = restTemplate.exchange(
-                fullUrl,
-                HttpMethod.GET,
-                entity,
-                typeRef,
-                1
-        );
-
-        return response.getBody();
+        return  boenOpenApi.sendRequest(typeRef,DEPT_DETAIL_URL.toString(),"GET");
     }
 
-
-    private String getAccessToken(Long timestamp){
-        String temp = secret+ timestamp;
-
-        //进行SHA-1加密
-        Digester sha1 = new Digester(DigestAlgorithm.SHA1);
-
-        return sha1.digestHex(temp);
-    }
 
 
     @Override
