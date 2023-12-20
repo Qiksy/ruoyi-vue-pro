@@ -75,6 +75,7 @@
         <xercesImpl.version>2.12.2</xercesImpl.version>
         <weixin-java.version>4.5.7.B</weixin-java.version>
         <ureport2.version>2.2.9</ureport2.version>
+        <flyway.version>10.0.0</flyway.version>
     </properties>
 
     <dependencyManagement>
@@ -509,6 +510,15 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
+            <!--实现数据库自动迁移-->
+            <!-- https://mvnrepository.com/artifact/org.flywaydb/flyway-core -->
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-core</artifactId>
+                <version>10.3.0</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>com.google.guava</groupId>
