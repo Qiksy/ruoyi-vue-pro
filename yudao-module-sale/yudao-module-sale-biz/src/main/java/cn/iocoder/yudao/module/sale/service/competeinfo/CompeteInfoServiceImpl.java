@@ -1,5 +1,9 @@
 package cn.iocoder.yudao.module.sale.service.competeinfo;
 
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.framework.mybatis.core.query.QueryWrapperX;
+import cn.iocoder.yudao.module.sale.dal.dataobject.competeinfosub.CompeteInfoSubDO;
+import cn.iocoder.yudao.module.sale.dal.mysql.competeinfosub.CompeteInfoSubMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.poi.ss.formula.functions.T;
@@ -32,6 +36,9 @@ public class CompeteInfoServiceImpl implements CompeteInfoService {
     @Resource
     private CompeteInfoMapper competeInfoMapper;
 
+    @Resource
+    private CompeteInfoSubMapper competeInfoSubMapper;
+
     @Override
     public Long createCompeteInfo(CompeteInfoSaveReqVO createReqVO) {
         // 插入
@@ -51,10 +58,15 @@ public class CompeteInfoServiceImpl implements CompeteInfoService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteCompeteInfo(Long id) {
         // 校验存在
         validateCompeteInfoExists(id);
-        // 删除
+        //删除子表
+        LambdaQueryWrapperX<CompeteInfoSubDO> queryWrapperX = new LambdaQueryWrapperX<>();
+        queryWrapperX.eq(CompeteInfoSubDO::getParentId,id);
+        competeInfoSubMapper.delete(queryWrapperX);
+        // 删除主表
         competeInfoMapper.deleteById(id);
     }
 
