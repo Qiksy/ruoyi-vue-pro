@@ -313,7 +313,7 @@ public class DeptServiceImpl implements DeptService {
         ParameterizedTypeReference<List<DeptNcDTO>> typeRef = new ParameterizedTypeReference<>() {
         };
 
-        return  boenOpenApi.sendRequest(typeRef,DEPT_DETAIL_URL.toString(),"GET");
+        return  boenOpenApi.sendRequest(typeRef,DEPT_DETAIL_URL.getUrl(),"GET",null);
     }
 
 

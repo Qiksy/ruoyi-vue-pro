@@ -574,7 +574,7 @@ public class AdminUserServiceImpl implements AdminUserService {
      * @return
      */
     private List<AdminUserNcDTO> getNcUserListByRemote(){
-        return boenOpenApi.sendRequest(new ParameterizedTypeReference<List<AdminUserNcDTO>>() {}, NC_USER_SYNC_URL.toString(), HttpMethod.GET.toString());
+        return boenOpenApi.sendRequest(new ParameterizedTypeReference<List<AdminUserNcDTO>>() {}, NC_USER_SYNC_URL.getUrl(), HttpMethod.GET.toString(),null);
 
     }
 

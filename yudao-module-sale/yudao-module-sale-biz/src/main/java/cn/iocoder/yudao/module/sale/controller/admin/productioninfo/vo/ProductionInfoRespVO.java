@@ -50,4 +50,10 @@ public class ProductionInfoRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
+    //////////////////////////// 附加字段 ////////////////////////////
+
+    /**
+     * 规格字符串
+     */
+    private String specStr;
 }

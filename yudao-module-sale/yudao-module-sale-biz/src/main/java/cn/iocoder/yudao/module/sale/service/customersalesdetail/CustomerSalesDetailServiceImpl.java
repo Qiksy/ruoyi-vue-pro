@@ -188,9 +188,9 @@ public class CustomerSalesDetailServiceImpl implements CustomerSalesDetailServic
         //
         List<CustomerSalesDetailDO> list = boenOpenApi.sendRequest(
                 typeReference,
-                CUSTOMER_SALES_SYNC_URL.toString(),
+                CUSTOMER_SALES_SYNC_URL.getUrl(),
                 HttpMethod.GET.toString(),
-                (Object) syncReqVO.getTimeRange());
+                 syncReqVO.getTimeRange());
 
         log.info("同步客户销售明细数据大小：{}", list.size());
         // 插入或者更新

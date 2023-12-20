@@ -9,5 +9,7 @@ import org.springframework.core.ParameterizedTypeReference;
  */
 public interface BoenOpenApi {
 
-    public <T> T sendRequest(ParameterizedTypeReference<T> typeRef, String url, String method, Object... params);
+
+
+    public <T> T sendRequest(ParameterizedTypeReference<T> typeRef, String url, String method,String[] timeRange);
 }

@@ -11,6 +11,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 public class BoenOpenApiImpl implements BoenOpenApi{
@@ -28,8 +29,9 @@ public class BoenOpenApiImpl implements BoenOpenApi{
     @Setter
     private String remoteUrl;
 
+
     @Override
-    public <T> T sendRequest(ParameterizedTypeReference<T> typeRef, String url, String method,Object... params) {
+    public <T> T sendRequest(ParameterizedTypeReference<T> typeRef, String url, String method, String[] timeRange) {
         long timestamp = System.currentTimeMillis();
         String accesstoken = getAccessToken(timestamp);
         HttpHeaders headers = new HttpHeaders();
@@ -41,23 +43,21 @@ public class BoenOpenApiImpl implements BoenOpenApi{
         HttpMethod httpMethod = HttpMethod.valueOf(method.toUpperCase());
 
         // params加上时间戳
-        if (params != null && params.length > 0) {
-            // 重新创建一个数组
-            Object[] newParams = new Object[params.length + 1];
-            System.arraycopy(params, 0, newParams, 0, params.length);
-            newParams[params.length] = timestamp;
-            params = newParams;
-        } else {
-            params = new Object[]{timestamp};
+        UriComponentsBuilder finalUrl = UriComponentsBuilder.fromHttpUrl(remoteUrl + url)
+                .queryParam("timestamp", timestamp);
+        if (timeRange != null && timeRange.length == 2) {
+            finalUrl.queryParam("timeRange[0]", timeRange[0]);
+            finalUrl.queryParam("timeRange[1]", timeRange[1]);
         }
 
         ResponseEntity<T> response = restTemplate.exchange(
-                remoteUrl + url,
+                finalUrl.build().toString(),
                 httpMethod,
                 entity,
-                typeRef,
-                params
+                typeRef
         );
+
+
 
 
         return response.getBody();
