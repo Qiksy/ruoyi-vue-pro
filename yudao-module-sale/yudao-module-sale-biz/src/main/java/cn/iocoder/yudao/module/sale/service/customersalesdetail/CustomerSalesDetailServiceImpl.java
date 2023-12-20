@@ -1,12 +1,14 @@
 package cn.iocoder.yudao.module.sale.service.customersalesdetail;
 
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
-import cn.iocoder.yudao.module.sale.service.remote.RemoteService;
+import cn.iocoder.yudao.module.system.api.openapi.BoenOpenApi;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.util.StringUtils;
@@ -27,6 +29,7 @@ import cn.iocoder.yudao.module.sale.dal.mysql.customersalesdetail.CustomerSalesD
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.sale.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.system.enums.openapi.BoenApiUrlEnums.CUSTOMER_SALES_SYNC_URL;
 
 /**
  * 客户销售明细 Service 实现类
@@ -44,9 +47,8 @@ public class CustomerSalesDetailServiceImpl implements CustomerSalesDetailServic
 
     @Resource
     private CustomerSalesDetailMapper customerSalesDetailMapper;
-
     @Resource
-    private RemoteService remoteService;
+    private BoenOpenApi boenOpenApi;
 
     @Override
     public Long createCustomerSalesDetail(CustomerSalesDetailSaveReqVO createReqVO) {
@@ -181,9 +183,14 @@ public class CustomerSalesDetailServiceImpl implements CustomerSalesDetailServic
      */
     @Override
     public void syncCustomerSalesDetail(CustomerSalesDetailSyncReqVO syncReqVO) {
-        // TODO 同步数据
-//        List<CustomerSalesDetailDO> list = detailService.getDoFromNc(syncReqVO);
-        List<CustomerSalesDetailDO> list = remoteService.getCustomerSalesDetail(syncReqVO);
+        ParameterizedTypeReference<List<CustomerSalesDetailDO>> typeReference = new ParameterizedTypeReference<>() {
+        };
+        //
+        List<CustomerSalesDetailDO> list = boenOpenApi.sendRequest(
+                typeReference,
+                CUSTOMER_SALES_SYNC_URL.toString(),
+                HttpMethod.GET.toString(),
+                (Object) syncReqVO.getTimeRange());
 
         log.info("同步客户销售明细数据大小：{}", list.size());
         // 插入或者更新

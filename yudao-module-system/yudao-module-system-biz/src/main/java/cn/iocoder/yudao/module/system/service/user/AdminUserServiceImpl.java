@@ -15,6 +15,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.datapermission.core.util.DataPermissionUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.infra.api.file.FileApi;
+import cn.iocoder.yudao.module.system.api.openapi.BoenOpenApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserNcDTO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.profile.UserProfileUpdatePasswordReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.profile.UserProfileUpdateReqVO;
@@ -63,6 +64,7 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertSet;
 import static cn.iocoder.yudao.module.system.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.system.enums.openapi.BoenApiUrlEnums.NC_USER_SYNC_URL;
 
 /**
  * 后台用户 Service 实现类
@@ -108,15 +110,9 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Resource
     private UserRoleMapper userRoleMapper;
 
-    @Value("${yudao.remote.secret:boen219689120231207}")
-    @Getter
-    @Setter
-    private String secret;
 
-    @Value("${yudao.remote.url}")
-    @Getter
-    @Setter
-    private String remoteUrl;
+    @Resource
+    private BoenOpenApi boenOpenApi;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -578,38 +574,10 @@ public class AdminUserServiceImpl implements AdminUserService {
      * @return
      */
     private List<AdminUserNcDTO> getNcUserListByRemote(){
-        long timestamp = System.currentTimeMillis();
-        String accesstoken = getAccessToken(timestamp);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", accesstoken);
+        return boenOpenApi.sendRequest(new ParameterizedTypeReference<List<AdminUserNcDTO>>() {}, NC_USER_SYNC_URL.toString(), HttpMethod.GET.toString());
 
-        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
-        //这里的大括号是使用了匿名内部类来保留泛型信息
-        ParameterizedTypeReference<List<AdminUserNcDTO>> typeRef = new ParameterizedTypeReference<>() {};
-
-        String baseUrl = remoteUrl + "/server/data/ncUserDetail";
-        String fullUrl =String.format("%s?timestamp=%s",baseUrl,timestamp);
-
-        ResponseEntity<List<AdminUserNcDTO>> response = restTemplate.exchange(
-                fullUrl,
-                HttpMethod.GET,
-                entity,
-                typeRef,
-                1
-        );
-
-        return response.getBody();
     }
 
-    private String getAccessToken(Long timestamp){
-        String temp = secret+ timestamp;
-
-        //进行SHA-1加密
-        Digester sha1 = new Digester(DigestAlgorithm.SHA1);
-
-        return sha1.digestHex(temp);
-    }
 
     @Override
     public AdminUserDO getUserByWecomeId(String openid) {
