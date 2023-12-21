@@ -29,4 +29,20 @@ public class CompeteInfoSaveReqVO {
     @Schema(description = "初始价格", example = "29687")
     private BigDecimal price;
 
+
+    private BigDecimal unitPrice;
+
+    private Long productionId;
+
+    /**
+     * 我方价格
+     */
+    private BigDecimal ourPrice;
+
+    private BigDecimal ourUnitPrice;
+
+    private Long deptId;
+
+    private Long areaId;
+
 }

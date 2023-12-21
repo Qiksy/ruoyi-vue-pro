@@ -79,4 +79,9 @@ public class CompeteInfoDO extends BaseDO {
      */
     private Long deptId;
 
+    /**
+     * 大区战区id
+     */
+    private Long areaId;
+
 }

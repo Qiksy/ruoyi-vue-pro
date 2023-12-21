@@ -42,7 +42,8 @@
         t2.name prodution_name,
         t4.name sale_class_name,
         t1.create_time,
-        dept.name
+        dept.name,
+        users.nickname creatorName
         FROM
         sale_compete_info t1 /** 竞品的信息 */
         left join sale_production_info t2 /**产品信息*/
@@ -50,6 +51,7 @@
         left join sale_production_marsaleclass t4 /**销售分类*/
         on t4.id = t2.marsaleclass_id and t4.deleted=0
         left join system_dept dept on dept.id = t1.dept_id and dept.deleted=0
+        left join system_users users on  users.id = t1.creator
         where t1.deleted = 0
             <if test="req.prodName != null">
                 and t1.prod_name like concat('%',#{req.prodName},'%')
@@ -77,7 +79,8 @@
         t2.name prodution_name,
         t4.name sale_class_name,
         t1.create_time,
-        dept.name
+        dept.name,
+        users.nickname creatorName
         FROM
         sale_compete_info t1 /** 竞品的信息 */
         left join sale_production_info t2 /**产品信息*/
@@ -85,6 +88,7 @@
         left join sale_production_marsaleclass t4 /**销售分类*/
         on t4.id = t2.marsaleclass_id and t4.deleted=0
         left join system_dept dept on dept.id = t1.dept_id and dept.deleted=0
+        left join system_users users on  users.id = t1.creator
         where t1.deleted = 0
         <if test="id != null">
             and t1.id  = #{id}
