@@ -3,7 +3,9 @@ package cn.iocoder.yudao.module.system.service.dept;
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.module.system.api.dept.dto.DeptNcDTO;
 import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptListReqVO;
+import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptRespVO;
 import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptSaveReqVO;
+import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptSimpleRespVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO;
 
 import java.util.Collection;
@@ -62,7 +64,9 @@ public interface DeptService {
      * @param reqVO 筛选条件请求 VO
      * @return 部门列表
      */
-    List<DeptDO> getDeptList(DeptListReqVO reqVO);
+    List<DeptRespVO> getDeptList(DeptListReqVO reqVO);
+
+    List<DeptDO> getDeptList2(DeptListReqVO reqVO);
 
     /**
      * 获得指定编号的部门 Map

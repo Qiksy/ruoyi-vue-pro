@@ -36,4 +36,7 @@ public class DeptRespVO {
     @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED, example = "时间戳格式")
     private LocalDateTime createTime;
 
+    @Schema(description = "部门负责人名称",requiredMode = Schema.RequiredMode.REQUIRED,example = "芋道")
+    private String leaderName;
+
 }

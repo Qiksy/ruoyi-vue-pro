@@ -10,7 +10,9 @@ import cn.iocoder.yudao.framework.datapermission.core.annotation.DataPermission;
 import cn.iocoder.yudao.module.system.api.dept.dto.DeptNcDTO;
 import cn.iocoder.yudao.module.system.api.openapi.BoenOpenApi;
 import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptListReqVO;
+import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptRespVO;
 import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptSaveReqVO;
+import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptSimpleRespVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.user.AdminUserDO;
 import cn.iocoder.yudao.module.system.dal.mysql.dept.DeptMapper;
@@ -197,7 +199,36 @@ public class DeptServiceImpl implements DeptService {
     }
 
     @Override
-    public List<DeptDO> getDeptList(DeptListReqVO reqVO) {
+    public List<DeptRespVO> getDeptList(DeptListReqVO reqVO) {
+        List<DeptDO> list = deptMapper.selectList(reqVO);
+        list.sort(Comparator.comparing(DeptDO::getSort));
+
+        //获取部门负责人ID
+        List<Long> leaderUserIdList = list.stream().map(DeptDO::getLeaderUserId).toList();
+        List<AdminUserDO> userList = adminUserService.getUserList(leaderUserIdList);
+
+        List<DeptRespVO>  result = new ArrayList<>();
+
+        for (DeptDO deptDO : list) {
+            DeptRespVO deptRespVO = BeanUtils.toBean(deptDO, DeptRespVO.class);
+            //设置部门负责人名称
+            if (deptDO.getLeaderUserId()!=null){
+                AdminUserDO user = userList.stream().filter(v -> v.getId().equals(deptDO.getLeaderUserId())).findFirst().orElse(null);
+                if (user!=null){
+                    deptRespVO.setLeaderName(user.getNickname());
+                }
+            }
+            result.add(deptRespVO);
+        }
+
+
+
+        return result;
+    }
+
+
+    @Override
+    public List<DeptDO> getDeptList2(DeptListReqVO reqVO) {
         List<DeptDO> list = deptMapper.selectList(reqVO);
         list.sort(Comparator.comparing(DeptDO::getSort));
         return list;

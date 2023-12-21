@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.*;
 import cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO;
+import cn.iocoder.yudao.module.system.dal.mysql.user.AdminUserMapper;
 import cn.iocoder.yudao.module.system.service.dept.DeptService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,6 +31,9 @@ public class DeptController {
 
     @Resource
     private DeptService deptService;
+
+    @Resource
+    private AdminUserMapper adminUserMapper;
 
     @PostMapping("create")
     @Operation(summary = "创建部门")
@@ -60,8 +64,8 @@ public class DeptController {
     @Operation(summary = "获取部门列表")
     @PreAuthorize("@ss.hasPermission('system:dept:query')")
     public CommonResult<List<DeptRespVO>> getDeptList(DeptListReqVO reqVO) {
-        List<DeptDO> list = deptService.getDeptList(reqVO);
-        return success(BeanUtils.toBean(list, DeptRespVO.class));
+        List<DeptRespVO> list = deptService.getDeptList(reqVO);
+        return success(list);
     }
 
     @GetMapping(value = {"/list-all-simple", "/simple-list"})
@@ -70,7 +74,7 @@ public class DeptController {
         // 获得部门列表，只要开启状态的
         DeptListReqVO reqVO = new DeptListReqVO();
         reqVO.setStatus(CommonStatusEnum.ENABLE.getStatus());
-        List<DeptDO> list = deptService.getDeptList(reqVO);
+        List<DeptDO> list = deptService.getDeptList2(reqVO);
         // 排序后，返回给前端
         list.sort(Comparator.comparing(DeptDO::getSort));
         return success(BeanUtils.toBean(list, DeptSimpleRespVO.class));
