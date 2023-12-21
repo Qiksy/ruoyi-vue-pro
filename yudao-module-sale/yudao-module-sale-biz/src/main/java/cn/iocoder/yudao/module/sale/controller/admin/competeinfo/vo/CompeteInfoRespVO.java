@@ -44,6 +44,12 @@ public class CompeteInfoRespVO {
     @ExcelProperty("当前价格")
     private BigDecimal currentPrice;
 
+
+    /**
+     * 当前单价
+     */
+    private BigDecimal currentUnitPrice;
+
     @Schema(description = "创建时间")
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
@@ -85,6 +91,8 @@ public class CompeteInfoRespVO {
      */
     private String deptName;
 
+    private String areaName;
+
 
 
     /**
@@ -94,4 +102,6 @@ public class CompeteInfoRespVO {
 
 
     private String creatorName;
+
+    private Long areaId;
 }

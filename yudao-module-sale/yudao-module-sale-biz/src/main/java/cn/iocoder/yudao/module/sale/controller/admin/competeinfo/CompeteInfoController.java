@@ -144,9 +144,16 @@ public class CompeteInfoController {
                 BigDecimal price = competeInfoRespVO.getPrice();
                 BigDecimal currentPrice = price.add(priceChanges);
                 competeInfoRespVO.setCurrentPrice(currentPrice);
+                // 如果当前价格不为空，那么当前单价就是当前价格除以规格
+                if (currentPrice != null && competeInfoRespVO.getSpec() != null){
+                    BigDecimal currentUnitPrice = currentPrice.divide(competeInfoRespVO.getSpec(),2,BigDecimal.ROUND_HALF_UP);
+                    competeInfoRespVO.setCurrentUnitPrice(currentUnitPrice);
+                }
             }else {
                 //如果子表为空，那么当前价格就是初始价格
                 competeInfoRespVO.setCurrentPrice(competeInfoRespVO.getPrice());
+                //如果子表为空，那么当前单价就是初始单价
+                competeInfoRespVO.setCurrentUnitPrice(competeInfoRespVO.getUnitPrice());
             }
 
 
