@@ -93,4 +93,19 @@
                   AND dr = 0
             ) t2 ON t2.pk_org = t1.pk_fatherorg
     </select>
+
+    <!--查询大区，用来选择大区战区下拉框的-->
+    <select id="selectList3" resultType="cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptSimpleRespVO">
+        WITH RECURSIVE descendants AS (
+            SELECT id, name, parent_id parentId
+            FROM system_dept
+            WHERE parent_id = '103' and status = 0 and name LIKE '%业务单元%'
+            UNION ALL
+            SELECT system_dept.id, system_dept.name, system_dept.parent_id parentId
+            FROM system_dept
+                     INNER JOIN descendants ON system_dept.parent_id = descendants.id
+            WHERE system_dept.name LIKE '%业务单元%' and status = 0
+        )
+        SELECT * FROM descendants
+    </select>
 </mapper>

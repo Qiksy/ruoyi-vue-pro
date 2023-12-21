@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.system.dal.mysql.dept;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptListReqVO;
+import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptSimpleRespVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -31,4 +32,6 @@ public interface DeptMapper extends BaseMapperX<DeptDO> {
     }
 
     List<DeptDO> selectFromNC();
+
+    List<DeptSimpleRespVO> selectList3(DeptListReqVO reqVO);
 }

@@ -68,6 +68,8 @@ public interface DeptService {
 
     List<DeptDO> getDeptList2(DeptListReqVO reqVO);
 
+    List<DeptSimpleRespVO> getDeptList3(DeptListReqVO reqVO);
+
     /**
      * 获得指定编号的部门 Map
      *

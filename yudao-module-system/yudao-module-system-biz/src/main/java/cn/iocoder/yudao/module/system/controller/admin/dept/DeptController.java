@@ -80,6 +80,16 @@ public class DeptController {
         return success(BeanUtils.toBean(list, DeptSimpleRespVO.class));
     }
 
+    @GetMapping("/area-zone-list")
+    @Operation(summary = "获取战区大区列表")
+    public CommonResult<List<DeptSimpleRespVO>> getSimpleDeptList2() {
+        // 获得部门列表，只要开启状态的
+        DeptListReqVO reqVO = new DeptListReqVO();
+        reqVO.setStatus(CommonStatusEnum.ENABLE.getStatus());
+        List<DeptSimpleRespVO> list = deptService.getDeptList3(reqVO);
+        return success(list);
+    }
+
     @GetMapping("/get")
     @Operation(summary = "获得部门信息")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")

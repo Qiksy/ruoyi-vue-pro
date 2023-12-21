@@ -235,6 +235,13 @@ public class DeptServiceImpl implements DeptService {
     }
 
     @Override
+    public List<DeptSimpleRespVO> getDeptList3(DeptListReqVO reqVO) {
+        List<DeptSimpleRespVO> list = deptMapper.selectList3(reqVO);
+        list.sort(Comparator.comparing(DeptSimpleRespVO::getId));
+        return list;
+    }
+
+    @Override
     public List<DeptDO> getChildDeptList(Long id) {
         List<DeptDO> children = new LinkedList<>();
         // 遍历每一层
