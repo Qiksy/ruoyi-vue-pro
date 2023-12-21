@@ -208,7 +208,7 @@ public class DeptServiceImplTest extends BaseDbUnitTest {
         reqVO.setStatus(CommonStatusEnum.ENABLE.getStatus());
 
         // 调用
-        List<DeptDO> sysDeptDOS = deptService.getDeptList(reqVO);
+        List<DeptDO> sysDeptDOS = deptService.getDeptList2(reqVO);
         // 断言
         assertEquals(1, sysDeptDOS.size());
         assertPojoEquals(dept, sysDeptDOS.get(0));
