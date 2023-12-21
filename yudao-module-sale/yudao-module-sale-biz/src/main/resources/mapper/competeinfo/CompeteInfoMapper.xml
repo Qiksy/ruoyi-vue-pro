@@ -23,6 +23,7 @@
         <result column="our_unit_price" property="ourUnitPrice" />
         <result column="dept_name" property="deptName" />
         <result column="create_time" property="createTime" />
+        <result column="creator_name" property="creatorName" />
     </resultMap>
 
     <!--这里进行分页查询，查询字段设计的表查询太多了，使用代码进行关联的话，非常的麻烦-->
@@ -43,7 +44,7 @@
         t4.name sale_class_name,
         t1.create_time,
         dept.name,
-        users.nickname creatorName
+        users.nickname creator_name
         FROM
         sale_compete_info t1 /** 竞品的信息 */
         left join sale_production_info t2 /**产品信息*/

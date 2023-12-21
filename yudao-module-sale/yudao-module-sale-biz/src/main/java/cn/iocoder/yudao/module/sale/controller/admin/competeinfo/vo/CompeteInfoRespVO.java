@@ -91,4 +91,7 @@ public class CompeteInfoRespVO {
      * 子表行
      */
     private List<CompeteInfoSubRespVO> subRows;
+
+
+    private String creatorName;
 }
