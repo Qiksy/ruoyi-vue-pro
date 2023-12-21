@@ -66,6 +66,28 @@ public class CompeteInfoRespVO {
 
 
     /**
+     * 初始单价
+     */
+    private BigDecimal unitPrice;
+
+    /**
+     * 我方价格（吨价）
+     */
+    private BigDecimal ourPrice;
+
+    /**
+     * 我方价格（单价）
+     */
+    private BigDecimal ourUnitPrice;
+
+    /**
+     * 归属部门（其实这里是选择的几个工厂之一）
+     */
+    private String deptName;
+
+
+
+    /**
      * 子表行
      */
     private List<CompeteInfoSubRespVO> subRows;

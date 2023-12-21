@@ -119,7 +119,7 @@ public class CompeteInfoController {
 //        PageResult<CompeteInfoDO> pageResult = competeInfoService.getCompeteInfoPage(pageReqVO);
 
 
-        //todo 带出 物料名称、产品线、工厂、当前价格
+        //带出 物料名称、产品线、工厂、当前价格
         PageResult<CompeteInfoRespVO> pageResult = competeInfoService.getCompeteInfoPage2(pageReqVO);
 
         //竞品信息子信息

@@ -42,12 +42,41 @@ public class CompeteInfoDO extends BaseDO {
      */
     private BigDecimal spec;
     /**
-     * 对标产品
+     * 对标产品（废弃）
      */
     private Long competeId;
     /**
      * 初始价格
      */
     private BigDecimal price;
+
+
+    /**
+     * 初始单价
+     */
+    private BigDecimal unitPrice;
+
+
+    /**
+     * 对标的我方的产品id
+     */
+    private Long productionId;
+
+
+    /**
+     * 我方价格（吨价）
+     */
+    private BigDecimal ourPrice;
+
+    /**
+     * 我方价格（单价）
+     */
+    private BigDecimal ourUnitPrice;
+
+
+    /**
+     * 归属部门（其实这里是选择的几个工厂之一）
+     */
+    private Long deptId;
 
 }

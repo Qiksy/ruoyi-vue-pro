@@ -18,6 +18,10 @@
         <result column="dept_id" property="deptId" />
         <result column="sale_class_name" property="saleClassName" />
         <result column="prodution_name" property="materialName" />
+        <result column="unit_price" property="unitPrice" />
+        <result column="our_price" property="ourPrice" />
+        <result column="our_unit_price" property="ourUnitPrice" />
+        <result column="dept_name" property="deptName" />
         <result column="create_time" property="createTime" />
     </resultMap>
 
@@ -29,20 +33,23 @@
         t1.brand,
         t1.prod_name,
         t1.spec,
-        t1.compete_id,
         t1.price,
-        t3.name prodution_name,
+        t1.unit_price,
+        t1.production_id,
+        t1.our_price,
+        t1.our_unit_price,
+        t1.dept_id,
+        t2.name prodution_name,
         t4.name sale_class_name,
-        t2.dept_id,
-        t1.create_time
+        t1.create_time,
+        dept.name
         FROM
-          sale_compete_info t1 /** 竞品的信息 */
-        left join sale_production_compete_info t2 /**工厂设置的竞品*/
-          on t1.compete_id = t2.id and t2.deleted=0
-        left join sale_production_info t3 /**物料基本信息*/
-          on t3.id = t2.production_id and t3.deleted=0
+        sale_compete_info t1 /** 竞品的信息 */
+        left join sale_production_info t2 /**产品信息*/
+        on t1.production_id = t2.id and t2.deleted=0
         left join sale_production_marsaleclass t4 /**销售分类*/
-          on t4.id = t3.marsaleclass_id and t4.deleted=0
+        on t4.id = t2.marsaleclass_id and t4.deleted=0
+        left join system_dept dept on dept.id = t1.dept_id and dept.deleted=0
         where t1.deleted = 0
             <if test="req.prodName != null">
                 and t1.prod_name like concat('%',#{req.prodName},'%')
@@ -52,15 +59,6 @@
             </if>
             <if test="req.spec != null">
                 and t1.spec = #{req.spec}
-            </if>
-            <if test="req.productionId != null">
-                and t3.id = #{req.productionId}
-            </if>
-            <if test="req.competeId != null">
-                and t2.id = #{req.competeId}
-            </if>
-            <if test="req.deptId != null">
-                and t2.dept_id = #{req.deptId}
             </if>
     </select>
     <select id="selectInfoById"
