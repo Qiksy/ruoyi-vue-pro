@@ -104,4 +104,10 @@ public class AdminUserDO extends TenantBaseDO {
      */
     private String wecomeId;
 
+
+    /**
+     * 用户编码
+     */
+    private String code;
+
 }

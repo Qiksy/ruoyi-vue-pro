@@ -530,6 +530,7 @@ public class AdminUserServiceImpl implements AdminUserService {
             adminUserDO.setStatus(CommonStatusEnum.ENABLE.getStatus());
             adminUserDO.setPassword(encodePassword(userInitPassword)); //设置默认密码
             adminUserDO.setWecomeId(ncUser.getPkPsndoc());//设置微信id，默认是nc的pkPsndoc
+            adminUserDO.setCode(ncUser.getCode());
             sysUserList.add(adminUserDO);
             roleMap.put(ncUser.getPkPsndoc(),ncUser.getPostName());
         }

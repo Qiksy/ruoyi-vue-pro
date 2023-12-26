@@ -17,6 +17,12 @@ public class UserSaveReqVO {
     @Schema(description = "用户编号", example = "1024")
     private Long id;
 
+
+    /**
+     * 编号
+     */
+    private String code;
+
     @Schema(description = "用户账号", requiredMode = Schema.RequiredMode.REQUIRED, example = "yudao")
     @NotBlank(message = "用户账号不能为空")
     @Pattern(regexp = "^[a-zA-Z0-9]{4,30}$", message = "用户账号由 数字、字母 组成")
