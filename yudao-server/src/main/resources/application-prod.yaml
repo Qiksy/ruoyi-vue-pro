@@ -74,6 +74,12 @@ spring:
           url: jdbc:oracle:thin:@10.18.10.80:1521/rac
           username: nciq
           password: Ad#min#65
+  flyway:
+    enabled: true
+    clean-disabled: true
+    baseline-on-migrate: true
+    baseline-version: 1 # 生产环境环境版本从1开始
+    locations: classpath:db/migration/quartz
 
   # Redis 配置。Redisson 默认的配置足够使用，一般不需要进行调优
   data:

@@ -114,6 +114,12 @@ spring:
             class: org.quartz.simpl.SimpleThreadPool # 线程池类型
     jdbc: # 使用 JDBC 的 JobStore 的时候，JDBC 的配置
       initialize-schema: NEVER # 是否自动使用 SQL 初始化 Quartz 表结构。这里设置成 never ，我们手动创建表结构。
+  flyway:
+    enabled: true
+    clean-disabled: true
+    baseline-on-migrate: true
+    baseline-version: 999 # 本地开发环境永远都不要执行 Flyway 的脚本
+    locations: classpath:db/migration/quartz
 
 --- #################### 消息队列相关 ####################
 
