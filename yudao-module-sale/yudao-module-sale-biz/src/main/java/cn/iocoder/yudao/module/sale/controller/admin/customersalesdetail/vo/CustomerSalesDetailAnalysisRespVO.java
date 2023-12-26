@@ -25,6 +25,8 @@ public class CustomerSalesDetailAnalysisRespVO {
     @ExcelProperty("科普员")
     private String employeeName;
 
+    private String employeeCode;
+
     /**
      * 战区编码
      */
