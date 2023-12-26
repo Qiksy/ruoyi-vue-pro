@@ -92,6 +92,6 @@ public class DeclineWarningDO extends BaseDO {
     /**
      * 审批结果
      */
-    int result;//审批结果
+    Integer result;//审批结果
 
 }
