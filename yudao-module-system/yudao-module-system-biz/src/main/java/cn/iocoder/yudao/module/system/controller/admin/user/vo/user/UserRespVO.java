@@ -76,4 +76,6 @@ public class UserRespVO{
 
     private String pkPsndoc;
 
+    private String code;
+
 }

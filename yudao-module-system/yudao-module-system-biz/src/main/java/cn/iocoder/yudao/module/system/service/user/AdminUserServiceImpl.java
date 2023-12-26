@@ -561,6 +561,7 @@ public class AdminUserServiceImpl implements AdminUserService {
             } else {
                 // 存在，更新以下部门就好了
                 temp.setDeptId(adminUserDO.getDeptId());
+                temp.setCode(adminUserDO.getCode());
                 userMapper.updateById(temp);
             }
         }
