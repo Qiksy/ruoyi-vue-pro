@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.bpm.framework.flowable.core.behavior.script.impl;
+package cn.iocoder.yudao.module.bpm.framework.flowable.core.behavior.script.impl.sale;
 
 import cn.iocoder.yudao.framework.common.exception.ErrorCode;
 import cn.iocoder.yudao.module.bpm.dal.dataobject.task.BpmProcessInstanceExtDO;

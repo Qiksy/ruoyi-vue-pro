@@ -1,21 +1,18 @@
-package cn.iocoder.yudao.module.bpm.framework.flowable.core.behavior.script.impl;
+package cn.iocoder.yudao.module.bpm.framework.flowable.core.behavior.script.impl.sale;
 
 import cn.iocoder.yudao.module.bpm.enums.definition.BpmTaskRuleScriptEnum;
-import cn.iocoder.yudao.module.bpm.framework.flowable.core.behavior.script.BpmTaskAssignScript;
-import lombok.extern.slf4j.Slf4j;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
 /**
- * 大区总
+ * 战区总
  * @author linr
  * @since 2023/12/2 23:01
  */
 @Component
-@Slf4j
-public class BpmTaskAssignDeptLeaderX1tScript extends BpmTaskAssignDeptLeaderAbstractScript {
+public class BpmTaskAssignDeptLeaderX2tScript extends BpmTaskAssignDeptLeaderAbstractScript {
 
 
     /**
@@ -27,7 +24,7 @@ public class BpmTaskAssignDeptLeaderX1tScript extends BpmTaskAssignDeptLeaderAbs
     @Override
     public Set<Long> calculateTaskCandidateUsers(DelegateExecution execution) {
 
-        return calculateTaskCandidateUsers(execution, BpmTaskRuleScriptEnum.AREA_LEADER.getId());
+        return calculateTaskCandidateUsers(execution, BpmTaskRuleScriptEnum.ZONE_LEADER.getId());
     }
 
     /**
@@ -37,6 +34,6 @@ public class BpmTaskAssignDeptLeaderX1tScript extends BpmTaskAssignDeptLeaderAbs
      */
     @Override
     public BpmTaskRuleScriptEnum getEnum() {
-        return BpmTaskRuleScriptEnum.AREA_LEADER;
+        return BpmTaskRuleScriptEnum.ZONE_LEADER;
     }
 }

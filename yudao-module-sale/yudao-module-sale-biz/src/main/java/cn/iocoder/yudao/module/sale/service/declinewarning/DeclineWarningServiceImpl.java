@@ -205,6 +205,10 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
             declineWarningDO.setResult(BpmProcessInstanceResultEnum.PROCESS.getResult()); //正在处理
             declineWarningMapper.updateById(declineWarningDO);
 
+
+            // todo 这里添加一个推送操作，具体逻辑就是将整个流程的所有人，插入到表中
+            // 当查询的时候，可以看得到有关自己的流程信息
+
             log.info("插入流程实例成功，流程实例id为：{}，业务id为：{}", processInstanceId,id);
         }
         return true;
