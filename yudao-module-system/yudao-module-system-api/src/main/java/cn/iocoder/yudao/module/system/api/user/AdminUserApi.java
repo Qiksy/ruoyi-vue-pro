@@ -40,6 +40,9 @@ public interface AdminUserApi {
      */
     List<AdminUserRespDTO> getUserList(Collection<Long> ids);
 
+
+    List<AdminUserRespDTO> getUserListByCodes(Collection<String> codes);
+
     /**
      * 获得指定部门的用户数组
      *

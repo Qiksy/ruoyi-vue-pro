@@ -17,6 +17,7 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.infra.api.file.FileApi;
 import cn.iocoder.yudao.module.system.api.openapi.BoenOpenApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserNcDTO;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.profile.UserProfileUpdatePasswordReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.profile.UserProfileUpdateReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.user.UserImportExcelVO;
@@ -594,4 +595,15 @@ public class AdminUserServiceImpl implements AdminUserService {
 //    public List<AdminUserNcDTO> getUserListByNc() {
 //        return userMapper.selectUserFromNC();
 //    }
+
+
+    @Override
+    public List<AdminUserRespDTO> getUserListByCodes(Collection<String> codes) {
+        LambdaQueryWrapperX<AdminUserDO> queryWrapperX = new LambdaQueryWrapperX<>();
+        queryWrapperX.in(AdminUserDO::getCode,codes);
+
+        List<AdminUserDO> adminUserDOS = userMapper.selectList(queryWrapperX);
+
+        return BeanUtils.toBean(adminUserDOS,AdminUserRespDTO.class);
+    }
 }

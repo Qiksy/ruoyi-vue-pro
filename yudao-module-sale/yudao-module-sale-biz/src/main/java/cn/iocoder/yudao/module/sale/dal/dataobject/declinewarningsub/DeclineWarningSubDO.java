@@ -35,6 +35,8 @@ public class DeclineWarningSubDO extends BaseDO {
      * 客户编码
      */
     private String customerCode;
+
+    private String employeeCode;
     /**
      * 科普员
      */

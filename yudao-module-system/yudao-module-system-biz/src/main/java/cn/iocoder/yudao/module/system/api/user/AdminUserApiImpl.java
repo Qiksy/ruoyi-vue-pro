@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.system.api.user;
 
 import cn.hutool.core.util.ObjUtil;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.user.AdminUserDO;
@@ -77,4 +78,10 @@ public class AdminUserApiImpl implements AdminUserApi {
         userService.validateUserList(ids);
     }
 
+
+    @Override
+    public List<AdminUserRespDTO> getUserListByCodes(Collection<String> codes) {
+
+        return userService.getUserListByCodes(codes);
+    }
 }

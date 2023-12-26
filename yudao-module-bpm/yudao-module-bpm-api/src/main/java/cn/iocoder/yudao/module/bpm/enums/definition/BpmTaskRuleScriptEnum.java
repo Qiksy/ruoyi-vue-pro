@@ -19,7 +19,8 @@ public enum BpmTaskRuleScriptEnum {
     LEADER_X2(21L, "流程发起人的二级领导"),
 
     AREA_LEADER(30L,"大区负责人"),
-    ZONE_LEADER(31L,"战区负责人");
+    ZONE_LEADER(31L,"战区负责人"),
+    KPY(32L,"科普员");
 
 
     /**
