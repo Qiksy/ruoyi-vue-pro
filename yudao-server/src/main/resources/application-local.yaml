@@ -119,7 +119,7 @@ spring:
     clean-disabled: true
     baseline-on-migrate: true
     baseline-version: 999 # 本地开发环境永远都不要执行 Flyway 的脚本
-    locations: classpath:db/migration/quartz
+    locations: classpath:db/migration/mysql
 
 --- #################### 消息队列相关 ####################
 
