@@ -66,4 +66,12 @@ public class DeclineWarningSubDO extends BaseDO {
      */
     private Long parentId;
 
+    /**
+     * 原因分析
+     */
+    private String reasonAnalysis;
+    /**
+     * 改进措施
+     */
+    private String improvementMeasure;
 }
