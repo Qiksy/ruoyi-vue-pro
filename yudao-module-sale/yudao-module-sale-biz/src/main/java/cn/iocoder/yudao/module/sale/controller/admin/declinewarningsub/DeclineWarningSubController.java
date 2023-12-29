@@ -53,6 +53,15 @@ public class DeclineWarningSubController {
         return success(true);
     }
 
+
+    @Operation(summary = "批量更新")
+    @PreAuthorize("@ss.hasPermission('sale:decline-warning:update')")
+    @PostMapping("/batch-update")
+    public CommonResult<Boolean> updateBatch(@Valid @RequestBody List<DeclineWarningSubBatchSaveReqVO> updateReqVO) {
+        declineWarningSubService.updateBatch(updateReqVO);
+        return success(true);
+    }
+
     @DeleteMapping("/delete")
     @Operation(summary = "删除销量下降预警子表")
     @Parameter(name = "id", description = "编号", required = true)

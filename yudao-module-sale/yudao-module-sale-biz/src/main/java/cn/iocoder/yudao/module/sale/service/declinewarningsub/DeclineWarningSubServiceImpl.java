@@ -88,4 +88,17 @@ public class DeclineWarningSubServiceImpl implements DeclineWarningSubService {
 
         return subDOList.stream().collect(Collectors.groupingBy(DeclineWarningSubDO::getParentId));
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateBatch(List<DeclineWarningSubBatchSaveReqVO> updateReqVO) {
+
+        for (DeclineWarningSubBatchSaveReqVO declineWarningSubDO : updateReqVO) {
+            // 校验存在
+            validateDeclineWarningSubExists(declineWarningSubDO.getId());
+            // 更新
+            DeclineWarningSubDO updateObj = BeanUtils.toBean(declineWarningSubDO, DeclineWarningSubDO.class);
+            declineWarningSubMapper.updateById(updateObj);
+        }
+    }
 }
