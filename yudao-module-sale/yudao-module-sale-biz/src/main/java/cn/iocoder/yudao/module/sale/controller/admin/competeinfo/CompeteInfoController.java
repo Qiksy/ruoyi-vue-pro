@@ -107,6 +107,9 @@ public class CompeteInfoController {
                 //如果子表为空，那么当前价格就是初始价格
                 competeInfoRespVO.setCurrentPrice(competeInfoRespVO.getPrice());
             }
+        }else{
+            //如果子表为空，那么当前价格就是初始价格
+            competeInfoRespVO.setCurrentPrice(competeInfoRespVO.getPrice());
         }
 
         return success(competeInfoRespVO);
