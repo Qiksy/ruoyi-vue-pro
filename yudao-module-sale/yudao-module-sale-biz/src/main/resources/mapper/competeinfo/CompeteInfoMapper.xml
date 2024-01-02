@@ -68,6 +68,9 @@
             <if test="req.spec != null">
                 and t1.spec = #{req.spec}
             </if>
+            <if test="req.deptId != null">
+                and t1.dept_id = #{req.deptId}
+            </if>
     </select>
     <select id="selectInfoById"
             resultMap="respVo">

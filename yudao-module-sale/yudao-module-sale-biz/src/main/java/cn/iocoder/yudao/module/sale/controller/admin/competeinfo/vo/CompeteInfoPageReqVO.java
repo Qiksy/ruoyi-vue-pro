@@ -39,6 +39,7 @@ public class CompeteInfoPageReqVO extends PageParam {
     @Schema(description = "产品id ")
     private Long productionId;
 
+    //这个deptId应该需要修改了
     @Schema(description = "部门id")
     private Long deptId;
 

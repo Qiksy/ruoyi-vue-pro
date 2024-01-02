@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.sale.controller.admin.productioninfo;
 
+import cn.iocoder.yudao.framework.security.core.annotations.PreAuthenticated;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -78,6 +79,28 @@ public class ProductionInfoController {
         PageResult<ProductionInfoDO> pageResult = productionInfoService.getProductionInfoPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, ProductionInfoRespVO.class));
     }
+
+
+    //新增一个接口，用来显示和搜索产成品物料
+    @GetMapping("/simple-list")
+    @Operation(summary = "获得物料信息列表")
+    //允许匿名访问
+    @PreAuthenticated
+    public CommonResult<List<ProductionInfoSimpleRespVO>> getProductionInfoList(@Valid ProductionInfoPageReqVO reqVO) {
+        List<ProductionInfoDO> list = productionInfoService.getProductionInfoList(reqVO);
+
+        List<ProductionInfoSimpleRespVO> result = new ArrayList<>();
+        for (ProductionInfoDO productionInfoDO : list) {
+            ProductionInfoSimpleRespVO temp = new ProductionInfoSimpleRespVO();
+            temp.setText(productionInfoDO.getName());
+            temp.setValue(productionInfoDO.getId());
+            temp.setSpec(productionInfoDO.getSpec());
+            result.add(temp);
+        }
+        return success(result);
+    }
+
+
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出物料信息 Excel")

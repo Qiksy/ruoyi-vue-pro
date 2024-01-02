@@ -114,4 +114,19 @@ public class ProductionInfoServiceImpl implements ProductionInfoService {
         return deptIds;
     }
 
+
+    /**
+     * 获取产成品物料以供选择
+     *
+     * @param reqVO
+     * @return
+     */
+    @Override
+    public List<ProductionInfoDO> getProductionInfoList(ProductionInfoPageReqVO reqVO) {
+        LambdaQueryWrapperX<ProductionInfoDO> queryWrapper = new LambdaQueryWrapperX<ProductionInfoDO>();
+        queryWrapper.likeIfPresent(ProductionInfoDO::getName,reqVO.getName())
+                .likeRight(ProductionInfoDO::getId,1001);
+        List<ProductionInfoDO> productionInfoDOS = productionInfoMapper.selectList(queryWrapper);
+        return productionInfoDOS;
+    }
 }

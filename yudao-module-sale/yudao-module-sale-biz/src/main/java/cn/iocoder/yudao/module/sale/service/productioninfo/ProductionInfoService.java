@@ -53,4 +53,11 @@ public interface ProductionInfoService {
     PageResult<ProductionInfoDO> getProductionInfoPage(ProductionInfoPageReqVO pageReqVO);
 
     Map<Long, ProductionInfoDO> getProductionMap(Collection<Long> productionIds);
+
+    /**
+     * 获取产成品物料以供选择
+     * @param reqVO
+     * @return
+     */
+    List<ProductionInfoDO> getProductionInfoList(ProductionInfoPageReqVO reqVO);
 }
