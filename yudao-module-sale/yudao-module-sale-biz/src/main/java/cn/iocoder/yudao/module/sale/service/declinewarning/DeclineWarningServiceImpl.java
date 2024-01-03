@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.sale.service.declinewarning;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.exception.ErrorCode;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.operatelog.core.util.OperateLogUtils;
@@ -168,6 +169,8 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
 
 
     /**
+     *
+     * 获取主子表的信息，并且把部门id和科普员编号设置进流程编码当中
      * @param submitApprovedReqVO
      * @return
      */
@@ -179,6 +182,12 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
 
         List<DeclineWarningDO> sourceList = declineWarningMapper.selectList(new LambdaQueryWrapperX<DeclineWarningDO>().in(DeclineWarningDO::getId, ids));
 
+        //获取主表
+        List<DeclineWarningSubDO> declineWarningSubDOS = declineWarningSubMapper.selectList(new LambdaQueryWrapperX<DeclineWarningSubDO>().in(DeclineWarningSubDO::getParentId, ids));
+        //转为map
+        Map<Long, List<DeclineWarningSubDO>> declineWarningSubMap = declineWarningSubDOS.stream().collect(Collectors.groupingBy(DeclineWarningSubDO::getParentId));
+
+
         checkDeptLeaderByDO(sourceList);
 
         for (DeclineWarningDO declineWarningDO : sourceList) {
@@ -189,6 +198,18 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
             Map<String, Object> processInstanceVariables = new HashMap<>();
             processInstanceVariables.put("zoneCode", Long.valueOf(declineWarningDO.getZoneCode()));
             processInstanceVariables.put("areaCode", Long.valueOf(declineWarningDO.getAreaCode()));
+
+            List<DeclineWarningSubDO> subDOList = declineWarningSubMap.get(declineWarningDO.getId());
+
+            if (CollUtil.isEmpty(subDOList)){
+                //原则上是不能为空的，如果为空，那么就是数据有问题
+                throw exception(new ErrorCode(1022,"掉量预警子表为空，不能发起流程"));
+            }
+
+            String kpyIds = subDOList.stream().map(DeclineWarningSubDO::getEmployeeCode)
+                    .distinct().collect(Collectors.joining(","));
+
+            processInstanceVariables.put("kpyIds",kpyIds); //科普员id
 
             if (StringUtils.hasText(declineWarningDO.getProcessInstanceId())){
                 String areaName = declineWarningDO.getAreaName();
