@@ -3,16 +3,14 @@ package cn.iocoder.yudao.module.system.service.dept;
 import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.util.object.ObjectUtils;
 import cn.iocoder.yudao.framework.test.core.ut.BaseDbUnitTest;
-import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptCreateReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptListReqVO;
-import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptUpdateReqVO;
+import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptSaveReqVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO;
 import cn.iocoder.yudao.module.system.dal.mysql.dept.DeptMapper;
-import cn.iocoder.yudao.module.system.enums.dept.DeptIdEnum;
-import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Import;
 
+import jakarta.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -40,8 +38,9 @@ public class DeptServiceImplTest extends BaseDbUnitTest {
     @Test
     public void testCreateDept() {
         // 准备参数
-        DeptCreateReqVO reqVO = randomPojo(DeptCreateReqVO.class, o -> {
-            o.setParentId(DeptIdEnum.ROOT.getId());
+        DeptSaveReqVO reqVO = randomPojo(DeptSaveReqVO.class, o -> {
+            o.setId(null); // 防止 id 被设置
+            o.setParentId(DeptDO.PARENT_ID_ROOT);
             o.setStatus(randomCommonStatus());
         });
 
@@ -51,7 +50,7 @@ public class DeptServiceImplTest extends BaseDbUnitTest {
         assertNotNull(deptId);
         // 校验记录的属性是否正确
         DeptDO deptDO = deptMapper.selectById(deptId);
-        assertPojoEquals(reqVO, deptDO);
+        assertPojoEquals(reqVO, deptDO, "id");
     }
 
     @Test
@@ -60,9 +59,9 @@ public class DeptServiceImplTest extends BaseDbUnitTest {
         DeptDO dbDeptDO = randomPojo(DeptDO.class, o -> o.setStatus(randomCommonStatus()));
         deptMapper.insert(dbDeptDO);// @Sql: 先插入出一条存在的数据
         // 准备参数
-        DeptUpdateReqVO reqVO = randomPojo(DeptUpdateReqVO.class, o -> {
+        DeptSaveReqVO reqVO = randomPojo(DeptSaveReqVO.class, o -> {
             // 设置更新的 ID
-            o.setParentId(DeptIdEnum.ROOT.getId());
+            o.setParentId(DeptDO.PARENT_ID_ROOT);
             o.setId(dbDeptDO.getId());
             o.setStatus(randomCommonStatus());
         });
@@ -209,7 +208,7 @@ public class DeptServiceImplTest extends BaseDbUnitTest {
         reqVO.setStatus(CommonStatusEnum.ENABLE.getStatus());
 
         // 调用
-        List<DeptDO> sysDeptDOS = deptService.getDeptList(reqVO);
+        List<DeptDO> sysDeptDOS = deptService.getDeptList2(reqVO);
         // 断言
         assertEquals(1, sysDeptDOS.size());
         assertPojoEquals(dept, sysDeptDOS.get(0));

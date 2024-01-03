@@ -5,10 +5,10 @@ import cn.iocoder.yudao.module.member.controller.admin.signin.vo.config.MemberSi
 import cn.iocoder.yudao.module.member.convert.signin.MemberSignInConfigConvert;
 import cn.iocoder.yudao.module.member.dal.dataobject.signin.MemberSignInConfigDO;
 import cn.iocoder.yudao.module.member.dal.mysql.signin.MemberSignInConfigMapper;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.util.Comparator;
 import java.util.List;
 
@@ -70,7 +70,7 @@ public class MemberSignInConfigServiceImpl implements MemberSignInConfigService 
      * 校验 day 是否重复
      *
      * @param day 天
-     * @param id 编号，只有更新的时候会传递
+     * @param id  编号，只有更新的时候会传递
      */
     private void validateSignInConfigDayDuplicate(Integer day, Long id) {
         MemberSignInConfigDO config = memberSignInConfigMapper.selectByDay(day);
@@ -90,7 +90,7 @@ public class MemberSignInConfigServiceImpl implements MemberSignInConfigService 
     }
 
     @Override
-    public List <MemberSignInConfigDO> getSignInConfigList() {
+    public List<MemberSignInConfigDO> getSignInConfigList() {
         List<MemberSignInConfigDO> list = memberSignInConfigMapper.selectList();
         list.sort(Comparator.comparing(MemberSignInConfigDO::getDay));
         return list;

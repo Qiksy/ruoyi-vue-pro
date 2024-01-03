@@ -45,4 +45,5 @@ public interface FileService {
      */
     byte[] getFileContent(Long configId, String path) throws Exception;
 
+    Long createFile2(String originalFilename, String path, byte[] bytes);
 }

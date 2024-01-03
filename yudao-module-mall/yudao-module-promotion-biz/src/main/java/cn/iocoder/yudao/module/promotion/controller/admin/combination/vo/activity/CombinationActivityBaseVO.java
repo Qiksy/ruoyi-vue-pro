@@ -1,10 +1,10 @@
 package cn.iocoder.yudao.module.promotion.controller.admin.combination.vo.activity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
@@ -47,6 +47,10 @@ public class CombinationActivityBaseVO {
     @Schema(description = "开团人数", requiredMode = Schema.RequiredMode.REQUIRED, example = "25222")
     @NotNull(message = "开团人数不能为空")
     private Integer userSize;
+
+    @Schema(description = "虚拟成团", requiredMode = Schema.RequiredMode.REQUIRED, example = "false")
+    @NotNull(message = "虚拟成团不能为空")
+    private Boolean virtualGroup;
 
     @Schema(description = "限制时长（小时）", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
     @NotNull(message = "限制时长不能为空")

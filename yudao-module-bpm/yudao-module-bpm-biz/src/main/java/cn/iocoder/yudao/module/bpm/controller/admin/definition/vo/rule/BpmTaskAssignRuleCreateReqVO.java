@@ -1,10 +1,11 @@
 package cn.iocoder.yudao.module.bpm.controller.admin.definition.vo.rule;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+
+import jakarta.validation.constraints.NotEmpty;
 
 @Schema(description = "管理后台 - 流程任务分配规则的创建 Request VO")
 @Data

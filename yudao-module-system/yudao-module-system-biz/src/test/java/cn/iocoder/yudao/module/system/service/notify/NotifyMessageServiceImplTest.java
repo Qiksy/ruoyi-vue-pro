@@ -11,10 +11,10 @@ import cn.iocoder.yudao.module.system.dal.dataobject.notify.NotifyMessageDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.notify.NotifyTemplateDO;
 import cn.iocoder.yudao.module.system.dal.mysql.notify.NotifyMessageMapper;
 import com.baomidou.mybatisplus.annotation.DbType;
-import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Import;
 
+import jakarta.annotation.Resource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;

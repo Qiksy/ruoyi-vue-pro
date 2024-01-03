@@ -3,6 +3,8 @@ package cn.iocoder.yudao.module.system.service.user;
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserNcDTO;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.profile.UserProfileUpdatePasswordReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.profile.UserProfileUpdateReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.user.*;
@@ -28,14 +30,14 @@ public interface AdminUserService {
      * @param reqVO 用户信息
      * @return 用户编号
      */
-    Long createUser(@Valid UserCreateReqVO reqVO);
+    Long createUser(@Valid UserSaveReqVO createReqVO);
 
     /**
      * 修改用户
      *
-     * @param reqVO 用户信息
+     * @param updateReqVO 用户信息
      */
-    void updateUser(@Valid UserUpdateReqVO reqVO);
+    void updateUser(@Valid UserSaveReqVO updateReqVO);
 
     /**
      * 更新用户的最后登陆信息
@@ -124,6 +126,9 @@ public interface AdminUserService {
      */
     AdminUserDO getUser(Long id);
 
+
+    AdminUserDO getUser(String username);
+
     /**
      * 获得指定部门的用户数组
      *
@@ -171,14 +176,6 @@ public interface AdminUserService {
     }
 
     /**
-     * 获得用户列表
-     *
-     * @param reqVO 列表请求
-     * @return 用户列表
-     */
-    List<AdminUserDO> getUserList(UserExportReqVO reqVO);
-
-    /**
      * 获得用户列表，基于昵称模糊匹配
      *
      * @param nickname 昵称
@@ -212,4 +209,16 @@ public interface AdminUserService {
      */
     boolean isPasswordMatch(String rawPassword, String encodedPassword);
 
+    AdminUserDO getUserByPkPsndoc(String pkPsndoc);
+
+    /**
+     * 同步用户
+     */
+    void syncUser();
+
+//    List<AdminUserNcDTO> getUserListByNc();
+
+    AdminUserDO getUserByWecomeId(String openid);
+
+    List<AdminUserRespDTO> getUserListByCodes(Collection<String> codes);
 }

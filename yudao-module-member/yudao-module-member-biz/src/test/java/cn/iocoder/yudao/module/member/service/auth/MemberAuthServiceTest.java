@@ -1,6 +1,5 @@
 package cn.iocoder.yudao.module.member.service.auth;
 
-import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.util.collection.ArrayUtils;
 import cn.iocoder.yudao.framework.redis.config.YudaoRedisAutoConfiguration;
@@ -12,11 +11,11 @@ import cn.iocoder.yudao.module.system.api.logger.LoginLogApi;
 import cn.iocoder.yudao.module.system.api.oauth2.OAuth2TokenApi;
 import cn.iocoder.yudao.module.system.api.sms.SmsCodeApi;
 import cn.iocoder.yudao.module.system.api.social.SocialUserApi;
-import jakarta.annotation.Resource;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import jakarta.annotation.Resource;
 import java.util.function.Consumer;
 
 import static cn.hutool.core.util.RandomUtil.randomEle;
@@ -47,8 +46,6 @@ public class MemberAuthServiceTest extends BaseDbAndRedisUnitTest {
     private OAuth2TokenApi oauth2TokenApi;
     @MockBean
     private SocialUserApi socialUserApi;
-    @MockBean
-    private WxMaService wxMaService;
     @MockBean
     private PasswordEncoder passwordEncoder;
 

@@ -1,10 +1,9 @@
 package cn.iocoder.yudao.module.member.controller.admin.signin.vo.config;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
+
+import jakarta.validation.constraints.*;
 
 @Schema(description = "管理后台 - 签到规则更新 Request VO")
 @Data

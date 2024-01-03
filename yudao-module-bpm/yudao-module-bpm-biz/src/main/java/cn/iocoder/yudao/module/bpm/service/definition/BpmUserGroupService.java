@@ -1,15 +1,13 @@
 package cn.iocoder.yudao.module.bpm.service.definition;
 
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import java.util.*;
+import jakarta.validation.*;
+
 import cn.iocoder.yudao.module.bpm.controller.admin.definition.vo.group.BpmUserGroupCreateReqVO;
 import cn.iocoder.yudao.module.bpm.controller.admin.definition.vo.group.BpmUserGroupPageReqVO;
 import cn.iocoder.yudao.module.bpm.controller.admin.definition.vo.group.BpmUserGroupUpdateReqVO;
 import cn.iocoder.yudao.module.bpm.dal.dataobject.definition.BpmUserGroupDO;
-import jakarta.validation.Valid;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 
 /**
  * 用户组 Service 接口

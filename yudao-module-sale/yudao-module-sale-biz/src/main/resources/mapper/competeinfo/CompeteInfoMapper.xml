@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.sale.dal.mysql.competeinfo.CompeteInfoMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+    <resultMap id="respVo" type="cn.iocoder.yudao.module.sale.controller.admin.competeinfo.vo.CompeteInfoRespVO">
+        <result column="id" property="id" />
+        <result column="brand" property="brand" />
+        <result column="prod_name" property="prodName" />
+        <result column="spec" property="spec" />
+        <result column="compete_id" property="competeId" />
+        <result column="price" property="price" />
+        <result column="dept_id" property="deptId" />
+        <result column="sale_class_name" property="saleClassName" />
+        <result column="prodution_name" property="materialName" />
+        <result column="unit_price" property="unitPrice" />
+        <result column="our_price" property="ourPrice" />
+        <result column="our_unit_price" property="ourUnitPrice" />
+        <result column="dept_name" property="deptName" />
+        <result column="area_name" property="areaName" />
+        <result column="create_time" property="createTime" />
+        <result column="creator_name" property="creatorName" />
+        <result column="area_id" property="areaId" />
+    </resultMap>
+
+    <!--这里进行分页查询，查询字段设计的表查询太多了，使用代码进行关联的话，非常的麻烦-->
+    <select id="selectPage2"
+            resultMap="respVo">
+        SELECT
+        t1.id,
+        t1.brand,
+        t1.prod_name,
+        t1.spec,
+        t1.price,
+        t1.unit_price,
+        t1.production_id,
+        t1.our_price,
+        t1.our_unit_price,
+        t1.dept_id,
+        t2.name prodution_name,
+        t4.name sale_class_name,
+        t1.create_time,
+        left(dept.name,4) dept_name,
+        REPLACE(dept2.name,'-业务单元','') area_name,
+        users.nickname creator_name,
+        t1.area_id
+        FROM
+        sale_compete_info t1 /** 竞品的信息 */
+        left join sale_production_info t2 /**产品信息*/
+        on t1.production_id = t2.id and t2.deleted=0
+        left join sale_production_marsaleclass t4 /**销售分类*/
+        on t4.id = t2.marsaleclass_id and t4.deleted=0
+        left join system_dept dept on dept.id = t1.dept_id and dept.deleted=0  /**所属工厂*/
+        left join system_dept dept2 on dept2.id = t1.area_id and dept2.deleted=0  /**所属大区战区*/
+        left join system_users users on  users.id = t1.creator
+        where t1.deleted = 0
+            <if test="req.prodName != null">
+                and t1.prod_name like concat('%',#{req.prodName},'%')
+            </if>
+            <if test="req.brand != null">
+                and t1.brand like concat('%',#{req.brand},'%')
+            </if>
+            <if test="req.spec != null">
+                and t1.spec = #{req.spec}
+            </if>
+            <if test="req.deptId != null">
+                and t1.dept_id = #{req.deptId}
+            </if>
+    </select>
+    <select id="selectInfoById"
+            resultMap="respVo">
+        SELECT
+        t1.id,
+        t1.brand,
+        t1.prod_name,
+        t1.spec,
+        t1.price,
+        t1.unit_price,
+        t1.production_id,
+        t1.our_price,
+        t1.our_unit_price,
+        t1.dept_id,
+        t2.name prodution_name,
+        t4.name sale_class_name,
+        t1.create_time,
+        left(dept.name,4) dept_name,
+        REPLACE(dept2.name,'-业务单元','') area_name,
+        users.nickname creator_name,
+        t1.area_id
+        FROM
+        sale_compete_info t1 /** 竞品的信息 */
+        left join sale_production_info t2 /**产品信息*/
+        on t1.production_id = t2.id and t2.deleted=0
+        left join sale_production_marsaleclass t4 /**销售分类*/
+        on t4.id = t2.marsaleclass_id and t4.deleted=0
+        left join system_dept dept on dept.id = t1.dept_id and dept.deleted=0  /**所属工厂*/
+        left join system_dept dept2 on dept2.id = t1.area_id and dept2.deleted=0  /**所属大区战区*/
+        left join system_users users on  users.id = t1.creator
+        where t1.deleted = 0
+        <if test="id != null">
+            and t1.id  = #{id}
+        </if>
+
+
+    </select>
+</mapper>

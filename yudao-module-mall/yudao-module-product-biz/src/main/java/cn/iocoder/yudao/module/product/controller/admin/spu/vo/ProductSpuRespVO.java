@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @ToString(callSuper = true)
 public class ProductSpuRespVO extends ProductSpuBaseVO {
 
-    @Schema(description = "spuId", requiredMode = Schema.RequiredMode.REQUIRED, example = "111")
+    @Schema(description = "商品 SPU 编号", requiredMode = Schema.RequiredMode.REQUIRED, example = "111")
     private Long id;
 
     @Schema(description = "商品价格", requiredMode = Schema.RequiredMode.REQUIRED, example = "1999")
@@ -36,5 +36,8 @@ public class ProductSpuRespVO extends ProductSpuBaseVO {
 
     @Schema(description = "商品状态", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     private Integer status;
+
+    @Schema(description = "浏览量", requiredMode = Schema.RequiredMode.REQUIRED, example = "888")
+    private Integer browseCount;
 
 }

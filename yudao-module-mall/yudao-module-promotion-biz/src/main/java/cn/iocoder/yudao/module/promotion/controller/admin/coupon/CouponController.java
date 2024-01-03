@@ -15,12 +15,12 @@ import cn.iocoder.yudao.module.promotion.service.coupon.CouponService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import java.util.Map;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
@@ -36,15 +36,6 @@ public class CouponController {
     private CouponService couponService;
     @Resource
     private MemberUserApi memberUserApi;
-
-//    @GetMapping("/get")
-//    @Operation(summary = "获得优惠劵")
-//    @Parameter(name = "id", description = "编号", required = true, example = "1024")
-//    @PreAuthorize("@ss.hasPermission('promotion:coupon:query')")
-//    public CommonResult<CouponRespVO> getCoupon(@RequestParam("id") Long id) {
-//        CouponDO coupon = couponService.getCoupon(id);
-//        return success(CouponConvert.INSTANCE.convert(coupon));
-//    }
 
     @DeleteMapping("/delete")
     @Operation(summary = "回收优惠劵")

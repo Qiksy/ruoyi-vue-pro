@@ -3,9 +3,10 @@ package cn.iocoder.yudao.module.system.api.sms.dto.code;
 import cn.iocoder.yudao.framework.common.validation.InEnum;
 import cn.iocoder.yudao.framework.common.validation.Mobile;
 import cn.iocoder.yudao.module.system.enums.sms.SmsSceneEnum;
+import lombok.Data;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 
 /**
  * 短信验证码的校验 Request DTO

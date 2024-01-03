@@ -3,7 +3,7 @@ spring:
     name: yudao-server
 
   profiles:
-    active: local
+    active: '@env@'
 
   main:
     allow-circular-references: true # 允许循环依赖，因为项目是三层架构，无法避免这个情况。
@@ -106,6 +106,32 @@ aj:
     req-check-minute-limit: 60 # check 接口一分钟内请求数限制
     req-verify-minute-limit: 60 # verify 接口一分钟内请求数限制
 
+--- #################### 消息队列相关 ####################
+
+# rocketmq 配置项，对应 RocketMQProperties 配置类
+rocketmq:
+  # Producer 配置项
+  producer:
+    group: ${spring.application.name}_PRODUCER # 生产者分组
+
+spring:
+  # Kafka 配置项，对应 KafkaProperties 配置类
+  kafka:
+    # Kafka Producer 配置项
+    producer:
+      acks: 1 # 0-不应答。1-leader 应答。all-所有 leader 和 follower 应答。
+      retries: 3 # 发送失败时，重试发送的次数
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer # 消息的 value 的序列化
+    # Kafka Consumer 配置项
+    consumer:
+      auto-offset-reset: earliest # 设置消费者分组最初的消费进度为 earliest 。可参考博客 https://blog.csdn.net/lishuangzhe7047/article/details/74530417 理解
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: '*'
+    # Kafka Consumer Listener 监听器配置
+    listener:
+      missing-topics-fatal: false # 消费监听接口监听的主题不存在时，默认会报错。所以通过设置为 false ，解决报错
+
 --- #################### 芋道相关配置 ####################
 
 yudao:
@@ -120,9 +146,17 @@ yudao:
       - /admin-api/mp/open/** # 微信公众号开放平台，微信回调接口，不需要登录
   websocket:
     enable: true # websocket的开关
-    path: /websocket/message # 路径
-    maxOnlineCount: 0 # 最大连接人数
-    sessionMap: true # 保存sessionMap
+    path: /infra/ws # 路径
+    sender-type: local # 消息发送的类型，可选值为 local、redis、rocketmq、kafka、rabbitmq
+    sender-rocketmq:
+      topic: ${spring.application.name}-websocket # 消息发送的 RocketMQ Topic
+      consumer-group: ${spring.application.name}-websocket-consumer # 消息发送的 RocketMQ Consumer Group
+    sender-rabbitmq:
+      exchange: ${spring.application.name}-websocket-exchange # 消息发送的 RabbitMQ Exchange
+      queue: ${spring.application.name}-websocket-queue # 消息发送的 RabbitMQ Queue
+    sender-kafka:
+      topic: ${spring.application.name}-websocket # 消息发送的 Kafka Topic
+      consumer-group: ${spring.application.name}-websocket-consumer # 消息发送的 Kafka Consumer Group
   swagger:
     title: 芋道快速开发平台
     description: 提供管理后台、用户 App 的所有功能
@@ -136,7 +170,7 @@ yudao:
   codegen:
     base-package: ${yudao.info.base-package}
     db-schemas: ${spring.datasource.dynamic.datasource.master.name}
-    front-type: 21 # 前端模版的类型，参见 CodegenFrontTypeEnum 枚举类
+    front-type: 10 # 前端模版的类型，参见 CodegenFrontTypeEnum 枚举类
   error-code: # 错误码相关配置项
     constants-class-list:
       - cn.iocoder.yudao.module.bpm.enums.ErrorCodeConstants
@@ -145,24 +179,20 @@ yudao:
       - cn.iocoder.yudao.module.pay.enums.ErrorCodeConstants
       - cn.iocoder.yudao.module.system.enums.ErrorCodeConstants
       - cn.iocoder.yudao.module.mp.enums.ErrorCodeConstants
-      - cn.iocoder.yudao.module.strain.enums.ErrorCodeConstants
-  mq:
-    redis:
-      pubsub:
-        enable: false # 是否开启 Redis pubsub 广播消费，默认为 true。这里设置成 false，可以按需开启
-      stream:
-        enable: false  # 是否开启 Redis stream 集群消费，默认为 true。这里设置成 false，可以按需开启
   tenant: # 多租户相关配置项
-    enable: true
+    enable: false
     ignore-urls:
       - /admin-api/system/tenant/get-id-by-name # 基于名字获取租户，不许带租户编号
+      - /admin-api/system/tenant/get-by-website # 基于域名获取租户，不许带租户编号
       - /admin-api/system/captcha/get # 获取图片验证码，和租户无关
       - /admin-api/system/captcha/check # 校验图片验证码，和租户无关
       - /admin-api/infra/file/*/get/** # 获取图片，和租户无关
       - /admin-api/system/sms/callback/* # 短信回调接口，无法带上租户编号
       - /admin-api/pay/notify/** # 支付回调通知，不携带租户编号
       - /jmreport/* # 积木报表，无法携带租户编号
+      - /ureport/* # UReport 报表，无法携带租户编号
       - /admin-api/mp/open/** # 微信公众号开放平台，微信回调接口，无法携带租户编号
+      - /system/dept/sync # 同步NC的接口，无需使用 租户编号，但是多租户会出问题
     ignore-tables:
       - system_tenant
       - system_tenant_package
@@ -200,6 +230,7 @@ yudao:
       - jimu_report_link
       - jimu_report_map
       - jimu_report_share
+      - report_ureport_data
       - rep_demo_dxtj
       - rep_demo_employee
       - rep_demo_gongsi
@@ -232,7 +263,9 @@ yudao:
   trade:
     order:
       app-id: 1 # 商户编号
-      expire-time: 2h # 支付的过期时间
+      pay-expire-time: 2h # 支付的过期时间
+      receive-expire-time: 14d # 收货的过期时间
+      comment-expire-time: 7d # 评论的过期时间
     express:
       client: kd_niao
       kd-niao:
@@ -244,7 +277,23 @@ yudao:
 
 debug: false
 
-#积木报表配置
+# 积木报表配置
 minidao :
-  base-package: org.jeecg.modules.jmreport.desreport.dao*
+  base-package: org.jeecg.modules.jmreport.desreport.*
   db-type: mysql
+tencent:
+  work:
+    corp-id: ww1bec1ba79db2f7a0
+    agent-id: 1000002
+    secret: EnBmjP6VC63DozIh5L7YRxgsY-1K4AWNS3fZ04ZYxLQ
+
+# UReport 配置
+ureport:
+  provider:
+    database:
+        disabled: false
+
+
+sys:
+  user:
+    init-password: Boen#@lxUfs0618 # 初始化密码

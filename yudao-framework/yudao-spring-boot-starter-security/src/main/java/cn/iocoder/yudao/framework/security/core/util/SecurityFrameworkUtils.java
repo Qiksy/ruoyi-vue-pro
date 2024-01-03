@@ -1,8 +1,8 @@
 package cn.iocoder.yudao.framework.security.core.util;
 
+import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.web.core.util.WebFrameworkUtils;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 
 /**
@@ -20,6 +21,9 @@ import java.util.Collections;
  */
 public class SecurityFrameworkUtils {
 
+    /**
+     * HEADER 认证头 value 的前缀
+     */
     public static final String AUTHORIZATION_BEARER = "Bearer";
 
     private SecurityFrameworkUtils() {}
@@ -28,19 +32,23 @@ public class SecurityFrameworkUtils {
      * 从请求中，获得认证 Token
      *
      * @param request 请求
-     * @param header 认证 Token 对应的 Header 名字
+     * @param headerName 认证 Token 对应的 Header 名字
+     * @param parameterName 认证 Token 对应的 Parameter 名字
      * @return 认证 Token
      */
-    public static String obtainAuthorization(HttpServletRequest request, String header) {
-        String authorization = request.getHeader(header);
-        if (!StringUtils.hasText(authorization)) {
+    public static String obtainAuthorization(HttpServletRequest request,
+                                             String headerName, String parameterName) {
+        // 1. 获得 Token。优先级：Header > Parameter
+        String token = request.getHeader(headerName);
+        if (StrUtil.isEmpty(token)) {
+            token = request.getParameter(parameterName);
+        }
+        if (!StringUtils.hasText(token)) {
             return null;
         }
-        int index = authorization.indexOf(AUTHORIZATION_BEARER + " ");
-        if (index == -1) { // 未找到
-            return null;
-        }
-        return authorization.substring(index + 7).trim();
+        // 2. 去除 Token 中带的 Bearer
+        int index = token.indexOf(AUTHORIZATION_BEARER + " ");
+        return index >= 0 ? token.substring(index + 7).trim() : token;
     }
 
     /**

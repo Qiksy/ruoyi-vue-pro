@@ -1,12 +1,12 @@
 package cn.iocoder.yudao.module.product.controller.admin.sku.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -51,10 +51,10 @@ public class ProductSkuBaseVO {
     private Double volume;
 
     @Schema(description = "一级分销的佣金，单位：分", example = "199")
-    private Integer subCommissionFirstPrice;
+    private Integer firstBrokeragePrice;
 
     @Schema(description = "二级分销的佣金，单位：分", example = "19")
-    private Integer subCommissionSecondPrice;
+    private Integer secondBrokeragePrice;
 
     @Schema(description = "属性数组")
     private List<Property> properties;

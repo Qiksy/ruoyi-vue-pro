@@ -4,10 +4,10 @@ import cn.iocoder.yudao.module.system.api.notify.NotifyMessageSendApi;
 import cn.iocoder.yudao.module.system.api.notify.dto.NotifySendSingleToUserReqDTO;
 import cn.iocoder.yudao.module.trade.enums.MessageTemplateConstants;
 import cn.iocoder.yudao.module.trade.service.message.bo.TradeOrderMessageWhenDeliveryOrderReqBO;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +25,9 @@ public class TradeMessageServiceImpl implements TradeMessageService {
 
     @Override
     public void sendMessageWhenDeliveryOrder(TradeOrderMessageWhenDeliveryOrderReqBO reqBO) {
+        if (true) {
+            return;
+        }
         // 1、构造消息
         Map<String, Object> msgMap = new HashMap<>(2);
         msgMap.put("orderId", reqBO.getOrderId());

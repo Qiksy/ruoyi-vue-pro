@@ -7,11 +7,11 @@ import cn.iocoder.yudao.module.bpm.service.message.dto.BpmMessageSendWhenProcess
 import cn.iocoder.yudao.module.bpm.service.message.dto.BpmMessageSendWhenProcessInstanceRejectReqDTO;
 import cn.iocoder.yudao.module.bpm.service.message.dto.BpmMessageSendWhenTaskCreatedReqDTO;
 import cn.iocoder.yudao.module.system.api.sms.SmsSendApi;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,6 +61,11 @@ public class BpmMessageServiceImpl implements BpmMessageService {
                 BpmMessageEnum.TASK_ASSIGNED.getSmsTemplateCode(), templateParams));
     }
 
+    /**
+     * 这里的作用是返回任务详情的 URL
+     * @param taskId 任务编号
+     * @return 任务详情的 URL
+     */
     private String getProcessInstanceDetailUrl(String taskId) {
         return webProperties.getAdminUi().getUrl() + "/bpm/process-instance/detail?id=" + taskId;
     }

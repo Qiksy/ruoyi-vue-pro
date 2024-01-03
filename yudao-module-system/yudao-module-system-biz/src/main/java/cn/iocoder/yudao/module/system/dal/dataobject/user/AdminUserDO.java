@@ -93,4 +93,21 @@ public class AdminUserDO extends TenantBaseDO {
      */
     private LocalDateTime loginDate;
 
+    /**
+     * bd_psndoc.pk_psndoc
+     * 附加的主键
+     */
+    private String pkPsndoc;
+
+    /**
+     * 企业微信的id
+     */
+    private String wecomeId;
+
+
+    /**
+     * 用户编码
+     */
+    private String code;
+
 }

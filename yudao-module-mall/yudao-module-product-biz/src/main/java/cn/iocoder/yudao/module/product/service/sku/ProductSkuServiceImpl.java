@@ -14,12 +14,12 @@ import cn.iocoder.yudao.module.product.dal.mysql.sku.ProductSkuMapper;
 import cn.iocoder.yudao.module.product.service.property.ProductPropertyService;
 import cn.iocoder.yudao.module.product.service.property.ProductPropertyValueService;
 import cn.iocoder.yudao.module.product.service.spu.ProductSpuService;
-import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -153,6 +153,9 @@ public class ProductSkuServiceImpl implements ProductSkuService {
 
     @Override
     public List<ProductSkuDO> getSkuListBySpuId(Collection<Long> spuIds) {
+        if (CollUtil.isEmpty(spuIds)) {
+            return Collections.emptyList();
+        }
         return productSkuMapper.selectListBySpuId(spuIds);
     }
 

@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.pay.api.order;
 
 import cn.iocoder.yudao.module.pay.api.order.dto.PayOrderCreateReqDTO;
 import cn.iocoder.yudao.module.pay.api.order.dto.PayOrderRespDTO;
+
 import jakarta.validation.Valid;
 
 /**
@@ -28,13 +29,12 @@ public interface PayOrderApi {
      */
     PayOrderRespDTO getOrder(Long id);
 
-    // TODO @puhui999：可以去掉 byId；然后 payOrderId 参数改成 id；
     /**
      * 更新支付订单价格
      *
-     * @param payOrderId 支付单编号
+     * @param id 支付单编号
      * @param payPrice   支付单价格
      */
-    void updatePayOrderPriceById(Long payOrderId, Integer payPrice);
+    void updatePayOrderPrice(Long id, Integer payPrice);
 
 }

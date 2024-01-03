@@ -6,6 +6,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Properties;
 
 @Mapper
@@ -19,8 +20,8 @@ public interface RedisConvert {
         commandStats.forEach((key, value) -> {
             respVO.getCommandStats().add(RedisMonitorRespVO.CommandStat.builder()
                     .command(StrUtil.subAfter((String) key, "cmdstat_", false))
-                    .calls(Long.valueOf(StrUtil.subBetween((String) value, "calls=", ",")))
-                    .usec(Long.valueOf(StrUtil.subBetween((String) value, "usec=", ",")))
+                    .calls(Long.valueOf(Optional.ofNullable(StrUtil.subBetween((String) value, "calls=", ",")).orElse("0"))                    )
+                    .usec(Long.valueOf(Optional.ofNullable(StrUtil.subBetween((String) value, "usec=", ",")).orElse("0")))
                     .build());
         });
         return respVO;

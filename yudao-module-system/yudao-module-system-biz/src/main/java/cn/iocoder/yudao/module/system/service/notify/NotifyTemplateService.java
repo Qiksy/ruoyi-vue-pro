@@ -1,12 +1,11 @@
 package cn.iocoder.yudao.module.system.service.notify;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.system.controller.admin.notify.vo.template.NotifyTemplateCreateReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.notify.vo.template.NotifyTemplatePageReqVO;
-import cn.iocoder.yudao.module.system.controller.admin.notify.vo.template.NotifyTemplateUpdateReqVO;
+import cn.iocoder.yudao.module.system.controller.admin.notify.vo.template.NotifyTemplateSaveReqVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.notify.NotifyTemplateDO;
-import jakarta.validation.Valid;
 
+import jakarta.validation.Valid;
 import java.util.Map;
 
 /**
@@ -22,14 +21,14 @@ public interface NotifyTemplateService {
      * @param createReqVO 创建信息
      * @return 编号
      */
-    Long createNotifyTemplate(@Valid NotifyTemplateCreateReqVO createReqVO);
+    Long createNotifyTemplate(@Valid NotifyTemplateSaveReqVO createReqVO);
 
     /**
      * 更新站内信模版
      *
      * @param updateReqVO 更新信息
      */
-    void updateNotifyTemplate(@Valid NotifyTemplateUpdateReqVO updateReqVO);
+    void updateNotifyTemplate(@Valid NotifyTemplateSaveReqVO updateReqVO);
 
     /**
      * 删除站内信模版

@@ -26,12 +26,12 @@ import cn.iocoder.yudao.module.pay.service.app.PayAppService;
 import cn.iocoder.yudao.module.pay.service.channel.PayChannelService;
 import cn.iocoder.yudao.module.pay.service.notify.PayNotifyService;
 import cn.iocoder.yudao.module.pay.service.order.PayOrderService;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -156,11 +156,11 @@ public class PayRefundServiceImpl implements PayRefundService {
     private PayOrderDO validatePayOrderCanRefund(PayRefundCreateReqDTO reqDTO) {
         PayOrderDO order = orderService.getOrder(reqDTO.getAppId(), reqDTO.getMerchantOrderId());
         if (order == null) {
-            throw exception(ORDER_NOT_FOUND);
+            throw exception(PAY_ORDER_NOT_FOUND);
         }
         // 校验状态，必须是已支付、或者已退款
         if (!PayOrderStatusEnum.isSuccessOrRefund(order.getStatus())) {
-            throw exception(ORDER_REFUND_FAIL_STATUS_ERROR);
+            throw exception(PAY_ORDER_REFUND_FAIL_STATUS_ERROR);
         }
 
         // 校验金额，退款金额不能大于原定的金额

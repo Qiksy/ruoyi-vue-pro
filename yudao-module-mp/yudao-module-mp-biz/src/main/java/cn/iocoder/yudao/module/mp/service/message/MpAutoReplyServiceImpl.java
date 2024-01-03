@@ -16,8 +16,6 @@ import cn.iocoder.yudao.module.mp.enums.message.MpAutoReplyTypeEnum;
 import cn.iocoder.yudao.module.mp.framework.mp.core.util.MpUtils;
 import cn.iocoder.yudao.module.mp.service.account.MpAccountService;
 import cn.iocoder.yudao.module.mp.service.message.bo.MpMessageSendOutReqBO;
-import jakarta.annotation.Resource;
-import jakarta.validation.Validator;
 import me.chanjar.weixin.common.api.WxConsts;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlMessage;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlOutMessage;
@@ -25,6 +23,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
+import jakarta.validation.Validator;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;

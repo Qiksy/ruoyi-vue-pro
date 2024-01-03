@@ -2,7 +2,6 @@ package cn.iocoder.yudao.module.report.service.goview;
 
 import cn.iocoder.yudao.framework.test.core.ut.BaseDbUnitTest;
 import cn.iocoder.yudao.module.report.controller.admin.goview.vo.data.GoViewDataRespVO;
-import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -10,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
 
+import jakarta.annotation.Resource;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

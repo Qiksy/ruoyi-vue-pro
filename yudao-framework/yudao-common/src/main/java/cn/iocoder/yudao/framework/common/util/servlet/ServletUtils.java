@@ -88,6 +88,8 @@ public class ServletUtils {
         return JakartaServletUtil.getClientIP(request);
     }
 
+    // TODO @疯狂：terminal 还是从 ServletUtils 里拿，更容易全局治理；
+
     public static boolean isJsonRequest(ServletRequest request) {
         return StrUtil.startWithIgnoreCase(request.getContentType(), MediaType.APPLICATION_JSON_VALUE);
     }
@@ -107,4 +109,5 @@ public class ServletUtils {
     public static Map<String, String> getParamMap(HttpServletRequest request) {
         return JakartaServletUtil.getParamMap(request);
     }
+
 }

@@ -1,10 +1,10 @@
 package cn.iocoder.yudao.module.trade.framework.order.config;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.Duration;
 
 /**
@@ -28,6 +28,18 @@ public class TradeOrderProperties {
      * 支付超时时间
      */
     @NotNull(message = "支付超时时间不能为空")
-    private Duration expireTime;
+    private Duration payExpireTime;
+
+    /**
+     * 收货超时时间
+     */
+    @NotNull(message = "收货超时时间不能为空")
+    private Duration receiveExpireTime;
+
+    /**
+     * 评论超时时间
+     */
+    @NotNull(message = "评论超时时间不能为空")
+    private Duration commentExpireTime;
 
 }

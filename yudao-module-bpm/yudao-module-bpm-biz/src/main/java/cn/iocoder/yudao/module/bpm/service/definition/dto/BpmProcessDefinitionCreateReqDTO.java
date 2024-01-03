@@ -3,11 +3,11 @@ package cn.iocoder.yudao.module.bpm.service.definition.dto;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.module.bpm.enums.definition.BpmModelFormTypeEnum;
+import lombok.Data;
+
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-
 import java.util.List;
 import java.util.Objects;
 

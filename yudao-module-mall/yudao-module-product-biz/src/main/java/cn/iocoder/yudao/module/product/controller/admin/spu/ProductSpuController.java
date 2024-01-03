@@ -8,20 +8,22 @@ import cn.iocoder.yudao.module.product.controller.admin.spu.vo.*;
 import cn.iocoder.yudao.module.product.convert.spu.ProductSpuConvert;
 import cn.iocoder.yudao.module.product.dal.dataobject.sku.ProductSkuDO;
 import cn.iocoder.yudao.module.product.dal.dataobject.spu.ProductSpuDO;
+import cn.iocoder.yudao.module.product.enums.spu.ProductSpuStatusEnum;
 import cn.iocoder.yudao.module.product.service.sku.ProductSkuService;
 import cn.iocoder.yudao.module.product.service.spu.ProductSpuService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -88,11 +90,13 @@ public class ProductSpuController {
         return success(ProductSpuConvert.INSTANCE.convertForSpuDetailRespVO(spu, skus));
     }
 
-    @GetMapping("/get-simple-list")
+    @GetMapping("/list-all-simple")
     @Operation(summary = "获得商品 SPU 精简列表")
     @PreAuthorize("@ss.hasPermission('product:spu:query')")
     public CommonResult<List<ProductSpuSimpleRespVO>> getSpuSimpleList() {
-        List<ProductSpuDO> list = productSpuService.getSpuList();
+        List<ProductSpuDO> list = productSpuService.getSpuListByStatus(ProductSpuStatusEnum.ENABLE.getStatus());
+        // 降序排序后，返回给前端
+        list.sort(Comparator.comparing(ProductSpuDO::getSort).reversed());
         return success(ProductSpuConvert.INSTANCE.convertList02(list));
     }
 

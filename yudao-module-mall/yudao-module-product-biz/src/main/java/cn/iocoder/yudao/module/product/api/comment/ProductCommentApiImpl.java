@@ -2,9 +2,10 @@ package cn.iocoder.yudao.module.product.api.comment;
 
 import cn.iocoder.yudao.module.product.api.comment.dto.ProductCommentCreateReqDTO;
 import cn.iocoder.yudao.module.product.service.comment.ProductCommentService;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import jakarta.annotation.Resource;
 
 /**
  * 商品评论 API 实现类

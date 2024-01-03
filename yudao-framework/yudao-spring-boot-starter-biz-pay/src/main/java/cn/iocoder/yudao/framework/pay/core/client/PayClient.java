@@ -4,6 +4,9 @@ import cn.iocoder.yudao.framework.pay.core.client.dto.order.PayOrderRespDTO;
 import cn.iocoder.yudao.framework.pay.core.client.dto.order.PayOrderUnifiedReqDTO;
 import cn.iocoder.yudao.framework.pay.core.client.dto.refund.PayRefundRespDTO;
 import cn.iocoder.yudao.framework.pay.core.client.dto.refund.PayRefundUnifiedReqDTO;
+import cn.iocoder.yudao.framework.pay.core.client.dto.transfer.PayTransferRespDTO;
+import cn.iocoder.yudao.framework.pay.core.client.dto.transfer.PayTransferUnifiedReqDTO;
+import cn.iocoder.yudao.framework.pay.core.enums.transfer.PayTransferTypeEnum;
 
 import java.util.Map;
 
@@ -76,4 +79,20 @@ public interface PayClient {
      */
     PayRefundRespDTO getRefund(String outTradeNo, String outRefundNo);
 
+    /**
+     * 调用渠道，进行转账
+     *
+     * @param reqDTO 统一转账请求信息
+     * @return 转账信息
+     */
+    PayTransferRespDTO unifiedTransfer(PayTransferUnifiedReqDTO reqDTO);
+
+    /**
+     * 获得转账订单信息
+     *
+     * @param outTradeNo 外部订单号
+     * @param type 转账类型
+     * @return 转账信息
+     */
+    PayTransferRespDTO getTransfer(String outTradeNo, PayTransferTypeEnum type);
 }

@@ -17,12 +17,12 @@ import cn.iocoder.yudao.module.member.dal.mysql.level.MemberLevelMapper;
 import cn.iocoder.yudao.module.member.enums.MemberExperienceBizTypeEnum;
 import cn.iocoder.yudao.module.member.service.user.MemberUserService;
 import com.google.common.annotations.VisibleForTesting;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -239,7 +239,8 @@ public class MemberLevelServiceImpl implements MemberLevelService {
 
         // 1. 创建经验记录
         MemberUserDO user = memberUserService.getUser(userId);
-        int userExperience = NumberUtil.max(user.getExperience() + experience, 0); // 防止扣出负数
+        Integer userExperience = ObjUtil.defaultIfNull(user.getExperience(), 0);
+        userExperience = NumberUtil.max(userExperience + experience, 0); // 防止扣出负数
         MemberLevelRecordDO levelRecord = new MemberLevelRecordDO()
                 .setUserId(user.getId())
                 .setExperience(experience)

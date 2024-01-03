@@ -1,11 +1,13 @@
 package cn.iocoder.yudao.module.pay.api.notify.dto;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import cn.iocoder.yudao.module.pay.enums.refund.PayRefundStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * 退款单的通知 Request DTO

@@ -1,0 +1,172 @@
+package cn.iocoder.yudao.module.sale.controller.admin.productioncompeteinfo;
+
+import cn.iocoder.yudao.module.sale.dal.dataobject.productioninfo.ProductionInfoDO;
+import cn.iocoder.yudao.module.sale.service.productioninfo.ProductionInfoService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.web.bind.annotation.*;
+import jakarta.annotation.Resource;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.security.access.prepost.PreAuthorize;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Operation;
+
+import jakarta.validation.constraints.*;
+import jakarta.validation.*;
+import jakarta.servlet.http.*;
+import java.util.*;
+import java.io.IOException;
+import java.util.stream.Collectors;
+
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
+
+import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+
+import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
+import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.*;
+
+import cn.iocoder.yudao.module.sale.controller.admin.productioncompeteinfo.vo.*;
+import cn.iocoder.yudao.module.sale.dal.dataobject.productioncompeteinfo.ProductionCompeteInfoDO;
+import cn.iocoder.yudao.module.sale.service.productioncompeteinfo.ProductionCompeteInfoService;
+
+@Tag(name = "管理后台 - 工厂竞品管理")
+@RestController
+@RequestMapping("/sale/production-compete-info")
+@Validated
+public class ProductionCompeteInfoController {
+
+    @Resource
+    private ProductionCompeteInfoService productionCompeteInfoService;
+
+    @Resource
+    private ProductionInfoService productionInfoService;
+
+    @PostMapping("/create")
+    @Operation(summary = "创建工厂竞品管理")
+    @PreAuthorize("@ss.hasPermission('sale:production-compete-info:create')")
+    public CommonResult<Long> createProductionCompeteInfo(@Valid @RequestBody ProductionCompeteInfoSaveReqVO createReqVO) {
+        return success(productionCompeteInfoService.createProductionCompeteInfo(createReqVO));
+    }
+
+    @PutMapping("/update")
+    @Operation(summary = "更新工厂竞品管理")
+    @PreAuthorize("@ss.hasPermission('sale:production-compete-info:update')")
+    public CommonResult<Boolean> updateProductionCompeteInfo(@Valid @RequestBody ProductionCompeteInfoSaveReqVO updateReqVO) {
+        productionCompeteInfoService.updateProductionCompeteInfo(updateReqVO);
+        return success(true);
+    }
+
+    @DeleteMapping("/delete")
+    @Operation(summary = "删除工厂竞品管理")
+    @Parameter(name = "id", description = "编号", required = true)
+    @PreAuthorize("@ss.hasPermission('sale:production-compete-info:delete')")
+    public CommonResult<Boolean> deleteProductionCompeteInfo(@RequestParam("id") Long id) {
+        productionCompeteInfoService.deleteProductionCompeteInfo(id);
+        return success(true);
+    }
+
+    @GetMapping("/get")
+    @Operation(summary = "获得工厂竞品管理")
+    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+    @PreAuthorize("@ss.hasPermission('sale:production-compete-info:query')")
+    public CommonResult<ProductionCompeteInfoRespVO> getProductionCompeteInfo(@RequestParam("id") Long id) {
+        ProductionCompeteInfoDO productionCompeteInfo = productionCompeteInfoService.getProductionCompeteInfo(id);
+
+        // 把物料名称也查询出来
+
+        Map<Long, ProductionInfoDO> productionMap = productionInfoService.getProductionMap(Collections.singletonList(productionCompeteInfo.getProductionId()));
+
+        ProductionCompeteInfoRespVO respVO = BeanUtils.toBean(productionCompeteInfo, ProductionCompeteInfoRespVO.class);
+        respVO.setProductionName(productionMap.get(productionCompeteInfo.getProductionId()).getName());
+        return success(respVO);
+    }
+
+    @GetMapping("/page")
+    @Operation(summary = "获得工厂竞品管理分页")
+    @PreAuthorize("@ss.hasPermission('sale:production-compete-info:query')")
+    public CommonResult<PageResult<ProductionCompeteInfoRespVO>> getProductionCompeteInfoPage(@Valid ProductionCompeteInfoPageReqVO pageReqVO) {
+        PageResult<ProductionCompeteInfoDO> pageResult = productionCompeteInfoService.getProductionCompeteInfoPage(pageReqVO);
+        // 顺便吧物料名称也查询出来
+        List<Long> productionIds = pageResult.getList().stream().map(ProductionCompeteInfoDO::getProductionId).distinct().collect(Collectors.toList());
+        Map<Long, ProductionInfoDO> productionMap = productionInfoService.getProductionMap(productionIds);
+        List<ProductionCompeteInfoRespVO> list = new ArrayList<>(pageResult.getList().size());
+        for (ProductionCompeteInfoDO productionCompeteInfo : pageResult.getList()) {
+            ProductionCompeteInfoRespVO respVO = BeanUtils.toBean(productionCompeteInfo, ProductionCompeteInfoRespVO.class);
+            respVO.setProductionName(productionMap.get(productionCompeteInfo.getProductionId()).getName());
+            list.add(respVO);
+        }
+
+        return success(new PageResult<>(list, pageResult.getTotal()));
+    }
+
+
+    @GetMapping("/list")
+    @Operation(summary = "获得工厂竞品管理列表")
+    @PreAuthorize("@ss.hasPermission('sale:production-compete-info:query')")
+    public CommonResult<ArrayNode> getProductionCompeteInfoList(@Valid ProductionCompeteInfoListReqVO listReqVO) {
+        List<ProductionCompeteInfoRespVO> list = productionCompeteInfoService.getProductionCompeteInfoList(listReqVO);
+
+        // 按照工厂id进行分组
+        Map<Long, List<ProductionCompeteInfoRespVO>> map = list.stream().collect(Collectors.groupingBy(ProductionCompeteInfoRespVO::getDeptId));
+        // 创建一个json数组
+        JsonNodeFactory factory = JsonNodeFactory.instance;
+        ArrayNode jsonNodes = factory.arrayNode();
+
+        for (Map.Entry<Long, List<ProductionCompeteInfoRespVO>> longListEntry : map.entrySet()) {
+            ObjectNode root = factory.objectNode();
+            root.put("text", getDeptName(longListEntry.getKey()));
+
+            ArrayNode children = factory.arrayNode();
+            for (ProductionCompeteInfoRespVO productionCompeteInfoRespVO : longListEntry.getValue()) {
+                ObjectNode child = factory.objectNode();
+                child.put("text", productionCompeteInfoRespVO.getProductionName());
+                child.put("id", String.valueOf(productionCompeteInfoRespVO.getId()));
+                children.add(child);
+            }
+
+            root.set("children", children);
+            jsonNodes.add(root);
+        }
+
+        return success(jsonNodes);
+    }
+
+    private String getDeptName(Long deptId) {
+        if (deptId == null){
+            return "未知";
+        }
+        switch (String.valueOf(deptId)){
+            case "10201":
+                return "播恩集团";
+            case "10202":
+                return "佛山播恩";
+            case "10203":
+                return "浙江播恩";
+            case "10214":
+                return "重庆八维";
+            default:
+                return "未知";
+        }
+    }
+
+    @GetMapping("/export-excel")
+    @Operation(summary = "导出工厂竞品管理 Excel")
+    @PreAuthorize("@ss.hasPermission('sale:production-compete-info:export')")
+    @OperateLog(type = EXPORT)
+    public void exportProductionCompeteInfoExcel(@Valid ProductionCompeteInfoPageReqVO pageReqVO,
+              HttpServletResponse response) throws IOException {
+        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        List<ProductionCompeteInfoDO> list = productionCompeteInfoService.getProductionCompeteInfoPage(pageReqVO).getList();
+        // 导出 Excel
+        ExcelUtils.write(response, "工厂竞品管理.xls", "数据", ProductionCompeteInfoRespVO.class,
+                        BeanUtils.toBean(list, ProductionCompeteInfoRespVO.class));
+    }
+
+}

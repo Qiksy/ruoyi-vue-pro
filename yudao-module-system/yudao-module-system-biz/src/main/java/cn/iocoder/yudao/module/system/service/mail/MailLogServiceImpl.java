@@ -7,10 +7,10 @@ import cn.iocoder.yudao.module.system.dal.dataobject.mail.MailLogDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.mail.MailTemplateDO;
 import cn.iocoder.yudao.module.system.dal.mysql.mail.MailLogMapper;
 import cn.iocoder.yudao.module.system.enums.mail.MailSendStatusEnum;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;

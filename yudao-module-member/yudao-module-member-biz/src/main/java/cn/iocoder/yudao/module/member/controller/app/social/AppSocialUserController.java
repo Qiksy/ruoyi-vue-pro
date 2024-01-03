@@ -7,12 +7,13 @@ import cn.iocoder.yudao.module.member.controller.app.social.vo.AppSocialUserBind
 import cn.iocoder.yudao.module.member.controller.app.social.vo.AppSocialUserUnbindReqVO;
 import cn.iocoder.yudao.module.member.convert.social.SocialUserConvert;
 import cn.iocoder.yudao.module.system.api.social.SocialUserApi;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 
 import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
 

@@ -5,14 +5,14 @@ import cn.iocoder.yudao.framework.common.validation.InEnum;
 import cn.iocoder.yudao.module.promotion.enums.common.PromotionConditionTypeEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -84,7 +84,7 @@ public class RewardActivityBaseVO {
         @Schema(description = "赠送的优惠劵编号的数组", example = "1,2,3")
         private List<Long> couponIds;
 
-        @Schema(description = "赠送的优惠卷数量的数组", example = "1,2,3")
+        @Schema(description = "赠送的优惠券数量的数组", example = "1,2,3")
         private List<Integer> couponCounts;
 
         @AssertTrue(message = "优惠劵和数量必须一一对应")

@@ -2,9 +2,9 @@ package cn.iocoder.yudao.module.system.api.permission;
 
 import cn.iocoder.yudao.module.system.api.permission.dto.DeptDataPermissionRespDTO;
 import cn.iocoder.yudao.module.system.service.permission.PermissionService;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.Resource;
 import java.util.Collection;
 import java.util.Set;
 

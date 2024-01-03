@@ -3,9 +3,10 @@ package cn.iocoder.yudao.module.system.api.social.dto;
 import cn.iocoder.yudao.framework.common.enums.UserTypeEnum;
 import cn.iocoder.yudao.framework.common.validation.InEnum;
 import cn.iocoder.yudao.module.system.enums.social.SocialTypeEnum;
+import lombok.Data;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 
 /**
  * 社交绑定 Request DTO，使用 code 授权码
@@ -32,12 +33,12 @@ public class SocialUserUnbindReqDTO {
      */
     @InEnum(SocialTypeEnum.class)
     @NotNull(message = "社交平台的类型不能为空")
-    private Integer type;
+    private Integer socialType;
 
     /**
-     * 社交平台的 unionId
+     * 社交平台的 openid
      */
-    @NotEmpty(message = "社交平台的 unionId 不能为空")
-    private String unionId;
+    @NotEmpty(message = "社交平台的 openid 不能为空")
+    private String openid;
 
 }

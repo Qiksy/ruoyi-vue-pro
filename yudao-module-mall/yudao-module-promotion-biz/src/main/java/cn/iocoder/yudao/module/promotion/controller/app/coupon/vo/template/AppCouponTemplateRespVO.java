@@ -1,9 +1,9 @@
 package cn.iocoder.yudao.module.promotion.controller.app.coupon.vo.template;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Min;
 import lombok.Data;
 
+import jakarta.validation.constraints.Min;
 import java.time.LocalDateTime;
 
 @Schema(description = "用户 App - 优惠劵模板 Response VO")
@@ -22,14 +22,6 @@ public class AppCouponTemplateRespVO {
     @Schema(description = "是否设置满多少金额可用", requiredMode = Schema.RequiredMode.REQUIRED, example = "100")
     // 单位：分；0 - 不限制
     private Integer usePrice;
-
-    // TODO 芋艿：这两要改的
-//    @Schema(description = "商品范围", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-//    @InEnum(PromotionProductScopeEnum.class)
-//    private Integer productScope;
-//
-//    @Schema(description = "商品范围编号的数组", example = "1,3")
-//    private List<Long> productScopeValues;
 
     @Schema(description = "生效日期类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     private Integer validityType;
@@ -63,7 +55,7 @@ public class AppCouponTemplateRespVO {
 
     // ========== 用户相关字段 ==========
 
-    @Schema(description = "是否已领取", requiredMode = Schema.RequiredMode.REQUIRED, example = "true")
-    private Boolean takeStatus;
+    @Schema(description = "是否可以领取", requiredMode = Schema.RequiredMode.REQUIRED, example = "true")
+    private Boolean canTake;
 
 }

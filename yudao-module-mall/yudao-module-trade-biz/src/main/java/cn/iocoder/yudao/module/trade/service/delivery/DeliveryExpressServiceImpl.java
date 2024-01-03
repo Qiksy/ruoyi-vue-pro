@@ -9,10 +9,10 @@ import cn.iocoder.yudao.module.trade.controller.admin.delivery.vo.express.Delive
 import cn.iocoder.yudao.module.trade.convert.delivery.DeliveryExpressConvert;
 import cn.iocoder.yudao.module.trade.dal.dataobject.delivery.DeliveryExpressDO;
 import cn.iocoder.yudao.module.trade.dal.mysql.delivery.DeliveryExpressMapper;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;

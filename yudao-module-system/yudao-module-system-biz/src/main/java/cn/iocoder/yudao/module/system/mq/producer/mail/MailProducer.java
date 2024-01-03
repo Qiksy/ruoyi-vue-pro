@@ -1,10 +1,11 @@
 package cn.iocoder.yudao.module.system.mq.producer.mail;
 
-import cn.iocoder.yudao.framework.mq.core.RedisMQTemplate;
 import cn.iocoder.yudao.module.system.mq.message.mail.MailSendMessage;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+
+import jakarta.annotation.Resource;
 
 /**
  * Mail 邮件相关消息的 Producer
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class MailProducer {
 
     @Resource
-    private RedisMQTemplate redisMQTemplate;
+    private ApplicationContext applicationContext;
 
     /**
      * 发送 {@link MailSendMessage} 消息
@@ -34,7 +35,7 @@ public class MailProducer {
         MailSendMessage message = new MailSendMessage()
                 .setLogId(sendLogId).setMail(mail).setAccountId(accountId)
                 .setNickname(nickname).setTitle(title).setContent(content);
-        redisMQTemplate.send(message);
+        applicationContext.publishEvent(message);
     }
 
 }

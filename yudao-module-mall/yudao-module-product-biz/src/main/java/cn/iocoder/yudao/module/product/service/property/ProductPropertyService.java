@@ -1,13 +1,10 @@
 package cn.iocoder.yudao.module.product.service.property;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.product.controller.admin.property.vo.property.ProductPropertyCreateReqVO;
-import cn.iocoder.yudao.module.product.controller.admin.property.vo.property.ProductPropertyListReqVO;
-import cn.iocoder.yudao.module.product.controller.admin.property.vo.property.ProductPropertyPageReqVO;
-import cn.iocoder.yudao.module.product.controller.admin.property.vo.property.ProductPropertyUpdateReqVO;
+import cn.iocoder.yudao.module.product.controller.admin.property.vo.property.*;
 import cn.iocoder.yudao.module.product.dal.dataobject.property.ProductPropertyDO;
-import jakarta.validation.Valid;
 
+import jakarta.validation.Valid;
 import java.util.Collection;
 import java.util.List;
 

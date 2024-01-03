@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.bpm.controller.admin.task.vo.task;
 
+import cn.iocoder.yudao.module.sale.dal.dataobject.declinewarning.DeclineWarningDO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,5 +23,7 @@ public class BpmTaskDonePageItemRespVO extends BpmTaskTodoPageItemRespVO {
     private Integer result;
     @Schema(description = "审批建议", requiredMode = Schema.RequiredMode.REQUIRED, example = "不请假了！")
     private String reason;
+
+    private DeclineWarningDO declineWarningInfo;
 
 }

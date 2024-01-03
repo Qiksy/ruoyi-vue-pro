@@ -1,9 +1,9 @@
 package cn.iocoder.yudao.module.system.api.tenant;
 
 import cn.iocoder.yudao.module.system.service.tenant.TenantService;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.Resource;
 import java.util.List;
 
 /**

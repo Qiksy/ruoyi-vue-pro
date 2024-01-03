@@ -4,6 +4,7 @@ import cn.iocoder.yudao.framework.security.config.SecurityProperties;
 import cn.iocoder.yudao.module.system.api.oauth2.OAuth2TokenApi;
 import cn.iocoder.yudao.module.report.framework.jmreport.core.service.JmReportTokenServiceImpl;
 import org.jeecg.modules.jmreport.api.JmReportTokenServiceI;
+import org.jeecg.modules.jmreport.desreport.dao.JimuReportDictDao;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
  * @author 芋道源码
  */
 @Configuration(proxyBeanMethods = false)
-@ComponentScan(basePackages = "org.jeecg.modules.jmreport") // 扫描积木报表的包
+@ComponentScan(basePackages = {"org.jeecg.modules.jmreport","org.jeecg.modules.jmreport.desreport.dao"}) // 扫描积木报表的包
 public class JmReportConfiguration {
 
     @Bean

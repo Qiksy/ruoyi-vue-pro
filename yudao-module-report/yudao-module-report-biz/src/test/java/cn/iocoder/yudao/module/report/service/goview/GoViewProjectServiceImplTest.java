@@ -7,9 +7,10 @@ import cn.iocoder.yudao.module.report.controller.admin.goview.vo.project.GoViewP
 import cn.iocoder.yudao.module.report.controller.admin.goview.vo.project.GoViewProjectUpdateReqVO;
 import cn.iocoder.yudao.module.report.dal.dataobject.goview.GoViewProjectDO;
 import cn.iocoder.yudao.module.report.dal.mysql.goview.GoViewProjectMapper;
-import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Import;
+
+import jakarta.annotation.Resource;
 
 import static cn.iocoder.yudao.framework.common.util.object.ObjectUtils.cloneIgnoreId;
 import static cn.iocoder.yudao.framework.test.core.util.AssertUtils.assertPojoEquals;

@@ -1,10 +1,11 @@
 package cn.iocoder.yudao.module.system.api.logger.dto;
 
+import lombok.Data;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
 
 /**
  * 登录日志创建 Request DTO

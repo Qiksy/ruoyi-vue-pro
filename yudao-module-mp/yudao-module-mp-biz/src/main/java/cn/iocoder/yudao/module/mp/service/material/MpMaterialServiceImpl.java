@@ -16,7 +16,6 @@ import cn.iocoder.yudao.module.mp.dal.dataobject.material.MpMaterialDO;
 import cn.iocoder.yudao.module.mp.dal.mysql.material.MpMaterialMapper;
 import cn.iocoder.yudao.module.mp.framework.mp.core.MpServiceFactory;
 import cn.iocoder.yudao.module.mp.service.account.MpAccountService;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.result.WxMediaUploadResult;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -26,6 +25,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;

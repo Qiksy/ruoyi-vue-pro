@@ -3,8 +3,8 @@ package cn.iocoder.yudao.module.member.service.signin;
 import cn.iocoder.yudao.module.member.controller.admin.signin.vo.config.MemberSignInConfigCreateReqVO;
 import cn.iocoder.yudao.module.member.controller.admin.signin.vo.config.MemberSignInConfigUpdateReqVO;
 import cn.iocoder.yudao.module.member.dal.dataobject.signin.MemberSignInConfigDO;
-import jakarta.validation.Valid;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 /**

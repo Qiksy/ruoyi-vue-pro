@@ -8,9 +8,12 @@ import cn.iocoder.yudao.module.member.convert.level.MemberExperienceRecordConver
 import cn.iocoder.yudao.module.member.dal.dataobject.level.MemberExperienceRecordDO;
 import cn.iocoder.yudao.module.member.dal.mysql.level.MemberExperienceRecordMapper;
 import cn.iocoder.yudao.module.member.enums.MemberExperienceBizTypeEnum;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import jakarta.annotation.Resource;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * 会员经验记录 Service 实现类

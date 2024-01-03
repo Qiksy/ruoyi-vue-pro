@@ -9,9 +9,11 @@ import cn.iocoder.yudao.framework.file.core.utils.FileTypeUtils;
 import cn.iocoder.yudao.module.infra.controller.admin.file.vo.file.FilePageReqVO;
 import cn.iocoder.yudao.module.infra.dal.dataobject.file.FileDO;
 import cn.iocoder.yudao.module.infra.dal.mysql.file.FileMapper;
-import jakarta.annotation.Resource;
+import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+
+import jakarta.annotation.Resource;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.infra.enums.ErrorCodeConstants.FILE_NOT_EXISTS;
@@ -38,6 +40,17 @@ public class FileServiceImpl implements FileService {
     @Override
     @SneakyThrows
     public String createFile(String name, String path, byte[] content) {
+        return createFile(content, path, name).getUrl();
+    }
+
+    @Override
+    @SneakyThrows
+    public Long createFile2(String name, String path, byte[] content) {
+        FileDO file = createFile(content, path, name);
+        return file.getId();
+    }
+
+    private FileDO createFile(byte[] content, String path,String name ) throws Exception {
         // 计算默认的 path 名
         String type = FileTypeUtils.getMineType(content, name);
         if (StrUtil.isEmpty(path)) {
@@ -55,6 +68,7 @@ public class FileServiceImpl implements FileService {
 
         // 保存到数据库
         FileDO file = new FileDO();
+        file.setId(DefaultIdentifierGenerator.getInstance().nextId(null));
         file.setConfigId(client.getId());
         file.setName(name);
         file.setPath(path);
@@ -62,7 +76,8 @@ public class FileServiceImpl implements FileService {
         file.setType(type);
         file.setSize(content.length);
         fileMapper.insert(file);
-        return url;
+
+        return file;
     }
 
     @Override

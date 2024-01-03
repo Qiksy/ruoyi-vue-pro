@@ -8,9 +8,10 @@ import cn.iocoder.yudao.module.report.controller.admin.goview.vo.project.GoViewP
 import cn.iocoder.yudao.module.report.convert.goview.GoViewProjectConvert;
 import cn.iocoder.yudao.module.report.dal.dataobject.goview.GoViewProjectDO;
 import cn.iocoder.yudao.module.report.dal.mysql.goview.GoViewProjectMapper;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import jakarta.annotation.Resource;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.report.enums.ErrorCodeConstants.GO_VIEW_PROJECT_NOT_EXISTS;

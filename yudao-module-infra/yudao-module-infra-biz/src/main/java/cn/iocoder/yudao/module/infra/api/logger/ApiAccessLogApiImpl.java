@@ -2,9 +2,10 @@ package cn.iocoder.yudao.module.infra.api.logger;
 
 import cn.iocoder.yudao.module.infra.api.logger.dto.ApiAccessLogCreateReqDTO;
 import cn.iocoder.yudao.module.infra.service.logger.ApiAccessLogService;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import jakarta.annotation.Resource;
 
 /**
  * API 访问日志的 API 实现类

@@ -9,11 +9,11 @@ import cn.iocoder.yudao.module.trade.controller.app.cart.vo.*;
 import cn.iocoder.yudao.module.trade.convert.cart.TradeCartConvert;
 import cn.iocoder.yudao.module.trade.dal.dataobject.cart.CartDO;
 import cn.iocoder.yudao.module.trade.dal.mysql.cart.CartMapper;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.util.*;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -26,7 +26,7 @@ import static java.util.Collections.emptyList;
 /**
  * 购物车 Service 实现类
  *
- * // TODO 芋艿：未来优化：购物车的价格计算，支持营销信息；目前不支持的原因，前端界面需要前端 pr 支持下；
+ * // TODO 芋艿：未来优化：购物车的价格计算，支持营销信息；目前不支持的原因，前端界面需要前端 pr 支持下；例如说：会员价格；
  *
  * @author 芋道源码
  */

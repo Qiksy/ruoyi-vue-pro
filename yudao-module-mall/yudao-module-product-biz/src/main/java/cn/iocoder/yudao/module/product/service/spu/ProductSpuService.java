@@ -4,8 +4,8 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.product.controller.admin.spu.vo.*;
 import cn.iocoder.yudao.module.product.controller.app.spu.vo.AppProductSpuPageReqVO;
 import cn.iocoder.yudao.module.product.dal.dataobject.spu.ProductSpuDO;
-import jakarta.validation.Valid;
 
+import jakarta.validation.Valid;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -68,11 +68,12 @@ public interface ProductSpuService {
     }
 
     /**
-     * 获得所有商品 SPU 列表
+     * 获得指定状态的商品 SPU 列表
      *
+     * @param status 状态
      * @return 商品 SPU 列表
      */
-    List<ProductSpuDO> getSpuList();
+    List<ProductSpuDO> getSpuListByStatus(Integer status);
 
     /**
      * 获得所有商品 SPU 列表
@@ -135,5 +136,16 @@ public interface ProductSpuService {
      * @return SPU 数量
      */
     Long getSpuCountByCategoryId(Long categoryId);
+
+
+    /**
+     * 校验商品是否有效。如下情况，视为无效：
+     * 1. 商品编号不存在
+     * 2. 商品被禁用
+     *
+     * @param ids 商品编号数组
+     * @return 商品 SPU 列表
+     */
+    List<ProductSpuDO> validateSpuList(Collection<Long> ids);
 
 }

@@ -4,9 +4,9 @@ import cn.iocoder.yudao.module.promotion.controller.admin.decorate.vo.DecorateCo
 import cn.iocoder.yudao.module.promotion.convert.decorate.DecorateComponentConvert;
 import cn.iocoder.yudao.module.promotion.dal.dataobject.decorate.DecorateComponentDO;
 import cn.iocoder.yudao.module.promotion.dal.mysql.decorate.DecorateComponentMapper;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.Resource;
 import java.util.List;
 
 /**

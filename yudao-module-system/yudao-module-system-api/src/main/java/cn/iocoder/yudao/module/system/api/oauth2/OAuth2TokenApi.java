@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.system.api.oauth2;
 import cn.iocoder.yudao.module.system.api.oauth2.dto.OAuth2AccessTokenCheckRespDTO;
 import cn.iocoder.yudao.module.system.api.oauth2.dto.OAuth2AccessTokenCreateReqDTO;
 import cn.iocoder.yudao.module.system.api.oauth2.dto.OAuth2AccessTokenRespDTO;
+
 import jakarta.validation.Valid;
 
 /**

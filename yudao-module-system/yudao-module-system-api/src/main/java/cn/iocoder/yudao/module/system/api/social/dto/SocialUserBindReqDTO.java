@@ -3,11 +3,12 @@ package cn.iocoder.yudao.module.system.api.social.dto;
 import cn.iocoder.yudao.framework.common.enums.UserTypeEnum;
 import cn.iocoder.yudao.framework.common.validation.InEnum;
 import cn.iocoder.yudao.module.system.enums.social.SocialTypeEnum;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * 取消绑定社交用户 Request DTO
@@ -36,7 +37,7 @@ public class SocialUserBindReqDTO {
      */
     @InEnum(SocialTypeEnum.class)
     @NotNull(message = "社交平台的类型不能为空")
-    private Integer type;
+    private Integer socialType;
     /**
      * 授权码
      */

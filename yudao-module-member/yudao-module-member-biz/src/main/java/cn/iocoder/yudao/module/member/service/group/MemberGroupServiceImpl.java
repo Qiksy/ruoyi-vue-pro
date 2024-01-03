@@ -10,10 +10,10 @@ import cn.iocoder.yudao.module.member.convert.group.MemberGroupConvert;
 import cn.iocoder.yudao.module.member.dal.dataobject.group.MemberGroupDO;
 import cn.iocoder.yudao.module.member.dal.mysql.group.MemberGroupMapper;
 import cn.iocoder.yudao.module.member.service.user.MemberUserService;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
 

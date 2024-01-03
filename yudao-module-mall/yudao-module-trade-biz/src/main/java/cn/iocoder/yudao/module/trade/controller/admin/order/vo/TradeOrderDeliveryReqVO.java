@@ -1,8 +1,9 @@
 package cn.iocoder.yudao.module.trade.controller.admin.order.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+
+import jakarta.validation.constraints.NotNull;
 
 @Schema(description = "管理后台 - 订单发货 Request VO")
 @Data

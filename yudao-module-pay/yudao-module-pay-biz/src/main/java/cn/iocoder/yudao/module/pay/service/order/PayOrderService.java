@@ -9,9 +9,9 @@ import cn.iocoder.yudao.module.pay.controller.admin.order.vo.PayOrderSubmitReqVO
 import cn.iocoder.yudao.module.pay.controller.admin.order.vo.PayOrderSubmitRespVO;
 import cn.iocoder.yudao.module.pay.dal.dataobject.order.PayOrderDO;
 import cn.iocoder.yudao.module.pay.dal.dataobject.order.PayOrderExtensionDO;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -101,10 +101,10 @@ public interface PayOrderService {
     /**
      * 更新支付订单价格
      *
-     * @param payOrderId 支付单编号
+     * @param id 支付单编号
      * @param payPrice   支付单价格
      */
-    void updatePayOrderPriceById(Long payOrderId, Integer payPrice);
+    void updatePayOrderPrice(Long id, Integer payPrice);
 
     /**
      * 获得支付订单

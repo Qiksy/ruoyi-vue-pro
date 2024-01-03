@@ -1,17 +1,15 @@
 package cn.iocoder.yudao.module.product.api.sku;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.product.api.sku.dto.ProductSkuRespDTO;
 import cn.iocoder.yudao.module.product.api.sku.dto.ProductSkuUpdateStockReqDTO;
 import cn.iocoder.yudao.module.product.convert.sku.ProductSkuConvert;
 import cn.iocoder.yudao.module.product.dal.dataobject.sku.ProductSkuDO;
 import cn.iocoder.yudao.module.product.service.sku.ProductSkuService;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -35,18 +33,12 @@ public class ProductSkuApiImpl implements ProductSkuApi {
 
     @Override
     public List<ProductSkuRespDTO> getSkuList(Collection<Long> ids) {
-        if (CollUtil.isEmpty(ids)) {
-            return Collections.emptyList();
-        }
         List<ProductSkuDO> skus = productSkuService.getSkuList(ids);
         return ProductSkuConvert.INSTANCE.convertList04(skus);
     }
 
     @Override
     public List<ProductSkuRespDTO> getSkuListBySpuId(Collection<Long> spuIds) {
-        if (CollUtil.isEmpty(spuIds)) {
-            return Collections.emptyList();
-        }
         List<ProductSkuDO> skus = productSkuService.getSkuListBySpuId(spuIds);
         return ProductSkuConvert.INSTANCE.convertList04(skus);
     }

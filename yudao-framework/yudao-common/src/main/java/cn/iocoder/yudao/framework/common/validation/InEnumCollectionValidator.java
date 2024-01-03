@@ -2,9 +2,9 @@ package cn.iocoder.yudao.framework.common.validation;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.core.IntArrayValuable;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;

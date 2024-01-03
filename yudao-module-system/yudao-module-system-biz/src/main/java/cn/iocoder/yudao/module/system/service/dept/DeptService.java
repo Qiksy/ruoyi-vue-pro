@@ -1,13 +1,17 @@
 package cn.iocoder.yudao.module.system.service.dept;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
-import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptCreateReqVO;
+import cn.iocoder.yudao.module.system.api.dept.dto.DeptNcDTO;
 import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptListReqVO;
-import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptUpdateReqVO;
+import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptRespVO;
+import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptSaveReqVO;
+import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptSimpleRespVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 部门 Service 接口
@@ -19,17 +23,17 @@ public interface DeptService {
     /**
      * 创建部门
      *
-     * @param reqVO 部门信息
+     * @param createReqVO 部门信息
      * @return 部门编号
      */
-    Long createDept(DeptCreateReqVO reqVO);
+    Long createDept(DeptSaveReqVO createReqVO);
 
     /**
      * 更新部门
      *
-     * @param reqVO 部门信息
+     * @param updateReqVO 部门信息
      */
-    void updateDept(DeptUpdateReqVO reqVO);
+    void updateDept(DeptSaveReqVO updateReqVO);
 
     /**
      * 删除部门
@@ -60,7 +64,11 @@ public interface DeptService {
      * @param reqVO 筛选条件请求 VO
      * @return 部门列表
      */
-    List<DeptDO> getDeptList(DeptListReqVO reqVO);
+    List<DeptRespVO> getDeptList(DeptListReqVO reqVO);
+
+    List<DeptDO> getDeptList2(DeptListReqVO reqVO);
+
+    List<DeptSimpleRespVO> getDeptList3(DeptListReqVO reqVO);
 
     /**
      * 获得指定编号的部门 Map
@@ -69,9 +77,6 @@ public interface DeptService {
      * @return 部门 Map
      */
     default Map<Long, DeptDO> getDeptMap(Collection<Long> ids) {
-        if (CollUtil.isEmpty(ids)) {
-            return Collections.emptyMap();
-        }
         List<DeptDO> list = getDeptList(ids);
         return CollectionUtils.convertMap(list, DeptDO::getId);
     }
@@ -101,4 +106,13 @@ public interface DeptService {
      */
     void validateDeptList(Collection<Long> ids);
 
+    /**
+     * 同步部门
+     */
+    void syncDept();
+
+
+    List<DeptNcDTO> getDeptFromNC();
+
+    List<DeptDO> getNotExistsLeaderDepts(Collection<Long> ids);
 }

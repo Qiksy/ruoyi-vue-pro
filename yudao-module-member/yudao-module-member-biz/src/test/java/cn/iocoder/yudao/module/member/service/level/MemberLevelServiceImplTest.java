@@ -9,11 +9,11 @@ import cn.iocoder.yudao.module.member.controller.admin.level.vo.level.MemberLeve
 import cn.iocoder.yudao.module.member.dal.dataobject.level.MemberLevelDO;
 import cn.iocoder.yudao.module.member.dal.mysql.level.MemberLevelMapper;
 import cn.iocoder.yudao.module.member.service.user.MemberUserService;
-import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 
+import jakarta.annotation.Resource;
 import java.util.List;
 import java.util.function.Consumer;
 

@@ -7,12 +7,12 @@ import cn.iocoder.yudao.module.product.dal.dataobject.category.ProductCategoryDO
 import cn.iocoder.yudao.module.product.service.category.ProductCategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.annotation.Resource;
 import java.util.Comparator;
 import java.util.List;
 

@@ -2,9 +2,9 @@ package cn.iocoder.yudao.module.mp.service.menu;
 
 import cn.iocoder.yudao.module.mp.controller.admin.menu.vo.MpMenuSaveReqVO;
 import cn.iocoder.yudao.module.mp.dal.dataobject.menu.MpMenuDO;
-import jakarta.validation.Valid;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlOutMessage;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 /**

@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
+import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 
 /**
  * Infra 模块的 Security 配置
@@ -26,19 +27,17 @@ public class SecurityConfiguration {
                 registry.requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/swagger-ui.html").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/swagger-resources/**").anonymous()
-                        .requestMatchers("/webjars/**").anonymous()
-                        .requestMatchers("/*/api-docs").anonymous();
-                // 积木报表
-                registry.requestMatchers("/jmreport/**").permitAll();
+                        .requestMatchers("/swagger-resources/**").permitAll()
+                        .requestMatchers("/webjars/**").permitAll()
+                        .requestMatchers("/*/api-docs").permitAll();
                 // Spring Boot Actuator 的安全配置
-                registry.requestMatchers("/actuator").anonymous()
-                        .requestMatchers("/actuator/**").anonymous();
+                registry.requestMatchers("/actuator").permitAll()
+                        .requestMatchers("/actuator/**").permitAll();
                 // Druid 监控
-                registry.requestMatchers("/druid/**").anonymous();
+                registry.requestMatchers("/druid/**").permitAll();
                 // Spring Boot Admin Server 的安全配置
-                registry.requestMatchers(adminSeverContextPath).anonymous()
-                        .requestMatchers(adminSeverContextPath + "/**").anonymous();
+                registry.requestMatchers(adminSeverContextPath).permitAll()
+                        .requestMatchers(adminSeverContextPath + "/**").permitAll();
                 // 文件读取
                 registry.requestMatchers(buildAdminApi("/infra/file/*/get/**")).permitAll();
             }

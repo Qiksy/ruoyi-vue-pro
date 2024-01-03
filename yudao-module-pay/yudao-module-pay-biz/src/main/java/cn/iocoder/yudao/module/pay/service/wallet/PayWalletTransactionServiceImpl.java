@@ -1,17 +1,20 @@
 package cn.iocoder.yudao.module.pay.service.wallet;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.pay.controller.admin.wallet.vo.transaction.PayWalletTransactionPageReqVO;
 import cn.iocoder.yudao.module.pay.controller.app.wallet.vo.transaction.AppPayWalletTransactionPageReqVO;
 import cn.iocoder.yudao.module.pay.convert.wallet.PayWalletTransactionConvert;
 import cn.iocoder.yudao.module.pay.dal.dataobject.wallet.PayWalletDO;
 import cn.iocoder.yudao.module.pay.dal.dataobject.wallet.PayWalletTransactionDO;
 import cn.iocoder.yudao.module.pay.dal.mysql.wallet.PayWalletTransactionMapper;
 import cn.iocoder.yudao.module.pay.dal.redis.no.PayNoRedisDAO;
-import cn.iocoder.yudao.module.pay.enums.member.PayWalletBizTypeEnum;
-import cn.iocoder.yudao.module.pay.service.wallet.bo.CreateWalletTransactionBO;
-import jakarta.annotation.Resource;
+import cn.iocoder.yudao.module.pay.enums.wallet.PayWalletBizTypeEnum;
+import cn.iocoder.yudao.module.pay.service.wallet.bo.WalletTransactionCreateReqBO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+
+import jakarta.annotation.Resource;
 
 /**
  * 钱包流水 Service 实现类
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Slf4j
+@Validated
 public class PayWalletTransactionServiceImpl implements PayWalletTransactionService {
 
     /**
@@ -38,11 +42,16 @@ public class PayWalletTransactionServiceImpl implements PayWalletTransactionServ
     public PageResult<PayWalletTransactionDO> getWalletTransactionPage(Long userId, Integer userType,
                                                                        AppPayWalletTransactionPageReqVO pageVO) {
         PayWalletDO wallet = payWalletService.getOrCreateWallet(userId, userType);
-        return payWalletTransactionMapper.selectPage(wallet.getId(), pageVO);
+        return payWalletTransactionMapper.selectPage(wallet.getId(), pageVO.getType(), pageVO);
     }
 
     @Override
-    public PayWalletTransactionDO createWalletTransaction(CreateWalletTransactionBO bo) {
+    public PageResult<PayWalletTransactionDO> getWalletTransactionPage(PayWalletTransactionPageReqVO pageVO) {
+        return payWalletTransactionMapper.selectPage(pageVO.getWalletId(), null, pageVO);
+    }
+
+    @Override
+    public PayWalletTransactionDO createWalletTransaction(WalletTransactionCreateReqBO bo) {
         PayWalletTransactionDO transaction = PayWalletTransactionConvert.INSTANCE.convert(bo)
                 .setNo(noRedisDAO.generate(WALLET_NO_PREFIX));
         payWalletTransactionMapper.insert(transaction);

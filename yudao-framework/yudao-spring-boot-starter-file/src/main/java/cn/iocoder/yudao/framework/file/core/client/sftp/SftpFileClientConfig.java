@@ -1,10 +1,11 @@
 package cn.iocoder.yudao.framework.file.core.client.sftp;
 
 import cn.iocoder.yudao.framework.file.core.client.FileClientConfig;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.validator.constraints.URL;
+
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Sftp 文件客户端的配置类
