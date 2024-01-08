@@ -41,7 +41,7 @@ public interface FreezingDeviceInfoService {
      * @param id 编号
      * @return 冷冻设备信息
      */
-    FreezingDeviceInfoDO getFreezingDeviceInfo(Long id);
+    FreezingDeviceInfoRespVO getFreezingDeviceInfo(Long id);
 
     /**
      * 获得冷冻设备信息列表

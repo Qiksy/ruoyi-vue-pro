@@ -66,8 +66,8 @@ public class FreezingDeviceInfoController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('strain:freezing-device-info:query')")
     public CommonResult<FreezingDeviceInfoRespVO> getFreezingDeviceInfo(@RequestParam("id") Long id) {
-        FreezingDeviceInfoDO freezingDeviceInfo = freezingDeviceInfoService.getFreezingDeviceInfo(id);
-        return success(FreezingDeviceInfoConvert.INSTANCE.convert(freezingDeviceInfo));
+        FreezingDeviceInfoRespVO freezingDeviceInfo = freezingDeviceInfoService.getFreezingDeviceInfo(id);
+        return success(freezingDeviceInfo);
     }
 
     @GetMapping("/list")

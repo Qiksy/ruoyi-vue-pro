@@ -1,6 +1,9 @@
 package cn.iocoder.yudao.module.strain.service.freezingdeviceinfo;
 
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.strain.controller.admin.freezingdevicehierarchy.vo.FreezingDeviceHierarchyRespVO;
+import cn.iocoder.yudao.module.strain.convert.freezingdevicehierarchy.FreezingDeviceHierarchyConvert;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingdevicehierarchy.FreezingDeviceHierarchyDO;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingdevicehierarchy.FreezingDeviceHierarchyMapper;
 import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
@@ -197,8 +200,23 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
     }
 
     @Override
-    public FreezingDeviceInfoDO getFreezingDeviceInfo(Long id) {
-        return freezingDeviceInfoMapper.selectById(id);
+    public FreezingDeviceInfoRespVO getFreezingDeviceInfo(Long id) {
+
+
+        FreezingDeviceInfoDO freezingDeviceInfoDO = freezingDeviceInfoMapper.selectById(id);
+
+        FreezingDeviceInfoRespVO respVO = BeanUtils.toBean(freezingDeviceInfoDO, FreezingDeviceInfoRespVO.class);
+        //todo 带出层级关系
+        LambdaQueryWrapperX<FreezingDeviceHierarchyDO> queryWrapper = new LambdaQueryWrapperX<>();
+        queryWrapper.eq(FreezingDeviceHierarchyDO::getFreezingDeviceId, id);
+        //层级列表
+        List<FreezingDeviceHierarchyDO> hierarchyDOS = freezingDeviceHierarchyMapper.selectList(queryWrapper);
+
+        //转换成vo
+        List<FreezingDeviceHierarchyRespVO> hierarchyRespVOS = FreezingDeviceHierarchyConvert.INSTANCE.convertList(hierarchyDOS);
+        respVO.setHierarchyList(hierarchyRespVOS);
+
+        return respVO;
     }
 
     @Override
