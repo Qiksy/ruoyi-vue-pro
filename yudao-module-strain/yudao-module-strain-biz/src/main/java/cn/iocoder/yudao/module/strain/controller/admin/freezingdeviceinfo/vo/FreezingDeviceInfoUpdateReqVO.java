@@ -11,4 +11,10 @@ import jakarta.validation.constraints.*;
 @ToString(callSuper = true)
 public class FreezingDeviceInfoUpdateReqVO extends FreezingDeviceInfoBaseVO {
 
+
+    private DeviceLayerVO[] layerList;
+
+
+    private DeviceLayerVO endBox;
+
 }

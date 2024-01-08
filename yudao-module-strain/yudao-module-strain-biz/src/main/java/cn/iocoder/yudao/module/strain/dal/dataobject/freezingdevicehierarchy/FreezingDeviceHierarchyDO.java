@@ -42,7 +42,7 @@ public class FreezingDeviceHierarchyDO extends BaseDO {
      */
     private Boolean isFinalLevel;
     /**
-     * 末级类型id
+     * 末级类型id 这里指的是冷冻盒id
      */
     private Long freezingBoxId;
     /**
@@ -50,7 +50,7 @@ public class FreezingDeviceHierarchyDO extends BaseDO {
      */
     private String remark;
     /**
-     * 层级类型
+     * 层级类型  这里是 层、列、块之类的
      */
     private String layerType;
 
