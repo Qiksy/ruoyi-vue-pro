@@ -31,6 +31,17 @@ public class FreezingDeviceHierarchyDO extends BaseDO {
      * 父级id
      */
     private Long parentId;
+
+    /**
+     * 名称，初始化的时候，是自动填写的
+     */
+    private String name;
+
+    /**
+     * 层级编码，基本上只是用来初始化的时候，进行一个命名使用
+     */
+    private String levelCode;
+
     /**
      * 冷冻设备id
      */

@@ -22,6 +22,8 @@ public class FreezingDeviceHierarchyBaseVO {
     @Schema(description = "父级id", example = "1601")
     private Long parentId;
 
+    @Schema(description = "名称", example = "第几层")
+    private String name;
 
     @Schema(description = "冷冻设备id", example = "18583")
     private Long freezingDeviceId;
