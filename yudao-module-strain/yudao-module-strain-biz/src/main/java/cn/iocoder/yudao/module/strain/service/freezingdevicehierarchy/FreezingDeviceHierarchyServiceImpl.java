@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.strain.service.freezingdevicehierarchy;
 
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -41,7 +42,7 @@ public class FreezingDeviceHierarchyServiceImpl implements FreezingDeviceHierarc
         // 校验存在
         validateFreezingDeviceHierarchyExists(updateReqVO.getId());
         // 更新
-        FreezingDeviceHierarchyDO updateObj = FreezingDeviceHierarchyConvert.INSTANCE.convert(updateReqVO);
+        FreezingDeviceHierarchyDO updateObj = BeanUtils.toBean(updateReqVO, FreezingDeviceHierarchyDO.class);
         freezingDeviceHierarchyMapper.updateById(updateObj);
     }
 
@@ -49,8 +50,19 @@ public class FreezingDeviceHierarchyServiceImpl implements FreezingDeviceHierarc
     public void deleteFreezingDeviceHierarchy(Long id) {
         // 校验存在
         validateFreezingDeviceHierarchyExists(id);
+
+        // 校验子层级是否存在，不存在才能删除
+        validateChridrenFreezingDeviceHierarchyNotExists(id);
+
         // 删除
         freezingDeviceHierarchyMapper.deleteById(id);
+    }
+
+    private void validateChridrenFreezingDeviceHierarchyNotExists(Long id) {
+        Long l = freezingDeviceHierarchyMapper.selectCountByPid(id);
+        if (l > 0) {
+            throw exception(FREEZING_DEVICE_HIERARCHY_EXISTS_CHILDREN);
+        }
     }
 
     private void validateFreezingDeviceHierarchyExists(Long id) {

@@ -39,4 +39,27 @@ public interface FreezingDeviceHierarchyMapper extends BaseMapperX<FreezingDevic
                 .orderByDesc(FreezingDeviceHierarchyDO::getId));
     }
 
+    /**
+     * 递归查询是否存在子层级
+     * @param id
+     * @return
+     */
+    default Long selectCountByPid(Long id){
+        LambdaQueryWrapperX<FreezingDeviceHierarchyDO> queryWrapperX = new LambdaQueryWrapperX<>();
+        queryWrapperX.eq(FreezingDeviceHierarchyDO::getParentId,id);
+
+        List<FreezingDeviceHierarchyDO> hierarchyDOS = selectList(queryWrapperX);
+
+        //如果为空则返回0
+        if (hierarchyDOS == null || hierarchyDOS.isEmpty()){
+            return 0L;
+        }
+
+        //不为空的话就一直递归查询
+        Long count = (long) hierarchyDOS.size();
+        for (FreezingDeviceHierarchyDO hierarchyDO : hierarchyDOS) {
+            count += selectCountByPid(hierarchyDO.getId());
+        }
+        return count;
+    }
 }
