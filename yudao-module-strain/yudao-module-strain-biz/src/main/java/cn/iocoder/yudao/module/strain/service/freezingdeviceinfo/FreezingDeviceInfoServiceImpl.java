@@ -108,7 +108,7 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
                             tempDO.setLevelCode(levelCode);
                             //设置名称
                             tempDO.setName(String.format("%02d", j + 1)+typeName);
-                            tempDO.setParentId(null); // 设置父级主键
+                            tempDO.setParentId(freezingDeviceInfo.getId()); // 设置父级主键
                         }
 
                         tempList.add(tempDO);//添加到临时层级关系
@@ -238,15 +238,15 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
         FreezingDeviceInfoDO freezingDeviceInfoDO = freezingDeviceInfoMapper.selectById(id);
 
         FreezingDeviceInfoRespVO respVO = BeanUtils.toBean(freezingDeviceInfoDO, FreezingDeviceInfoRespVO.class);
-        //todo 带出层级关系
-        LambdaQueryWrapperX<FreezingDeviceHierarchyDO> queryWrapper = new LambdaQueryWrapperX<>();
-        queryWrapper.eq(FreezingDeviceHierarchyDO::getFreezingDeviceId, id);
-        //层级列表
-        List<FreezingDeviceHierarchyDO> hierarchyDOS = freezingDeviceHierarchyMapper.selectList(queryWrapper);
-
-        //转换成vo
-        List<FreezingDeviceHierarchyRespVO> hierarchyRespVOS = BeanUtils.toBean(hierarchyDOS, FreezingDeviceHierarchyRespVO.class);
-        respVO.setHierarchyList(hierarchyRespVOS);
+//        不再带出层级关系，转为单独请求
+//        LambdaQueryWrapperX<FreezingDeviceHierarchyDO> queryWrapper = new LambdaQueryWrapperX<>();
+//        queryWrapper.eq(FreezingDeviceHierarchyDO::getFreezingDeviceId, id);
+//        //层级列表
+//        List<FreezingDeviceHierarchyDO> hierarchyDOS = freezingDeviceHierarchyMapper.selectList(queryWrapper);
+//
+//        //转换成vo
+//        List<FreezingDeviceHierarchyRespVO> hierarchyRespVOS = BeanUtils.toBean(hierarchyDOS, FreezingDeviceHierarchyRespVO.class);
+//        respVO.setHierarchyList(hierarchyRespVOS);
 
         return respVO;
     }
@@ -265,5 +265,55 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
     public List<FreezingDeviceInfoDO> getFreezingDeviceInfoList(FreezingDeviceInfoExportReqVO exportReqVO) {
         return freezingDeviceInfoMapper.selectList(exportReqVO);
     }
+
+
+    /**
+     * 查询某个冷冻设备的层级信息，包括它自身，成为一个树节点
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public FreezingDeviceInfoLevelRespVO getFreezingDeviceInfoLevel(Long id) {
+
+        FreezingDeviceInfoDO freezingDeviceInfoDO = freezingDeviceInfoMapper.selectById(id);
+
+        if (freezingDeviceInfoDO==null){
+            //不存在则报错
+            throw exception(FREEZING_DEVICE_INFO_NOT_EXISTS);
+        }
+
+        //构建父节点
+        FreezingDeviceInfoLevelRespVO parent = new FreezingDeviceInfoLevelRespVO(); // 父级id
+        parent.setId(freezingDeviceInfoDO.getId());
+        parent.setIsFinalLevel(false);
+        parent.setName(freezingDeviceInfoDO.getName());
+        parent.setFreezingDeviceId(freezingDeviceInfoDO.getId());
+        parent.setLayerType(null);
+
+        // 获取层级信息
+        parent.setChildren(getChildren(parent.getId()));
+        return parent;
+    }
+
+    /**
+     * 遍历获取获取子节点
+     * @param id
+     * @return
+     */
+    private List<FreezingDeviceInfoLevelRespVO> getChildren(Long id) {
+        List<FreezingDeviceHierarchyDO> hierarchyDOS = freezingDeviceHierarchyMapper.selectList(new LambdaQueryWrapperX<FreezingDeviceHierarchyDO>().eq(FreezingDeviceHierarchyDO::getParentId, id));
+        if (hierarchyDOS.isEmpty()){
+            //返回一个空的list
+            return new ArrayList<>();
+        }
+        List<FreezingDeviceInfoLevelRespVO> result = BeanUtils.toBean(hierarchyDOS, FreezingDeviceInfoLevelRespVO.class);
+
+        for (FreezingDeviceInfoLevelRespVO freezingDeviceInfoLevelRespVO : result) {
+            freezingDeviceInfoLevelRespVO.setChildren(getChildren(freezingDeviceInfoLevelRespVO.getId()));
+        }
+        return result;
+    }
+
 
 }

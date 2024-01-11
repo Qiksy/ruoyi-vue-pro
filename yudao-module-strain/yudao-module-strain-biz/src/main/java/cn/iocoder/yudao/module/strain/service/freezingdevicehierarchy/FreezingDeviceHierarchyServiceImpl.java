@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.strain.service.freezingdevicehierarchy;
 
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.module.strain.dal.dataobject.freezingdeviceinfo.FreezingDeviceInfoDO;
+import cn.iocoder.yudao.module.strain.dal.mysql.freezingdeviceinfo.FreezingDeviceInfoMapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -27,6 +29,9 @@ public class FreezingDeviceHierarchyServiceImpl implements FreezingDeviceHierarc
 
     @Resource
     private FreezingDeviceHierarchyMapper freezingDeviceHierarchyMapper;
+
+    @Resource
+    private FreezingDeviceInfoMapper freezingDeviceMapper;
 
     @Override
     public Long createFreezingDeviceHierarchy(FreezingDeviceHierarchyCreateReqVO createReqVO) {
@@ -100,12 +105,25 @@ public class FreezingDeviceHierarchyServiceImpl implements FreezingDeviceHierarc
     public void addNewFreezingDeviceHierarchy(FreezingDeviceHierarchyUpdateReqVO updateReqVO) {
         Long id = updateReqVO.getParentId();
         //父级的信息
-        FreezingDeviceHierarchyDO parentInfo = freezingDeviceHierarchyMapper.selectOne(FreezingDeviceHierarchyDO::getId, id);
+        FreezingDeviceHierarchyDO parentInfo = freezingDeviceHierarchyMapper.selectById(id);
 
-        if (parentInfo.getIsFinalLevel()){
+
+        //判断是上级是否是冷冻设备
+        boolean flag = false;
+
+        if (parentInfo == null){
+            //可能是第一层级，也就是父级就是冷冻设备
+            FreezingDeviceInfoDO freezingDeviceInfoDO = freezingDeviceMapper.selectById(id);
+            if (freezingDeviceInfoDO != null){
+                flag = true;
+            }
+        }
+
+        if (!flag && parentInfo.getIsFinalLevel()){
             // 末级冻藏盒不能再添加子集
             throw exception(FREEZING_DEVICE_HIERARCHY_IS_FINAL_LEVEL);
         }
+
 
 
         FreezingDeviceHierarchyDO freezingDeviceHierarchyDO = new FreezingDeviceHierarchyDO();

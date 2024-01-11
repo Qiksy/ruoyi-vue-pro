@@ -70,6 +70,16 @@ public class FreezingDeviceInfoController {
         return success(freezingDeviceInfo);
     }
 
+
+    @Operation(summary = "获取冷冻设备的层级信息")
+    @GetMapping("/get-level")
+    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+    @PreAuthorize("@ss.hasPermission('strain:freezing-device-info:query')")
+    public CommonResult<FreezingDeviceInfoLevelRespVO> getFreezingDeviceInfoLevel(@RequestParam("id") Long id) {
+        FreezingDeviceInfoLevelRespVO freezingDeviceInfo = freezingDeviceInfoService.getFreezingDeviceInfoLevel(id);
+        return success(freezingDeviceInfo);
+    }
+
     @GetMapping("/list")
     @Operation(summary = "获得冷冻设备信息列表")
     @Parameter(name = "ids", description = "编号列表", required = true, example = "1024,2048")

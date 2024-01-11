@@ -67,4 +67,10 @@ public interface FreezingDeviceInfoService {
      */
     List<FreezingDeviceInfoDO> getFreezingDeviceInfoList(FreezingDeviceInfoExportReqVO exportReqVO);
 
+    /**
+     * 查询某个冷冻设备的层级信息，包括它自身，成为一个树节点
+     * @param id
+     * @return
+     */
+    FreezingDeviceInfoLevelRespVO getFreezingDeviceInfoLevel(Long id);
 }
