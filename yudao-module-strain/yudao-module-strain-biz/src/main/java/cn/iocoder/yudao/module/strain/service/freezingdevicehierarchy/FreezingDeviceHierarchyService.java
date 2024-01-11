@@ -67,4 +67,9 @@ public interface FreezingDeviceHierarchyService {
      */
     List<FreezingDeviceHierarchyDO> getFreezingDeviceHierarchyList(FreezingDeviceHierarchyExportReqVO exportReqVO);
 
+    /**
+     * 给某个层级下面添加一个新的层级
+     * @param updateReqVO
+     */
+    void addNewFreezingDeviceHierarchy(FreezingDeviceHierarchyUpdateReqVO updateReqVO);
 }

@@ -91,4 +91,32 @@ public class FreezingDeviceHierarchyServiceImpl implements FreezingDeviceHierarc
         return freezingDeviceHierarchyMapper.selectList(exportReqVO);
     }
 
+    /**
+     * 给某个层级下面添加一个新的层级
+     *
+     * @param updateReqVO
+     */
+    @Override
+    public void addNewFreezingDeviceHierarchy(FreezingDeviceHierarchyUpdateReqVO updateReqVO) {
+        Long id = updateReqVO.getParentId();
+        //父级的信息
+        FreezingDeviceHierarchyDO parentInfo = freezingDeviceHierarchyMapper.selectOne(FreezingDeviceHierarchyDO::getId, id);
+
+        if (parentInfo.getIsFinalLevel()){
+            // 末级冻藏盒不能再添加子集
+            throw exception(FREEZING_DEVICE_HIERARCHY_IS_FINAL_LEVEL);
+        }
+
+
+        FreezingDeviceHierarchyDO freezingDeviceHierarchyDO = new FreezingDeviceHierarchyDO();
+        // 不用再添加levelCode了
+        freezingDeviceHierarchyDO.setParentId(id);
+        freezingDeviceHierarchyDO.setFreezingDeviceId(updateReqVO.getFreezingDeviceId());
+        freezingDeviceHierarchyDO.setName(updateReqVO.getName());
+        freezingDeviceHierarchyDO.setLayerType(updateReqVO.getLayerType());
+        freezingDeviceHierarchyDO.setIsFinalLevel(false);
+
+
+        freezingDeviceHierarchyMapper.insert(freezingDeviceHierarchyDO);
+    }
 }

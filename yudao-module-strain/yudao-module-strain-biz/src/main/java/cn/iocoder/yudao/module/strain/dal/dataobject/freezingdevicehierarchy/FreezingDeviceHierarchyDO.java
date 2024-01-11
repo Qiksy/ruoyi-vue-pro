@@ -47,7 +47,7 @@ public class FreezingDeviceHierarchyDO extends BaseDO {
      */
     private Long freezingDeviceId;
     /**
-     * 是否为末级
+     * 是否为末级  这里也可以指代为 是否为冷冻盒
      *
      * 枚举 {@link TODO strain_yes_no 对应的类}
      */

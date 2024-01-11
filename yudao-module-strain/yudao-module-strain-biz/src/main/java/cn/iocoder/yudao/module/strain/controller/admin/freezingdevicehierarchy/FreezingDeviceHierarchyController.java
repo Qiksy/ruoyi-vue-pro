@@ -52,6 +52,15 @@ public class FreezingDeviceHierarchyController {
         return success(true);
     }
 
+
+    @PutMapping("/add-new")
+    @Operation(summary = "添加新的冷冻设备层级")
+    @PreAuthorize("@ss.hasPermission('strain:freezing-device-hierarchy:update')")
+    public CommonResult<Boolean> addNewFreezingDeviceHierarchy(@Valid @RequestBody FreezingDeviceHierarchyUpdateReqVO updateReqVO) {
+        freezingDeviceHierarchyService.addNewFreezingDeviceHierarchy(updateReqVO);
+        return success(true);
+    }
+
     @DeleteMapping("/delete")
     @Operation(summary = "删除冷冻设备层级")
     @Parameter(name = "id", description = "编号", required = true)

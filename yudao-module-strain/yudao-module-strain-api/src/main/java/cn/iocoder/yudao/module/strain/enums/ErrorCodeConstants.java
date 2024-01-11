@@ -29,5 +29,6 @@ public interface ErrorCodeConstants {
     // ========== 冷冻设备层级 98_006_001 ==========
     ErrorCode FREEZING_DEVICE_HIERARCHY_NOT_EXISTS = new ErrorCode(98_006_001, "冷冻设备层级不存在");
     ErrorCode FREEZING_DEVICE_HIERARCHY_EXISTS_CHILDREN = new ErrorCode(98_006_002, "冷冻设备层级存在子层级");
+    ErrorCode FREEZING_DEVICE_HIERARCHY_IS_FINAL_LEVEL = new ErrorCode(98_006_002, "冷冻设备层级已经是末级，不能再添加子层级");
 
 }
