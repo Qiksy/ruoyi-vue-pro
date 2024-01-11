@@ -133,6 +133,11 @@ public class FreezingDeviceHierarchyServiceImpl implements FreezingDeviceHierarc
         freezingDeviceHierarchyDO.setName(updateReqVO.getName());
         freezingDeviceHierarchyDO.setLayerType(updateReqVO.getLayerType());
         freezingDeviceHierarchyDO.setIsFinalLevel(false);
+        //如果是冻藏盒
+        if(updateReqVO.getFreezingDeviceId()!=null){
+            freezingDeviceHierarchyDO.setFreezingBoxId(updateReqVO.getFreezingBoxId()); // 设置冻藏盒id
+            freezingDeviceHierarchyDO.setIsFinalLevel(true); //设置为末级
+        }
 
 
         freezingDeviceHierarchyMapper.insert(freezingDeviceHierarchyDO);
