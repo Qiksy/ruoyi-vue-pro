@@ -34,4 +34,8 @@ public interface ErrorCodeConstants {
     // ========== 菌种信息 98_007_001 ==========
     ErrorCode MICROBE_BASIC_INFO_NOT_EXISTS = new ErrorCode(98_007_001, "菌种信息不存在");
 
+
+    // ========== 冷冻管库存预录入 98_008_001 ==========
+    ErrorCode FREEZING_TUBE_STOCK_PRE_ENTRY_NOT_EXISTS = new ErrorCode(98_008_001, "冷冻管库存预录入不存在");
+
 }

@@ -12,3 +12,5 @@ DELETE FROM "strain_freezing_device_info";
 DELETE FROM "strain_freezing_device_hierarchy";
 
 DELETE FROM "strain_microbe_basic_info";
+
+DELETE FROM "strain_freezing_tube_stock_pre_entry";
