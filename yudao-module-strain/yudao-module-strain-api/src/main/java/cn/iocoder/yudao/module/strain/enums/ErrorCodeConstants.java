@@ -31,4 +31,7 @@ public interface ErrorCodeConstants {
     ErrorCode FREEZING_DEVICE_HIERARCHY_EXISTS_CHILDREN = new ErrorCode(98_006_002, "冷冻设备层级存在子层级");
     ErrorCode FREEZING_DEVICE_HIERARCHY_IS_FINAL_LEVEL = new ErrorCode(98_006_002, "冷冻设备层级已经是末级，不能再添加子层级");
 
+    // ========== 菌种信息 98_007_001 ==========
+    ErrorCode MICROBE_BASIC_INFO_NOT_EXISTS = new ErrorCode(98_007_001, "菌种信息不存在");
+
 }
