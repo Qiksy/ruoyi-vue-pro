@@ -100,8 +100,11 @@ public class MenuServiceImpl implements MenuService {
         List<MenuDO> menuDOS = menuMapper.selectList(queryWrapperX);
 
         for (MenuDO menuDO : menuDOS) {
-            menuDO.setStatus(status);
-            menuMapper.updateById(menuDO);
+            if (!menuDO.getStatus().equals(status)) {
+                // 不等于才进行更新
+                menuDO.setStatus(status);
+                menuMapper.updateById(menuDO);
+            }
             updateChildrenMenuStatus(menuDO.getId(), status);
         }
     }
