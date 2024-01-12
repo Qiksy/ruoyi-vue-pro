@@ -144,7 +144,7 @@ public class MicrobeBasicInfoServiceImplTest extends BaseDbUnitTest {
        reqVO.setIsVisiable(null);
 
        // 调用
-       PageResult<MicrobeBasicInfoDO> pageResult = microbeBasicInfoService.getMicrobeBasicInfoPage(reqVO);
+       PageResult<MicrobeBasicInfoRespVO> pageResult = microbeBasicInfoService.getMicrobeBasicInfoPage(reqVO);
        // 断言
        assertEquals(1, pageResult.getTotal());
        assertEquals(1, pageResult.getList().size());

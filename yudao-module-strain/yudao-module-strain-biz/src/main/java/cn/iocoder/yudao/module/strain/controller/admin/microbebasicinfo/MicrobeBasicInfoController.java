@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
 import java.util.*;
 import java.io.IOException;
 
@@ -18,11 +19,13 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
+
 import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.*;
 
 import cn.iocoder.yudao.module.strain.controller.admin.microbebasicinfo.vo.*;
@@ -75,8 +78,8 @@ public class MicrobeBasicInfoController {
     @Operation(summary = "获得菌种信息分页")
     @PreAuthorize("@ss.hasPermission('strain:microbe-basic-info:query')")
     public CommonResult<PageResult<MicrobeBasicInfoRespVO>> getMicrobeBasicInfoPage(@Valid MicrobeBasicInfoPageReqVO pageReqVO) {
-        PageResult<MicrobeBasicInfoDO> pageResult = microbeBasicInfoService.getMicrobeBasicInfoPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, MicrobeBasicInfoRespVO.class));
+        PageResult<MicrobeBasicInfoRespVO> pageResult = microbeBasicInfoService.getMicrobeBasicInfoPage(pageReqVO);
+        return success(pageResult);
     }
 
     @GetMapping("/export-excel")
@@ -84,12 +87,11 @@ public class MicrobeBasicInfoController {
     @PreAuthorize("@ss.hasPermission('strain:microbe-basic-info:export')")
     @OperateLog(type = EXPORT)
     public void exportMicrobeBasicInfoExcel(@Valid MicrobeBasicInfoPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                            HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<MicrobeBasicInfoDO> list = microbeBasicInfoService.getMicrobeBasicInfoPage(pageReqVO).getList();
+        List<MicrobeBasicInfoRespVO> list = microbeBasicInfoService.getMicrobeBasicInfoPage(pageReqVO).getList();
         // 导出 Excel
-        ExcelUtils.write(response, "菌种信息.xls", "数据", MicrobeBasicInfoRespVO.class,
-                        BeanUtils.toBean(list, MicrobeBasicInfoRespVO.class));
+        ExcelUtils.write(response, "菌种信息.xls", "数据", MicrobeBasicInfoRespVO.class, list);
     }
 
 }

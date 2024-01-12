@@ -1,11 +1,14 @@
 package cn.iocoder.yudao.module.strain.service.microbebasicinfo;
 
+import cn.iocoder.yudao.module.strain.dal.mysql.culturemediumdatainfo.CultureMediumDataInfoMapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
 import cn.iocoder.yudao.module.strain.controller.admin.microbebasicinfo.vo.*;
 import cn.iocoder.yudao.module.strain.dal.dataobject.microbebasicinfo.MicrobeBasicInfoDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -28,6 +31,9 @@ public class MicrobeBasicInfoServiceImpl implements MicrobeBasicInfoService {
 
     @Resource
     private MicrobeBasicInfoMapper microbeBasicInfoMapper;
+
+    @Resource
+    private CultureMediumDataInfoMapper cultureMediumDataInfoMapper;
 
     @Override
     public Long createMicrobeBasicInfo(MicrobeBasicInfoSaveReqVO createReqVO) {
@@ -67,8 +73,24 @@ public class MicrobeBasicInfoServiceImpl implements MicrobeBasicInfoService {
     }
 
     @Override
-    public PageResult<MicrobeBasicInfoDO> getMicrobeBasicInfoPage(MicrobeBasicInfoPageReqVO pageReqVO) {
-        return microbeBasicInfoMapper.selectPage(pageReqVO);
+    public PageResult<MicrobeBasicInfoRespVO> getMicrobeBasicInfoPage(MicrobeBasicInfoPageReqVO pageReqVO) {
+        PageResult<MicrobeBasicInfoDO> microbeBasicInfoDOPageResult = microbeBasicInfoMapper.selectPage(pageReqVO);
+        PageResult<MicrobeBasicInfoRespVO> result = BeanUtils.toBean(microbeBasicInfoDOPageResult, MicrobeBasicInfoRespVO.class);
+
+        //获取培养基名称
+        List<MicrobeBasicInfoRespVO> list = result.getList();
+
+        Set<Long> mediumIds = list.stream().map(MicrobeBasicInfoRespVO::getMediumId).collect(Collectors.toSet());
+
+        Map<Long, String> mediumMap = cultureMediumDataInfoMapper.selectMediumNameByIds(mediumIds);
+
+        for (MicrobeBasicInfoRespVO microbeBasicInfoRespVO : list) {
+            microbeBasicInfoRespVO.setMediumName(mediumMap.get(microbeBasicInfoRespVO.getMediumId()));
+        }
+
+        result.setList(list);
+
+        return result;
     }
 
 }

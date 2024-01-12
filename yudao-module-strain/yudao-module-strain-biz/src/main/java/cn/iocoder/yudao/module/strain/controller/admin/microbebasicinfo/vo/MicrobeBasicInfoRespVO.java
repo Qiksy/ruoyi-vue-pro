@@ -63,9 +63,13 @@ public class MicrobeBasicInfoRespVO {
     @ExcelProperty("菌落形态")
     private String colonyMorphology;
 
-    @Schema(description = "培养基id", example = "10806")
-    @ExcelProperty("培养基id")
+//    @Schema(description = "培养基id", example = "10806")
+//    @ExcelProperty("培养基id")
     private Long mediumId;
+
+    @Schema(description = "培养基名称")
+    @ExcelProperty("培养基名称")
+    private String mediumName;
 
     @Schema(description = "有效期至", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("有效期至")

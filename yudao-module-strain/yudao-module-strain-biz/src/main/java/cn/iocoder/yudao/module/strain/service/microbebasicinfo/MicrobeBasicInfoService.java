@@ -50,6 +50,6 @@ public interface MicrobeBasicInfoService {
      * @param pageReqVO 分页查询
      * @return 菌种信息分页
      */
-    PageResult<MicrobeBasicInfoDO> getMicrobeBasicInfoPage(MicrobeBasicInfoPageReqVO pageReqVO);
+    PageResult<MicrobeBasicInfoRespVO> getMicrobeBasicInfoPage(MicrobeBasicInfoPageReqVO pageReqVO);
 
 }
