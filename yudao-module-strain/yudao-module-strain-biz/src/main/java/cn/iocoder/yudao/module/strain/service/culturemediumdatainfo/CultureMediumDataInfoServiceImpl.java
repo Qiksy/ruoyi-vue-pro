@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.strain.service.culturemediumdatainfo;
 
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -79,4 +80,13 @@ public class CultureMediumDataInfoServiceImpl implements CultureMediumDataInfoSe
         return cultureMediumDataInfoMapper.selectList(exportReqVO);
     }
 
+    @Override
+    public List<CultureMediumDataInfoDO> getSimpleCultureMediumDataInfoList() {
+
+        LambdaQueryWrapperX<CultureMediumDataInfoDO> queryWrapperX = new LambdaQueryWrapperX<>();
+        //只查询name和id
+        queryWrapperX.select(CultureMediumDataInfoDO::getId,CultureMediumDataInfoDO::getName);
+
+        return cultureMediumDataInfoMapper.selectList(queryWrapperX);
+    }
 }

@@ -67,4 +67,9 @@ public interface CultureMediumDataInfoService {
      */
     List<CultureMediumDataInfoDO> getCultureMediumDataInfoList(CultureMediumDataInfoExportReqVO exportReqVO);
 
+    /**
+     * 获取简单的name和id列表
+     * @return 培养基列表
+     */
+    List<CultureMediumDataInfoDO> getSimpleCultureMediumDataInfoList();
 }

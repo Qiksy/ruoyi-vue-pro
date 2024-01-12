@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.strain.controller.admin.culturemediumdatainfo;
 
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -97,6 +98,15 @@ public class CultureMediumDataInfoController {
         // 导出 Excel
         List<CultureMediumDataInfoExcelVO> datas = CultureMediumDataInfoConvert.INSTANCE.convertList02(list);
         ExcelUtils.write(response, "培养基数据信息.xls", "数据", CultureMediumDataInfoExcelVO.class, datas);
+    }
+
+
+    @GetMapping("/simple-list")
+    @Operation(summary = "获得培养基数据信息简单列表")
+    @PreAuthorize("@ss.hasPermission('strain:culture-medium-data-info:query')")
+    public CommonResult<List<CultureMediumDataInfoRespVO>> getCultureMediumDataInfoSimpleList() {
+        List<CultureMediumDataInfoDO> list = cultureMediumDataInfoService.getSimpleCultureMediumDataInfoList();
+        return success(BeanUtils.toBean(list, CultureMediumDataInfoRespVO.class));
     }
 
 }
