@@ -19,7 +19,7 @@ public class FreezingTubeStockPreEntrySaveReqVO {
     private String code;
 
     @Schema(description = "冷冻管类型id", requiredMode = Schema.RequiredMode.REQUIRED, example = "23902")
-    @NotNull(message = "冷冻管类型id不能为空")
+    @NotNull(message = "冻藏管类型不能为空")
     private Long tubeId;
 
     @Schema(description = "冷冻盒id", example = "24951")
@@ -47,25 +47,31 @@ public class FreezingTubeStockPreEntrySaveReqVO {
     private Long projectId;
 
     @Schema(description = "菌种id", example = "15252")
+    @NotNull(message = "菌种不能为空")
     private Long microbeId;
 
-    @Schema(description = "有效期至", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "有效期至不能为空")
+    @Schema(description = "有效期至")
     private LocalDateTime expirationDate;
 
-    @Schema(description = "保存日期", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "保存日期不能为空")
+    @Schema(description = "保存日期")
     private LocalDateTime saveDate;
 
     @Schema(description = "保存人id", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "保存人id不能为空")
     private Long saveBy;
 
     @Schema(description = "备注", example = "你说的对")
     private String remark;
 
-    @Schema(description = "是否入库", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @NotNull(message = "是否入库不能为空")
+    @Schema(description = "是否入库", example = "2")
     private Boolean status;
+
+    /**
+     * 冻藏管数量
+     */
+    @Schema(description = "冻藏管数量", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
+    @NotNull(message = "冻藏管数量不能为空")
+    @Min(value = 1, message = "冻藏管数量不能小于1")
+    @Max(value = 99, message = "冻藏管数量不能大于99")
+    private int num;
 
 }

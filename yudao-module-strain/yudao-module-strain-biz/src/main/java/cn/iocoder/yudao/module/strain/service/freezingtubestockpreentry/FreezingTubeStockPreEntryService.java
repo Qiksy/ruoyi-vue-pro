@@ -20,7 +20,7 @@ public interface FreezingTubeStockPreEntryService {
      * @param createReqVO 创建信息
      * @return 编号
      */
-    Long createFreezingTubeStockPreEntry(@Valid FreezingTubeStockPreEntrySaveReqVO createReqVO);
+    List<Long> createFreezingTubeStockPreEntry(@Valid FreezingTubeStockPreEntrySaveReqVO createReqVO);
 
     /**
      * 更新冷冻管库存预录入
