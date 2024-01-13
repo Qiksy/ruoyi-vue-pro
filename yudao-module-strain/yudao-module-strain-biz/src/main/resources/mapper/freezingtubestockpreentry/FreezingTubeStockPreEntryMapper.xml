@@ -9,4 +9,44 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectPage2"
+            resultType="cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.FreezingTubeStockPreEntryRespVO">
+        SELECT
+        t2.nickname save_by_name,
+        t3.chinese_name microbe_name,
+        t4.name tube_name,
+        t1.id,
+        t1.code,
+        t1.expiration_date,
+        t1.save_date,
+        t1.status,
+        t1.create_time,
+        t1.remark,
+        t1.thaw_freeze_cycle_count
+        FROM
+        strain_freezing_tube_stock_pre_entry t1
+        left join system_users t2 on t1.save_by = t2.id and t2.deleted= 0
+        left join strain_microbe_basic_info t3 on t3.id = t1.microbe_id and t3.deleted= 0
+        left join strain_freezing_tube_info t4 on t4.id = t1.tube_id and t4.deleted= 0
+        where t1.deleted =0
+            <if test="req.saveByName != null and req.saveByName != ''">
+                and t2.nickname like concat('%', #{req.saveByName}, '%')
+            </if>
+            <if test="req.microbeName != null and req.microbeName != ''">
+                and t3.chinese_name like concat('%', #{req.microbeName}, '%')
+            </if>
+            <if test="req.code != null and req.code != ''">
+                and t1.code like concat('%', #{req.code}, '%')
+            </if>
+            <if test="req.createTime != null and req.createTime.length == 2">
+                and t1.create_time &gt;= #{req.createTime[0]}
+                and t1.create_time &lt;= #{req.createTime[1]}
+            </if>
+            <if test="req.status != null">
+                and t1.status = #{req.status}
+            </if>
+            <if test="req.remark != null and req.remark != ''">
+                and t1.remark like concat('%', #{req.remark}, '%')
+            </if>
+    </select>
 </mapper>

@@ -27,6 +27,8 @@ public class FreezingTubeStockPreEntryRespVO {
     @ExcelProperty("冷冻管类型id")
     private Long tubeId;
 
+    private String tubeName;
+
     @Schema(description = "冷冻盒id", example = "24951")
     @ExcelProperty("冷冻盒id")
     private Long boxId;
@@ -63,6 +65,10 @@ public class FreezingTubeStockPreEntryRespVO {
     @ExcelProperty("菌种id")
     private Long microbeId;
 
+    @Schema(description = "菌种名称", example = "大肠杆菌")
+    @ExcelProperty("菌种名称")
+    private String microbeName;
+
     @Schema(description = "有效期至", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("有效期至")
     private LocalDateTime expirationDate;
@@ -77,7 +83,7 @@ public class FreezingTubeStockPreEntryRespVO {
 
     @Schema(description = "保存人", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("保存人")
-    private Long saveByName;
+    private String saveByName;
 
     @Schema(description = "创建时间")
     @ExcelProperty("创建时间")

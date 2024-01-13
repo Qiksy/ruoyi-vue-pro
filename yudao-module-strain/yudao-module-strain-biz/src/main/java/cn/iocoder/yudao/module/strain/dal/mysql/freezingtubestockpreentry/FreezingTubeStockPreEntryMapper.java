@@ -10,9 +10,11 @@ import cn.iocoder.yudao.framework.mybatis.core.query.MPJLambdaWrapperX;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDetailDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.user.AdminUserDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.*;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 冷冻管库存预录入 Mapper
@@ -44,7 +46,9 @@ public interface FreezingTubeStockPreEntryMapper extends BaseMapperX<FreezingTub
                 .orderByDesc(FreezingTubeStockPreEntryDO::getId));
     }
 
-    default PageResult<FreezingTubeStockPreEntryRespVO>  selectPage2(FreezingTubeStockPreEntryPageReqVO reqVO){
+    /*
+    //这个是mpj多表连接的方式，太麻烦了。
+        default PageResult<FreezingTubeStockPreEntryRespVO>  selectPage2(FreezingTubeStockPreEntryPageReqVO reqVO){
 
         MPJLambdaWrapperX<FreezingTubeStockPreEntryDO> wrapperX = new MPJLambdaWrapperX<>();
         wrapperX.selectAll(FreezingTubeStockPreEntryDO.class); // 查询所有字段
@@ -77,4 +81,6 @@ public interface FreezingTubeStockPreEntryMapper extends BaseMapperX<FreezingTub
         PageResult<FreezingTubeStockPreEntryDetailDO> result = selectJoinPage(reqVO,FreezingTubeStockPreEntryDetailDO.class,wrapperX);
         return BeanUtils.toBean(result, FreezingTubeStockPreEntryRespVO.class);
     }
+     */
+    IPage<FreezingTubeStockPreEntryRespVO> selectPage2(IPage<FreezingTubeStockPreEntryRespVO> page, @Param("req") FreezingTubeStockPreEntryPageReqVO reqVO);
 }

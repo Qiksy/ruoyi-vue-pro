@@ -72,4 +72,10 @@ public class FreezingTubeStockPreEntryPageReqVO extends PageParam {
     @Schema(description = "是否入库", example = "2")
     private Boolean status;
 
+    /**
+     * 菌种名称
+     */
+    @Schema(description = "菌种名称", example = "大肠杆菌")
+    private String microbeName;
+
 }
