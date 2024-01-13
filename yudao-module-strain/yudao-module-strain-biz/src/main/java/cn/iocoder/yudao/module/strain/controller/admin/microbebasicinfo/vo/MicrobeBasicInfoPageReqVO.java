@@ -36,4 +36,7 @@ public class MicrobeBasicInfoPageReqVO extends PageParam {
     @Schema(description = "是否公开浏览 （0否1是）")
     private Boolean isVisiable;
 
+    @Schema(description = "菌种类型（使用字典类型）", example = "2")
+    private String microbeType;
+
 }

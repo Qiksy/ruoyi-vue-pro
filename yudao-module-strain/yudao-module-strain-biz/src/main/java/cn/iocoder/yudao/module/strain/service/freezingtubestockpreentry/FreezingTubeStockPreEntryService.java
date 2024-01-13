@@ -52,4 +52,10 @@ public interface FreezingTubeStockPreEntryService {
      */
     PageResult<FreezingTubeStockPreEntryDO> getFreezingTubeStockPreEntryPage(FreezingTubeStockPreEntryPageReqVO pageReqVO);
 
+    /**
+     * 连表查询分页
+     * @param pageReqVO 分页查询
+     * @return 冷冻管库存预录入分页
+     */
+    PageResult<FreezingTubeStockPreEntryRespVO> getFreezingTubeStockPreEntryPage2(FreezingTubeStockPreEntryPageReqVO pageReqVO);
 }

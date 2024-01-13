@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.strain.service.freezingtubeinfo;
 
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -79,4 +81,16 @@ public class FreezingTubeInfoServiceImpl implements FreezingTubeInfoService {
         return freezingTubeInfoMapper.selectList(exportReqVO);
     }
 
+    /**
+     * 只获取冷冻管基本信息的简单信息，包括编号、名称
+     *
+     * @return 获得冷冻管基本信息列表
+     */
+    @Override
+    public List<FreezingTubeInfoRespVO> getFreezingTubeInfoSimpleList() {
+        LambdaQueryWrapperX<FreezingTubeInfoDO> queryWrapperX = new LambdaQueryWrapperX<>();
+        queryWrapperX.select(FreezingTubeInfoDO::getId, FreezingTubeInfoDO::getName);
+        List<FreezingTubeInfoDO> list = freezingTubeInfoMapper.selectList(queryWrapperX);
+        return BeanUtils.toBean(list, FreezingTubeInfoRespVO.class);
+    }
 }

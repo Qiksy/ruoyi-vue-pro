@@ -71,9 +71,13 @@ public class FreezingTubeStockPreEntryRespVO {
     @ExcelProperty("保存日期")
     private LocalDateTime saveDate;
 
-    @Schema(description = "保存人id", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("保存人id")
+//    @Schema(description = "保存人id", requiredMode = Schema.RequiredMode.REQUIRED)
+//    @ExcelProperty("保存人id")
     private Long saveBy;
+
+    @Schema(description = "保存人", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("保存人")
+    private Long saveByName;
 
     @Schema(description = "创建时间")
     @ExcelProperty("创建时间")

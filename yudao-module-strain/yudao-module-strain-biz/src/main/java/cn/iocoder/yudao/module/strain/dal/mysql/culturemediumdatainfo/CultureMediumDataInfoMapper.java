@@ -38,6 +38,11 @@ public interface CultureMediumDataInfoMapper extends BaseMapperX<CultureMediumDa
      * @return 返回培养基名称
      */
     default Map<Long, String> selectMediumNameByIds(Set<Long> mediumIds){
+
+        if (mediumIds == null || mediumIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
         LambdaQueryWrapperX<CultureMediumDataInfoDO> queryWrapperX = new LambdaQueryWrapperX<>();
         queryWrapperX.select(CultureMediumDataInfoDO::getId, CultureMediumDataInfoDO::getName)
                 .in(CultureMediumDataInfoDO::getId, mediumIds);

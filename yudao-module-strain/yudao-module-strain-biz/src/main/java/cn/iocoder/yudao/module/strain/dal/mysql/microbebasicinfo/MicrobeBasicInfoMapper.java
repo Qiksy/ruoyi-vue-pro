@@ -26,6 +26,7 @@ public interface MicrobeBasicInfoMapper extends BaseMapperX<MicrobeBasicInfoDO> 
                 .eqIfPresent(MicrobeBasicInfoDO::getGeneAccessionNumber, reqVO.getGeneAccessionNumber())
                 .eqIfPresent(MicrobeBasicInfoDO::getIsPathogenic, reqVO.getIsPathogenic())
                 .eqIfPresent(MicrobeBasicInfoDO::getIsVisiable, reqVO.getIsVisiable())
+                .eqIfPresent(MicrobeBasicInfoDO::getMicrobeType, reqVO.getMicrobeType())
                 .orderByDesc(MicrobeBasicInfoDO::getId));
     }
 

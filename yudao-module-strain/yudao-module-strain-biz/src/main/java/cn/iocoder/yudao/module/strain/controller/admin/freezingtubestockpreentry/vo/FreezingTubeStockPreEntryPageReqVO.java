@@ -59,6 +59,9 @@ public class FreezingTubeStockPreEntryPageReqVO extends PageParam {
     @Schema(description = "保存人id")
     private Long saveBy;
 
+    @Schema(description = "保存人姓名")
+    private String saveByName;
+
     @Schema(description = "创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;

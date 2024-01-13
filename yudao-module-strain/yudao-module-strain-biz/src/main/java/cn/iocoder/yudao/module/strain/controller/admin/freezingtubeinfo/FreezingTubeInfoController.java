@@ -87,6 +87,14 @@ public class FreezingTubeInfoController {
         return success(FreezingTubeInfoConvert.INSTANCE.convertPage(pageResult));
     }
 
+    @GetMapping("/simple-list")
+    @Operation(summary = "获得冷冻管基本信息列表")
+    @PreAuthorize("@ss.hasPermission('strain:freezing-tube-info:query')")
+    public CommonResult<List<FreezingTubeInfoRespVO>> getFreezingTubeInfoSimpleList() {
+        List<FreezingTubeInfoRespVO> list = freezingTubeInfoService.getFreezingTubeInfoSimpleList();
+        return success(list);
+    }
+
     @GetMapping("/export-excel")
     @Operation(summary = "导出冷冻管基本信息 Excel")
     @PreAuthorize("@ss.hasPermission('strain:freezing-tube-info:export')")

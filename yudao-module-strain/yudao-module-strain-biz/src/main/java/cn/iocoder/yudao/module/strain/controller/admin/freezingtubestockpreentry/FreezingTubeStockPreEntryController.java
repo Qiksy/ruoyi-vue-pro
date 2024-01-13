@@ -75,8 +75,8 @@ public class FreezingTubeStockPreEntryController {
     @Operation(summary = "获得冷冻管库存预录入分页")
     @PreAuthorize("@ss.hasPermission('strain:freezing-tube-stock-pre-entry:query')")
     public CommonResult<PageResult<FreezingTubeStockPreEntryRespVO>> getFreezingTubeStockPreEntryPage(@Valid FreezingTubeStockPreEntryPageReqVO pageReqVO) {
-        PageResult<FreezingTubeStockPreEntryDO> pageResult = freezingTubeStockPreEntryService.getFreezingTubeStockPreEntryPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, FreezingTubeStockPreEntryRespVO.class));
+        PageResult<FreezingTubeStockPreEntryRespVO> pageResult = freezingTubeStockPreEntryService.getFreezingTubeStockPreEntryPage2(pageReqVO);
+        return success(pageResult);
     }
 
     @GetMapping("/export-excel")

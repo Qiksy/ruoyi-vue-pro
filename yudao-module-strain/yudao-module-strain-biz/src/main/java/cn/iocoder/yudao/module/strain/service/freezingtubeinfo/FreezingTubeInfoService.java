@@ -67,4 +67,9 @@ public interface FreezingTubeInfoService {
      */
     List<FreezingTubeInfoDO> getFreezingTubeInfoList(FreezingTubeInfoExportReqVO exportReqVO);
 
+    /**
+     * 只获取冷冻管基本信息的简单信息，包括编号、名称
+     * @return 获得冷冻管基本信息列表
+     */
+    List<FreezingTubeInfoRespVO> getFreezingTubeInfoSimpleList();
 }

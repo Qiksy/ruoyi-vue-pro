@@ -71,4 +71,14 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
         return freezingTubeStockPreEntryMapper.selectPage(pageReqVO);
     }
 
+    /**
+     * 连表查询分页
+     *
+     * @param pageReqVO 分页查询
+     * @return 冷冻管库存预录入分页
+     */
+    @Override
+    public PageResult<FreezingTubeStockPreEntryRespVO> getFreezingTubeStockPreEntryPage2(FreezingTubeStockPreEntryPageReqVO pageReqVO) {
+        return freezingTubeStockPreEntryMapper.selectPage2(pageReqVO);
+    }
 }
