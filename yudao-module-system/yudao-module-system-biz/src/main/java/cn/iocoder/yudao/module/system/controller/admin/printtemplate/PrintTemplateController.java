@@ -71,6 +71,16 @@ public class PrintTemplateController {
         return success(BeanUtils.toBean(printTemplate, PrintTemplateRespVO.class));
     }
 
+
+    @GetMapping("/getBycode")
+    @Operation(summary = "获得打印模板")
+    @Parameter(name = "code", description = "编号", required = true, example = "1024")
+    @PreAuthorize("@ss.hasPermission('system:print-template:query')")
+    public CommonResult<PrintTemplateRespVO> getPrintTemplate(@RequestParam("code") String code) {
+        PrintTemplateDO printTemplate = printTemplateService.getPrintTemplateByCode(code);
+        return success(BeanUtils.toBean(printTemplate, PrintTemplateRespVO.class));
+    }
+
     @GetMapping("/page")
     @Operation(summary = "获得打印模板分页")
     @PreAuthorize("@ss.hasPermission('system:print-template:query')")

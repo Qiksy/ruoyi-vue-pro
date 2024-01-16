@@ -71,4 +71,9 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
         return printTemplateMapper.selectPage(pageReqVO);
     }
 
+
+    @Override
+    public PrintTemplateDO getPrintTemplateByCode(String code) {
+        return printTemplateMapper.selectOne("code",code);
+    }
 }

@@ -52,4 +52,5 @@ public interface PrintTemplateService {
      */
     PageResult<PrintTemplateDO> getPrintTemplatePage(PrintTemplatePageReqVO pageReqVO);
 
+    PrintTemplateDO getPrintTemplateByCode(String code);
 }
