@@ -106,8 +106,11 @@ public class SocialUserServiceImpl implements SocialUserService {
         //这里进行更改，如果是企业微信登录，则从用户表中，根据用户的企业微信id
         if (Objects.equals(socialType, SocialTypeEnum.WECHAT_ENTERPRISE_WEB.getType())||Objects.equals(socialType, SocialTypeEnum.WECHAT_ENTERPRISE.getType())){
 //            AdminUserDO userByPkPsndoc = userService.getUserByPkPsndoc(socialUser.getOpenid());
+            log.info("企业微信登录，openid为：{}",socialUser.getOpenid());
             AdminUserDO userByPkPsndoc = userService.getUserByWecomeId(socialUser.getOpenid());
+
             if (userByPkPsndoc==null){
+                log.info("查询用户信息：查询不到");
                 throw exception(USER_NOT_EXISTS);
             }
             return new SocialUserRespDTO(socialUser.getOpenid(), userByPkPsndoc.getId());
