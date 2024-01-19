@@ -79,4 +79,15 @@ public class StorageAreaInfoServiceImpl implements StorageAreaInfoService {
         return storageAreaInfoMapper.selectList(exportReqVO);
     }
 
+
+    /**
+     * 获取全部的冷冻区域信息
+     *
+     * @return 冷冻区域信息
+     */
+    @Override
+    public List<StorageAreaInfoDO> getAllStorageAreaInfoList() {
+
+        return storageAreaInfoMapper.selectList();
+    }
 }

@@ -67,4 +67,9 @@ public interface StorageAreaInfoService {
      */
     List<StorageAreaInfoDO> getStorageAreaInfoList(StorageAreaInfoExportReqVO exportReqVO);
 
+    /**
+     * 获取全部的冷冻区域信息
+     * @return 冷冻区域信息
+     */
+    List<StorageAreaInfoDO> getAllStorageAreaInfoList();
 }

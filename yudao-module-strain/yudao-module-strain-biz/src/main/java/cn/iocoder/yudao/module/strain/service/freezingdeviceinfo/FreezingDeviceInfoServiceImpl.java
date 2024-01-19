@@ -7,18 +7,22 @@ import cn.iocoder.yudao.module.strain.convert.freezingdevicehierarchy.FreezingDe
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingboxinfo.FreezingBoxInfoDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingdevicehierarchy.FreezingDeviceHierarchyDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockinfo.FreezingTubeStockInfoDO;
+import cn.iocoder.yudao.module.strain.dal.dataobject.storageareainfo.StorageAreaInfoDO;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingboxinfo.FreezingBoxInfoMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingdevicehierarchy.FreezingDeviceHierarchyMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockinfo.FreezingTubeStockInfoMapper;
+import cn.iocoder.yudao.module.strain.dal.mysql.storageareainfo.StorageAreaInfoMapper;
 import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import cn.iocoder.yudao.module.system.api.dict.dto.DictDataRespDTO;
 import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.*;
+
 import cn.iocoder.yudao.module.strain.controller.admin.freezingdeviceinfo.vo.*;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingdeviceinfo.FreezingDeviceInfoDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -52,6 +56,10 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
     @Resource
     private FreezingTubeStockInfoMapper freezingTubeStockInfoMapper;
 
+
+    @Resource
+    private StorageAreaInfoMapper storageAreaInfoMapper;
+
     @Resource
     private DictDataApi dictDataApi;
 
@@ -60,6 +68,7 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
      * 1.新增层级
      * 2.新增末级
      * 3.初始化冷冻盒的每个槽位
+     *
      * @param createReqVO 创建信息
      * @return 主键
      */
@@ -80,11 +89,9 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
 
         List<List<FreezingDeviceHierarchyDO>> hierarchyList = new ArrayList<>(); // 最终需要插入的层级关系
 
-        if (layerList!=null && layerList.length!=0){
+        if (layerList != null && layerList.length != 0) {
             //对层级信息进行排序
             List<DeviceLayerVO> list = Arrays.stream(layerList).sorted(Comparator.comparing(DeviceLayerVO::getIndex)).toList();
-
-
 
 
             for (int i = 0; i < list.size(); i++) {
@@ -96,12 +103,12 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
                 for (int j = 0; j < deviceLayerVO.getNum(); j++) {
                     // j 代表层级中的第几个
 
-                    int xnum =1 ;  //表示上一层的父级数量
+                    int xnum = 1;  //表示上一层的父级数量
 
 
-                    if (deviceLayerVO.getIndex()>0){
+                    if (deviceLayerVO.getIndex() > 0) {
                         //如果不是第一层级，还要再加一套循环
-                        xnum = hierarchyList.get(i-1).size();
+                        xnum = hierarchyList.get(i - 1).size();
                     }
 
                     for (int x = 0; x < xnum; x++) {
@@ -114,21 +121,21 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
 
                         String typeName = strainDeviceLayerType.getOrDefault(deviceLayerVO.getType(), new DictDataRespDTO().setLabel("未知")).getLabel();
                         //
-                        if (deviceLayerVO.getIndex()>0){
+                        if (deviceLayerVO.getIndex() > 0) {
                             //层级编码
                             String currentLevelCode = String.format("%02d", j + 1);
-                            String parentLevelCode = hierarchyList.get(i-1).get(x).getLevelCode();
-                            tempDO.setLevelCode(parentLevelCode+"-"+currentLevelCode);
+                            String parentLevelCode = hierarchyList.get(i - 1).get(x).getLevelCode();
+                            tempDO.setLevelCode(parentLevelCode + "-" + currentLevelCode);
 
-                            tempDO.setName(parentLevelCode+"-"+currentLevelCode+typeName);
+                            tempDO.setName(parentLevelCode + "-" + currentLevelCode + typeName);
 
-                            tempDO.setParentId(hierarchyList.get(i-1).get(x).getId()); // 设置父级主键
-                        }else {
+                            tempDO.setParentId(hierarchyList.get(i - 1).get(x).getId()); // 设置父级主键
+                        } else {
                             //层级编码两位数，不足开头补零
                             String levelCode = String.format("%02d", j + 1);
                             tempDO.setLevelCode(levelCode);
                             //设置名称
-                            tempDO.setName(String.format("%02d", j + 1)+typeName);
+                            tempDO.setName(String.format("%02d", j + 1) + typeName);
                             tempDO.setParentId(freezingDeviceInfo.getId()); // 设置父级主键
                         }
 
@@ -155,12 +162,12 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
 
         List<FreezingDeviceHierarchyDO> boxHierarchyList = new ArrayList<>(); // 临时层级关系
 
-        if (!hierarchyList.isEmpty()){
+        if (!hierarchyList.isEmpty()) {
             // 插入末级
             List<FreezingDeviceHierarchyDO> last = hierarchyList.getLast(); //获取最后一一个层级
             DeviceLayerVO endBox = createReqVO.getEndBox();
 
-            if (endBox!=null){
+            if (endBox != null) {
 
                 for (int i = 0; i < last.size(); i++) {
                     for (int integer = 0; integer < endBox.getNum(); integer++) {
@@ -173,7 +180,7 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
 //                        int num = i*endBox.getNum()+integer+1;
                         String levelCode = String.format("%02d", integer + 1);
                         String parentLevelCode = last.get(i).getLevelCode();
-                        temp.setName(parentLevelCode+"-"+levelCode+"冷冻盒");
+                        temp.setName(parentLevelCode + "-" + levelCode + "冷冻盒");
                         boxHierarchyList.add(temp);
                     }
                 }
@@ -183,11 +190,11 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
                 }
 
             }
-        }else{
+        } else {
             //如果没有初始的层级
             DeviceLayerVO endBox = createReqVO.getEndBox();
 
-            if (endBox!=null){
+            if (endBox != null) {
                 for (int i = 0; i < endBox.getNum(); i++) {
                     FreezingDeviceHierarchyDO temp = new FreezingDeviceHierarchyDO();
                     temp.setParentId(null); //设置父级主键
@@ -205,7 +212,6 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
         }
 
 
-
         //=============================================
         //=================3初始化冷冻盒的槽位=============
         //=============================================
@@ -216,7 +222,7 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
         LambdaQueryWrapperX<FreezingBoxInfoDO> queryWrapper = new LambdaQueryWrapperX<>();
         //这里需要将String转换为Long类型。因为提高通用性，这个type有的时候传输的是字典类型，有的时候是主键long
         Long boxId = Long.valueOf(createReqVO.getEndBox().getType());
-        queryWrapper.eq(FreezingBoxInfoDO::getId,boxId);
+        queryWrapper.eq(FreezingBoxInfoDO::getId, boxId);
         FreezingBoxInfoDO boxInfoDO = freezingBoxInfoMapper.selectOne(queryWrapper);
 
         Integer xNum = boxInfoDO.getAxisCapacityX();//x容量
@@ -234,8 +240,8 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
                     FreezingTubeStockInfoDO tubeStockInfoDO = new FreezingTubeStockInfoDO();
                     Long box = freezingDeviceHierarchyDO.getId();
                     tubeStockInfoDO.setBoxId(box);  //对应的最末的层级
-                    tubeStockInfoDO.setCode(String.format("%s:%s-%s",box,(i+1),(j+1))); // 可阅读的编号
-                    tubeStockInfoDO.setTubePosition(String.format("%1s-%2s",i,j)); //相对位置  x-y编号
+                    tubeStockInfoDO.setCode(String.format("%s:%s-%s", box, (i + 1), (j + 1))); // 可阅读的编号
+                    tubeStockInfoDO.setTubePosition(String.format("%1s-%2s", i, j)); //相对位置  x-y编号
                     tubeStockInfoDO.setTubePositionX(String.valueOf(i)); //x轴编号
                     tubeStockInfoDO.setTubePositionY(String.valueOf(j)); //y轴编号
                     tubeStockInfoDO.setStatus("0"); //0 表示这里是空槽位
@@ -274,12 +280,13 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
 
     /**
      * 校验子层级是否存在
+     *
      * @param id
      */
     private void validateFreezingDeviceHierarchyExistsByParentId(Long id) {
         LambdaQueryWrapperX<FreezingDeviceHierarchyDO> queryWrapper = new LambdaQueryWrapperX<>();
         queryWrapper.eqIfPresent(FreezingDeviceHierarchyDO::getFreezingDeviceId, id);
-        if (freezingDeviceHierarchyMapper.selectCount(queryWrapper)>0) {
+        if (freezingDeviceHierarchyMapper.selectCount(queryWrapper) > 0) {
             //如果大于0，说明存在子层级
             throw exception(FREEZING_DEVICE_INFO_EXISTS_CHILDREN);
         }
@@ -338,7 +345,7 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
 
         FreezingDeviceInfoDO freezingDeviceInfoDO = freezingDeviceInfoMapper.selectById(id);
 
-        if (freezingDeviceInfoDO==null){
+        if (freezingDeviceInfoDO == null) {
             //不存在则报错
             throw exception(FREEZING_DEVICE_INFO_NOT_EXISTS);
         }
@@ -358,12 +365,13 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
 
     /**
      * 遍历获取获取子节点
+     *
      * @param id
      * @return
      */
     private List<FreezingDeviceInfoLevelRespVO> getChildren(Long id) {
         List<FreezingDeviceHierarchyDO> hierarchyDOS = freezingDeviceHierarchyMapper.selectList(new LambdaQueryWrapperX<FreezingDeviceHierarchyDO>().eq(FreezingDeviceHierarchyDO::getParentId, id));
-        if (hierarchyDOS.isEmpty()){
+        if (hierarchyDOS.isEmpty()) {
             //返回一个空的list
             return new ArrayList<>();
         }
@@ -376,4 +384,34 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
     }
 
 
+    /**
+     * @param code 存放区域编码1
+     * @return 返回该区域所有的冷冻设备包括子层级列表，用于前端展示
+     */
+    @Override
+    public List<FreezingDeviceInfoLevelRespVO>  getFreezingDeviceInfoListByAreaCode(String code) {
+        //查询区域信息
+        StorageAreaInfoDO storageAreaInfoDO = storageAreaInfoMapper.selectOne(new LambdaQueryWrapperX<StorageAreaInfoDO>().eq(StorageAreaInfoDO::getCode, code));
+
+        //查询设备信息
+        LambdaQueryWrapperX<FreezingDeviceInfoDO> queryWrapperX = new LambdaQueryWrapperX<>();
+        queryWrapperX.eq(FreezingDeviceInfoDO::getStorageAreaId, storageAreaInfoDO.getId())
+                .select(FreezingDeviceInfoDO::getId);
+
+        //设备信息列表
+        List<FreezingDeviceInfoDO> freezingDeviceInfoDOS =
+                Optional.ofNullable(freezingDeviceInfoMapper.selectList(queryWrapperX)).orElse(new ArrayList<FreezingDeviceInfoDO>());
+
+
+        //转换成id
+        List<Long> deviceIds = freezingDeviceInfoDOS.stream().map(FreezingDeviceInfoDO::getId).toList();
+
+        //获取层级并且返回
+        List<FreezingDeviceInfoLevelRespVO> result = new ArrayList<>();
+        for (Long deviceId : deviceIds) {
+            FreezingDeviceInfoLevelRespVO freezingDeviceInfoLevel = getFreezingDeviceInfoLevel(deviceId);
+            result.add(freezingDeviceInfoLevel);
+        }
+        return result;
+    }
 }

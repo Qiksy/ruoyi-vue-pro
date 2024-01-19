@@ -73,4 +73,10 @@ public interface FreezingDeviceInfoService {
      * @return
      */
     FreezingDeviceInfoLevelRespVO getFreezingDeviceInfoLevel(Long id);
+
+    /**
+     * @param code 存放区域编码1
+     * @return 返回该区域所有的冷冻设备包括子层级列表，用于前端展示
+     */
+    List<FreezingDeviceInfoLevelRespVO>  getFreezingDeviceInfoListByAreaCode(String code);
 }

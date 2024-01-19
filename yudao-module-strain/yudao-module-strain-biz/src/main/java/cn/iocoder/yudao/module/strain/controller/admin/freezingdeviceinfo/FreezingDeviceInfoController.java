@@ -89,6 +89,18 @@ public class FreezingDeviceInfoController {
         return success(FreezingDeviceInfoConvert.INSTANCE.convertList(list));
     }
 
+
+    @GetMapping("/list-by-area-code")
+    @Operation(summary = "获得冷冻设备信息列表")
+    @Parameter(name = "areaCode", description = "区域编码", required = true, example = "1024,2048")
+    @PreAuthorize("@ss.hasPermission('strain:freezing-device-info:query')")
+    public CommonResult<List<FreezingDeviceInfoLevelRespVO> > getFreezingDeviceInfoListByAreaCode(@RequestParam("code") String code){
+        List<FreezingDeviceInfoLevelRespVO>  list = freezingDeviceInfoService.getFreezingDeviceInfoListByAreaCode(code);
+        return success(list);
+    }
+
+
+
     @GetMapping("/page")
     @Operation(summary = "获得冷冻设备信息分页")
     @PreAuthorize("@ss.hasPermission('strain:freezing-device-info:query')")

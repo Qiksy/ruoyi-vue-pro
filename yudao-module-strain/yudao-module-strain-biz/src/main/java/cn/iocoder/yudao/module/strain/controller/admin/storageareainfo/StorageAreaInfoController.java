@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.strain.controller.admin.storageareainfo;
 
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -97,6 +98,16 @@ public class StorageAreaInfoController {
         // 导出 Excel
         List<StorageAreaInfoExcelVO> datas = StorageAreaInfoConvert.INSTANCE.convertList02(list);
         ExcelUtils.write(response, "存放区域信息.xls", "数据", StorageAreaInfoExcelVO.class, datas);
+    }
+
+
+    @GetMapping("/all-list")
+    @Operation(summary = "获得所有的区域信息列表")
+    @Parameter(name = "ids", description = "编号列表", required = true, example = "1024,2048")
+    @PreAuthorize("@ss.hasPermission('strain:storage-area-info:query')")
+    public CommonResult<List<StorageAreaInfoRespVO>> getAllStorageAreaInfoList() {
+        List<StorageAreaInfoDO> list = storageAreaInfoService.getAllStorageAreaInfoList();
+        return success(BeanUtils.toBean(list, StorageAreaInfoRespVO.class));
     }
 
 }

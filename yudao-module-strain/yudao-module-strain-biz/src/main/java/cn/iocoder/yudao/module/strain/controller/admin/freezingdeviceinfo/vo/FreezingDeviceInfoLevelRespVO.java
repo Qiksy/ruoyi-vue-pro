@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.strain.controller.admin.freezingdeviceinfo.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
