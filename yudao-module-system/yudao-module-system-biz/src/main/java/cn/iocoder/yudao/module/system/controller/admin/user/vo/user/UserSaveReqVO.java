@@ -70,4 +70,9 @@ public class UserSaveReqVO {
                 || (ObjectUtil.isAllNotEmpty(password)); // 新增时，必须都传递 password
     }
 
+    public String pkPsndoc;
+
+    public String wecomeId;
+
+
 }
