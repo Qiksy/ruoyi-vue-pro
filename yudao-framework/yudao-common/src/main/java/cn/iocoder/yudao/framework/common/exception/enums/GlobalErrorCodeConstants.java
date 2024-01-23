@@ -38,4 +38,10 @@ public interface GlobalErrorCodeConstants {
 
     ErrorCode UNKNOWN = new ErrorCode(999, "未知错误");
 
+    // redisson并发相关
+    //获取锁失败
+    ErrorCode GET_LOCK_FAIL = new ErrorCode(1000, "获取锁失败");
+    //获取锁被中断
+    ErrorCode GET_LOCK_INTERRUPT = new ErrorCode(1001, "获取锁被中断");
+
 }

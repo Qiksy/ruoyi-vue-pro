@@ -36,10 +36,12 @@ public interface ErrorCodeConstants {
 
 
     // ========== 冷冻管库存预录入 98_008_001 ==========
-    ErrorCode FREEZING_TUBE_STOCK_PRE_ENTRY_NOT_EXISTS = new ErrorCode(98_008_001, "冷冻管库存预录入不存在");
+    ErrorCode FREEZING_TUBE_STOCK_PRE_ENTRY_NOT_EXISTS = new ErrorCode(98_008_001, "冻藏管库存预录入不存在");
 
 
     // ========== 冷冻盒槽位 98_008_001 ==========
-    ErrorCode FREEZING_TUBE_STOCK_INFO_NOT_EXISTS = new ErrorCode(98_009_001, "冷冻盒槽位不存在");
+    ErrorCode FREEZING_TUBE_STOCK_INFO_NOT_EXISTS = new ErrorCode(98_009_001, "冻藏盒槽位不存在");
+
+    ErrorCode TUBE_STOCK_INFO_EXISTS = new ErrorCode(98_009_002, "槽位被占用或样品已录入");
 
 }

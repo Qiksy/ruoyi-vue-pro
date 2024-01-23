@@ -1,11 +1,14 @@
 package cn.iocoder.yudao.module.strain.service.freezingtubestockinfo;
 
 import java.util.*;
+
+import cn.iocoder.yudao.module.strain.controller.admin.freezingboxinfo.vo.FreezingBoxInfoDetailVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockinfo.vo.*;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockinfo.FreezingTubeStockInfoDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * 冷冻盒槽位 Service 接口
@@ -28,6 +31,8 @@ public interface FreezingTubeStockInfoService {
      * @param updateReqVO 更新信息
      */
     void updateFreezingTubeStockInfo(@Valid FreezingTubeStockInfoSaveReqVO updateReqVO);
+
+    void scannerUpdateFreezingTubeStockInfo(@NotNull Long tubeStockId, @NotNull Long perStockId);
 
     /**
      * 删除冷冻盒槽位
@@ -52,4 +57,11 @@ public interface FreezingTubeStockInfoService {
      */
     PageResult<FreezingTubeStockInfoDO> getFreezingTubeStockInfoPage(FreezingTubeStockInfoPageReqVO pageReqVO);
 
+    /**
+     * 根据盒子id，返回一个盒子的所有槽位，
+     * 包括盒子信息
+     * @param boxId 盒子id
+     * @return 盒子的所有槽位
+     */
+    FreezingBoxInfoDetailVO getListByBoxId(Long boxId);
 }

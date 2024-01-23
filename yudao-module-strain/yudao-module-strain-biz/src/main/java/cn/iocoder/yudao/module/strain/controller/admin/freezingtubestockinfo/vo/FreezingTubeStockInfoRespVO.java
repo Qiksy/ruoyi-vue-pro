@@ -63,6 +63,21 @@ public class FreezingTubeStockInfoRespVO {
     @ExcelProperty("菌种id")
     private Long microbeId;
 
+    /**
+     * 菌种名称
+     */
+    private String microbeName;
+
+    /**
+     * 菌种编号
+     */
+    private String microbeCode;
+
+    /**
+     * 菌种类型
+     */
+    private String microbeType;
+
     @Schema(description = "有效期至", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("有效期至")
     private LocalDateTime expirationDate;

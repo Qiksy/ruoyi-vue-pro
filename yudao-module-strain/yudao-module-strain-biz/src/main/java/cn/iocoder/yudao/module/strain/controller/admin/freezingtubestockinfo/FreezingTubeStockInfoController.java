@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockinfo;
 
+import cn.iocoder.yudao.module.strain.controller.admin.freezingboxinfo.vo.FreezingBoxInfoDetailVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -53,6 +54,15 @@ public class FreezingTubeStockInfoController {
         return success(true);
     }
 
+    @PutMapping("/scanner-update")
+    @Operation(summary = "扫码入库")
+    @PreAuthorize("@ss.hasPermission('strain:freezing-tube-stock-info:update')")
+    public CommonResult<Boolean> scannerUpdateFreezingTubeStockInfo(@NotNull @RequestParam("tubeStockId") Long tubeStockId,@NotNull @RequestParam("perStockId") Long perStockId) {
+        freezingTubeStockInfoService.scannerUpdateFreezingTubeStockInfo(tubeStockId,perStockId);
+        return success(true);
+    }
+
+
     @DeleteMapping("/delete")
     @Operation(summary = "删除冷冻盒槽位")
     @Parameter(name = "id", description = "编号", required = true)
@@ -90,6 +100,16 @@ public class FreezingTubeStockInfoController {
         // 导出 Excel
         ExcelUtils.write(response, "冷冻盒槽位.xls", "数据", FreezingTubeStockInfoRespVO.class,
                         BeanUtils.toBean(list, FreezingTubeStockInfoRespVO.class));
+    }
+
+
+    @GetMapping("/getListByBoxId")
+    @Operation(summary = "获得冷冻盒槽位")
+    @Parameter(name = "boxId", description = "编号", required = true, example = "1024")
+    @PreAuthorize("@ss.hasPermission('strain:freezing-tube-stock-info:query')")
+    public CommonResult<FreezingBoxInfoDetailVO> getListByBoxId(@RequestParam("boxId") Long boxId) {
+        FreezingBoxInfoDetailVO freezingTubeStockInfo = freezingTubeStockInfoService.getListByBoxId(boxId);
+        return success(freezingTubeStockInfo);
     }
 
 }

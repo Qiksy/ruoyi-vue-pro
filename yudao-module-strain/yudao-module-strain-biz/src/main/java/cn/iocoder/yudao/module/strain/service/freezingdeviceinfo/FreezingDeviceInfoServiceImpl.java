@@ -241,7 +241,7 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
                     Long box = freezingDeviceHierarchyDO.getId();
                     tubeStockInfoDO.setBoxId(box);  //对应的最末的层级
                     tubeStockInfoDO.setCode(String.format("%s:%s-%s", box, (i + 1), (j + 1))); // 可阅读的编号
-                    tubeStockInfoDO.setTubePosition(String.format("%1s-%2s", i, j)); //相对位置  x-y编号
+                    tubeStockInfoDO.setTubePosition(String.format("%s-%s", i, j)); //相对位置  x-y编号
                     tubeStockInfoDO.setTubePositionX(String.valueOf(i)); //x轴编号
                     tubeStockInfoDO.setTubePositionY(String.valueOf(j)); //y轴编号
                     tubeStockInfoDO.setStatus("0"); //0 表示这里是空槽位
