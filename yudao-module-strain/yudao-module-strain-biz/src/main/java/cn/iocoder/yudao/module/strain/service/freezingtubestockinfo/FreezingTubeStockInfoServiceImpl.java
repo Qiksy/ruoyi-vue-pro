@@ -133,6 +133,8 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
                         entryDO.setStatus(true); //表示已经入库
                         freezingTubeStockPreEntryMapper.updateById(entryDO);
                         //todo 冗余一些菌种信息在里面，例如菌种名称、编号、用途等等，如果以后要更新，就设置定时任务去执行同步更新
+
+                        //菌种名称、编号、用途、来源备注
                     } else {
                         //触发1
                         throw exception(TUBE_STOCK_INFO_EXISTS);
@@ -221,9 +223,9 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
                 if (microbeBasicInfoDO == null) {
                     continue;
                 }
-                respVO.setMicrobeName(microbeBasicInfoDO.getChineseName());
-                respVO.setMicrobeCode(microbeBasicInfoDO.getCode());
-                respVO.setMicrobeType(microbeBasicInfoDO.getMicrobeType());
+                respVO.setMicrobeName(microbeBasicInfoDO.getChineseName()); // 菌种名称
+                respVO.setMicrobeCode(microbeBasicInfoDO.getCode());  //菌种编号
+                respVO.setMicrobeType(microbeBasicInfoDO.getMicrobeType());// 菌种type
             }
         }
 

@@ -180,7 +180,7 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
 //                        int num = i*endBox.getNum()+integer+1;
                         String levelCode = String.format("%02d", integer + 1);
                         String parentLevelCode = last.get(i).getLevelCode();
-                        temp.setName(parentLevelCode + "-" + levelCode + "冷冻盒");
+                        temp.setName(parentLevelCode + "-" + levelCode + "冻藏盒");
                         boxHierarchyList.add(temp);
                     }
                 }
