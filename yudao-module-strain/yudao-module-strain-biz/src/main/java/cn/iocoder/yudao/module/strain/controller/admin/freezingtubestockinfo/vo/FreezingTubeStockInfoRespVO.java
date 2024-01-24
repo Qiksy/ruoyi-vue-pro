@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockinfo.vo;
 
+import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.FreezingTubeStockPreEntryRespVO;
+import cn.iocoder.yudao.module.strain.controller.admin.microbebasicinfo.vo.MicrobeBasicInfoRespVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import java.util.*;
@@ -95,6 +97,12 @@ public class FreezingTubeStockInfoRespVO {
     @ExcelProperty("保存人id")
     private Long saveBy;
 
+
+    /**
+     * 保存人姓名
+     */
+    private String saveByName;
+
     @Schema(description = "预录入id", example = "21863")
     @ExcelProperty("预录入id")
     private Long stockPreEntryId;
@@ -106,5 +114,15 @@ public class FreezingTubeStockInfoRespVO {
     @Schema(description = "备注", example = "你说的对")
     @ExcelProperty("备注")
     private String remark;
+
+    private MicrobeBasicInfoRespVO microbeInfo;
+    //预备录入的信息
+    private FreezingTubeStockPreEntryRespVO tubeStockPreEntryInfo;
+
+    /**
+     * 预录入编号
+     */
+    private String stockPreEntryCode;
+
 
 }

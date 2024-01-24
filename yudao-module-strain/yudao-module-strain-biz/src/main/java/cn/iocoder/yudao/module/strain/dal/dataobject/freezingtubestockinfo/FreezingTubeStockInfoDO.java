@@ -92,10 +92,22 @@ public class FreezingTubeStockInfoDO extends BaseDO {
      * 保存人id
      */
     private Long saveBy;
+
+    /**
+     * 保存人姓名
+     */
+    private String saveByName;
+
     /**
      * 预录入id
      */
     private Long stockPreEntryId;
+
+    /**
+     * 预录入编号
+     */
+    private String stockPreEntryCode;
+
     /**
      * 备注
      */

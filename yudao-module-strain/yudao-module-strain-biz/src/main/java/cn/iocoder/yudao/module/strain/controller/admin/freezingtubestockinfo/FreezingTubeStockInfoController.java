@@ -57,8 +57,8 @@ public class FreezingTubeStockInfoController {
     @PutMapping("/scanner-update")
     @Operation(summary = "扫码入库")
     @PreAuthorize("@ss.hasPermission('strain:freezing-tube-stock-info:update')")
-    public CommonResult<Boolean> scannerUpdateFreezingTubeStockInfo(@NotNull @RequestParam("tubeStockId") Long tubeStockId,@NotNull @RequestParam("perStockId") Long perStockId) {
-        freezingTubeStockInfoService.scannerUpdateFreezingTubeStockInfo(tubeStockId,perStockId);
+    public CommonResult<Boolean> scannerUpdateFreezingTubeStockInfo(@NotNull @RequestParam("tubeStockId") Long tubeStockId,@NotNull @RequestParam("perStockCode") String perStockCode) {
+        freezingTubeStockInfoService.scannerUpdateFreezingTubeStockInfo(tubeStockId,perStockCode);
         return success(true);
     }
 

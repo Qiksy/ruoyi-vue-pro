@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.strain.service.freezingtubestockinfo;
 
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.strain.controller.admin.freezingboxinfo.vo.FreezingBoxInfoDetailVO;
+import cn.iocoder.yudao.module.strain.controller.admin.microbebasicinfo.vo.MicrobeBasicInfoRespVO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingboxinfo.FreezingBoxInfoDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingdevicehierarchy.FreezingDeviceHierarchyDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDO;
@@ -10,6 +11,8 @@ import cn.iocoder.yudao.module.strain.dal.mysql.freezingboxinfo.FreezingBoxInfoM
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingdevicehierarchy.FreezingDeviceHierarchyMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.FreezingTubeStockPreEntryMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.microbebasicinfo.MicrobeBasicInfoMapper;
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.Redisson;
 import org.redisson.api.RLock;
@@ -65,6 +68,9 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
     @Resource
     private MicrobeBasicInfoMapper microbeBasicInfoMapper; // 菌种基础信息 Mapper
 
+    @Resource
+    private AdminUserApi adminUserApi; // 系统用户 API
+
     /**
      * 槽位id锁前缀
      */
@@ -96,15 +102,15 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
 
     /**
      * @param tubeStockId 槽位id
-     * @param perStockId  预备入库id
+     * @param perStockCode 预备入库的编号
      */
     @Override
-    public void scannerUpdateFreezingTubeStockInfo(Long tubeStockId, Long perStockId) {
+    public void scannerUpdateFreezingTubeStockInfo(Long tubeStockId, String perStockCode) {
         // 获取预备入库的相关信息，存放到槽位当中。然后更新槽位信息
 
         //需要做并发控制，也就是加锁
         String tubeSockKey = tubeSockKeyPrefix + tubeStockId.toString();
-        String tubePerSockKey = tubePreSockKeyPrefix + perStockId.toString();
+        String tubePerSockKey = tubePreSockKeyPrefix + perStockCode;
 
         // 获取槽位的锁
         RLock boxLock = redissonClient.getLock(tubeSockKey);
@@ -117,22 +123,37 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
                 //业务逻辑
                 try {
                     FreezingTubeStockInfoDO freezingTubeStockInfoDO = freezingTubeStockInfoMapper.selectById(tubeStockId);
-                    FreezingTubeStockPreEntryDO entryDO = freezingTubeStockPreEntryMapper.selectById(perStockId);
+                    FreezingTubeStockPreEntryDO entryDO = freezingTubeStockPreEntryMapper.selectOne(
+                            new LambdaQueryWrapperX<FreezingTubeStockPreEntryDO>().
+                                    eq(FreezingTubeStockPreEntryDO::getCode, perStockCode));
                     //判断是否已经入库了
                     if (StringUtils.equals(freezingTubeStockInfoDO.getStatus(), "0") && !entryDO.getStatus()) {
+
+                        AdminUserRespDTO user = Optional.ofNullable(adminUserApi.getUser(entryDO.getSaveBy())).orElse(new AdminUserRespDTO());
+
                         //这里是没入库的
                         freezingTubeStockInfoDO.setMicrobeId(entryDO.getMicrobeId()); //设置菌种id
                         freezingTubeStockInfoDO.setSaveBy(Long.valueOf(entryDO.getCreator()));//设置保存人
+                        freezingTubeStockInfoDO.setSaveByName(user.getNickname());//设置保存人的姓名
                         freezingTubeStockInfoDO.setStockPreEntryId(entryDO.getId());//设置预备入库id
                         freezingTubeStockInfoDO.setThawFreezeCycleCount(entryDO.getThawFreezeCycleCount());//设置融冻次数
                         freezingTubeStockInfoDO.setTubeId(entryDO.getTubeId());//设置冷冻管类型id
                         freezingTubeStockInfoDO.setStatus("1");//在库状态
+
+                        //设置保存时间和有效期
+                        freezingTubeStockInfoDO.setExpirationDate(entryDO.getExpirationDate());
+                        freezingTubeStockInfoDO.setSaveDate(entryDO.getSaveDate());
+
+                        //设置预备录入编号
+                        freezingTubeStockInfoDO.setStockPreEntryCode(entryDO.getCode());
+
+                        //todo 冗余一些菌种信息在里面，例如菌种名称、编号、用途等等，如果以后要更新，就设置定时任务去执行同步更新
                         //更新冷冻管信息
                         freezingTubeStockInfoMapper.updateById(freezingTubeStockInfoDO);
                         //更新预备入库信息
                         entryDO.setStatus(true); //表示已经入库
                         freezingTubeStockPreEntryMapper.updateById(entryDO);
-                        //todo 冗余一些菌种信息在里面，例如菌种名称、编号、用途等等，如果以后要更新，就设置定时任务去执行同步更新
+
 
                         //菌种名称、编号、用途、来源备注
                     } else {
@@ -208,24 +229,27 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
         List<FreezingTubeStockInfoDO> tubeStockInfoDOList = freezingTubeStockInfoMapper.selectList(queryWrapperX);
 
 
+        //返回的最终的每个槽位的信息
+        //除了槽位信息还包含着菌种信息
         List<FreezingTubeStockInfoRespVO> respVOList = BeanUtils.toBean(tubeStockInfoDOList, FreezingTubeStockInfoRespVO.class);
 
-        //todo 槽位信息需要拼接各种菌种信息
+
+        // 槽位信息需要拼接各种菌种信息
         List<Long> microbeIds = tubeStockInfoDOList.stream().map(FreezingTubeStockInfoDO::getMicrobeId).filter(Objects::nonNull).distinct().toList();
 
         if (!microbeIds.isEmpty()) {
             List<MicrobeBasicInfoDO> microbeBasicInfoDOS = microbeBasicInfoMapper.selectBatchIds(microbeIds);
-            Map<Long, MicrobeBasicInfoDO> microbeMap = microbeBasicInfoDOS.stream().collect(Collectors.toMap(MicrobeBasicInfoDO::getId, o -> o));
+            List<MicrobeBasicInfoRespVO> microbeInfo = BeanUtils.toBean(microbeBasicInfoDOS, MicrobeBasicInfoRespVO.class);
+            Map<Long, MicrobeBasicInfoRespVO> microbeMap = microbeInfo.stream().collect(Collectors.toMap(MicrobeBasicInfoRespVO::getId, o -> o));
 
 
             for (FreezingTubeStockInfoRespVO respVO : respVOList) {
-                MicrobeBasicInfoDO microbeBasicInfoDO = microbeMap.get(respVO.getMicrobeId());
-                if (microbeBasicInfoDO == null) {
+                MicrobeBasicInfoRespVO microbeBasicInfoVo = microbeMap.get(respVO.getMicrobeId());
+                if (microbeBasicInfoVo == null) {
                     continue;
                 }
-                respVO.setMicrobeName(microbeBasicInfoDO.getChineseName()); // 菌种名称
-                respVO.setMicrobeCode(microbeBasicInfoDO.getCode());  //菌种编号
-                respVO.setMicrobeType(microbeBasicInfoDO.getMicrobeType());// 菌种type
+                respVO.setMicrobeInfo(microbeBasicInfoVo);
+                respVO.setMicrobeType(microbeBasicInfoVo.getMicrobeType());// 菌种type
             }
         }
 

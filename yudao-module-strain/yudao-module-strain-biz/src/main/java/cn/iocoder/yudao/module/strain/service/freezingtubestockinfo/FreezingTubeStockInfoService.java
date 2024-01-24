@@ -32,7 +32,7 @@ public interface FreezingTubeStockInfoService {
      */
     void updateFreezingTubeStockInfo(@Valid FreezingTubeStockInfoSaveReqVO updateReqVO);
 
-    void scannerUpdateFreezingTubeStockInfo(@NotNull Long tubeStockId, @NotNull Long perStockId);
+    void scannerUpdateFreezingTubeStockInfo(@NotNull Long tubeStockId, @NotNull String perStockCode);
 
     /**
      * 删除冷冻盒槽位
