@@ -9,4 +9,17 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="getSockStatus" resultType="java.util.Map" parameterType="arraylist">
+        select status,count(1) num from strain_freezing_tube_stock_info where box_id in (
+        /*查询这个区域下面的所有盒子*/
+        select id from strain_freezing_device_hierarchy
+        where freezing_device_id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        and is_final_level = 1
+        and deleted = 0
+        )
+        group by status
+    </select>
 </mapper>

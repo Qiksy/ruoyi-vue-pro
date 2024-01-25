@@ -106,8 +106,9 @@ public class StorageAreaInfoController {
     @Parameter(name = "ids", description = "编号列表", required = true, example = "1024,2048")
     @PreAuthorize("@ss.hasPermission('strain:storage-area-info:query')")
     public CommonResult<List<StorageAreaInfoRespVO>> getAllStorageAreaInfoList() {
-        List<StorageAreaInfoDO> list = storageAreaInfoService.getAllStorageAreaInfoList();
-        return success(BeanUtils.toBean(list, StorageAreaInfoRespVO.class));
+        List<StorageAreaInfoRespVO> list = storageAreaInfoService.getAllStorageAreaInfoList();
+
+        return success(list);
     }
 
 }

@@ -13,4 +13,23 @@ public class StorageAreaInfoRespVO extends StorageAreaInfoBaseVO {
     @Schema(description = "创建时间")
     private LocalDateTime createTime;
 
+    /**
+     * 冻藏设备数量
+     */
+    private long deviceNum;
+
+
+    //在库数量
+    private long inStockNum;
+
+    //待回库数量
+    private long waitInStockNum;
+
+    //空闲数量
+    private long freeNum;
+
+    //总数量
+    private long totalNum;
+
+
 }

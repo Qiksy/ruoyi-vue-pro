@@ -68,8 +68,8 @@ public interface StorageAreaInfoService {
     List<StorageAreaInfoDO> getStorageAreaInfoList(StorageAreaInfoExportReqVO exportReqVO);
 
     /**
-     * 获取全部的冷冻区域信息
+     * 获取全部的冷冻区域信息，包括分析其中的菌种类型、数量、容量
      * @return 冷冻区域信息
      */
-    List<StorageAreaInfoDO> getAllStorageAreaInfoList();
+    List<StorageAreaInfoRespVO> getAllStorageAreaInfoList();
 }

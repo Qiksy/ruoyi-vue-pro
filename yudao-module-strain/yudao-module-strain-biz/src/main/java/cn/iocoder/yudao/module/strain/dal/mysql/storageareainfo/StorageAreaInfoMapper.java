@@ -6,8 +6,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.strain.dal.dataobject.storageareainfo.StorageAreaInfoDO;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.strain.controller.admin.storageareainfo.vo.*;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 存放区域信息 Mapper
@@ -37,4 +39,11 @@ public interface StorageAreaInfoMapper extends BaseMapperX<StorageAreaInfoDO> {
                 .orderByDesc(StorageAreaInfoDO::getId));
     }
 
+    /**
+     * 获取整个库存的信息
+     * @param list
+     * @return
+     */
+    @MapKey("status")
+    Map<String, Map<String,Object>> getSockStatus(@Param("list") List<Long> list);
 }
