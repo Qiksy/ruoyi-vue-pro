@@ -70,4 +70,11 @@ public interface FreezingTubeStockInfoService {
      * @param tubeStockId 冻藏管槽位id
      */
     void tempDelivery(Long tubeStockId);
+
+    /**
+     * 给冻藏管的融冻次数+1
+     * 然后设置在库状态为在库
+     * @param perStockCode 冻藏管的编号
+     */
+    void scannerReStock(String perStockCode);
 }

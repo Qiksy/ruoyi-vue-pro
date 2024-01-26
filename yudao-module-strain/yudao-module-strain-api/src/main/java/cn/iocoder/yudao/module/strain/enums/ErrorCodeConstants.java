@@ -44,4 +44,7 @@ public interface ErrorCodeConstants {
 
     ErrorCode TUBE_STOCK_INFO_EXISTS = new ErrorCode(98_009_002, "槽位被占用或样品已录入");
 
+    ErrorCode TUBE_STOCK_NOT_EXISTS = new ErrorCode(98_009_003, "关联槽位不存在，无法复存");
+
+    ErrorCode TUBE_STOCK_TOO_MANY = new ErrorCode(98_009_004, "关联槽位过多");
 }

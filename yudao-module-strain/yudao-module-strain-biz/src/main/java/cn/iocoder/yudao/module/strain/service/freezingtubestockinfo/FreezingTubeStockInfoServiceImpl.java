@@ -305,4 +305,43 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
         //todo 可能需要关联出库单，把出库单的已经回库状态进行更新
 
     }
+
+    /**
+     * 给冻藏管的融冻次数+1
+     * 然后设置在库状态为在库
+     *
+     * @param perStockCode 冻藏管的编号
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void scannerReStock(String perStockCode) {
+
+        LambdaQueryWrapperX<FreezingTubeStockPreEntryDO> lambdaQueryWrapperX = new LambdaQueryWrapperX<FreezingTubeStockPreEntryDO>().eq(FreezingTubeStockPreEntryDO::getCode, perStockCode);
+        FreezingTubeStockPreEntryDO perStock = freezingTubeStockPreEntryMapper.selectOne(lambdaQueryWrapperX);
+
+        int generationNumber = Optional.ofNullable(perStock.getGenerationNumber()).orElse(1) +1;
+        perStock.setGenerationNumber(generationNumber);
+
+        freezingTubeStockPreEntryMapper.updateById(perStock);
+
+
+        LambdaQueryWrapperX<FreezingTubeStockInfoDO> wrapperX = new LambdaQueryWrapperX<>();
+        wrapperX.eq(FreezingTubeStockInfoDO::getStockPreEntryId, perStock.getId());
+
+        List<FreezingTubeStockInfoDO> tubeStockInfoDOList = freezingTubeStockInfoMapper.selectList(wrapperX);
+
+        if(tubeStockInfoDOList.isEmpty()){
+            //槽位不存在
+            throw exception(TUBE_STOCK_NOT_EXISTS);
+        } else if (tubeStockInfoDOList.size()>1) {
+            //槽位存在但是太多个，有冲突
+            throw exception(TUBE_STOCK_TOO_MANY);
+        }else {
+            //更新
+            FreezingTubeStockInfoDO freezingTubeStockInfoDO = tubeStockInfoDOList.get(0);
+            freezingTubeStockInfoDO.setStatus(InventoryStatisEnum.IN_STOCK.getValue());
+            freezingTubeStockInfoDO.setGenerationNumber(generationNumber);
+            freezingTubeStockInfoMapper.updateById(freezingTubeStockInfoDO);
+        }
+    }
 }
