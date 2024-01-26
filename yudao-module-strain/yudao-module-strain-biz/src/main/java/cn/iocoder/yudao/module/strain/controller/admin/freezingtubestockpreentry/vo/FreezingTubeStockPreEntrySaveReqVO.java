@@ -63,7 +63,7 @@ public class FreezingTubeStockPreEntrySaveReqVO {
     private String remark;
 
     @Schema(description = "是否入库", example = "2")
-    private Boolean status;
+    private String status;
 
     /**
      * 冻藏管数量

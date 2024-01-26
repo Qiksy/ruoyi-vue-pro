@@ -4,6 +4,7 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.strain.dal.dataobject.microbebasicinfo.MicrobeBasicInfoDO;
 import cn.iocoder.yudao.module.strain.dal.mysql.microbebasicinfo.MicrobeBasicInfoMapper;
+import cn.iocoder.yudao.module.strain.enums.InventoryStatisEnum;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
@@ -66,7 +67,8 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
             //过期时间=保存时间+有效期天数
             entryDO.setExpirationDate(createReqVO.getSaveDate().plusDays(microbeBasicInfoDO.getValidityPeriodDays()));
 
-            entryDO.setStatus(false);// 默认没有入库
+            // 默认没有入库
+            entryDO.setStatus(InventoryStatisEnum.NOT_IN_STOCK.getValue());
 
             doList.add(entryDO);
         }

@@ -39,6 +39,7 @@ import static cn.iocoder.yudao.framework.common.exception.enums.GlobalErrorCodeC
 import static cn.iocoder.yudao.framework.common.exception.enums.GlobalErrorCodeConstants.GET_LOCK_INTERRUPT;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.strain.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.strain.enums.InventoryStatisEnum.IN_STOCK;
 
 /**
  * 冷冻盒槽位 Service 实现类
@@ -128,7 +129,7 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
                             new LambdaQueryWrapperX<FreezingTubeStockPreEntryDO>().
                                     eq(FreezingTubeStockPreEntryDO::getCode, perStockCode));
                     //判断是否已经入库了
-                    if (StringUtils.equals(freezingTubeStockInfoDO.getStatus(), "0") && !entryDO.getStatus()) {
+                    if (StringUtils.equals(freezingTubeStockInfoDO.getStatus(), "0") && StringUtils.equals(entryDO.getStatus(),"0")) {
 
                         AdminUserRespDTO user = Optional.ofNullable(adminUserApi.getUser(entryDO.getSaveBy())).orElse(new AdminUserRespDTO());
 
@@ -152,7 +153,7 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
                         //更新冷冻管信息
                         freezingTubeStockInfoMapper.updateById(freezingTubeStockInfoDO);
                         //更新预备入库信息
-                        entryDO.setStatus(true); //表示已经入库
+                        entryDO.setStatus(InventoryStatisEnum.IN_STOCK.getValue()); //表示已经入库
                         freezingTubeStockPreEntryMapper.updateById(entryDO);
 
 
@@ -295,7 +296,16 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
      */
     @Override
     public void tempDelivery(Long tubeStockId) {
+
+
+
+
         FreezingTubeStockInfoDO freezingTubeStockInfoDO = freezingTubeStockInfoMapper.selectById(tubeStockId);
+
+        if (freezingTubeStockInfoDO.getStockPreEntryId()==null){
+            //表示没有预备入库的信息
+            throw exception(TUBE_STOCK_NOT_PRE_ENTRY);
+        }
 
         freezingTubeStockInfoDO.setStatus(InventoryStatisEnum.WAIT_STOCK.getValue());
 
@@ -339,7 +349,7 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
         }else {
             //更新
             FreezingTubeStockInfoDO freezingTubeStockInfoDO = tubeStockInfoDOList.get(0);
-            freezingTubeStockInfoDO.setStatus(InventoryStatisEnum.IN_STOCK.getValue());
+            freezingTubeStockInfoDO.setStatus(IN_STOCK.getValue());
             freezingTubeStockInfoDO.setGenerationNumber(generationNumber);
             freezingTubeStockInfoMapper.updateById(freezingTubeStockInfoDO);
         }

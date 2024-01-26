@@ -92,8 +92,8 @@ public class FreezingTubeStockPreEntryDO extends BaseDO {
     /**
      * 是否入库
      *
-     * 枚举 {@link TODO infra_boolean_string 对应的类}
+     * 枚举
      */
-    private Boolean status;
+    private String status;
 
 }

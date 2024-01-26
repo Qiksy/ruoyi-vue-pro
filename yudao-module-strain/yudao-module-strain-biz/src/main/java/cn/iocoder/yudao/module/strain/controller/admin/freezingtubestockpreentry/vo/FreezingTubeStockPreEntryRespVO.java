@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo;
 
+import cn.iocoder.yudao.module.strain.enums.DictTypeConstants;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import java.util.*;
@@ -95,7 +96,7 @@ public class FreezingTubeStockPreEntryRespVO {
 
     @Schema(description = "是否入库", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
     @ExcelProperty(value = "是否入库", converter = DictConvert.class)
-    @DictFormat("infra_boolean_string") // TODO 代码优化：建议设置到对应的 DictTypeConstants 枚举类中
-    private Boolean status;
+    @DictFormat(DictTypeConstants.STRAIN_INVENTORY_STATUS) // TODO 代码优化：建议设置到对应的 DictTypeConstants 枚举类中
+    private String status;
 
 }
