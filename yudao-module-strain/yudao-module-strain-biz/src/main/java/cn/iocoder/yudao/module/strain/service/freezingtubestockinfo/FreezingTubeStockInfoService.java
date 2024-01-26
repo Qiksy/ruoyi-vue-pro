@@ -64,4 +64,10 @@ public interface FreezingTubeStockInfoService {
      * @return 盒子的所有槽位
      */
     FreezingBoxInfoDetailVO getListByBoxId(Long boxId);
+
+    /**
+     * 将这个槽位设置为待出库
+     * @param tubeStockId 冻藏管槽位id
+     */
+    void tempDelivery(Long tubeStockId);
 }

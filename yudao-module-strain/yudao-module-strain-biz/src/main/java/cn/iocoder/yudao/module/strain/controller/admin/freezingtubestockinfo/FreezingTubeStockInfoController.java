@@ -112,4 +112,13 @@ public class FreezingTubeStockInfoController {
         return success(freezingTubeStockInfo);
     }
 
+
+    @PutMapping("/temp-delivery")
+    @Operation(summary = "临时出库")
+    @PreAuthorize("@ss.hasPermission('strain:freezing-tube-stock-info:update')")
+    public CommonResult<Boolean> tempDelivery(@NotNull @RequestParam("tubeStockId") Long tubeStockId) {
+        freezingTubeStockInfoService.tempDelivery(tubeStockId);
+        return success(true);
+    }
+
 }

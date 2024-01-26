@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.strain.dal.mysql.freezingboxinfo.FreezingBoxInfoM
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingdevicehierarchy.FreezingDeviceHierarchyMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.FreezingTubeStockPreEntryMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.microbebasicinfo.MicrobeBasicInfoMapper;
+import cn.iocoder.yudao.module.strain.enums.InventoryStatisEnum;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import org.apache.commons.lang3.StringUtils;
@@ -285,5 +286,23 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
 
         detailVO.setTubeStockInfoList(matrix);
         return detailVO;
+    }
+
+    /**
+     * 将这个槽位设置为待回库
+     *
+     * @param tubeStockId 冻藏管槽位id
+     */
+    @Override
+    public void tempDelivery(Long tubeStockId) {
+        FreezingTubeStockInfoDO freezingTubeStockInfoDO = freezingTubeStockInfoMapper.selectById(tubeStockId);
+
+        freezingTubeStockInfoDO.setStatus(InventoryStatisEnum.WAIT_STOCK.getValue());
+
+        freezingTubeStockInfoMapper.updateById(freezingTubeStockInfoDO);
+
+
+        //todo 可能需要关联出库单，把出库单的已经回库状态进行更新
+
     }
 }
