@@ -367,17 +367,17 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
         int type = generateReqVO.getType();
         LocalDate now = LocalDate.now();
         if (type == 0) {
-            saleDate = now.getYear() + "-" + now.getMonthValue() + "-10";
+            saleDate = now.getYear() + "-" + String.format("%02d", now.getMonthValue()) + "-10";
             if (now.getDayOfMonth() < 10) {
                 throw exception(DECLINE_WARNING_GENERATE_TIME_ERROR);
             }
         } else if (type == 1) {
-            saleDate = now.getYear() + "-" + now.getMonthValue() + "-20";
+            saleDate = now.getYear() + "-" + String.format("%02d", now.getMonthValue()) + "-20";
             if (now.getDayOfMonth() < 20) {
                 throw exception(DECLINE_WARNING_GENERATE_TIME_ERROR);
             }
         } else if (type == 2) {
-            saleDate = now.getYear() + "-" + now.getMonthValue() + "-" + now.lengthOfMonth();
+            saleDate = now.getYear() + "-" + String.format("%02d", now.getMonthValue()) + "-" + now.lengthOfMonth();
             if (now.getDayOfMonth() < now.lengthOfMonth()) {
                 throw exception(DECLINE_WARNING_GENERATE_TIME_ERROR);
             }
