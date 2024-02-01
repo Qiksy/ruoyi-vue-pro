@@ -41,4 +41,21 @@ public class AdminUserRespDTO {
      */
     private String mobile;
 
+    /**
+     * bd_psndoc.pk_psndoc
+     * 附加的主键
+     */
+    private String pkPsndoc;
+
+    /**
+     * 企业微信的id
+     */
+    private String wecomeId;
+
+
+    /**
+     * 用户编码
+     */
+    private String code;
+
 }
