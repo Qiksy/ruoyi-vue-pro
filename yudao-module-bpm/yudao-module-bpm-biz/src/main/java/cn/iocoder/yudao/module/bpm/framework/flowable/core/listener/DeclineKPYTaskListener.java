@@ -64,6 +64,7 @@ public class DeclineKPYTaskListener implements TaskListener {
         myListener.deptApi = this.deptApi;
         myListener.tencentApi = this.tencentApi;
         myListener.stringRedisTemplate = this.stringRedisTemplate;
+        myListener.agentId = this.agentId;
     }
 
     @Override
@@ -87,7 +88,7 @@ public class DeclineKPYTaskListener implements TaskListener {
         //推送给谁
         kpyContent.put("touser", touserStr);
         //应用id
-        kpyContent.put("agentid", agentId);
+        kpyContent.put("agentid", myListener.agentId);
         //消息内容
         kpyContent.put("content", "有一条掉量预警需要你反馈，请你点击<a href=\"https://saletool.bo-en.com/social-login-redirect\">微销售</a>进行处理");
         ObjectMapper op = new ObjectMapper();
@@ -105,13 +106,12 @@ public class DeclineKPYTaskListener implements TaskListener {
             throw new RuntimeException(e);
         } catch (IOException e) {
             log.info("发送消息失败");
+            throw new RuntimeException(e);
+        }
 
-            if (wecomeMessageRespDTO.getErrcode() != 0) {
-                log.info("发送消息失败{}",wecomeMessageRespDTO);
-                throw exception(wecomeMessageRespDTO.getErrcode(),"消息发送失败：{}",wecomeMessageRespDTO.getErrmsg());
-            }else {
-                throw new RuntimeException(e);
-            }
+        if (wecomeMessageRespDTO.getErrcode() != 0) {
+            log.info("发送消息失败{}",wecomeMessageRespDTO);
+            throw exception(wecomeMessageRespDTO.getErrcode(),"消息发送失败：{}",wecomeMessageRespDTO.getErrmsg());
         }
 
 

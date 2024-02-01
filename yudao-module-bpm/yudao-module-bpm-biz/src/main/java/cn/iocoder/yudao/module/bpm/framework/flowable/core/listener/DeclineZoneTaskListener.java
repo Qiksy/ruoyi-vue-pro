@@ -67,6 +67,7 @@ public class DeclineZoneTaskListener implements TaskListener {
         myListener.deptApi = this.deptApi;
         myListener.tencentApi = this.tencentApi;
         myListener.stringRedisTemplate = this.stringRedisTemplate;
+        myListener.agentId = this.agentId;
     }
 
     @Override
@@ -90,7 +91,7 @@ public class DeclineZoneTaskListener implements TaskListener {
             //推送给谁
             leaderContent.put("touser", leaderUser.getWecomeId());
             //应用id
-            leaderContent.put("agentid", agentId);
+            leaderContent.put("agentid", myListener.agentId);
             //消息内容
             leaderContent.put("content", "您管辖的战区内有客户销量对比上月同期下降超过30%。\n 请及时与对应的大区总沟通，并进入<a href=\"https://saletool.bo-en.com/social-login-redirect\">微销售</a>进行处理");
 
@@ -101,23 +102,24 @@ public class DeclineZoneTaskListener implements TaskListener {
                 log.info("jsonNode2:{}",op.writeValueAsString(leaderContent));
                 wecomeMessageRespDTO2 = myListener.tencentApi.sendWelcomeMessage(op.writeValueAsString(leaderContent));
 
+
                 //利用redisson，将这个人的这个类型的消息记录下来，5分钟内不再发送
                 String key = ZONE_LEADER_CONTENT_SEND_RECORD_PREFIX + leaderUserId;
                 //设置一个key
                 myListener.stringRedisTemplate.opsForValue().set(key,"1", Duration.ofMinutes(5));
+
 
             } catch (JsonProcessingException e) {
                 log.info("解析json失败");
                 throw new RuntimeException(e);
             } catch (IOException e) {
                 log.info("发送消息失败");
+                throw new RuntimeException(e);
+            }
 
-                if (wecomeMessageRespDTO2.getErrcode() != 0) {
-                    log.info("发送消息失败{}",wecomeMessageRespDTO2);
-                    throw exception(wecomeMessageRespDTO2.getErrcode(),"消息发送失败：{}",wecomeMessageRespDTO2.getErrmsg());
-                }else {
-                    throw new RuntimeException(e);
-                }
+            if (wecomeMessageRespDTO2.getErrcode() != 0) {
+                log.info("发送消息失败{}", wecomeMessageRespDTO2);
+                throw exception(wecomeMessageRespDTO2.getErrcode(),"消息发送失败：{}",wecomeMessageRespDTO2.getErrmsg());
             }
         }
     }
