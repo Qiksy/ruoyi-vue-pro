@@ -196,8 +196,8 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
 
             // 发起 BPM 流程
             Map<String, Object> processInstanceVariables = new HashMap<>();
-            processInstanceVariables.put("zoneCode", Long.valueOf(declineWarningDO.getZoneCode()));
-            processInstanceVariables.put("areaCode", Long.valueOf(declineWarningDO.getAreaCode()));
+            processInstanceVariables.put("zoneCode", Long.valueOf(declineWarningDO.getZoneCode())); //战区总
+            processInstanceVariables.put("areaCode", Long.valueOf(declineWarningDO.getAreaCode())); //大区总
 
             List<DeclineWarningSubDO> subDOList = declineWarningSubMap.get(declineWarningDO.getId());
 
