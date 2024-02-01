@@ -81,7 +81,7 @@ public class DeclineZoneTaskListener implements TaskListener {
         Long leaderUserId = dept.getLeaderUserId();
         ObjectMapper op = new ObjectMapper();
 
-        if (Boolean.FALSE.equals(stringRedisTemplate.hasKey(ZONE_LEADER_CONTENT_SEND_RECORD_PREFIX + leaderUserId))) {
+        if (Boolean.FALSE.equals(myListener.stringRedisTemplate.hasKey(ZONE_LEADER_CONTENT_SEND_RECORD_PREFIX + leaderUserId))) {
             AdminUserRespDTO leaderUser = myListener.adminUserApi.getUser(leaderUserId);
 
             ObjectNode leaderContent = JsonNodeFactory.instance.objectNode(); //大区总消息
@@ -104,7 +104,7 @@ public class DeclineZoneTaskListener implements TaskListener {
                 //利用redisson，将这个人的这个类型的消息记录下来，5分钟内不再发送
                 String key = ZONE_LEADER_CONTENT_SEND_RECORD_PREFIX + leaderUserId;
                 //设置一个key
-                stringRedisTemplate.opsForValue().set(key,"1", Duration.ofMinutes(5));
+                myListener.stringRedisTemplate.opsForValue().set(key,"1", Duration.ofMinutes(5));
 
             } catch (JsonProcessingException e) {
                 log.info("解析json失败");
