@@ -24,4 +24,8 @@ public class DeclineWarningSubBatchSaveReqVO {
 
     @Schema(description = "科普员反馈", example = "0否1是")
     private String feedback;
+
+    // 科普员反馈详情
+    @Schema(description = "科普员反馈详情")
+    private String feedbackDetail;
 }

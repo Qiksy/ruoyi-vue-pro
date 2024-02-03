@@ -57,4 +57,8 @@ public class DeclineWarningSubRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
+    private String feedback;
+
+    private String feedbackDetail;
+
 }

@@ -76,4 +76,6 @@ public class DeclineWarningSubDO extends BaseDO {
     private String improvementMeasure;
 
     private String feedback;
+
+    private String feedbackDetail;
 }
