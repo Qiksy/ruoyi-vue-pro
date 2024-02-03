@@ -124,7 +124,7 @@ public class DeclineStartListener implements TaskListener {
         }
         if (wecomeMessageRespDTO.getErrcode() != 0) {
             log.info("发送消息失败{}",wecomeMessageRespDTO);
-            throw exception(wecomeMessageRespDTO.getErrcode(),"消息发送失败：{}",wecomeMessageRespDTO.getErrmsg());
+            throw exception(512,wecomeMessageRespDTO);
         }
 
 
