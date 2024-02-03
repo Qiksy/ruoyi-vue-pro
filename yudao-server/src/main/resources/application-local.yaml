@@ -250,6 +250,8 @@ yudao:
     url: http://127.0.0.1:8561 # 远程调用的地址
     secret: boen219689120231207 # 远程调用的密钥
   tencent-lbs-key: TVDBZ-TDILD-4ON4B-PFDZA-RNLKH-VVF6E # QQ 地图的密钥 https://lbs.qq.com/service/staticV2/staticGuide/staticDoc
+  bpm:
+    is-send-message: false # 流程是否发送消息
 
 justauth:
   enabled: true

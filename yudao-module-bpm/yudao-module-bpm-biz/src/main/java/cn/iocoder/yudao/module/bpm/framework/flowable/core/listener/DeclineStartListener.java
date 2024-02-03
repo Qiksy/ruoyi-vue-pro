@@ -45,6 +45,9 @@ public class DeclineStartListener implements TaskListener {
     @Value("${tencent.work.agent-id}")
     private String agentId;
 
+    @Value("${yudao.bpm.is-send-message:false}")
+    private Boolean isSendMessage;//默认关闭
+
     @Resource
     private BpmProcessInstanceService processInstanceService;
 
@@ -80,11 +83,16 @@ public class DeclineStartListener implements TaskListener {
         myListener.tencentApi = this.tencentApi;
         myListener.stringRedisTemplate = this.stringRedisTemplate;
         myListener.agentId = this.agentId;
+        myListener.isSendMessage = this.isSendMessage;
     }
 
 
     @Override
     public void notify(DelegateTask delegateTask) {
+        if (!myListener.isSendMessage){
+            //如果不给开启发送消息，直接返回
+            return;
+        }
         String processInstanceId = delegateTask.getProcessInstanceId();
         ProcessInstance processInstance = myListener.processInstanceService.getProcessInstance(processInstanceId);
         Map<String, Object> variables = processInstance.getProcessVariables();
