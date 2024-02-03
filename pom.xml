@@ -25,6 +25,7 @@
         <!-- 示例项目 -->
         <module>yudao-module-sale</module>
 <!--        <module>yudao-example</module>-->
+        <module>yudao-module-strain</module>
     </modules>
 
     <name>${project.artifactId}</name>

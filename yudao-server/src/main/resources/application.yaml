@@ -237,6 +237,23 @@ yudao:
       - rep_demo_jianpiao
       - tmp_report_data_1
       - tmp_report_data_income
+      - strain_culture_medium_data_info
+      - strain_freezing_box_info
+      - strain_freezing_device_hierarchy
+      - strain_freezing_device_info
+      - strain_freezing_tube_info
+      - strain_freezing_tube_stock_info
+      - strain_freezing_tube_stock_pre_entry
+      - strain_input_template
+      - strain_microbe_basic_info
+      - strain_outbound_application
+      - strain_outbound_sub_application
+      - strain_project_basic_info
+      - strain_project_member_info
+      - strain_stock_transfer_application
+      - strain_stock_transfer_sub_application
+      - strain_storage_area_info
+      - strain_warning_record
   sms-code: # 短信验证码相关的配置项
     expire-times: 10m
     send-frequency: 1m
