@@ -112,8 +112,12 @@ public class DeclineStartListener implements TaskListener {
         kpyContent.put("touser", touserStr);
         //应用id
         kpyContent.put("agentid", myListener.agentId);
+
+        ObjectNode textNode = JsonNodeFactory.instance.objectNode();
+        textNode.put("content","你有客户销量对比上月同期下降超过30%，请及时与大区总沟通");
+
         //消息内容
-        kpyContent.put("content", "你有客户销量对比上月同期下降超过30%，请及时与大区总沟通");
+        kpyContent.set("text",textNode );
         ObjectMapper op = new ObjectMapper();
 
 
@@ -152,8 +156,12 @@ public class DeclineStartListener implements TaskListener {
             leaderContent.put("touser", leaderUser.getWecomeId());
             //应用id
             leaderContent.put("agentid", myListener.agentId);
-            //消息内容
-            leaderContent.put("content", "您管辖的大区内有客户销量对比上月同期下降超过30%。\n 请及时与对应的科普员沟通，并进入<a href=\"https://saletool.bo-en.com/social-login-redirect\">微销售</a>进行处理");
+
+            ObjectNode textNode2 = JsonNodeFactory.instance.objectNode();
+            textNode2.put("content","您管辖的大区内有客户销量对比上月同期下降超过30%。\n 请及时与对应的科普员沟通，并进入<a href=\"https://saletool.bo-en.com/social-login-redirect\">微销售</a>进行处理");
+
+                    //消息内容
+            leaderContent.set("content", textNode2);
 
             //发送
             WecomeMessageRespDTO wecomeMessageRespDTO2 =  new WecomeMessageRespDTO();

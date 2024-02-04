@@ -99,8 +99,12 @@ public class DeclineZoneTaskListener implements TaskListener {
             leaderContent.put("touser", leaderUser.getWecomeId());
             //应用id
             leaderContent.put("agentid", myListener.agentId);
-            //消息内容
-            leaderContent.put("content", "您管辖的战区内有客户销量对比上月同期下降超过30%。\n 请及时与对应的大区总沟通，并进入<a href=\"https://saletool.bo-en.com/social-login-redirect\">微销售</a>进行处理");
+
+            ObjectNode textNode = JsonNodeFactory.instance.objectNode();
+            textNode.put("content","您管辖的战区内有客户销量对比上月同期下降超过30%。\n 请及时与对应的大区总沟通，并进入<a href=\"https://saletool.bo-en.com/social-login-redirect\">微销售</a>进行处理");
+
+                    //消息内容
+            leaderContent.set("text", textNode);
 
 
             //发送

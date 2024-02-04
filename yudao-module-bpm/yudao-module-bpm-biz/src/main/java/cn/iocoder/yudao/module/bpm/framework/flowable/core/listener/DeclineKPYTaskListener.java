@@ -97,8 +97,13 @@ public class DeclineKPYTaskListener implements TaskListener {
         kpyContent.put("touser", touserStr);
         //应用id
         kpyContent.put("agentid", myListener.agentId);
+
+        ObjectNode textNode = JsonNodeFactory.instance.objectNode();
+        textNode.put("content", "有一条掉量预警需要你反馈，请你点击<a href=\"https://saletool.bo-en.com/social-login-redirect\">微销售</a>进行处理");
+
+
         //消息内容
-        kpyContent.put("content", "有一条掉量预警需要你反馈，请你点击<a href=\"https://saletool.bo-en.com/social-login-redirect\">微销售</a>进行处理");
+        kpyContent.set("text",textNode );
         ObjectMapper op = new ObjectMapper();
 
 
