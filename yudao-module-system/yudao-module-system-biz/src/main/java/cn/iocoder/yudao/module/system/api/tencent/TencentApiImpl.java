@@ -115,7 +115,7 @@ public class TencentApiImpl implements TencentApi {
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI("https://qyapi.weixin.qq.com/cgi-bin/message/send?debug=1&access_token=" + accessToken))
+                .uri(new URI("https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=" + accessToken))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
