@@ -14,6 +14,7 @@ import cn.iocoder.yudao.module.strain.dal.mysql.microbebasicinfo.MicrobeBasicInf
 import cn.iocoder.yudao.module.strain.enums.InventoryStatisEnum;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.Redisson;
 import org.redisson.api.RLock;
@@ -103,7 +104,7 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
 
 
     /**
-     * @param tubeStockId 槽位id
+     * @param tubeStockId  槽位id
      * @param perStockCode 预备入库的编号
      */
     @Override
@@ -129,7 +130,7 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
                             new LambdaQueryWrapperX<FreezingTubeStockPreEntryDO>().
                                     eq(FreezingTubeStockPreEntryDO::getCode, perStockCode));
                     //判断是否已经入库了
-                    if (StringUtils.equals(freezingTubeStockInfoDO.getStatus(), "0") && StringUtils.equals(entryDO.getStatus(),"0")) {
+                    if (StringUtils.equals(freezingTubeStockInfoDO.getStatus(), "0") && StringUtils.equals(entryDO.getStatus(), "0")) {
 
                         AdminUserRespDTO user = Optional.ofNullable(adminUserApi.getUser(entryDO.getSaveBy())).orElse(new AdminUserRespDTO());
 
@@ -256,7 +257,6 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
         }
 
 
-
         //开始将获取到的tubeInfo转为二维的
         int maxY = freezingBoxInfoDO.getAxisCapacityY();
         int maxX = freezingBoxInfoDO.getAxisCapacityX();
@@ -298,11 +298,9 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
     public void tempDelivery(Long tubeStockId) {
 
 
-
-
         FreezingTubeStockInfoDO freezingTubeStockInfoDO = freezingTubeStockInfoMapper.selectById(tubeStockId);
 
-        if (freezingTubeStockInfoDO.getStockPreEntryId()==null){
+        if (freezingTubeStockInfoDO.getStockPreEntryId() == null) {
             //表示没有预备入库的信息
             throw exception(TUBE_STOCK_NOT_PRE_ENTRY);
         }
@@ -313,6 +311,57 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
 
 
         //todo 可能需要关联出库单，把出库单的已经回库状态进行更新
+
+    }
+
+
+    /**
+     * 完全出库，也就是不会设置待回库的
+     *
+     * @param tubeStockId 冻藏管槽位id
+     */
+    @Override
+    public void delivery(Long tubeStockId) {
+        //获取槽位id
+        FreezingTubeStockInfoDO freezingTubeStockInfoDO = freezingTubeStockInfoMapper.selectById(tubeStockId);
+        if (freezingTubeStockInfoDO == null) {
+            throw exception(FREEZING_TUBE_STOCK_INFO_NOT_EXISTS);
+        }
+
+        Long stockPreEntryId = freezingTubeStockInfoDO.getStockPreEntryId(); // 获取冷冻管实例
+
+        //冻藏管
+        FreezingTubeStockPreEntryDO tubeInfo = freezingTubeStockPreEntryMapper.selectById(stockPreEntryId);
+        if (tubeInfo != null) {
+            //如果存在，就更新它的状态为未入库
+            tubeInfo.setStatus(InventoryStatisEnum.NOT_IN_STOCK.getValue());
+            freezingTubeStockPreEntryMapper.updateById(tubeInfo);
+        }
+
+
+        //重新设置状态
+        freezingTubeStockInfoDO.setStatus(InventoryStatisEnum.NOT_IN_STOCK.getValue()); //重新设置为未入库
+        freezingTubeStockInfoDO.setStockPreEntryId(null); //设置预备入库id为空
+//        freezingTubeStockInfoMapper.updateById(freezingTubeStockInfoDO);
+
+        //设置为null需要用到LambdaUpdateWrapper
+        LambdaUpdateWrapper<FreezingTubeStockInfoDO> wrapperX = new LambdaUpdateWrapper<>();
+        wrapperX.set(FreezingTubeStockInfoDO::getStockPreEntryId, null)
+                .set(FreezingTubeStockInfoDO::getMicrobeId, null)
+                .set(FreezingTubeStockInfoDO::getExpirationDate, null)
+                .set(FreezingTubeStockInfoDO::getSaveDate, null)
+                .set(FreezingTubeStockInfoDO::getStatus, InventoryStatisEnum.NOT_IN_STOCK.getValue())
+                .set(FreezingTubeStockInfoDO::getSaveBy, null)
+                .set(FreezingTubeStockInfoDO::getSaveByName, null)
+                .set(FreezingTubeStockInfoDO::getStockPreEntryCode, null)
+                .set(FreezingTubeStockInfoDO::getCreator, null)
+                .set(FreezingTubeStockInfoDO::getCreateTime, null)
+                .set(FreezingTubeStockInfoDO::getUpdater, null)
+                .set(FreezingTubeStockInfoDO::getUpdateTime, null);
+        wrapperX.eq(FreezingTubeStockInfoDO::getId, tubeStockId);
+
+        freezingTubeStockInfoMapper.update(freezingTubeStockInfoDO, wrapperX);
+
 
     }
 
@@ -329,7 +378,7 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
         LambdaQueryWrapperX<FreezingTubeStockPreEntryDO> lambdaQueryWrapperX = new LambdaQueryWrapperX<FreezingTubeStockPreEntryDO>().eq(FreezingTubeStockPreEntryDO::getCode, perStockCode);
         FreezingTubeStockPreEntryDO perStock = freezingTubeStockPreEntryMapper.selectOne(lambdaQueryWrapperX);
 
-        int generationNumber = Optional.ofNullable(perStock.getGenerationNumber()).orElse(1) +1;
+        int generationNumber = Optional.ofNullable(perStock.getGenerationNumber()).orElse(1) + 1;
         perStock.setGenerationNumber(generationNumber);
 
         freezingTubeStockPreEntryMapper.updateById(perStock);
@@ -340,13 +389,13 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
 
         List<FreezingTubeStockInfoDO> tubeStockInfoDOList = freezingTubeStockInfoMapper.selectList(wrapperX);
 
-        if(tubeStockInfoDOList.isEmpty()){
+        if (tubeStockInfoDOList.isEmpty()) {
             //槽位不存在
             throw exception(TUBE_STOCK_NOT_EXISTS);
-        } else if (tubeStockInfoDOList.size()>1) {
+        } else if (tubeStockInfoDOList.size() > 1) {
             //槽位存在但是太多个，有冲突
             throw exception(TUBE_STOCK_TOO_MANY);
-        }else {
+        } else {
             //更新
             FreezingTubeStockInfoDO freezingTubeStockInfoDO = tubeStockInfoDOList.get(0);
             freezingTubeStockInfoDO.setStatus(IN_STOCK.getValue());

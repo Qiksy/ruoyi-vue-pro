@@ -77,4 +77,10 @@ public interface FreezingTubeStockInfoService {
      * @param perStockCode 冻藏管的编号
      */
     void scannerReStock(String perStockCode);
+
+    /**
+     * 完全出库，也就是不会设置待回库的
+     * @param tubeStockId 冻藏管槽位id
+     */
+    void delivery(Long tubeStockId);
 }
