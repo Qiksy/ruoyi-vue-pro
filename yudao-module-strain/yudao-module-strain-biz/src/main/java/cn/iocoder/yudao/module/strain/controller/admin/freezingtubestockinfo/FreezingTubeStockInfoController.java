@@ -121,6 +121,14 @@ public class FreezingTubeStockInfoController {
         return success(true);
     }
 
+    @PutMapping("/delivery")
+    @Operation(summary = "完全出库")
+    @PreAuthorize("@ss.hasPermission('strain:freezing-tube-stock-info:update')")
+    public CommonResult<Boolean> delivery(@NotNull @RequestParam("tubeStockId") Long tubeStockId) {
+        freezingTubeStockInfoService.delivery(tubeStockId);
+        return success(true);
+    }
+
     @PutMapping("/scanner-re-stock")
     @Operation(summary = "扫码复存")
     @PreAuthorize("@ss.hasPermission('strain:freezing-tube-stock-info:update')")

@@ -1,5 +1,10 @@
 package cn.iocoder.yudao.module.strain.enums;
 
+/**
+ * 冷冻管库存状态枚举
+ * @author linr
+ * @since 2024/2/21 16:10
+ */
 public enum InventoryStatisEnum {
 
     /**
