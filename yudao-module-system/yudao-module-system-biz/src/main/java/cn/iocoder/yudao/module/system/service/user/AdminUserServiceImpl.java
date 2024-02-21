@@ -514,12 +514,10 @@ public class AdminUserServiceImpl implements AdminUserService {
         //处理数据
         List<AdminUserDO> sysUserList =  new ArrayList<>();
 
-        List<RoleDO> roleDOList = roleMapper.selectList();  //角色列表
-
+        RoleDO commonRole = roleMapper.selectByCode("common");
 
         List<UserRoleDO> userRoleDOList = new ArrayList<>(); //用户与角色的关系
 
-        Map<String, String>  roleMap = new HashMap<>(); //角色名字和id的映射
 
 
         for (AdminUserNcDTO ncUser : userListByNc) {
@@ -533,7 +531,6 @@ public class AdminUserServiceImpl implements AdminUserService {
             adminUserDO.setWecomeId(ncUser.getPkPsndoc());//设置微信id，默认是nc的pkPsndoc
             adminUserDO.setCode(ncUser.getCode());
             sysUserList.add(adminUserDO);
-            roleMap.put(ncUser.getPkPsndoc(),ncUser.getPostName());
         }
 
 
@@ -549,13 +546,14 @@ public class AdminUserServiceImpl implements AdminUserService {
                 // 现在使用手机号，不会重复的
                 userMapper.insert(adminUserDO);
                 // 增用户角色关系
-                // 根据postname，找出第一个角色
-                String postname = roleMap.get(adminUserDO.getPkPsndoc());
-                // 这里有可能报错 晚点处理
-                RoleDO roleDO = roleDOList.stream().filter(role -> role.getName().equals(postname)).findFirst().get();
+
+                // 2024年02月21日 修改逻辑，原本角色是根据岗位名称设置的，太多角色了，不利于管理
+                // 现在默认设置一个通用角色
+
+
                 UserRoleDO userRoleDO = new UserRoleDO();
                 userRoleDO.setUserId(adminUserDO.getId());
-                userRoleDO.setRoleId(roleDO.getId());
+                userRoleDO.setRoleId(commonRole.getId());
 
                 userRoleDOList.add(userRoleDO);
 
