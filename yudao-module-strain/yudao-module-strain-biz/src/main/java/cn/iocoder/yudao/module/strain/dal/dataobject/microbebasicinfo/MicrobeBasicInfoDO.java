@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
+import org.glassfish.jaxb.core.v2.TODO;
 
 /**
  * 菌种信息 DO
@@ -106,4 +107,19 @@ public class MicrobeBasicInfoDO extends BaseDO {
      */
     private String remark;
 
+
+    //保存方式
+    private String storageMode;
+
+
+    //菌种图片列表
+    //形如 [1354985,165765465]
+    private String microbeImages;
+
+    //菌种附件说明
+    // 形如 [1354985,165765465]
+    private String  microbeAttachment;
+
+    //菌体形态
+    private String microbialMorphology;
 }
