@@ -126,6 +126,10 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
     public void deleteFreezingTubeStockPreEntry(Long id) {
         // 校验存在
         validateFreezingTubeStockPreEntryExists(id);
+        // 校验是否已经入库了
+        if (!Objects.equals(freezingTubeStockPreEntryMapper.selectById(id).getStatus(), InventoryStatisEnum.NOT_IN_STOCK.getValue())) {
+            throw exception(FREEZING_TUBE_STOCK_PRE_ENTRY_IN_STOCK);
+        }
         // 删除
         freezingTubeStockPreEntryMapper.deleteById(id);
     }
