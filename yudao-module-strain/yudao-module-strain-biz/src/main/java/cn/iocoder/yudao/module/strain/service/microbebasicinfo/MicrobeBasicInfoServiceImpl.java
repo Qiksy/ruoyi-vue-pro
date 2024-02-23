@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.strain.service.microbebasicinfo;
 
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.strain.dal.mysql.culturemediumdatainfo.CultureMediumDataInfoMapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -39,9 +40,22 @@ public class MicrobeBasicInfoServiceImpl implements MicrobeBasicInfoService {
     public Long createMicrobeBasicInfo(MicrobeBasicInfoSaveReqVO createReqVO) {
         // 插入
         MicrobeBasicInfoDO microbeBasicInfo = BeanUtils.toBean(createReqVO, MicrobeBasicInfoDO.class);
+
+        //验证是否编码重复
+        validateMicrobeBasicInfoCodeExists(microbeBasicInfo.getCode());
+
         microbeBasicInfoMapper.insert(microbeBasicInfo);
         // 返回
         return microbeBasicInfo.getId();
+    }
+
+    private void validateMicrobeBasicInfoCodeExists(String code) {
+        LambdaQueryWrapperX<MicrobeBasicInfoDO> queryWrapper = new LambdaQueryWrapperX<MicrobeBasicInfoDO>()
+                .eq(MicrobeBasicInfoDO::getCode, code);
+        Long count = microbeBasicInfoMapper.selectCount(queryWrapper);
+        if (count > 0) {
+            throw exception(MICROBE_BASIC_INFO_CODE_EXISTS);
+        }
     }
 
     @Override
