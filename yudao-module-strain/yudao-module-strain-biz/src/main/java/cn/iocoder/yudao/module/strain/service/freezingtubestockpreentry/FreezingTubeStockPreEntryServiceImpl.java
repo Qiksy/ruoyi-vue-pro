@@ -48,6 +48,7 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
         Long microbeId = createReqVO.getMicrobeId();
         MicrobeBasicInfoDO microbeBasicInfoDO = microbeBasicInfoMapper.selectById(microbeId);
         String microbeType = microbeBasicInfoDO.getMicrobeType();
+        String microbeCode = microbeBasicInfoDO.getCode();
 
         // 获取数量，然后构造多个对象，并且批量插入
         List<FreezingTubeStockPreEntryDO> doList = new ArrayList<>();
@@ -59,7 +60,7 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
             entryDO.setMicrobeId(createReqVO.getMicrobeId()); // 菌种
             entryDO.setSaveBy(SecurityFrameworkUtils.getLoginUserId()); // 保存人
             entryDO.setSaveDate(createReqVO.getSaveDate()); // 保存日期
-            entryDO.setCode(generateCode(microbeType, i));
+            entryDO.setCode(generateCode(microbeCode, i));
 
             //设置融冻次数
             entryDO.setThawFreezeCycleCount(1);
@@ -80,47 +81,36 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
 
     /**
      * 生成冷冻管编号
-     * 24_000_00_00_00;
-     * 年份_天数_课题编号(暂时保留)_菌种类型_流水号
+     * 菌种编号-加上流水号
      *
-     * @param microbeType
+     * @param microbeCode 菌种编号
      * @param i           第几个
      * @return 冷冻管编号
      */
-    private String generateCode(String microbeType, int i) {
-        //获取当前年份
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        //获取DD
-        int day = calendar.get(Calendar.DAY_OF_YEAR);
-        //预留的课题ID
-        String subjectId = "00";
+    private String generateCode(String microbeCode, int i) {
         //菌种类型
-        //microbeType需要补足两位数，不足处为0
-        microbeType = String.format("%02d", Integer.parseInt(microbeType));
-        String codePrefix =  String.valueOf(year).substring(2) + String.format("%03d",day) + subjectId + microbeType;
+//        microbeCode = String.format("%02d", Integer.parseInt(microbeCode));
 
         FreezingTubeStockPreEntryDO entryDO = freezingTubeStockPreEntryMapper.selectOne(new LambdaQueryWrapperX<FreezingTubeStockPreEntryDO>()
                 .select(FreezingTubeStockPreEntryDO::getCode)
-                .likeRight(FreezingTubeStockPreEntryDO::getCode, codePrefix)
+                .likeRight(FreezingTubeStockPreEntryDO::getCode,(microbeCode+"-") )
                 .last("limit 1")
                 .orderByDesc(FreezingTubeStockPreEntryDO::getCode));
 
-        if (entryDO == null) {
-            return codePrefix + String.format("%02d", i + 1);
+
+        int serialNumber;
+        if (entryDO!=null){
+            String oldCode = entryDO.getCode();
+            serialNumber = Integer.parseInt(oldCode.substring((microbeCode+"-").length()));
+        }else {
+            serialNumber = 0;
         }
 
-        String oldCode = entryDO.getCode();
+        serialNumber = serialNumber + i + 1;
 
-        //获取流水号
-        int serialNumber = Integer.parseInt(oldCode.substring(codePrefix.length()));
-        serialNumber = serialNumber + 1 + i;
-
-        //获取流水号长度
         int length = Math.max(2,String.valueOf(serialNumber).length()) ;
 
-        //流水号保底两位，如果不够就继续往上加
-        return codePrefix + String.format("%0"+length+"d", serialNumber);
+        return (microbeCode+"-") + String.format("%0"+length+"d", serialNumber);
     }
 
     @Override

@@ -101,4 +101,19 @@ public class MicrobeBasicInfoRespVO {
     @ExcelProperty("备注")
     private String remark;
 
+
+    //保存方式
+    private String storageMode;
+
+
+    //菌种图片列表
+    //形如 [1354985,165765465]
+    private String microbeImages;
+
+    //菌种附件说明
+    // 形如 [1354985,165765465]
+    private String  microbeAttachment;
+
+    //菌体形态
+    private String microbialMorphology;
 }
