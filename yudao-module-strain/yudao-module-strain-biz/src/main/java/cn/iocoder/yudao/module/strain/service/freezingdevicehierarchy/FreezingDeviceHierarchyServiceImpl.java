@@ -194,6 +194,7 @@ public class FreezingDeviceHierarchyServiceImpl implements FreezingDeviceHierarc
                     tubeStockInfoDO.setTubePositionX(String.valueOf(i)); //x轴编号
                     tubeStockInfoDO.setTubePositionY(String.valueOf(j)); //y轴编号
                     tubeStockInfoDO.setStatus("0"); //0 表示这里是空槽位
+                    tubeStockInfoDOList.add(tubeStockInfoDO);
                 }
             }
 
