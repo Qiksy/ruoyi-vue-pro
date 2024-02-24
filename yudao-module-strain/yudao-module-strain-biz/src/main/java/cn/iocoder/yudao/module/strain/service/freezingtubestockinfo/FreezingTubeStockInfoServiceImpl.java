@@ -136,7 +136,8 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
 
                         //这里是没入库的
                         freezingTubeStockInfoDO.setMicrobeId(entryDO.getMicrobeId()); //设置菌种id
-                        freezingTubeStockInfoDO.setSaveBy(Long.valueOf(entryDO.getCreator()));//设置保存人
+                        String creator = entryDO.getCreator();
+                        freezingTubeStockInfoDO.setSaveBy(Long.valueOf(creator));//设置保存人
                         freezingTubeStockInfoDO.setSaveByName(user.getNickname());//设置保存人的姓名
                         freezingTubeStockInfoDO.setStockPreEntryId(entryDO.getId());//设置预备入库id
                         freezingTubeStockInfoDO.setThawFreezeCycleCount(entryDO.getThawFreezeCycleCount());//设置融冻次数
@@ -378,8 +379,8 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
         LambdaQueryWrapperX<FreezingTubeStockPreEntryDO> lambdaQueryWrapperX = new LambdaQueryWrapperX<FreezingTubeStockPreEntryDO>().eq(FreezingTubeStockPreEntryDO::getCode, perStockCode);
         FreezingTubeStockPreEntryDO perStock = freezingTubeStockPreEntryMapper.selectOne(lambdaQueryWrapperX);
 
-        int generationNumber = Optional.ofNullable(perStock.getGenerationNumber()).orElse(1) + 1;
-        perStock.setGenerationNumber(generationNumber);
+        int thawFreezeCycleCount = Optional.ofNullable(perStock.getThawFreezeCycleCount()).orElse(1) + 1;
+        perStock.setGenerationNumber(thawFreezeCycleCount);
 
         freezingTubeStockPreEntryMapper.updateById(perStock);
 
@@ -399,7 +400,7 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
             //更新
             FreezingTubeStockInfoDO freezingTubeStockInfoDO = tubeStockInfoDOList.get(0);
             freezingTubeStockInfoDO.setStatus(IN_STOCK.getValue());
-            freezingTubeStockInfoDO.setGenerationNumber(generationNumber);
+            freezingTubeStockInfoDO.setThawFreezeCycleCount(thawFreezeCycleCount);
             freezingTubeStockInfoMapper.updateById(freezingTubeStockInfoDO);
         }
     }

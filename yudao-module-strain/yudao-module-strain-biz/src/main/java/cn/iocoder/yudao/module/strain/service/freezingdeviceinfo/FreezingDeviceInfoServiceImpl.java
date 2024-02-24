@@ -19,6 +19,7 @@ import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.*;
@@ -73,6 +74,7 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
      * @return 主键
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Long createFreezingDeviceInfo(FreezingDeviceInfoCreateReqVO createReqVO) {
         // 插入
         FreezingDeviceInfoDO freezingDeviceInfo = FreezingDeviceInfoConvert.INSTANCE.convert(createReqVO);
@@ -197,10 +199,14 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
             if (endBox != null) {
                 for (int i = 0; i < endBox.getNum(); i++) {
                     FreezingDeviceHierarchyDO temp = new FreezingDeviceHierarchyDO();
-                    temp.setParentId(null); //设置父级主键
+                    temp.setParentId(freezingDeviceInfo.getId()); //设置父级主键
                     temp.setFreezingDeviceId(freezingDeviceInfo.getId()); // 设置设备主键
                     temp.setIsFinalLevel(true); // 是否为末级
                     temp.setFreezingBoxId(Long.valueOf(endBox.getType())); // 设置末级类型
+
+                    String levelCode = String.format("%02d", i + 1);
+                    temp.setName(levelCode + "冻藏盒");
+
                     boxHierarchyList.add(temp);
                 }
 
@@ -218,40 +224,43 @@ public class FreezingDeviceInfoServiceImpl implements FreezingDeviceInfoService 
 
 
         //3.1 获取冷冻盒的具体信息
+        DeviceLayerVO endBox = createReqVO.getEndBox();
+        if (endBox!=null){
+            LambdaQueryWrapperX<FreezingBoxInfoDO> queryWrapper = new LambdaQueryWrapperX<>();
+            //这里需要将String转换为Long类型。因为提高通用性，这个type有的时候传输的是字典类型，有的时候是主键long
+            Long boxId = Long.valueOf(createReqVO.getEndBox().getType());
+            queryWrapper.eq(FreezingBoxInfoDO::getId, boxId);
+            FreezingBoxInfoDO boxInfoDO = freezingBoxInfoMapper.selectOne(queryWrapper);
 
-        LambdaQueryWrapperX<FreezingBoxInfoDO> queryWrapper = new LambdaQueryWrapperX<>();
-        //这里需要将String转换为Long类型。因为提高通用性，这个type有的时候传输的是字典类型，有的时候是主键long
-        Long boxId = Long.valueOf(createReqVO.getEndBox().getType());
-        queryWrapper.eq(FreezingBoxInfoDO::getId, boxId);
-        FreezingBoxInfoDO boxInfoDO = freezingBoxInfoMapper.selectOne(queryWrapper);
-
-        Integer xNum = boxInfoDO.getAxisCapacityX();//x容量
-        Integer yNum = boxInfoDO.getAxisCapacityY();//y容量
-        Integer xCodeType = Integer.valueOf(boxInfoDO.getAxisCodeTypeX());//x轴编号类型
-        Integer yCodeType = Integer.valueOf(boxInfoDO.getAxisCodeTypeY());//y轴编号类型
+            Integer xNum = boxInfoDO.getAxisCapacityX();//x容量
+            Integer yNum = boxInfoDO.getAxisCapacityY();//y容量
+            Integer xCodeType = Integer.valueOf(boxInfoDO.getAxisCodeTypeX());//x轴编号类型
+            Integer yCodeType = Integer.valueOf(boxInfoDO.getAxisCodeTypeY());//y轴编号类型
 
 
-        List<FreezingTubeStockInfoDO> tubeStockInfoDOS = new ArrayList<>(); // 槽位表先初始化
+            List<FreezingTubeStockInfoDO> tubeStockInfoDOS = new ArrayList<>(); // 槽位表先初始化
 
-        for (FreezingDeviceHierarchyDO freezingDeviceHierarchyDO : boxHierarchyList) {
-            for (int i = 0; i < xNum; i++) {
-                for (int j = 0; j < yNum; j++) {
-                    //循环插入
-                    FreezingTubeStockInfoDO tubeStockInfoDO = new FreezingTubeStockInfoDO();
-                    Long box = freezingDeviceHierarchyDO.getId();
-                    tubeStockInfoDO.setBoxId(box);  //对应的最末的层级
-                    tubeStockInfoDO.setCode(String.format("%s:%s-%s", box, (i + 1), (j + 1))); // 可阅读的编号
-                    tubeStockInfoDO.setTubePosition(String.format("%s-%s", i, j)); //相对位置  x-y编号
-                    tubeStockInfoDO.setTubePositionX(String.valueOf(i)); //x轴编号
-                    tubeStockInfoDO.setTubePositionY(String.valueOf(j)); //y轴编号
-                    tubeStockInfoDO.setStatus("0"); //0 表示这里是空槽位
-                    tubeStockInfoDOS.add(tubeStockInfoDO);
+            for (FreezingDeviceHierarchyDO freezingDeviceHierarchyDO : boxHierarchyList) {
+                for (int i = 0; i < xNum; i++) {
+                    for (int j = 0; j < yNum; j++) {
+                        //循环插入
+                        FreezingTubeStockInfoDO tubeStockInfoDO = new FreezingTubeStockInfoDO();
+                        Long box = freezingDeviceHierarchyDO.getId();
+                        tubeStockInfoDO.setBoxId(box);  //对应的最末的层级
+                        tubeStockInfoDO.setCode(String.format("%s:%s-%s", box, (i + 1), (j + 1))); // 可阅读的编号
+                        tubeStockInfoDO.setTubePosition(String.format("%s-%s", i, j)); //相对位置  x-y编号
+                        tubeStockInfoDO.setTubePositionX(String.valueOf(i)); //x轴编号
+                        tubeStockInfoDO.setTubePositionY(String.valueOf(j)); //y轴编号
+                        tubeStockInfoDO.setStatus("0"); //0 表示这里是空槽位
+                        tubeStockInfoDOS.add(tubeStockInfoDO);
+                    }
                 }
             }
+
+            //插入数据库
+            freezingTubeStockInfoMapper.insertBatch(tubeStockInfoDOS);
         }
 
-        //插入数据库
-        freezingTubeStockInfoMapper.insertBatch(tubeStockInfoDOS);
 
         // 返回
         return freezingDeviceInfo.getId();
