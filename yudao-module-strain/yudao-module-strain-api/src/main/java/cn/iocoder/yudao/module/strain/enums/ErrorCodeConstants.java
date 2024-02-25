@@ -53,4 +53,11 @@ public interface ErrorCodeConstants {
     ErrorCode TUBE_STOCK_TOO_MANY = new ErrorCode(98_009_004, "关联槽位过多");
 
     ErrorCode TUBE_STOCK_NOT_PRE_ENTRY = new ErrorCode(98_009_005, "槽位不存在冷冻管");
+
+    // ========== 出库申请 98_010_005 ==========
+    ErrorCode OUTBOUND_APPLICATION_NOT_EXISTS = new ErrorCode(98_010_005, "出库申请不存在");
+
+    // ========== 出库申请子表 98_011_005 ==========
+    ErrorCode OUTBOUND_SUB_APPLICATION_NOT_EXISTS = new ErrorCode(98_011_005, "出库申请子不存在");
+
 }
