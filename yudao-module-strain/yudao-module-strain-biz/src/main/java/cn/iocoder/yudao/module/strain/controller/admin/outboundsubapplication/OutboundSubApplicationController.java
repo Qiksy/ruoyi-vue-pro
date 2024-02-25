@@ -31,7 +31,7 @@ import cn.iocoder.yudao.module.strain.service.outboundsubapplication.OutboundSub
 
 @Tag(name = "管理后台 - 出库申请子")
 @RestController
-@RequestMapping("/strain/outbound-application")
+@RequestMapping("/strain/outbound-sub-application")
 @Validated
 public class OutboundSubApplicationController {
 
