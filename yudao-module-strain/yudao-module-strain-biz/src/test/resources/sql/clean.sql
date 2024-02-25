@@ -17,3 +17,8 @@ DELETE FROM "strain_freezing_tube_stock_pre_entry";
 
 
 DELETE FROM "strain_freezing_tube_stock_info";
+
+
+DELETE FROM "strain_outbound_application";
+
+DELETE FROM "strain_outbound_sub_application";
