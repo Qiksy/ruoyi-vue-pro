@@ -380,7 +380,7 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
         FreezingTubeStockPreEntryDO perStock = freezingTubeStockPreEntryMapper.selectOne(lambdaQueryWrapperX);
 
         int thawFreezeCycleCount = Optional.ofNullable(perStock.getThawFreezeCycleCount()).orElse(1) + 1;
-        perStock.setGenerationNumber(thawFreezeCycleCount);
+        perStock.setThawFreezeCycleCount(thawFreezeCycleCount);
 
         freezingTubeStockPreEntryMapper.updateById(perStock);
 
