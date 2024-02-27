@@ -62,7 +62,7 @@ public class OutboundApplicationServiceImplTest extends BaseDbUnitTest {
         OutboundApplicationDO dbOutboundApplication = randomPojo(OutboundApplicationDO.class);
         outboundApplicationMapper.insert(dbOutboundApplication);// @Sql: 先插入出一条存在的数据
         // 准备参数
-        OutboundApplicationSaveReqVO updateReqVO = randomPojo(OutboundApplicationSaveReqVO.class, o -> {
+        OutboundApplicationCreateReqVO updateReqVO = randomPojo(OutboundApplicationCreateReqVO.class, o -> {
             o.setId(dbOutboundApplication.getId()); // 设置更新的 ID
         });
 
@@ -76,7 +76,7 @@ public class OutboundApplicationServiceImplTest extends BaseDbUnitTest {
     @Test
     public void testUpdateOutboundApplication_notExists() {
         // 准备参数
-        OutboundApplicationSaveReqVO updateReqVO = randomPojo(OutboundApplicationSaveReqVO.class);
+        OutboundApplicationCreateReqVO updateReqVO = randomPojo(OutboundApplicationCreateReqVO.class);
 
         // 调用, 并断言异常
         assertServiceException(() -> outboundApplicationService.updateOutboundApplication(updateReqVO), OUTBOUND_APPLICATION_NOT_EXISTS);

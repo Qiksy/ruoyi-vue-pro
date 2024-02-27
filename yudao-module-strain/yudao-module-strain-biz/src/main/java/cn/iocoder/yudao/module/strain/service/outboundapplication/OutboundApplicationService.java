@@ -27,7 +27,13 @@ public interface OutboundApplicationService {
      *
      * @param updateReqVO 更新信息
      */
-    void updateOutboundApplication(@Valid OutboundApplicationSaveReqVO updateReqVO);
+    void updateOutboundApplication(@Valid OutboundApplicationCreateReqVO updateReqVO);
+
+    /**
+     * 更新并且提交
+     * @param updateReqVO 更新信息
+     */
+    void updateAndSubmitOutboundApplication(OutboundApplicationCreateReqVO updateReqVO);
 
     /**
      * 删除出库申请
@@ -60,4 +66,6 @@ public interface OutboundApplicationService {
      * @return 单独的表的数据
      */
     OutboundApplicationRespVO getOutboundApplicationVO(Long id);
+
+
 }

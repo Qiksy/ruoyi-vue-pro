@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.strain.service.outboundapplication;
 
 import cn.hutool.core.date.DateUtil;
+import cn.iocoder.yudao.framework.common.exception.ErrorCode;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.bpm.enums.task.BpmProcessInstanceResultEnum;
@@ -12,6 +13,7 @@ import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.Freezing
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -62,20 +64,77 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
     }
 
     @Override
-    public void updateOutboundApplication(OutboundApplicationSaveReqVO updateReqVO) {
+    public void updateOutboundApplication(OutboundApplicationCreateReqVO updateReqVO) {
         // 校验存在
         validateOutboundApplicationExists(updateReqVO.getId());
         // 更新
         OutboundApplicationDO updateObj = BeanUtils.toBean(updateReqVO, OutboundApplicationDO.class);
         outboundApplicationMapper.updateById(updateObj);
+
+        //删除子表
+        subApplicationMapper.delete(OutboundSubApplicationDO::getParentId,updateReqVO.getId());
+
+        //重新插入子表
+        List<OutboundSubApplicationDO> subApplicationDOS = BeanUtils.toBean(updateReqVO.getSubList(), OutboundSubApplicationDO.class);
+        //设置子表的parent_id
+        subApplicationDOS.forEach(item->item.setParentId(updateReqVO.getId()));
+
+        subApplicationMapper.insertBatch(subApplicationDOS);
     }
+
+
+    /**
+     * 更新并且提交
+     *
+     * @param updateReqVO 更新信息
+     */
+    @Override
+    public void updateAndSubmitOutboundApplication(OutboundApplicationCreateReqVO updateReqVO) {
+        // 校验存在
+        validateOutboundApplicationExists(updateReqVO.getId());
+        // 更新
+        OutboundApplicationDO updateObj = BeanUtils.toBean(updateReqVO, OutboundApplicationDO.class);
+
+        updateObj.setApproResult(BpmProcessInstanceResultEnum.PROCESS.getResult().toString());
+        outboundApplicationMapper.updateById(updateObj);
+
+        //删除子表
+        subApplicationMapper.delete(OutboundSubApplicationDO::getParentId,updateReqVO.getId());
+
+        //重新插入子表
+        List<OutboundSubApplicationDO> subApplicationDOS = BeanUtils.toBean(updateReqVO.getSubList(), OutboundSubApplicationDO.class);
+        //设置子表的parent_id
+        subApplicationDOS.forEach(item->item.setParentId(updateReqVO.getId()));
+
+
+        //todo 校验是否存在相同的明细正在处理中
+        validateSubIsExistsProcess(subApplicationDOS);
+
+
+        subApplicationMapper.insertBatch(subApplicationDOS);
+    }
+
+
 
     @Override
     public void deleteOutboundApplication(Long id) {
-        // 校验存在
-        validateOutboundApplicationExists(id);
-        // 删除
+        // 校验存在和是否自由态
+        validateOutboundApplicationStatus(id);
+
+        // 删除 主表
         outboundApplicationMapper.deleteById(id);
+        //删除子表
+        subApplicationMapper.delete(OutboundSubApplicationDO::getParentId,id);
+    }
+
+    private void validateOutboundApplicationStatus(Long id) {
+        OutboundApplicationDO outboundApplicationDO = outboundApplicationMapper.selectById(id);
+        if (outboundApplicationDO == null) {
+            throw exception(OUTBOUND_APPLICATION_NOT_EXISTS);
+        }
+        if (!BpmProcessInstanceResultEnum.UN_START.getResult().toString().equals(outboundApplicationDO.getApproResult())){
+            throw exception(OUTBOUND_APPLICATION_STATUS_NOT_UN_START);
+        }
     }
 
     private void validateOutboundApplicationExists(Long id) {
@@ -173,26 +232,30 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         }
 
         //设置编码
-        String codePrefix = "CK";
-        //获取当前时间
-        String now = DateUtil.format(new Date(), "yyyyMMdd");
-        //查询数据库已经有的流水号
-        LambdaQueryWrapper<OutboundApplicationDO> queryWrapper = new LambdaQueryWrapper<OutboundApplicationDO>()
-                .likeRight(OutboundApplicationDO::getCode, codePrefix + now)
-                .orderByDesc(OutboundApplicationDO::getCode)
-                .eq(OutboundApplicationDO::getDeleted, 0)
-                .last("LIMIT 1");
-        OutboundApplicationDO tempDO = outboundApplicationMapper.selectOne(queryWrapper);
-        //如果没有查询到数据，说明是当天第一条数据
-        if (tempDO == null) {
-            outboundApplicationDO.setCode(codePrefix + now + "001");
-        } else {
-            //如果查询到数据，说明不是当天第一条数据
-            String code = tempDO.getCode();
-            String suffix = code.substring(code.length() - 3);
-            int num = Integer.parseInt(suffix) + 1;
-            String newSuffix = String.format("%03d", num);
-            outboundApplicationDO.setCode(codePrefix + now + newSuffix);
+
+        //如果编码为空或者id为空的情况下才需要设置编码
+        if (StringUtils.isBlank(outboundApplicationDO.getCode()) || outboundApplicationDO.getId()==null){
+            String codePrefix = "CK";
+            //获取当前时间
+            String now = DateUtil.format(new Date(), "yyyyMMdd");
+            //查询数据库已经有的流水号
+            LambdaQueryWrapper<OutboundApplicationDO> queryWrapper = new LambdaQueryWrapper<OutboundApplicationDO>()
+                    .likeRight(OutboundApplicationDO::getCode, codePrefix + now)
+                    .orderByDesc(OutboundApplicationDO::getCode)
+                    .eq(OutboundApplicationDO::getDeleted, 0)
+                    .last("LIMIT 1");
+            OutboundApplicationDO tempDO = outboundApplicationMapper.selectOne(queryWrapper);
+            //如果没有查询到数据，说明是当天第一条数据
+            if (tempDO == null) {
+                outboundApplicationDO.setCode(codePrefix + now + "001");
+            } else {
+                //如果查询到数据，说明不是当天第一条数据
+                String code = tempDO.getCode();
+                String suffix = code.substring(code.length() - 3);
+                int num = Integer.parseInt(suffix) + 1;
+                String newSuffix = String.format("%03d", num);
+                outboundApplicationDO.setCode(codePrefix + now + newSuffix);
+            }
         }
 
         //插入数据
@@ -209,9 +272,27 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
 
         //todo 如果是审批的逻辑，需要检查是否已经存在相同的明细正在处理中
 
+        validateSubIsExistsProcess(subApplicationDOS);
+
+
+
 
         //后续需要出库的时候，需要扫码核验，否则不可以出库
         subApplicationMapper.insertBatch(subApplicationDOS);
         return outboundApplicationDO.getId();
+    }
+
+    /**
+     * 判断是否已经存在正在处理的明细了
+     * @param subApplicationDOS 子表数据
+     */
+    private void validateSubIsExistsProcess(List<OutboundSubApplicationDO> subApplicationDOS) {
+        List<Long> specimenIds = subApplicationDOS.stream().map(OutboundSubApplicationDO::getSpecimenId).distinct().toList();
+
+        List<String> specimenCode = subApplicationMapper.selectProcessorBySpecimenIds(specimenIds);
+
+        if (!specimenCode.isEmpty()){
+            throw exception(new ErrorCode(999, String.join(",", specimenCode)+"已经存在于出库单中，正在处理中"));
+        }
     }
 }

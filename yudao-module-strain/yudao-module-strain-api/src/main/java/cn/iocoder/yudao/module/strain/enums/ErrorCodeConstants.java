@@ -56,6 +56,7 @@ public interface ErrorCodeConstants {
 
     // ========== 出库申请 98_010_005 ==========
     ErrorCode OUTBOUND_APPLICATION_NOT_EXISTS = new ErrorCode(98_010_005, "出库申请不存在");
+    ErrorCode OUTBOUND_APPLICATION_STATUS_NOT_UN_START = new ErrorCode(98_010_006, "非自由态的出库申请不可以修改");
 
     // ========== 出库申请子表 98_011_005 ==========
     ErrorCode OUTBOUND_SUB_APPLICATION_NOT_EXISTS = new ErrorCode(98_011_005, "出库申请子不存在");

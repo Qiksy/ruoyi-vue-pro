@@ -58,8 +58,16 @@ public class OutboundApplicationController {
     @PutMapping("/update")
     @Operation(summary = "更新出库申请")
     @PreAuthorize("@ss.hasPermission('strain:outbound-application:update')")
-    public CommonResult<Boolean> updateOutboundApplication(@Valid @RequestBody OutboundApplicationSaveReqVO updateReqVO) {
+    public CommonResult<Boolean> updateOutboundApplication(@Valid @RequestBody OutboundApplicationCreateReqVO updateReqVO) {
         outboundApplicationService.updateOutboundApplication(updateReqVO);
+        return success(true);
+    }
+
+    @PutMapping("update-and-submit")
+    @Operation(summary = "更新出库并提交申请")
+    @PreAuthorize("@ss.hasPermission('strain:outbound-application:update')")
+    public CommonResult<Boolean> updateAndSubmitOutboundApplication(@Valid @RequestBody OutboundApplicationCreateReqVO updateReqVO) {
+        outboundApplicationService.updateAndSubmitOutboundApplication(updateReqVO);
         return success(true);
     }
 
