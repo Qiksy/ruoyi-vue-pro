@@ -89,6 +89,7 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
      * @param updateReqVO 更新信息
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateAndSubmitOutboundApplication(OutboundApplicationCreateReqVO updateReqVO) {
         // 校验存在
         validateOutboundApplicationExists(updateReqVO.getId());
