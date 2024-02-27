@@ -12,6 +12,13 @@ import java.util.List;
 @Data
 public class OutboundApplicationCreateReqVO {
 
+    private Long id;
+
+
+    /**
+     * 单据号
+     */
+    private String code;
 
 
     @Schema(description = "申请人", requiredMode = Schema.RequiredMode.REQUIRED)
