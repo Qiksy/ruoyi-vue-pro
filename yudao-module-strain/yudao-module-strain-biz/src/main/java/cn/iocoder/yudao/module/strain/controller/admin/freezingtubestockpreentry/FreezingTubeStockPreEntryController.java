@@ -80,6 +80,16 @@ public class FreezingTubeStockPreEntryController {
         return success(pageResult);
     }
 
+
+    //新的分页查询
+    @GetMapping("/page2")
+    @Operation(summary = "获得样品分页（排除正在审核中的样品）")
+    @PreAuthorize("@ss.hasPermission('strain:freezing-tube-stock-pre-entry:query')")
+    public CommonResult<PageResult<FreezingTubeStockPreEntryRespVO>> getFreezingTubeStockPreEntryPage2(@Valid FreezingTubeStockPreEntryPageReqVO pageReqVO) {
+        PageResult<FreezingTubeStockPreEntryRespVO> pageResult = freezingTubeStockPreEntryService.getFreezingTubeStockPreEntryPage3(pageReqVO);
+        return success(pageResult);
+    }
+
     @GetMapping("/export-excel")
     @Operation(summary = "导出冷冻管库存预录入 Excel")
     @PreAuthorize("@ss.hasPermission('strain:freezing-tube-stock-pre-entry:export')")

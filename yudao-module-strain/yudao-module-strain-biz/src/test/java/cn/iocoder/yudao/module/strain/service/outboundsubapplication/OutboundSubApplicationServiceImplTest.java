@@ -111,7 +111,7 @@ public class OutboundSubApplicationServiceImplTest extends BaseDbUnitTest {
        // mock 数据
        OutboundSubApplicationDO dbOutboundSubApplication = randomPojo(OutboundSubApplicationDO.class, o -> { // 等会查询到
            o.setParentId(null);
-           o.setTubeId(null);
+           o.setSpecimenId(null);
            o.setCreateTime(null);
            o.setRemark(null);
        });
@@ -119,7 +119,7 @@ public class OutboundSubApplicationServiceImplTest extends BaseDbUnitTest {
        // 测试 parentId 不匹配
        outboundSubApplicationMapper.insert(cloneIgnoreId(dbOutboundSubApplication, o -> o.setParentId(null)));
        // 测试 tubeId 不匹配
-       outboundSubApplicationMapper.insert(cloneIgnoreId(dbOutboundSubApplication, o -> o.setTubeId(null)));
+       outboundSubApplicationMapper.insert(cloneIgnoreId(dbOutboundSubApplication, o -> o.setSpecimenId(null)));
        // 测试 createTime 不匹配
        outboundSubApplicationMapper.insert(cloneIgnoreId(dbOutboundSubApplication, o -> o.setCreateTime(null)));
        // 测试 remark 不匹配

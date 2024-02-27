@@ -83,4 +83,6 @@ public interface FreezingTubeStockPreEntryMapper extends BaseMapperX<FreezingTub
     }
      */
     IPage<FreezingTubeStockPreEntryRespVO> selectPage2(IPage<FreezingTubeStockPreEntryRespVO> page, @Param("req") FreezingTubeStockPreEntryPageReqVO reqVO);
+
+    IPage<FreezingTubeStockPreEntryRespVO> selectPage3(IPage<FreezingTubeStockPreEntryRespVO> iPage, @Param("req") FreezingTubeStockPreEntryPageReqVO pageReqVO);
 }

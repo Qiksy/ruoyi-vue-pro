@@ -57,4 +57,9 @@ public class OutboundApplicationRespVO {
     @ExcelProperty("审批结果")
     private String approResult;
 
+    /**
+     * 子表数据
+     */
+    private List<OutboundApplicationSubRespVO> subList;
+
 }

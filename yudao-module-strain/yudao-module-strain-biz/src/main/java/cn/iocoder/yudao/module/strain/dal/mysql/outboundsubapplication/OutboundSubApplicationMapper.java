@@ -20,7 +20,7 @@ public interface OutboundSubApplicationMapper extends BaseMapperX<OutboundSubApp
     default PageResult<OutboundSubApplicationDO> selectPage(OutboundSubApplicationPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<OutboundSubApplicationDO>()
                 .eqIfPresent(OutboundSubApplicationDO::getParentId, reqVO.getParentId())
-                .eqIfPresent(OutboundSubApplicationDO::getTubeId, reqVO.getTubeId())
+                .eqIfPresent(OutboundSubApplicationDO::getSpecimenId, reqVO.getTubeId())
                 .betweenIfPresent(OutboundSubApplicationDO::getCreateTime, reqVO.getCreateTime())
                 .eqIfPresent(OutboundSubApplicationDO::getRemark, reqVO.getRemark())
                 .orderByDesc(OutboundSubApplicationDO::getId));

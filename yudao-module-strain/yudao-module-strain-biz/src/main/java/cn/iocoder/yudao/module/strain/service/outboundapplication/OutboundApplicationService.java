@@ -20,7 +20,7 @@ public interface OutboundApplicationService {
      * @param createReqVO 创建信息
      * @return 编号
      */
-    Long createOutboundApplication(@Valid OutboundApplicationSaveReqVO createReqVO);
+    Long createOutboundApplication(@Valid OutboundApplicationCreateReqVO createReqVO);
 
     /**
      * 更新出库申请
@@ -52,4 +52,12 @@ public interface OutboundApplicationService {
      */
     PageResult<OutboundApplicationDO> getOutboundApplicationPage(OutboundApplicationPageReqVO pageReqVO);
 
+    Long createAndApplyOutboundApplication(OutboundApplicationCreateReqVO createReqVO);
+
+    /**
+     * 获取主子表的所有的数据
+     * @param id 主键
+     * @return 单独的表的数据
+     */
+    OutboundApplicationRespVO getOutboundApplicationVO(Long id);
 }

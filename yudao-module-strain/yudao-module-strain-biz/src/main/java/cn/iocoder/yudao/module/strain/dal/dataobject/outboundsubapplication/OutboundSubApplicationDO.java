@@ -32,9 +32,32 @@ public class OutboundSubApplicationDO extends BaseDO {
      */
     private Long parentId;
     /**
-     * 冷冻管id
+     * 样品id
      */
-    private Long tubeId;
+    private Long specimenId;
+
+    /**
+     * 槽位id
+     */
+    private Long stockId;
+
+    /**
+     * 菌种名称
+     */
+    private String specimenCode;
+    /**
+     * 中文名称
+     */
+    private String chineseName;
+
+    private String latinName;
+
+
+
+
+
+
+
     /**
      * 备注
      */

@@ -58,4 +58,19 @@ public interface FreezingTubeStockPreEntryService {
      * @return 冷冻管库存预录入分页
      */
     PageResult<FreezingTubeStockPreEntryRespVO> getFreezingTubeStockPreEntryPage2(FreezingTubeStockPreEntryPageReqVO pageReqVO);
+
+    /**
+     * 连表查询分页，去掉正在处理的样品
+     * @param pageReqVO 分页查询
+     * @return 样品分页
+     */
+    PageResult<FreezingTubeStockPreEntryRespVO> getFreezingTubeStockPreEntryPage3(FreezingTubeStockPreEntryPageReqVO pageReqVO);
+
+
+    /**
+     * 传入槽位id，获取对应的槽位位置
+     * @param stockIds 槽位id
+     * @return map
+     */
+    Map<Long, String> getStockPositionStrMap(List<Long> stockIds);
 }
