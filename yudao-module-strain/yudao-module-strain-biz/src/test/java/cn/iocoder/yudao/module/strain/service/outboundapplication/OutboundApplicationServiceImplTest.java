@@ -45,7 +45,7 @@ public class OutboundApplicationServiceImplTest extends BaseDbUnitTest {
     @Test
     public void testCreateOutboundApplication_success() {
         // 准备参数
-        OutboundApplicationSaveReqVO createReqVO = randomPojo(OutboundApplicationSaveReqVO.class).setId(null);
+        OutboundApplicationCreateReqVO createReqVO = randomPojo(OutboundApplicationCreateReqVO.class);
 
         // 调用
         Long outboundApplicationId = outboundApplicationService.createOutboundApplication(createReqVO);

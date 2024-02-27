@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.strain.controller.admin.outboundapplication;
 
+import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -39,11 +40,20 @@ public class OutboundApplicationController {
     private OutboundApplicationService outboundApplicationService;
 
     @PostMapping("/create")
-    @Operation(summary = "创建出库申请")
+    @Operation(summary = "保存出库申请")
     @PreAuthorize("@ss.hasPermission('strain:outbound-application:create')")
-    public CommonResult<Long> createOutboundApplication(@Valid @RequestBody OutboundApplicationSaveReqVO createReqVO) {
+    public CommonResult<Long> createOutboundApplication(@Valid @RequestBody OutboundApplicationCreateReqVO createReqVO) {
         return success(outboundApplicationService.createOutboundApplication(createReqVO));
     }
+
+
+    @PostMapping("/save-and-submit")
+    @Operation(summary = "保存和申请出库单")
+    @PreAuthorize("@ss.hasPermission('strain:outbound-application:create')")
+    public CommonResult<Long> createAndApplyOutboundApplication(@Valid @RequestBody OutboundApplicationCreateReqVO createReqVO) {
+        return success(outboundApplicationService.createAndApplyOutboundApplication(createReqVO));
+    }
+
 
     @PutMapping("/update")
     @Operation(summary = "更新出库申请")
@@ -67,8 +77,9 @@ public class OutboundApplicationController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('strain:outbound-application:query')")
     public CommonResult<OutboundApplicationRespVO> getOutboundApplication(@RequestParam("id") Long id) {
-        OutboundApplicationDO outboundApplication = outboundApplicationService.getOutboundApplication(id);
-        return success(BeanUtils.toBean(outboundApplication, OutboundApplicationRespVO.class));
+//        OutboundApplicationDO outboundApplication = outboundApplicationService.getOutboundApplication(id);
+        OutboundApplicationRespVO outboundApplication = outboundApplicationService.getOutboundApplicationVO(id);
+        return success(outboundApplication);
     }
 
     @GetMapping("/page")

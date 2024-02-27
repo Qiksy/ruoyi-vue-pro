@@ -70,6 +70,8 @@ public class FreezingTubeStockPreEntryRespVO {
     @ExcelProperty("菌种名称")
     private String microbeName;
 
+    private String latinName;
+
     @Schema(description = "有效期至", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("有效期至")
     private LocalDateTime expirationDate;
@@ -98,5 +100,13 @@ public class FreezingTubeStockPreEntryRespVO {
     @ExcelProperty(value = "是否入库", converter = DictConvert.class)
     @DictFormat(DictTypeConstants.STRAIN_INVENTORY_STATUS) // TODO 代码优化：建议设置到对应的 DictTypeConstants 枚举类中
     private String status;
+
+
+
+    //对应的槽位id，用来获取位置信息
+    private Long stockId;
+
+    //位置信息
+    private String positionStr;
 
 }

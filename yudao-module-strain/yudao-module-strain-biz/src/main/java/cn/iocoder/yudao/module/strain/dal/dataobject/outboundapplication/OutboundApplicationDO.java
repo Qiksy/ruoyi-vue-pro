@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.strain.dal.dataobject.outboundapplication;
 
+import cn.iocoder.yudao.module.bpm.enums.task.BpmProcessInstanceResultEnum;
 import lombok.*;
 import java.util.*;
 import java.time.LocalDateTime;
@@ -61,6 +62,7 @@ public class OutboundApplicationDO extends BaseDO {
     private String processInstanceId;
     /**
      * 审批结果
+     * 枚举 {@link BpmProcessInstanceResultEnum}
      */
     private String approResult;
 

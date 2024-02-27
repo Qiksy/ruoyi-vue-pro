@@ -2,8 +2,15 @@ package cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry;
 
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
+import cn.iocoder.yudao.module.strain.dal.dataobject.freezingdeviceinfo.FreezingDeviceInfoDO;
+import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockinfo.FreezingTubeStockInfoDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.microbebasicinfo.MicrobeBasicInfoDO;
+import cn.iocoder.yudao.module.strain.dal.dataobject.storageareainfo.StorageAreaInfoDO;
+import cn.iocoder.yudao.module.strain.dal.mysql.freezingdevicehierarchy.FreezingDeviceHierarchyMapper;
+import cn.iocoder.yudao.module.strain.dal.mysql.freezingdeviceinfo.FreezingDeviceInfoMapper;
+import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockinfo.FreezingTubeStockInfoMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.microbebasicinfo.MicrobeBasicInfoMapper;
+import cn.iocoder.yudao.module.strain.dal.mysql.storageareainfo.StorageAreaInfoMapper;
 import cn.iocoder.yudao.module.strain.enums.InventoryStatisEnum;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -39,6 +46,26 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
 
     @Resource
     private MicrobeBasicInfoMapper microbeBasicInfoMapper;
+
+
+    /**
+     * 槽位信息
+     */
+    @Resource
+    private FreezingTubeStockInfoMapper tubeStockInfoMapper; //槽位信息
+
+
+    @Resource
+    private FreezingDeviceHierarchyMapper deviceHierarchyMapper; //冻存设备层级信息
+
+
+    @Resource
+    private FreezingDeviceInfoMapper deviceInfoMapper; // 设备信息
+
+
+    @Resource
+    private StorageAreaInfoMapper storageAreaInfoMapper; //区域信息
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -160,6 +187,95 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
     public PageResult<FreezingTubeStockPreEntryRespVO> getFreezingTubeStockPreEntryPage2(FreezingTubeStockPreEntryPageReqVO pageReqVO) {
         IPage<FreezingTubeStockPreEntryRespVO> iPage = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
          freezingTubeStockPreEntryMapper.selectPage2(iPage,pageReqVO);
+
+         // 查询这些样品的位置信息
+        List<Long> list = iPage.getRecords().stream().map(FreezingTubeStockPreEntryRespVO::getStockId).filter(
+                Objects::nonNull
+        ).toList();
+
+        Map<Long,String> positionMap = getStockPositionStrMap(list);
+
+        if (!positionMap.isEmpty()){
+            iPage.getRecords().forEach(e->e.setPositionStr(positionMap.get(e.getStockId())));
+        }
         return new PageResult<>(iPage.getRecords(),iPage.getTotal());
+    }
+
+    /**
+     * 连表查询分页，去掉正在处理的样品
+     *
+     * @param pageReqVO 分页查询
+     * @return 样品分页
+     */
+    @Override
+    public PageResult<FreezingTubeStockPreEntryRespVO> getFreezingTubeStockPreEntryPage3(FreezingTubeStockPreEntryPageReqVO pageReqVO) {
+        IPage<FreezingTubeStockPreEntryRespVO> iPage = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        freezingTubeStockPreEntryMapper.selectPage3(iPage,pageReqVO);
+
+        // 查询这些样品的位置信息
+        List<Long> list = iPage.getRecords().stream().map(FreezingTubeStockPreEntryRespVO::getStockId).filter(
+                Objects::nonNull
+        ).toList();
+
+        Map<Long,String> positionMap = getStockPositionStrMap(list);
+
+        if (!positionMap.isEmpty()){
+            iPage.getRecords().forEach(e->e.setPositionStr(positionMap.get(e.getStockId())));
+        }
+        return new PageResult<>(iPage.getRecords(),iPage.getTotal());
+    }
+
+    /**
+     * 从这里获取样品的位置信息
+     * @param stockIds 槽位id
+     * @return 返回一个槽位id和对应的位置信息
+     */
+    public Map<Long, String> getStockPositionStrMap(List<Long> stockIds) {
+        if (stockIds.isEmpty()){
+            return Collections.emptyMap();
+        }
+
+        Map<Long,String> map = new HashMap<>();
+
+        try {
+            for (Long stockId : stockIds) {
+                //查询这个位置的具体信息
+                FreezingTubeStockInfoDO tubeStockInfoDO = tubeStockInfoMapper.selectOne("id", stockId);
+                String boxPositionStr = getBoxPositionStr(tubeStockInfoDO);
+
+                //1. 递归查询层级名称 和设备名称
+                LevelTempInfo levelTempInfo = deviceHierarchyMapper.selectLevelNameById(tubeStockInfoDO.getBoxId());
+                String levelName = levelTempInfo.getName();
+
+                //2. 查询设备名称
+                FreezingDeviceInfoDO deviceInfoDO = deviceInfoMapper.selectById(levelTempInfo.getParentId());// 层级的最上级是设备
+                String deviceName = deviceInfoDO.getName();
+
+                //3. 查询区域名称
+                StorageAreaInfoDO areaInfoDO = storageAreaInfoMapper.selectById(deviceInfoDO.getStorageAreaId());
+
+                String areaName = areaInfoDO.getName();
+                //4. 添加到对应的map中
+
+                map.put(stockId,areaName + "/" + deviceName + "/" + levelName + "/" + boxPositionStr);
+            }
+        } catch (Exception e) {
+            throw exception(MICROBE_POSITION_INFO_NOT_EXISTS);
+        }
+
+
+        return map;
+    }
+
+    /**
+     * 获取xy的相对位置，因为实际上数据存储的是0~9，所以需要转换
+     * @param tubeStockInfoDO 冷冻管库存信息
+     * @return 返回位置信息
+     */
+    private String getBoxPositionStr(FreezingTubeStockInfoDO tubeStockInfoDO) {
+        String tubePositionX = tubeStockInfoDO.getTubePositionX();
+        String tubePositionY = tubeStockInfoDO.getTubePositionY();
+
+        return (Integer.parseInt(tubePositionX)+1) + "-" + (Integer.parseInt(tubePositionY)+1);
     }
 }

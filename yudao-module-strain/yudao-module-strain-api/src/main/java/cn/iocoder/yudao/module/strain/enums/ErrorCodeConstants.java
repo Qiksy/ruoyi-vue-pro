@@ -60,4 +60,9 @@ public interface ErrorCodeConstants {
     // ========== 出库申请子表 98_011_005 ==========
     ErrorCode OUTBOUND_SUB_APPLICATION_NOT_EXISTS = new ErrorCode(98_011_005, "出库申请子不存在");
 
+
+    // 菌种模块通用错误码
+    //获取菌种位置信息失败
+    ErrorCode MICROBE_POSITION_INFO_NOT_EXISTS = new ErrorCode(98_012_001, "获取菌种位置信息失败，请联系管理员");
+
 }

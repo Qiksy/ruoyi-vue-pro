@@ -5,9 +5,12 @@ import java.util.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.LevelTempInfo;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingdevicehierarchy.FreezingDeviceHierarchyDO;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.strain.controller.admin.freezingdevicehierarchy.vo.*;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * 冷冻设备层级 Mapper
@@ -41,17 +44,18 @@ public interface FreezingDeviceHierarchyMapper extends BaseMapperX<FreezingDevic
 
     /**
      * 递归查询是否存在子层级
+     *
      * @param id
      * @return
      */
-    default Long selectCountByPid(Long id){
+    default Long selectCountByPid(Long id) {
         LambdaQueryWrapperX<FreezingDeviceHierarchyDO> queryWrapperX = new LambdaQueryWrapperX<>();
-        queryWrapperX.eq(FreezingDeviceHierarchyDO::getParentId,id);
+        queryWrapperX.eq(FreezingDeviceHierarchyDO::getParentId, id);
 
         List<FreezingDeviceHierarchyDO> hierarchyDOS = selectList(queryWrapperX);
 
         //如果为空则返回0
-        if (hierarchyDOS == null || hierarchyDOS.isEmpty()){
+        if (hierarchyDOS == null || hierarchyDOS.isEmpty()) {
             return 0L;
         }
 
@@ -62,4 +66,17 @@ public interface FreezingDeviceHierarchyMapper extends BaseMapperX<FreezingDevic
         }
         return count;
     }
+
+
+    @Select("""
+            with RECURSIVE  cte as (
+                        select id,parent_id,name from strain_freezing_device_hierarchy  where id = #{boxId}
+                        union all
+                        select  t.id, t.parent_id, CONCAT(t.name, '/', cte.name) from strain_freezing_device_hierarchy  t
+                        inner join cte on cte.parent_id = t.id
+                        )
+                        select * from cte
+                        order by id LIMIT 1
+            """)
+    LevelTempInfo selectLevelNameById(Long boxId);
 }
