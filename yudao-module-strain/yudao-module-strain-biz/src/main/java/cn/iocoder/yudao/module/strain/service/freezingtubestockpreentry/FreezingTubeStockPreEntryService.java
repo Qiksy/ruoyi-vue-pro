@@ -1,6 +1,9 @@
 package cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry;
 
 import java.util.*;
+
+import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningReqVO;
+import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningRespVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.*;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDO;
@@ -73,4 +76,6 @@ public interface FreezingTubeStockPreEntryService {
      * @return map
      */
     Map<Long, String> getStockPositionStrMap(List<Long> stockIds);
+
+    PageResult<ExpiredWarningRespVO> getExpiredWaringPage(ExpiredWarningReqVO queryVO);
 }

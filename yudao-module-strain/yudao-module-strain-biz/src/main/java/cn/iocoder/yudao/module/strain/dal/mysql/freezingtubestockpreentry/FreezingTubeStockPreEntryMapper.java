@@ -7,6 +7,8 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.MPJLambdaWrapperX;
+import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningReqVO;
+import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningRespVO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDetailDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.user.AdminUserDO;
@@ -85,4 +87,6 @@ public interface FreezingTubeStockPreEntryMapper extends BaseMapperX<FreezingTub
     IPage<FreezingTubeStockPreEntryRespVO> selectPage2(IPage<FreezingTubeStockPreEntryRespVO> page, @Param("req") FreezingTubeStockPreEntryPageReqVO reqVO);
 
     IPage<FreezingTubeStockPreEntryRespVO> selectPage3(IPage<FreezingTubeStockPreEntryRespVO> iPage, @Param("req") FreezingTubeStockPreEntryPageReqVO pageReqVO);
+
+    IPage<ExpiredWarningRespVO> selectPage4(IPage<ExpiredWarningRespVO> iPage,@Param("req") ExpiredWarningReqVO pageReqVO);
 }
