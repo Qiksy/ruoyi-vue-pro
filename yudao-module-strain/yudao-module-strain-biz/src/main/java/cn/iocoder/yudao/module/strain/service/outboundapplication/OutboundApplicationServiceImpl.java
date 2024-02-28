@@ -349,7 +349,7 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
                 freezingTubeStockPreEntryMapper.updateBatch(specimenList);
 
                 //获取槽位数据
-                List<FreezingTubeStockInfoDO> tubeStockInfoDOList = stockInfoMapper.selectList(FreezingTubeStockInfoDO::getStockPreEntryId, specimenList);
+                List<FreezingTubeStockInfoDO> tubeStockInfoDOList = stockInfoMapper.selectList(FreezingTubeStockInfoDO::getStockPreEntryId,specimenIds );
                 tubeStockInfoDOList.forEach(item->item.setStatus(InventoryStatisEnum.WAIT_STOCK.getValue()));
 
                 stockInfoMapper.updateBatch(tubeStockInfoDOList);
@@ -384,9 +384,9 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         //更新样品数据
         freezingTubeStockPreEntryMapper.updateBatch(specimenList);
 
-        Set<Long> collect = specimenList.stream().map(FreezingTubeStockPreEntryDO::getId).collect(Collectors.toSet());
+//        Set<Long> collect = specimenList.stream().map(FreezingTubeStockPreEntryDO::getId).collect(Collectors.toSet());
         //获取槽位数据，清空菌种
-        List<FreezingTubeStockInfoDO> tubeStockInfoDOList = stockInfoMapper.selectList(FreezingTubeStockInfoDO::getStockPreEntryId, collect);
+        List<FreezingTubeStockInfoDO> tubeStockInfoDOList = stockInfoMapper.selectList(FreezingTubeStockInfoDO::getStockPreEntryId, specimenIds);
 
         LambdaUpdateWrapper<FreezingTubeStockInfoDO> wrapperX = new LambdaUpdateWrapper<>();
         wrapperX.set(FreezingTubeStockInfoDO::getStockPreEntryId, null)
