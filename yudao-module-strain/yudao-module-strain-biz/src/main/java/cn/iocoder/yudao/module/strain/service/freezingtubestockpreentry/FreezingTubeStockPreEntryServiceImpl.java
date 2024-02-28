@@ -2,6 +2,8 @@ package cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry;
 
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
+import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningReqVO;
+import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningRespVO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingdeviceinfo.FreezingDeviceInfoDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockinfo.FreezingTubeStockInfoDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.microbebasicinfo.MicrobeBasicInfoDO;
@@ -198,6 +200,25 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
         if (!positionMap.isEmpty()){
             iPage.getRecords().forEach(e->e.setPositionStr(positionMap.get(e.getStockId())));
         }
+        return new PageResult<>(iPage.getRecords(),iPage.getTotal());
+    }
+
+
+    @Override
+    public PageResult<ExpiredWarningRespVO> getExpiredWaringPage(ExpiredWarningReqVO pageReqVO) {
+        IPage<ExpiredWarningRespVO> iPage = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        freezingTubeStockPreEntryMapper.selectPage4(iPage, pageReqVO);
+// 查询这些样品的位置信息
+        List<Long> list = iPage.getRecords().stream().map(ExpiredWarningRespVO::getStockId).filter(
+                Objects::nonNull
+        ).toList();
+
+        Map<Long,String> positionMap = getStockPositionStrMap(list);
+
+        if (!positionMap.isEmpty()){
+            iPage.getRecords().forEach(e->e.setPositionStr(positionMap.get(e.getStockId())));
+        }
+
         return new PageResult<>(iPage.getRecords(),iPage.getTotal());
     }
 
