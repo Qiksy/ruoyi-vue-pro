@@ -29,4 +29,16 @@ public interface OutboundApplicationMapper extends BaseMapperX<OutboundApplicati
                 .orderByDesc(OutboundApplicationDO::getId));
     }
 
+    default PageResult<OutboundApplicationDO> selectPage2(OutboundApplicationPageReqVO reqVO, Long creatorId){
+        return selectPage(reqVO, new LambdaQueryWrapperX<OutboundApplicationDO>()
+                .eqIfPresent(OutboundApplicationDO::getCode, reqVO.getCode())
+                .eqIfPresent(OutboundApplicationDO::getApplicant, reqVO.getApplicant())
+                .eqIfPresent(OutboundApplicationDO::getUseage, reqVO.getUseage())
+                .eqIfPresent(OutboundApplicationDO::getIsRestocked, reqVO.getIsRestocked())
+                .eqIfPresent(OutboundApplicationDO::getType, reqVO.getType())
+                .eqIfPresent(OutboundApplicationDO::getProcessInstanceId, reqVO.getProcessInstanceId())
+                .eqIfPresent(OutboundApplicationDO::getApproResult, reqVO.getApproResult())
+                .eqIfPresent(OutboundApplicationDO::getCreator, creatorId)
+                .orderByDesc(OutboundApplicationDO::getId));
+    }
 }

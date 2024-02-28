@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry;
 
+import cn.iocoder.yudao.module.strain.enums.InventoryStatisEnum;
 import lombok.*;
 import java.util.*;
 import java.time.LocalDateTime;
@@ -90,9 +91,9 @@ public class FreezingTubeStockPreEntryDO extends BaseDO {
      */
     private String remark;
     /**
-     * 是否入库
+     * 入库状态 0 未入库 1 入库 2待回库 3销毁 4删除
      *
-     * 枚举
+     * 枚举 {@link InventoryStatisEnum}
      */
     private String status;
 

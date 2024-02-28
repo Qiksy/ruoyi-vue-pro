@@ -24,7 +24,7 @@ public enum InventoryStatisEnum {
      */
     DESTROY_STOCK("3"),
     /**
-     * 已删除
+     * 已删除 /已消耗
      */
     DELETE_STOCK("4");
 
