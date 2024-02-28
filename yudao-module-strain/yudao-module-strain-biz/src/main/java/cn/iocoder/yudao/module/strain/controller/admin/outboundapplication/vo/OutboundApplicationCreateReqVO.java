@@ -37,6 +37,8 @@ public class OutboundApplicationCreateReqVO {
     @NotNull(message = "出库类型不能为空")
     private String type;
 
+    private String approResult;
+
     //子表
     List<OutboundApplicationSubCreateReqVO> subList;
 

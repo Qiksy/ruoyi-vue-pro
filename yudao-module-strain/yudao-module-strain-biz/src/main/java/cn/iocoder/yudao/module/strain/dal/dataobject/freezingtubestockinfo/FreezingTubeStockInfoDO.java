@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockinfo;
 
+import cn.iocoder.yudao.module.strain.enums.InventoryStatisEnum;
 import lombok.*;
 import java.util.*;
 import java.time.LocalDateTime;
@@ -85,7 +86,7 @@ public class FreezingTubeStockInfoDO extends BaseDO {
     /**
      * 状态
      *
-     * 枚举 {@link TODO strain_inventory_status 对应的类}
+     * 枚举 {@link InventoryStatisEnum}
      */
     private String status;
     /**
@@ -99,7 +100,7 @@ public class FreezingTubeStockInfoDO extends BaseDO {
     private String saveByName;
 
     /**
-     * 预录入id
+     * 样品id
      */
     private Long stockPreEntryId;
 

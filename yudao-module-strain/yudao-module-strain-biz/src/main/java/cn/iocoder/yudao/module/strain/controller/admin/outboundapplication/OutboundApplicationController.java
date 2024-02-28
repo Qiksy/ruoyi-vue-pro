@@ -63,13 +63,22 @@ public class OutboundApplicationController {
         return success(true);
     }
 
-    @PutMapping("update-and-submit")
+    @PutMapping("/update-and-submit")
     @Operation(summary = "更新出库并提交申请")
     @PreAuthorize("@ss.hasPermission('strain:outbound-application:update')")
     public CommonResult<Boolean> updateAndSubmitOutboundApplication(@Valid @RequestBody OutboundApplicationCreateReqVO updateReqVO) {
         outboundApplicationService.updateAndSubmitOutboundApplication(updateReqVO);
         return success(true);
     }
+
+    @PostMapping("/approve")
+    @Operation(summary = "审批出库")
+    @PreAuthorize("@ss.hasPermission('strain:outbound-application:update')")
+    public CommonResult<Boolean> approveOutboundApplication(@Valid @RequestBody OutboundApplicationCreateReqVO updateReqVO) {
+        outboundApplicationService.approveOutboundApplication(updateReqVO);
+        return success(true);
+    }
+
 
     @DeleteMapping("/delete")
     @Operation(summary = "删除出库申请")
@@ -95,6 +104,14 @@ public class OutboundApplicationController {
     @PreAuthorize("@ss.hasPermission('strain:outbound-application:query')")
     public CommonResult<PageResult<OutboundApplicationRespVO>> getOutboundApplicationPage(@Valid OutboundApplicationPageReqVO pageReqVO) {
         PageResult<OutboundApplicationDO> pageResult = outboundApplicationService.getOutboundApplicationPage(pageReqVO);
+        return success(BeanUtils.toBean(pageResult, OutboundApplicationRespVO.class));
+    }
+
+    @GetMapping("/self-page")
+    @Operation(summary = "获得自己申请的出库申请分页")
+    @PreAuthorize("@ss.hasPermission('strain:outbound-application:query')")
+    public CommonResult<PageResult<OutboundApplicationRespVO>> getOutboundApplicationPageSelf(@Valid OutboundApplicationPageReqVO pageReqVO) {
+        PageResult<OutboundApplicationDO> pageResult = outboundApplicationService.getOutboundApplicationPageSelf(pageReqVO);
         return success(BeanUtils.toBean(pageResult, OutboundApplicationRespVO.class));
     }
 

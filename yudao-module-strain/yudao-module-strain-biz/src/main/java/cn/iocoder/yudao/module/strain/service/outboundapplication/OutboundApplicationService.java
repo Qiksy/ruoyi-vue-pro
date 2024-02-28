@@ -58,6 +58,13 @@ public interface OutboundApplicationService {
      */
     PageResult<OutboundApplicationDO> getOutboundApplicationPage(OutboundApplicationPageReqVO pageReqVO);
 
+    /**
+     * 获取自己申请的出库申请
+     * @param pageReqVO 分页查询
+     * @return 出库申请分页
+     */
+    PageResult<OutboundApplicationDO> getOutboundApplicationPageSelf(OutboundApplicationPageReqVO pageReqVO);
+
     Long createAndApplyOutboundApplication(OutboundApplicationCreateReqVO createReqVO);
 
     /**
@@ -68,4 +75,9 @@ public interface OutboundApplicationService {
     OutboundApplicationRespVO getOutboundApplicationVO(Long id);
 
 
+    /**
+     * 审批通过或者不通过
+     * @param updateReqVO 单据数据
+     */
+    void approveOutboundApplication(OutboundApplicationCreateReqVO updateReqVO);
 }
