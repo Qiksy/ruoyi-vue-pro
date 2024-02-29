@@ -39,14 +39,14 @@ public class FreezingDeviceHierarchyController {
 
     @PostMapping("/create")
     @Operation(summary = "创建冷冻设备层级")
-    @PreAuthorize("@ss.hasPermission('strain:freezing-device-hierarchy:create')")
+    @PreAuthorize("@ss.hasPermission('strain:freezing-device-info:create')")
     public CommonResult<Long> createFreezingDeviceHierarchy(@Valid @RequestBody FreezingDeviceHierarchyCreateReqVO createReqVO) {
         return success(freezingDeviceHierarchyService.createFreezingDeviceHierarchy(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新冷冻设备层级")
-    @PreAuthorize("@ss.hasPermission('strain:freezing-device-hierarchy:update')")
+    @PreAuthorize("@ss.hasPermission('strain:freezing-device-info:update')")
     public CommonResult<Boolean> updateFreezingDeviceHierarchy(@Valid @RequestBody FreezingDeviceHierarchyUpdateReqVO updateReqVO) {
         freezingDeviceHierarchyService.updateFreezingDeviceHierarchy(updateReqVO);
         return success(true);
@@ -55,7 +55,7 @@ public class FreezingDeviceHierarchyController {
 
     @PutMapping("/add-new")
     @Operation(summary = "添加新的冷冻设备层级")
-    @PreAuthorize("@ss.hasPermission('strain:freezing-device-hierarchy:update')")
+    @PreAuthorize("@ss.hasPermission('strain:freezing-device-info:update')")
     public CommonResult<Boolean> addNewFreezingDeviceHierarchy(@Valid @RequestBody FreezingDeviceHierarchyUpdateReqVO updateReqVO) {
         freezingDeviceHierarchyService.addNewFreezingDeviceHierarchy(updateReqVO);
         return success(true);
@@ -64,7 +64,7 @@ public class FreezingDeviceHierarchyController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除冷冻设备层级")
     @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('strain:freezing-device-hierarchy:delete')")
+    @PreAuthorize("@ss.hasPermission('strain:freezing-device-info:delete')")
     public CommonResult<Boolean> deleteFreezingDeviceHierarchy(@RequestParam("id") Long id) {
         freezingDeviceHierarchyService.deleteFreezingDeviceHierarchy(id);
         return success(true);
@@ -73,7 +73,7 @@ public class FreezingDeviceHierarchyController {
     @GetMapping("/get")
     @Operation(summary = "获得冷冻设备层级")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('strain:freezing-device-hierarchy:query')")
+    @PreAuthorize("@ss.hasPermission('strain:freezing-device-info:query')")
     public CommonResult<FreezingDeviceHierarchyRespVO> getFreezingDeviceHierarchy(@RequestParam("id") Long id) {
         FreezingDeviceHierarchyDO freezingDeviceHierarchy = freezingDeviceHierarchyService.getFreezingDeviceHierarchy(id);
         return success(FreezingDeviceHierarchyConvert.INSTANCE.convert(freezingDeviceHierarchy));
@@ -82,7 +82,7 @@ public class FreezingDeviceHierarchyController {
     @GetMapping("/list")
     @Operation(summary = "获得冷冻设备层级列表")
     @Parameter(name = "ids", description = "编号列表", required = true, example = "1024,2048")
-    @PreAuthorize("@ss.hasPermission('strain:freezing-device-hierarchy:query')")
+    @PreAuthorize("@ss.hasPermission('strain:freezing-device-info:query')")
     public CommonResult<List<FreezingDeviceHierarchyRespVO>> getFreezingDeviceHierarchyList(@RequestParam("ids") Collection<Long> ids) {
         List<FreezingDeviceHierarchyDO> list = freezingDeviceHierarchyService.getFreezingDeviceHierarchyList(ids);
         return success(FreezingDeviceHierarchyConvert.INSTANCE.convertList(list));
@@ -90,7 +90,7 @@ public class FreezingDeviceHierarchyController {
 
     @GetMapping("/page")
     @Operation(summary = "获得冷冻设备层级分页")
-    @PreAuthorize("@ss.hasPermission('strain:freezing-device-hierarchy:query')")
+    @PreAuthorize("@ss.hasPermission('strain:freezing-device-info:query')")
     public CommonResult<PageResult<FreezingDeviceHierarchyRespVO>> getFreezingDeviceHierarchyPage(@Valid FreezingDeviceHierarchyPageReqVO pageVO) {
         PageResult<FreezingDeviceHierarchyDO> pageResult = freezingDeviceHierarchyService.getFreezingDeviceHierarchyPage(pageVO);
         return success(FreezingDeviceHierarchyConvert.INSTANCE.convertPage(pageResult));
@@ -98,7 +98,7 @@ public class FreezingDeviceHierarchyController {
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出冷冻设备层级 Excel")
-    @PreAuthorize("@ss.hasPermission('strain:freezing-device-hierarchy:export')")
+    @PreAuthorize("@ss.hasPermission('strain:freezing-device-info:export')")
     @OperateLog(type = EXPORT)
     public void exportFreezingDeviceHierarchyExcel(@Valid FreezingDeviceHierarchyExportReqVO exportReqVO,
               HttpServletResponse response) throws IOException {
