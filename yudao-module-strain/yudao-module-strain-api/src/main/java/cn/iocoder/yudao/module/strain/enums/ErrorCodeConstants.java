@@ -36,6 +36,8 @@ public interface ErrorCodeConstants {
 
     ErrorCode MICROBE_BASIC_INFO_CODE_EXISTS = new ErrorCode(98_007_002, "菌种编号已经存在");
 
+    ErrorCode MICROBE_BASIC_INFO_EXISTS_FREEZING_TUBE_STOCK_PRE_ENTRY = new ErrorCode(98_007_003, "已经存在样品信息，不允许删除");
+
 
     // ========== 冷冻管库存预录入 98_008_001 ==========
     ErrorCode FREEZING_TUBE_STOCK_PRE_ENTRY_NOT_EXISTS = new ErrorCode(98_008_001, "样品不存在");

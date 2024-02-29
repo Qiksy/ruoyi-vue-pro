@@ -1,7 +1,9 @@
 package cn.iocoder.yudao.module.strain.service.microbebasicinfo;
 
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDO;
 import cn.iocoder.yudao.module.strain.dal.mysql.culturemediumdatainfo.CultureMediumDataInfoMapper;
+import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.FreezingTubeStockPreEntryMapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -35,6 +37,11 @@ public class MicrobeBasicInfoServiceImpl implements MicrobeBasicInfoService {
 
     @Resource
     private CultureMediumDataInfoMapper cultureMediumDataInfoMapper;
+
+
+    //查询样品数据
+    @Resource
+    private FreezingTubeStockPreEntryMapper freezingTubeStockPreEntryMapper;
 
     @Override
     public Long createMicrobeBasicInfo(MicrobeBasicInfoSaveReqVO createReqVO) {
@@ -71,8 +78,22 @@ public class MicrobeBasicInfoServiceImpl implements MicrobeBasicInfoService {
     public void deleteMicrobeBasicInfo(Long id) {
         // 校验存在
         validateMicrobeBasicInfoExists(id);
+
+        // 删除之前校验是否存在样品数据，如果有则不允许删除
+        validateMicrobeSpecimenExists(id);
+
+
         // 删除
         microbeBasicInfoMapper.deleteById(id);
+    }
+
+    private void validateMicrobeSpecimenExists(Long id) {
+        LambdaQueryWrapperX<FreezingTubeStockPreEntryDO> lambdaQueryWrapperX = new LambdaQueryWrapperX<FreezingTubeStockPreEntryDO>()
+                .eq(FreezingTubeStockPreEntryDO::getMicrobeId, id);
+        Long count = freezingTubeStockPreEntryMapper.selectCount(lambdaQueryWrapperX);
+        if (count > 0) {
+            throw exception(MICROBE_BASIC_INFO_EXISTS_FREEZING_TUBE_STOCK_PRE_ENTRY);
+        }
     }
 
     private void validateMicrobeBasicInfoExists(Long id) {
