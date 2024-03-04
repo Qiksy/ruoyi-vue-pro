@@ -124,7 +124,9 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         //重新插入子表
         List<OutboundSubApplicationDO> subApplicationDOS = BeanUtils.toBean(updateReqVO.getSubList(), OutboundSubApplicationDO.class);
         //设置子表的parent_id
-        subApplicationDOS.forEach(item->item.setParentId(updateReqVO.getId()));
+        for (OutboundSubApplicationDO subApplicationDO : subApplicationDOS) {
+            subApplicationDO.setParentId(updateReqVO.getId());
+        }
 
 
         // 校验是否存在相同的明细正在处理中
@@ -344,13 +346,17 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
                 status = null;
                 //回库并且是正常出库的，设置菌种为待回库
                 List<FreezingTubeStockPreEntryDO> specimenList = freezingTubeStockPreEntryMapper.selectList("id", specimenIds);
-                specimenList.forEach(item->item.setStatus(InventoryStatisEnum.WAIT_STOCK.getValue()));
+                for (FreezingTubeStockPreEntryDO entryDO : specimenList) {
+                    entryDO.setStatus(InventoryStatisEnum.WAIT_STOCK.getValue());
+                }
                 //更新样品数据
                 freezingTubeStockPreEntryMapper.updateBatch(specimenList);
 
                 //获取槽位数据
                 List<FreezingTubeStockInfoDO> tubeStockInfoDOList = stockInfoMapper.selectList(FreezingTubeStockInfoDO::getStockPreEntryId,specimenIds );
-                tubeStockInfoDOList.forEach(item->item.setStatus(InventoryStatisEnum.WAIT_STOCK.getValue()));
+                for (FreezingTubeStockInfoDO freezingTubeStockInfoDO : tubeStockInfoDOList) {
+                    freezingTubeStockInfoDO.setStatus(InventoryStatisEnum.WAIT_STOCK.getValue());
+                }
 
                 stockInfoMapper.updateBatch(tubeStockInfoDOList);
             }else if (!updateReqVO.getIsRestocked() && updateReqVO.getType().equals("1")){
@@ -380,7 +386,9 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
      */
     private void deliverSpecimen(Set<Long> specimenIds, String status) {
         List<FreezingTubeStockPreEntryDO> specimenList = freezingTubeStockPreEntryMapper.selectList("id", specimenIds);
-        specimenList.forEach(item->item.setStatus(status));
+        for (FreezingTubeStockPreEntryDO entryDO : specimenList) {
+            entryDO.setStatus(status);
+        }
         //更新样品数据
         freezingTubeStockPreEntryMapper.updateBatch(specimenList);
 
