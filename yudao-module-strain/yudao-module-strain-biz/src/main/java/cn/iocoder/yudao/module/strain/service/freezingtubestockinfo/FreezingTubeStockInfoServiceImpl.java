@@ -142,7 +142,7 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
                         freezingTubeStockInfoDO.setStockPreEntryId(entryDO.getId());//设置预备入库id
                         freezingTubeStockInfoDO.setThawFreezeCycleCount(entryDO.getThawFreezeCycleCount());//设置融冻次数
                         freezingTubeStockInfoDO.setTubeId(entryDO.getTubeId());//设置冷冻管类型id
-                        freezingTubeStockInfoDO.setStatus("1");//在库状态
+                        freezingTubeStockInfoDO.setStatus(InventoryStatisEnum.IN_STOCK.getValue());//在库状态
 
                         //设置保存时间和有效期
                         freezingTubeStockInfoDO.setExpirationDate(entryDO.getExpirationDate());
@@ -311,8 +311,13 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
         freezingTubeStockInfoMapper.updateById(freezingTubeStockInfoDO);
 
 
-        //todo 可能需要关联出库单，把出库单的已经回库状态进行更新
+        //把关联的样品设置为待入库
 
+        FreezingTubeStockPreEntryDO entryDO = freezingTubeStockPreEntryMapper.selectById(freezingTubeStockInfoDO.getStockPreEntryId());
+
+        entryDO.setStatus(InventoryStatisEnum.WAIT_STOCK.getValue());
+
+        freezingTubeStockPreEntryMapper.updateById(entryDO);
     }
 
 
@@ -336,6 +341,7 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
         if (tubeInfo != null) {
             //如果存在，就更新它的状态为未入库
             tubeInfo.setStatus(InventoryStatisEnum.NOT_IN_STOCK.getValue());
+            //还要设置sockid
             freezingTubeStockPreEntryMapper.updateById(tubeInfo);
         }
 
@@ -382,6 +388,8 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
         int thawFreezeCycleCount = Optional.ofNullable(perStock.getThawFreezeCycleCount()).orElse(1) + 1;
         perStock.setThawFreezeCycleCount(thawFreezeCycleCount);
 
+        // 设置库存状态为在库
+        perStock.setStatus(IN_STOCK.getValue());
         freezingTubeStockPreEntryMapper.updateById(perStock);
 
 
