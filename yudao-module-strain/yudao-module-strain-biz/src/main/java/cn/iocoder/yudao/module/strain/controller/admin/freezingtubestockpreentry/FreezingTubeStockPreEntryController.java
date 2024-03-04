@@ -49,7 +49,7 @@ public class FreezingTubeStockPreEntryController {
     @PutMapping("/update")
     @Operation(summary = "更新冷冻管库存预录入")
     @PreAuthorize("@ss.hasPermission('strain:freezing-tube-stock-pre-entry:update')")
-    public CommonResult<Boolean> updateFreezingTubeStockPreEntry(@Valid @RequestBody FreezingTubeStockPreEntrySaveReqVO updateReqVO) {
+    public CommonResult<Boolean> updateFreezingTubeStockPreEntry(@Valid @RequestBody FreezingTubeStockPreEntryUpdateReqVO updateReqVO) {
         freezingTubeStockPreEntryService.updateFreezingTubeStockPreEntry(updateReqVO);
         return success(true);
     }

@@ -62,7 +62,7 @@ public class FreezingTubeStockPreEntryServiceImplTest extends BaseDbUnitTest {
         FreezingTubeStockPreEntryDO dbFreezingTubeStockPreEntry = randomPojo(FreezingTubeStockPreEntryDO.class);
         freezingTubeStockPreEntryMapper.insert(dbFreezingTubeStockPreEntry);// @Sql: 先插入出一条存在的数据
         // 准备参数
-        FreezingTubeStockPreEntrySaveReqVO updateReqVO = randomPojo(FreezingTubeStockPreEntrySaveReqVO.class, o -> {
+        FreezingTubeStockPreEntryUpdateReqVO updateReqVO = randomPojo(FreezingTubeStockPreEntryUpdateReqVO.class, o -> {
             o.setId(dbFreezingTubeStockPreEntry.getId()); // 设置更新的 ID
         });
 
@@ -76,7 +76,7 @@ public class FreezingTubeStockPreEntryServiceImplTest extends BaseDbUnitTest {
     @Test
     public void testUpdateFreezingTubeStockPreEntry_notExists() {
         // 准备参数
-        FreezingTubeStockPreEntrySaveReqVO updateReqVO = randomPojo(FreezingTubeStockPreEntrySaveReqVO.class);
+        FreezingTubeStockPreEntryUpdateReqVO updateReqVO = randomPojo(FreezingTubeStockPreEntryUpdateReqVO.class);
 
         // 调用, 并断言异常
         assertServiceException(() -> freezingTubeStockPreEntryService.updateFreezingTubeStockPreEntry(updateReqVO), FREEZING_TUBE_STOCK_PRE_ENTRY_NOT_EXISTS);

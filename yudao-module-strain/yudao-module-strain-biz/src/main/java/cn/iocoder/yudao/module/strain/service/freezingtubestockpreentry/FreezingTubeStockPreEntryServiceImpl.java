@@ -143,7 +143,7 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
     }
 
     @Override
-    public void updateFreezingTubeStockPreEntry(FreezingTubeStockPreEntrySaveReqVO updateReqVO) {
+    public void updateFreezingTubeStockPreEntry(FreezingTubeStockPreEntryUpdateReqVO updateReqVO) {
         // 校验存在
         validateFreezingTubeStockPreEntryExists(updateReqVO.getId());
         // 更新

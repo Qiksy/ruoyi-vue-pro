@@ -30,7 +30,7 @@ public interface FreezingTubeStockPreEntryService {
      *
      * @param updateReqVO 更新信息
      */
-    void updateFreezingTubeStockPreEntry(@Valid FreezingTubeStockPreEntrySaveReqVO updateReqVO);
+    void updateFreezingTubeStockPreEntry(@Valid FreezingTubeStockPreEntryUpdateReqVO updateReqVO);
 
     /**
      * 删除冷冻管库存预录入
