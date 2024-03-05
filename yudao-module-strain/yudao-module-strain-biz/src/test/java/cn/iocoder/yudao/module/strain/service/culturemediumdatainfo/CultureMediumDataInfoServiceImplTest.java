@@ -30,7 +30,7 @@ import static org.mockito.Mockito.*;
 
 /**
  * {@link CultureMediumDataInfoServiceImpl} 的单元测试类
- *
+ * 培养基 基础信息测试
  * @author 芋道源码
  */
 @Import(CultureMediumDataInfoServiceImpl.class)
@@ -42,6 +42,9 @@ public class CultureMediumDataInfoServiceImplTest extends BaseDbUnitTest {
     @Resource
     private CultureMediumDataInfoMapper cultureMediumDataInfoMapper;
 
+    /**
+     * 更新插入一个数据是否会有问题
+     */
     @Test
     public void testCreateCultureMediumDataInfo_success() {
         // 准备参数
@@ -53,9 +56,12 @@ public class CultureMediumDataInfoServiceImplTest extends BaseDbUnitTest {
         assertNotNull(cultureMediumDataInfoId);
         // 校验记录的属性是否正确
         CultureMediumDataInfoDO cultureMediumDataInfo = cultureMediumDataInfoMapper.selectById(cultureMediumDataInfoId);
-        assertPojoEquals(reqVO, cultureMediumDataInfo);
+        assertPojoEquals(reqVO, cultureMediumDataInfo,"createTime","updateTime");
     }
 
+    /**
+     * 更新一个数据
+     */
     @Test
     public void testUpdateCultureMediumDataInfo_success() {
         // mock 数据
@@ -105,23 +111,25 @@ public class CultureMediumDataInfoServiceImplTest extends BaseDbUnitTest {
         assertServiceException(() -> cultureMediumDataInfoService.deleteCultureMediumDataInfo(id), CULTURE_MEDIUM_DATA_INFO_NOT_EXISTS);
     }
 
+    /**
+     * 总共插入三条数据，然后测试精准的查询其中一条，看看查询结果是否正确
+     */
     @Test
-    @Disabled  // TODO 请修改 null 为需要的值，然后删除 @Disabled 注解
     public void testGetCultureMediumDataInfoPage() {
        // mock 数据
        CultureMediumDataInfoDO dbCultureMediumDataInfo = randomPojo(CultureMediumDataInfoDO.class, o -> { // 等会查询到
-           o.setCode(null);
-           o.setName(null);
+           o.setCode("001");
+           o.setName("MRS培养基");
        });
        cultureMediumDataInfoMapper.insert(dbCultureMediumDataInfo);
        // 测试 code 不匹配
-       cultureMediumDataInfoMapper.insert(cloneIgnoreId(dbCultureMediumDataInfo, o -> o.setCode(null)));
+       cultureMediumDataInfoMapper.insert(cloneIgnoreId(dbCultureMediumDataInfo, o -> o.setCode("002")));
        // 测试 name 不匹配
-       cultureMediumDataInfoMapper.insert(cloneIgnoreId(dbCultureMediumDataInfo, o -> o.setName(null)));
+       cultureMediumDataInfoMapper.insert(cloneIgnoreId(dbCultureMediumDataInfo, o -> o.setName("不存在培养基")));
        // 准备参数
        CultureMediumDataInfoPageReqVO reqVO = new CultureMediumDataInfoPageReqVO();
-       reqVO.setCode(null);
-       reqVO.setName(null);
+       reqVO.setCode("001");
+       reqVO.setName("MRS培养基");
 
        // 调用
        PageResult<CultureMediumDataInfoDO> pageResult = cultureMediumDataInfoService.getCultureMediumDataInfoPage(reqVO);
@@ -132,22 +140,21 @@ public class CultureMediumDataInfoServiceImplTest extends BaseDbUnitTest {
     }
 
     @Test
-    @Disabled  // TODO 请修改 null 为需要的值，然后删除 @Disabled 注解
     public void testGetCultureMediumDataInfoList() {
        // mock 数据
        CultureMediumDataInfoDO dbCultureMediumDataInfo = randomPojo(CultureMediumDataInfoDO.class, o -> { // 等会查询到
-           o.setCode(null);
-           o.setName(null);
+           o.setCode("001");
+           o.setName("MRS培养基");
        });
        cultureMediumDataInfoMapper.insert(dbCultureMediumDataInfo);
        // 测试 code 不匹配
-       cultureMediumDataInfoMapper.insert(cloneIgnoreId(dbCultureMediumDataInfo, o -> o.setCode(null)));
+       cultureMediumDataInfoMapper.insert(cloneIgnoreId(dbCultureMediumDataInfo, o -> o.setCode("002")));
        // 测试 name 不匹配
-       cultureMediumDataInfoMapper.insert(cloneIgnoreId(dbCultureMediumDataInfo, o -> o.setName(null)));
+       cultureMediumDataInfoMapper.insert(cloneIgnoreId(dbCultureMediumDataInfo, o -> o.setName("测试培养基")));
        // 准备参数
        CultureMediumDataInfoExportReqVO reqVO = new CultureMediumDataInfoExportReqVO();
-       reqVO.setCode(null);
-       reqVO.setName(null);
+       reqVO.setCode("001");
+       reqVO.setName("MRS培养基");
 
        // 调用
        List<CultureMediumDataInfoDO> list = cultureMediumDataInfoService.getCultureMediumDataInfoList(reqVO);

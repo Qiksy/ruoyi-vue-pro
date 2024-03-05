@@ -4,14 +4,15 @@ CREATE TABLE IF NOT EXISTS "strain_culture_medium_data_info" (
                                                                  "code" varchar NOT NULL,
                                                                  "name" varchar NOT NULL,
                                                                  "sterilization_conditions" varchar NOT NULL,
-                                                                 "usage" varchar NOT NULL,
+                                                                 "purpose" varchar NOT NULL,
                                                                  "category" varchar NOT NULL,
                                                                  "formula" varchar NOT NULL,
-                                                                 "create_by" varchar,
+                                                                 "creator" varchar,
                                                                  "create_time" datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                                                 "update_by" varchar,
+                                                                 "updater" varchar,
                                                                  "update_time" datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                                                                  "remark" varchar,
+                                                                 "deleted" bit NOT NULL DEFAULT FALSE,
                                                                  PRIMARY KEY ("id")
 ) COMMENT '培养基数据信息表';
 
