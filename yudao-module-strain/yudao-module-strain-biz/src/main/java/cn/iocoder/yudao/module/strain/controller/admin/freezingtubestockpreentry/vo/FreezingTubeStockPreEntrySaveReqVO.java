@@ -74,4 +74,6 @@ public class FreezingTubeStockPreEntrySaveReqVO {
     @Max(value = 99, message = "冻藏管数量不能大于99")
     private int num;
 
+    private String boxCode;
+
 }

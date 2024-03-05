@@ -24,7 +24,8 @@
         t1.create_time,
         t1.remark,
         t1.thaw_freeze_cycle_count,
-        t5.id stock_id
+        t5.id stock_id,
+        t1.box_code
         FROM
         strain_freezing_tube_stock_pre_entry t1
         left join system_users t2 on t1.save_by = t2.id and t2.deleted= 0
@@ -51,6 +52,10 @@
             <if test="req.remark != null and req.remark != ''">
                 and t1.remark like concat('%', #{req.remark}, '%')
             </if>
+            <if test="req.boxCode != null and req.boxCode != ''">
+                and t1.box_code like concat('%', #{req.boxCode}, '%')
+            </if>
+        order by t1.box_code desc,t1.code,t5.tube_position_x,t5.tube_position_y
     </select>
     <select id="selectPage3"
             resultType="cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.FreezingTubeStockPreEntryRespVO">
@@ -67,7 +72,8 @@
         t1.create_time,
         t1.remark,
         t1.thaw_freeze_cycle_count,
-        t5.id stock_id
+        t5.id stock_id,
+        t1.box_code
         FROM
         strain_freezing_tube_stock_pre_entry t1
         left join system_users t2 on t1.save_by = t2.id and t2.deleted= 0
@@ -99,6 +105,7 @@
         <if test="req.remark != null and req.remark != ''">
             and t1.remark like concat('%', #{req.remark}, '%')
         </if>
+        order by t1.box_code desc,t1.code,t5.tube_position_x,t5.tube_position_y
     </select>
     <select id="selectPage4"
             resultType="cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningRespVO">
@@ -118,7 +125,8 @@
             t1.create_time,
             t1.remark,
             t1.thaw_freeze_cycle_count,
-            t5.id stock_id
+            t5.id stock_id,
+            t1.box_code
         FROM
             strain_freezing_tube_stock_pre_entry t1
                 left join system_users t2 on t1.save_by = t2.id and t2.deleted= 0
@@ -142,5 +150,6 @@
         <if test="req.specimenCode != null and req.specimenCode != ''">
             and t1.code like concat('%', #{req.specimenCode}, '%')
         </if>
+        order by t1.box_code desc,t1.code,t5.tube_position_x,t5.tube_position_y
     </select>
 </mapper>

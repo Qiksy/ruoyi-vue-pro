@@ -78,4 +78,6 @@ public class FreezingTubeStockPreEntryPageReqVO extends PageParam {
     @Schema(description = "菌种名称", example = "大肠杆菌")
     private String microbeName;
 
+    private String boxCode;
+
 }

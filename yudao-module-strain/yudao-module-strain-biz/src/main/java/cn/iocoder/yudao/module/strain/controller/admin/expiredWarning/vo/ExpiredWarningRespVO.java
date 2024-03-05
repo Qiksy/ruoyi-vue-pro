@@ -31,4 +31,6 @@ public class ExpiredWarningRespVO {
 
     private String positionStr;
 
+    private String boxCode;
+
 }

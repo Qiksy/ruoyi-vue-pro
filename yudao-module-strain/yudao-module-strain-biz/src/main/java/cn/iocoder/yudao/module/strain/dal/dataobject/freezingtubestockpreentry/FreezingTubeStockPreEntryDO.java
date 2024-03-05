@@ -97,4 +97,10 @@ public class FreezingTubeStockPreEntryDO extends BaseDO {
      */
     private String status;
 
+
+    /**
+     * 盒子编码。仅用于初始化数据，不关联真实的库存表
+     */
+    private String boxCode;
+
 }

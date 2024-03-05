@@ -72,4 +72,6 @@ public class FreezingTubeStockPreEntryUpdateReqVO {
     @Schema(description = "是否入库", example = "2")
     private String status;
 
+    private String boxCode;
+
 }

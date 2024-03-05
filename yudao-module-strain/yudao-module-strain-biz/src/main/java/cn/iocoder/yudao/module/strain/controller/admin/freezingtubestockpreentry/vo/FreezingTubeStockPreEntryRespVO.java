@@ -109,4 +109,7 @@ public class FreezingTubeStockPreEntryRespVO {
     //位置信息
     private String positionStr;
 
+    //盒子编码
+    private String boxCode;
+
 }
