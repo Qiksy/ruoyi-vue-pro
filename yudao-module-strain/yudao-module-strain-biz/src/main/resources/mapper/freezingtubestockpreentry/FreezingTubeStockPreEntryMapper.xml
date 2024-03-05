@@ -53,7 +53,7 @@
                 and t1.remark like concat('%', #{req.remark}, '%')
             </if>
             <if test="req.boxCode != null and req.boxCode != ''">
-                and t1.box_code like concat('%', #{req.boxCode}, '%')
+                and t1.box_code = #{req.boxCode}
             </if>
         order by t1.box_code desc,t1.code,t5.tube_position_x,t5.tube_position_y
     </select>
