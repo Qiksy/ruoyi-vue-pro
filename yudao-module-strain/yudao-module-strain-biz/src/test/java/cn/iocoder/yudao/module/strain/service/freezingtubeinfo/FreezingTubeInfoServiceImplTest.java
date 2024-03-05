@@ -15,6 +15,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 
 import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Import;
+
 import java.util.*;
 import java.time.LocalDateTime;
 
@@ -30,6 +31,8 @@ import static org.mockito.Mockito.*;
 
 /**
  * {@link FreezingTubeInfoServiceImpl} 的单元测试类
+ * <p>
+ * 冻藏管信息的单元测试
  *
  * @author 芋道源码
  */
@@ -53,7 +56,7 @@ public class FreezingTubeInfoServiceImplTest extends BaseDbUnitTest {
         assertNotNull(freezingTubeInfoId);
         // 校验记录的属性是否正确
         FreezingTubeInfoDO freezingTubeInfo = freezingTubeInfoMapper.selectById(freezingTubeInfoId);
-        assertPojoEquals(reqVO, freezingTubeInfo);
+        assertPojoEquals(reqVO, freezingTubeInfo, "createTime", "updateTime");
     }
 
     @Test
@@ -92,8 +95,8 @@ public class FreezingTubeInfoServiceImplTest extends BaseDbUnitTest {
 
         // 调用
         freezingTubeInfoService.deleteFreezingTubeInfo(id);
-       // 校验数据不存在了
-       assertNull(freezingTubeInfoMapper.selectById(id));
+        // 校验数据不存在了
+        assertNull(freezingTubeInfoMapper.selectById(id));
     }
 
     @Test
@@ -106,86 +109,78 @@ public class FreezingTubeInfoServiceImplTest extends BaseDbUnitTest {
     }
 
     @Test
-    @Disabled  // TODO 请修改 null 为需要的值，然后删除 @Disabled 注解
     public void testGetFreezingTubeInfoPage() {
-       // mock 数据
-       FreezingTubeInfoDO dbFreezingTubeInfo = randomPojo(FreezingTubeInfoDO.class, o -> { // 等会查询到
-           o.setCode(null);
-           o.setName(null);
-           o.setCapacity(null);
-           o.setVolumeUnit(null);
-           o.setCreateTime(null);
-           o.setRemark(null);
-       });
-       freezingTubeInfoMapper.insert(dbFreezingTubeInfo);
-       // 测试 code 不匹配
-       freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setCode(null)));
-       // 测试 name 不匹配
-       freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setName(null)));
-       // 测试 capacity 不匹配
-       freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setCapacity(null)));
-       // 测试 volumeUnit 不匹配
-       freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setVolumeUnit(null)));
-       // 测试 createTime 不匹配
-       freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setCreateTime(null)));
-       // 测试 remark 不匹配
-       freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setRemark(null)));
-       // 准备参数
-       FreezingTubeInfoPageReqVO reqVO = new FreezingTubeInfoPageReqVO();
-       reqVO.setCode(null);
-       reqVO.setName(null);
-       reqVO.setCapacity(null);
-       reqVO.setVolumeUnit(null);
-       reqVO.setCreateTime(buildBetweenTime(2023, 2, 1, 2023, 2, 28));
-       reqVO.setRemark(null);
+        // mock 数据
+        FreezingTubeInfoDO dbFreezingTubeInfo = randomPojo(FreezingTubeInfoDO.class, o -> { // 等会查询到
+            o.setCode("code");
+            o.setName("name");
+            o.setCapacity(10);
+            o.setVolumeUnit("ml");
+            o.setRemark("备注测试");
+        });
+        freezingTubeInfoMapper.insert(dbFreezingTubeInfo);
+        // 测试 code 不匹配
+        freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setCode("123456")));
+        // 测试 name 不匹配
+        freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setName("123456")));
+        // 测试 capacity 不匹配
+        freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setCapacity(50)));
+        // 测试 volumeUnit 不匹配
+        freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setVolumeUnit("L")));
+        // 测试 remark 不匹配
+        freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setRemark("45644")));
+        // 准备参数
+        FreezingTubeInfoPageReqVO reqVO = new FreezingTubeInfoPageReqVO();
+        reqVO.setCode("code");
+        reqVO.setName("name");
+        reqVO.setCapacity(10);
+        reqVO.setVolumeUnit("ml");
+//        reqVO.setCreateTime(buildBetweenTime(2023, 2, 1, 2023, 2, 28));
+        reqVO.setRemark("备注测试");
 
-       // 调用
-       PageResult<FreezingTubeInfoDO> pageResult = freezingTubeInfoService.getFreezingTubeInfoPage(reqVO);
-       // 断言
-       assertEquals(1, pageResult.getTotal());
-       assertEquals(1, pageResult.getList().size());
-       assertPojoEquals(dbFreezingTubeInfo, pageResult.getList().get(0));
+        // 调用
+        PageResult<FreezingTubeInfoDO> pageResult = freezingTubeInfoService.getFreezingTubeInfoPage(reqVO);
+        // 断言
+        assertEquals(1, pageResult.getTotal());
+        assertEquals(1, pageResult.getList().size());
+        assertPojoEquals(dbFreezingTubeInfo, pageResult.getList().getFirst());
     }
 
     @Test
-    @Disabled  // TODO 请修改 null 为需要的值，然后删除 @Disabled 注解
     public void testGetFreezingTubeInfoList() {
-       // mock 数据
-       FreezingTubeInfoDO dbFreezingTubeInfo = randomPojo(FreezingTubeInfoDO.class, o -> { // 等会查询到
-           o.setCode(null);
-           o.setName(null);
-           o.setCapacity(null);
-           o.setVolumeUnit(null);
-           o.setCreateTime(null);
-           o.setRemark(null);
-       });
-       freezingTubeInfoMapper.insert(dbFreezingTubeInfo);
-       // 测试 code 不匹配
-       freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setCode(null)));
-       // 测试 name 不匹配
-       freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setName(null)));
-       // 测试 capacity 不匹配
-       freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setCapacity(null)));
-       // 测试 volumeUnit 不匹配
-       freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setVolumeUnit(null)));
-       // 测试 createTime 不匹配
-       freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setCreateTime(null)));
-       // 测试 remark 不匹配
-       freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setRemark(null)));
-       // 准备参数
-       FreezingTubeInfoExportReqVO reqVO = new FreezingTubeInfoExportReqVO();
-       reqVO.setCode(null);
-       reqVO.setName(null);
-       reqVO.setCapacity(null);
-       reqVO.setVolumeUnit(null);
-       reqVO.setCreateTime(buildBetweenTime(2023, 2, 1, 2023, 2, 28));
-       reqVO.setRemark(null);
+        // mock 数据
+        FreezingTubeInfoDO dbFreezingTubeInfo = randomPojo(FreezingTubeInfoDO.class, o -> { // 等会查询到
+            o.setCode("code");
+            o.setName("name");
+            o.setCapacity(10);
+            o.setVolumeUnit("ml");
+            o.setRemark("备注测试");
+        });
+        freezingTubeInfoMapper.insert(dbFreezingTubeInfo);
+        // 测试 code 不匹配
+        freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setCode("123456")));
+        // 测试 name 不匹配
+        freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setName("123456")));
+        // 测试 capacity 不匹配
+        freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setCapacity(50)));
+        // 测试 volumeUnit 不匹配
+        freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setVolumeUnit("L")));
+        // 测试 remark 不匹配
+        freezingTubeInfoMapper.insert(cloneIgnoreId(dbFreezingTubeInfo, o -> o.setRemark("45644")));
+        // 准备参数
+        FreezingTubeInfoExportReqVO reqVO = new FreezingTubeInfoExportReqVO();
+        reqVO.setCode("code");
+        reqVO.setName("name");
+        reqVO.setCapacity(10);
+        reqVO.setVolumeUnit("ml");
+//        reqVO.setCreateTime(buildBetweenTime(2023, 2, 1, 2023, 2, 28));
+        reqVO.setRemark("备注测试");
 
-       // 调用
-       List<FreezingTubeInfoDO> list = freezingTubeInfoService.getFreezingTubeInfoList(reqVO);
-       // 断言
-       assertEquals(1, list.size());
-       assertPojoEquals(dbFreezingTubeInfo, list.get(0));
+        // 调用
+        List<FreezingTubeInfoDO> list = freezingTubeInfoService.getFreezingTubeInfoList(reqVO);
+        // 断言
+        assertEquals(1, list.size());
+        assertPojoEquals(dbFreezingTubeInfo, list.getFirst());
     }
 
 }
