@@ -85,4 +85,10 @@ public class CustomerSalesDetailDO extends BaseDO {
      */
     private Double monthlyCumulativeSales;
 
+    /*
+   2024-04-08 新增
+    */
+    private String zonePk;
+    private String areaPk;
+    private String deptPk;
 }

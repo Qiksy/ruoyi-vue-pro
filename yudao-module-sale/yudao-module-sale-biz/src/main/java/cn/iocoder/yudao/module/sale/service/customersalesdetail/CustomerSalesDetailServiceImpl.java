@@ -197,8 +197,9 @@ public class CustomerSalesDetailServiceImpl implements CustomerSalesDetailServic
         for (CustomerSalesDetailDO detailDO : list) {
             LambdaQueryWrapper<CustomerSalesDetailDO> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(CustomerSalesDetailDO::getCustomerCode, detailDO.getCustomerCode()) // 客户编码
-                    .eq(CustomerSalesDetailDO::getZoneCode, detailDO.getZoneCode()) // 战区编码
-                    .eq(CustomerSalesDetailDO::getAreaCode, detailDO.getAreaCode()) // 大区编码
+                    .eq(CustomerSalesDetailDO::getZonePk, detailDO.getZonePk()) // 战区编码
+                    .eq(CustomerSalesDetailDO::getAreaPk, detailDO.getAreaPk()) // 大区编码
+                    .eq(CustomerSalesDetailDO::getDeptPk, detailDO.getDeptPk()) // 营盘编码
                     .eq(CustomerSalesDetailDO::getSaleDate, detailDO.getSaleDate()); // 年月日
             //todo 等会验证这里是否会自动校验删除字段
             CustomerSalesDetailDO customerSalesDetailDO = customerSalesDetailMapper.selectOne(queryWrapper);
