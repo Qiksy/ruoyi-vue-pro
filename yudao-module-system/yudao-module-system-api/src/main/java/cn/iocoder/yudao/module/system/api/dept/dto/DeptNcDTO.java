@@ -2,6 +2,8 @@ package cn.iocoder.yudao.module.system.api.dept.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 从
  * @author linr
@@ -54,4 +56,17 @@ public class DeptNcDTO {
      * 负责人电话，这个用来确定负责人是谁
      */
     private String leaderUserPhone;
+
+    /**
+     * NC系统中的PK值
+     */
+    private String pkDept;
+
+    /**
+     * 父级的PK值
+     */
+    private String parentPkDept;
+
+
+    List<DeptNcDTO> children;
 }

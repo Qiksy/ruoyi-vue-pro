@@ -35,15 +35,18 @@ public class OrganizationalStructureSyncJob implements JobHandler {
     @Override
     @TenantJob
     public String execute(String param) {
+        log.info("[execute][开始同步部门]");
+        // 同步部门
+        deptService.syncDept();
+        log.info("[execute][同步部门成功]");
+
+
         log.info("[execute][开始执行同步组织架构的任务]");
         // 首先，同步用户
         adminUserService.syncUser();
         log.info("[execute][同步用户成功]");
 
-        log.info("[execute][开始同步部门]");
-        // 同步部门
-        deptService.syncDept();
-        log.info("[execute][同步部门成功]");
+
 
         return null;
     }

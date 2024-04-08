@@ -18,6 +18,8 @@ import cn.iocoder.yudao.module.infra.api.file.FileApi;
 import cn.iocoder.yudao.module.system.api.openapi.BoenOpenApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserNcDTO;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
+import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptListReqVO;
+import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptRespVO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.profile.UserProfileUpdatePasswordReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.profile.UserProfileUpdateReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.user.UserImportExcelVO;
@@ -518,21 +520,33 @@ public class AdminUserServiceImpl implements AdminUserService {
 
         List<UserRoleDO> userRoleDOList = new ArrayList<>(); //用户与角色的关系
 
+        List<DeptRespVO> deptList = deptService.getDeptList(new DeptListReqVO());
+        //如果部门有重复的，就只选择一个
+        Map<String, Long> deptMap = deptList.stream().collect(Collectors.toMap(DeptRespVO::getCode, DeptRespVO::getId, (k1, k2) -> k1));
 
 
-        for (AdminUserNcDTO ncUser : userListByNc) {
+
+        //1. 先筛选出来需要删除的用户
+        Set<String> deleteUserKey = userListByNc.stream().filter(ncUser -> "N".equals(ncUser.getPoststat())).map(AdminUserNcDTO::getPkPsndoc).collect(Collectors.toSet());
+        userMapper.delete(new LambdaQueryWrapper<AdminUserDO>().in(AdminUserDO::getPkPsndoc, deleteUserKey));
+
+
+        //2. 然后筛选出来需要新增的用户
+        List<AdminUserNcDTO> ncUserList = userListByNc.stream().filter(ncUser -> "Y".equals(ncUser.getPoststat())).toList();
+
+        for (AdminUserNcDTO ncUser : ncUserList) {
             AdminUserDO adminUserDO = new AdminUserDO();
             adminUserDO.setNickname(ncUser.getName());
             adminUserDO.setPkPsndoc(ncUser.getPkPsndoc());
             adminUserDO.setUsername(ncUser.getOfficephone());  //手机号码当作用户名
-            adminUserDO.setDeptId(Long.valueOf(ncUser.getDeptcode())); //设置部门
+            //部门需要重新获取
+            adminUserDO.setDeptId(deptMap.get(ncUser.getDeptcode())); //设置部门
             adminUserDO.setStatus(CommonStatusEnum.ENABLE.getStatus());
             adminUserDO.setPassword(encodePassword(userInitPassword)); //设置默认密码
             adminUserDO.setWecomeId(ncUser.getPkPsndoc());//设置微信id，默认是nc的pkPsndoc
             adminUserDO.setCode(ncUser.getCode());
             sysUserList.add(adminUserDO);
         }
-
 
         for (AdminUserDO adminUserDO : sysUserList) {
             // 查询是否已经存在这个用户

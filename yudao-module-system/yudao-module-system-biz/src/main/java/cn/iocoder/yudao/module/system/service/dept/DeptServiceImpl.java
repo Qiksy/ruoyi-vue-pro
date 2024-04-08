@@ -20,6 +20,7 @@ import cn.iocoder.yudao.module.system.dal.redis.RedisKeyConstants;
 import cn.iocoder.yudao.module.system.service.user.AdminUserService;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,12 +33,14 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import jakarta.annotation.Resource;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertSet;
@@ -207,20 +210,19 @@ public class DeptServiceImpl implements DeptService {
         List<Long> leaderUserIdList = list.stream().map(DeptDO::getLeaderUserId).toList();
         List<AdminUserDO> userList = adminUserService.getUserList(leaderUserIdList);
 
-        List<DeptRespVO>  result = new ArrayList<>();
+        List<DeptRespVO> result = new ArrayList<>();
 
         for (DeptDO deptDO : list) {
             DeptRespVO deptRespVO = BeanUtils.toBean(deptDO, DeptRespVO.class);
             //设置部门负责人名称
-            if (deptDO.getLeaderUserId()!=null){
+            if (deptDO.getLeaderUserId() != null) {
                 AdminUserDO user = userList.stream().filter(v -> v.getId().equals(deptDO.getLeaderUserId())).findFirst().orElse(null);
-                if (user!=null){
+                if (user != null) {
                     deptRespVO.setLeaderName(user.getNickname());
                 }
             }
             result.add(deptRespVO);
         }
-
 
 
         return result;
@@ -288,60 +290,144 @@ public class DeptServiceImpl implements DeptService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void syncDept() {
-        //1. 先去获取NC所有的部门
-        List<DeptNcDTO> deptDOList = this.getDeptFromNC();
 
-        //2. 给status一个默认值
-        deptDOList.forEach(v->v.setStatus(0));
+        //重写逻辑 by 2024.04.08
+//        1. 从NC65中获取部门数据
+        List<DeptNcDTO> ncDeptList = this.getDeptFromNC();
 
-        //根据leaderUserPhone，查找对应的leaderUserId，如果没有leaderUserPhone，则查找上级的leaderUserPhone
-        //如果没有上级，则不处理
-        for (DeptNcDTO dto : deptDOList) {
-            setLeaderUserId(dto, deptDOList);
+        //2. 删除目前没有的部门
+        List<String> pkDept = ncDeptList.stream().map(DeptNcDTO::getPkDept).distinct().toList();
+        deptMapper.delete(new LambdaQueryWrapper<DeptDO>().notIn(DeptDO::getPkDept, pkDept));
+
+        //3. 设置用户的leaderUserId
+        for (DeptNcDTO deptNcDTO : ncDeptList) {
+            setLeaderUserId(deptNcDTO, ncDeptList);
         }
 
-        List<DeptDO> bean = BeanUtils.toBean(deptDOList, DeptDO.class);
 
-//        //3. 有则更新，无则插入
-        deptMapper.insertOrUpdateBatch(bean);
+        //4. 插入或者更新
+        // 首先，查询出来系统的所有的部门
+        List<DeptDO> deptDOS = deptMapper.selectList();
+        Map<String, DeptDO> systemDepMap = deptDOS.stream().collect(Collectors.toMap(DeptDO::getPkDept, v -> v));
+        //将系统部门的id值赋值给ncDeptList中具有相同的pkDept的部门
+
+        //转成树状结构
+        List<DeptNcDTO> treeRoot = convertListToTree(ncDeptList);
+        //队列
+        Deque<DeptNcDTO> deque = new ArrayDeque<>();
+        for (DeptNcDTO root : treeRoot) {
+
+            deque.add(root);
+
+            while (!deque.isEmpty() ) {
+
+                int size = deque.size();
+                while (size>0){
+                    DeptNcDTO poll = deque.poll();
+                    DeptDO deptDO = systemDepMap.get(poll.getPkDept());
+                    //设置了id
+                    if(deptDO==null){
+                        poll.setId(DefaultIdentifierGenerator.getInstance().nextId(null));
+                    }else {
+                        poll.setId(deptDO.getId());
+                    }
+
+                    //转成DO
+                    DeptDO deptDO1 = BeanUtils.toBean(poll, DeptDO.class);
+                    deptDO1.setStatus(CommonStatusEnum.ENABLE.getStatus());
+                    //插入或者更新
+                    if (deptDO == null) {
+                        deptMapper.insert(deptDO1);
+                    } else {
+                        deptMapper.updateById(deptDO1);
+                    }
+
+
+                    List<DeptNcDTO> children = Optional.ofNullable(poll.getChildren()).orElse(Collections.emptyList());
+                    for (DeptNcDTO child : children) {
+                        DeptDO deptDO2 = systemDepMap.get(child.getPkDept());
+                        //设置了id
+                        if(deptDO2==null){
+                            child.setId(DefaultIdentifierGenerator.getInstance().nextId(null));
+                        }else {
+                            child.setId(deptDO2.getId());
+                        }
+                        //设置父级id
+                        child.setParentId(poll.getId());
+                        //加入队列
+                        deque.add(child);
+                    }
+                    size--;
+                }
+            }
+        }
+    }
+
+
+    /**
+     * 将部门列表转换为树结构
+     * @param list
+     * @return
+     */
+    public List<DeptNcDTO> convertListToTree(List<DeptNcDTO> list) {
+        // 将列表转换为Map，键为pkDept，值为DeptNcDTO对象
+        Map<String, DeptNcDTO> map = list.stream()
+                .collect(Collectors.toMap(DeptNcDTO::getPkDept, dept -> dept));
+
+        // 遍历列表，为每个DeptNcDTO设置其子节点
+        list.forEach(dept -> {
+            DeptNcDTO parent = map.get(dept.getParentPkDept());
+            if (parent != null) {
+                if (parent.getChildren() == null) {
+                    parent.setChildren(new ArrayList<>());
+                }
+                parent.getChildren().add(dept);
+            }
+        });
+
+        // 返回根节点列表
+        return list.stream()
+                .filter(dept -> dept.getParentPkDept() == null)
+                .collect(Collectors.toList());
     }
 
     /**
      * 一个递归方法
+     *
      * @param dto
      * @param deptDOList
      */
     private void setLeaderUserId(DeptNcDTO dto, List<DeptNcDTO> deptDOList) {
-        if (dto==null){
+        if (dto == null) {
             return;
         }
         String leaderUserPhone = dto.getLeaderUserPhone();
 
-        if (leaderUserPhone ==null) {
+        if (leaderUserPhone == null) {
             // 如果不为空，则设置为leaderUserId
             //如果是空的 那就继续找上级的phone，如果找不到就继续找，所以是一个递归的问题
-            leaderUserPhone = findParentLeaderUserPhone(dto.getParentId(), deptDOList);
-
+            leaderUserPhone = findParentLeaderUserPhone(dto.getParentPkDept(), deptDOList);
         }
         AdminUserDO user = adminUserService.getUser(leaderUserPhone);//根据用户名查询用户
-        if (user!=null){
+        if (user != null) {
             dto.setLeaderUserId(user.getId());
         }
     }
 
-    private String findParentLeaderUserPhone(Long parentId, List<DeptNcDTO> deptDOList) {
-        if (parentId==null){
+    private String findParentLeaderUserPhone(String parentPkDept, List<DeptNcDTO> deptDOList) {
+        if (parentPkDept == null) {
             return null;
         }
-        DeptNcDTO parentDept = deptDOList.stream().filter(v -> v.getId().equals(parentId)).findFirst().orElse(null);
-        if (parentDept==null){
+        DeptNcDTO parentDept = deptDOList.stream().filter(v -> v.getPkDept().equals(parentPkDept)).findFirst().orElse(null);
+        if (parentDept == null) {
             return null;
         }
-        if (parentDept.getLeaderUserPhone()!=null){
+        if (parentDept.getLeaderUserPhone() != null) {
             return parentDept.getLeaderUserPhone();
-        }else {
-            return findParentLeaderUserPhone(parentDept.getParentId(),deptDOList);
+        } else {
+            return findParentLeaderUserPhone(parentDept.getParentPkDept(), deptDOList);
         }
     }
 
@@ -351,9 +437,8 @@ public class DeptServiceImpl implements DeptService {
         ParameterizedTypeReference<List<DeptNcDTO>> typeRef = new ParameterizedTypeReference<>() {
         };
 
-        return  boenOpenApi.sendRequest(typeRef,DEPT_DETAIL_URL.getUrl(),"GET",null);
+        return boenOpenApi.sendRequest(typeRef, DEPT_DETAIL_URL.getUrl(), "GET", null);
     }
-
 
 
     @Override

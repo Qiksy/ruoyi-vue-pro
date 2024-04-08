@@ -68,4 +68,10 @@ public class DeptDO extends TenantBaseDO {
      */
     private Integer status;
 
+
+    /**
+     * NC65中的部门 PK 值
+     */
+    private String pkDept;
+
 }

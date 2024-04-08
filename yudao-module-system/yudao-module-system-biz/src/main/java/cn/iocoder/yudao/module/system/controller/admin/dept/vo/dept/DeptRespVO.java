@@ -12,6 +12,11 @@ public class DeptRespVO {
     @Schema(description = "部门编号", example = "1024")
     private Long id;
 
+    /**
+     * 部门的字符串编码
+     */
+    private String code;
+
     @Schema(description = "部门名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "芋道")
     private String name;
 

@@ -16,4 +16,11 @@ public class AdminUserNcDTO {
     private String deptcode;
     //手机号码
     private String officephone;
+
+    private String pkDept;
+
+    /**
+     * 是否在岗
+     */
+    private String poststat;
 }
