@@ -116,12 +116,15 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
      */
     @Override
     public String generateDeclineWarning(DeclineWarningGenerateReqVO generateReqVO) {
-        //todo 获取对应的时间，然后分析 生成主表，然后生成子表信息，插入数据库
+        //获取对应的时间，然后分析 生成主表，然后生成子表信息，插入数据库
+
+        //获取对应的时间
         String saleDate = getSaleDate(generateReqVO);
 
-        //获取完数据之后
+        //获取完时间之后
         CustomerSalesDetailPageReqVO reqVO = new CustomerSalesDetailPageReqVO();
         reqVO.setSaleDate(saleDate);
+        //查询对应的数据
         List<CustomerSalesDetailAnalysisRespVO> warningSourceList = detailService.getCustomerSalesDetailAnalysisList(reqVO);
 
         //判断 大区、战区是否拥有对应的负责人，如果没有，则抛出异常信息
@@ -198,6 +201,8 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
             Map<String, Object> processInstanceVariables = new HashMap<>();
             processInstanceVariables.put("zoneCode", Long.valueOf(declineWarningDO.getZoneCode())); //战区总
             processInstanceVariables.put("areaCode", Long.valueOf(declineWarningDO.getAreaCode())); //大区总
+            processInstanceVariables.put("areaPk", Long.valueOf(declineWarningDO.getAreaCode())); //大区主键
+            processInstanceVariables.put("zonePk", Long.valueOf(declineWarningDO.getAreaCode())); //战区主键
 
             List<DeclineWarningSubDO> subDOList = declineWarningSubMap.get(declineWarningDO.getId());
 
@@ -266,11 +271,11 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
      */
     private void generateDO(List<CustomerSalesDetailAnalysisRespVO> warningSourceList, String saleDate, List<DeclineWarningDO> declineWarningList, Map<String, List<DeclineWarningSubDO>> declineWarningSubMap) {
         // warningSourceList按照大区进行分组
-        Map<String, List<CustomerSalesDetailAnalysisRespVO>> areaMap = warningSourceList.stream().collect(Collectors.groupingBy(CustomerSalesDetailAnalysisRespVO::getAreaCode));
+        Map<String, List<CustomerSalesDetailAnalysisRespVO>> areaMap = warningSourceList.stream().collect(Collectors.groupingBy(CustomerSalesDetailAnalysisRespVO::getAreaPk));
 
         for (Map.Entry<String, List<CustomerSalesDetailAnalysisRespVO>> stringListEntry : areaMap.entrySet()) {
             // 每个大区一条预警信息，也就是主表
-            String areaCode = stringListEntry.getKey();
+            String areaPk = stringListEntry.getKey();
             List<CustomerSalesDetailAnalysisRespVO> subSourceList = stringListEntry.getValue();
             CustomerSalesDetailAnalysisRespVO tempBaseVO = subSourceList.get(0); // 用于获取基础信息
 
@@ -278,8 +283,14 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
             DeclineWarningDO mainDO = new DeclineWarningDO();
             mainDO.setZoneCode(tempBaseVO.getZoneCode());
             mainDO.setZoneName(tempBaseVO.getZoneName());
-            mainDO.setAreaCode(areaCode);
+            // 这里原本取的是map的key，后面改成了取的是list的第一个元素
+            mainDO.setAreaCode(tempBaseVO.getAreaCode());
             mainDO.setAreaName(tempBaseVO.getAreaName());
+
+            //新增
+            mainDO.setAreaPk(tempBaseVO.getAreaPk());
+            mainDO.setZonePk(tempBaseVO.getZonePk());
+
             mainDO.setCompeteTime(saleDate);
 
             int custCount = subSourceList.size(); // 上个月销量下降超过30%的客户数量cust_count
@@ -308,7 +319,7 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
                 DeclineWarningSubDO subDO = BeanUtils.toBean(subSourceDO, DeclineWarningSubDO.class);
                 subDOList.add(subDO);
             }
-            declineWarningSubMap.put(areaCode, subDOList);
+            declineWarningSubMap.put(tempBaseVO.getAreaCode(), subDOList);
         }
     }
 

@@ -80,4 +80,8 @@ public class CustomerSalesDetailAnalysisRespVO {
     @ExcelProperty("下降数量")
     private Double declineNum;
 
+    private String zonePk;
+    private String areaPk;
+    private String deptPk;
+
 }

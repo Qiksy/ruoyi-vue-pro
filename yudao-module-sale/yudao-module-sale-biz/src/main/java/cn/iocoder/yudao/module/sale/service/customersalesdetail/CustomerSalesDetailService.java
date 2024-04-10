@@ -63,7 +63,17 @@ public interface CustomerSalesDetailService {
 
     List<CustomerSalesDetailDO> getDoFromNc(CustomerSalesDetailSyncReqVO syncReqVO);
 
+    /**
+     * 获取页面分页，只是用来分页的
+     * @param pageReqVO
+     * @return
+     */
     PageResult<CustomerSalesDetailAnalysisRespVO> getCustomerSalesDetailAnalysisPage(CustomerSalesDetailPageReqVO pageReqVO);
 
+    /**
+     * 查询销量下降的vo
+     * @param pageReqVO
+     * @return
+     */
     List<CustomerSalesDetailAnalysisRespVO> getCustomerSalesDetailAnalysisList(CustomerSalesDetailPageReqVO pageReqVO);
 }

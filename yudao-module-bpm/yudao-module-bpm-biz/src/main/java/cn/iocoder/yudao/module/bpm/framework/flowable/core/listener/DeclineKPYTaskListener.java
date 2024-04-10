@@ -28,6 +28,12 @@ import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 
+/**
+ *
+ * 科普员监听
+ * @author linr
+ * @since 2024/4/10 15:59
+ */
 @Component
 @Slf4j
 public class DeclineKPYTaskListener implements TaskListener {

@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.delegate.TaskListener;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.service.delegate.DelegateTask;
@@ -142,7 +143,16 @@ public class DeclineStartListener implements TaskListener {
 
         //其次通知对应的大区总，您有待处理的销售掉量预警，请及时处理
         Long areaCode = (Long) variables.get("areaCode");
-        DeptRespDTO dept = myListener.deptApi.getDept(areaCode);
+        String areaPk =  (String)variables.get("areaPk");
+        DeptRespDTO dept;
+        if (!StringUtils.isBlank(areaPk)){
+            dept = myListener.deptApi.getDeptByPk(areaPk);
+        }else {
+            dept = myListener.deptApi.getDept(areaCode);
+        }
+
+
+//        DeptRespDTO dept = myListener.deptApi.getDept(areaCode);
         Long leaderUserId = dept.getLeaderUserId();
 
         //判断redis key是否存在

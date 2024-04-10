@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.delegate.TaskListener;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.service.delegate.DelegateTask;
@@ -85,7 +86,15 @@ public class DeclineZoneTaskListener implements TaskListener {
 
         //通知战区总
         Long zoneCode = (Long) variables.get("zoneCode");
-        DeptRespDTO dept = myListener.deptApi.getDept(zoneCode);
+        String zonePk =  (String)variables.get("zonePk");
+
+        DeptRespDTO dept;
+        if (!StringUtils.isBlank(zonePk)){
+            dept = myListener.deptApi.getDeptByPk(zonePk);
+        }else {
+            dept = myListener.deptApi.getDept(zoneCode);
+        }
+
         Long leaderUserId = dept.getLeaderUserId();
         ObjectMapper op = new ObjectMapper();
 

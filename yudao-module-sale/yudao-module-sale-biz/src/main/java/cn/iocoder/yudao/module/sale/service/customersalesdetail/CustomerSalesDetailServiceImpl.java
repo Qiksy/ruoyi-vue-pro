@@ -133,7 +133,8 @@ public class CustomerSalesDetailServiceImpl implements CustomerSalesDetailServic
         pageReqVO.setStartDate(currStartDate);
         pageReqVO.setEndDate(currEndDate);
         List<CustomerSalesDetailDO> currMonthList = customerSalesDetailMapper.selectListByMaxSale(pageReqVO);
-        //转为Map
+
+        //客户主键当作key转为Map
         Map<String, CustomerSalesDetailDO> currMonthMap = new HashMap<>();
         for (CustomerSalesDetailDO customerSalesDetailDO : currMonthList) {
             currMonthMap.put(customerSalesDetailDO.getCustomerCode(), customerSalesDetailDO);

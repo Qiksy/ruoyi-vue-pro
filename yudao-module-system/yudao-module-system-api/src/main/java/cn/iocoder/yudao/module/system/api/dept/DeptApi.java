@@ -58,4 +58,10 @@ public interface DeptApi {
      */
     List<DeptRespDTO> getNotExistsLeaderDepts(Collection<Long> ids);
 
+    /**
+     * 根据NC主键的值，获取部门信息
+     * @param areaPk
+     * @return
+     */
+    DeptRespDTO getDeptByPk(String areaPk);
 }

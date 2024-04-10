@@ -449,4 +449,17 @@ public class DeptServiceImpl implements DeptService {
 
         return deptMapper.selectList(queryWrapper);
     }
+
+    /**
+     * 根据ncpk值获取部门信息
+     *
+     * @param areaPk
+     * @return
+     */
+    @Override
+    public DeptDO getDeptByPk(String areaPk) {
+        LambdaQueryWrapper<DeptDO> queryWrapper = new LambdaQueryWrapper<DeptDO>()
+                .eq(DeptDO::getPkDept, areaPk);
+        return deptMapper.selectOne(queryWrapper);
+    }
 }

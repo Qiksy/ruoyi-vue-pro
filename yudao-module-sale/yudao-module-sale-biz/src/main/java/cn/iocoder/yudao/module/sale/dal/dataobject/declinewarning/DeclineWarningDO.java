@@ -94,4 +94,8 @@ public class DeclineWarningDO extends BaseDO {
      */
     Integer result;//审批结果
 
+
+    String areaPk;
+
+    String zonePk;
 }

@@ -50,4 +50,17 @@ public class DeptApiImpl implements DeptApi {
 
         return  BeanUtils.toBean(depts, DeptRespDTO.class);
     }
+
+    /**
+     * 根据NC主键的值，获取部门信息
+     *
+     * @param areaPk
+     * @return
+     */
+    @Override
+    public DeptRespDTO getDeptByPk(String areaPk) {
+        DeptDO dept = deptService.getDeptByPk(areaPk);
+
+        return BeanUtils.toBean(dept, DeptRespDTO.class);
+    }
 }

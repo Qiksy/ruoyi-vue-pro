@@ -115,4 +115,11 @@ public interface DeptService {
     List<DeptNcDTO> getDeptFromNC();
 
     List<DeptDO> getNotExistsLeaderDepts(Collection<Long> ids);
+
+    /**
+     * 根据ncpk值获取部门信息
+     * @param areaPk
+     * @return
+     */
+    DeptDO getDeptByPk(String areaPk);
 }
