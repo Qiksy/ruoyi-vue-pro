@@ -201,8 +201,8 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
             Map<String, Object> processInstanceVariables = new HashMap<>();
             processInstanceVariables.put("zoneCode", Long.valueOf(declineWarningDO.getZoneCode())); //战区总
             processInstanceVariables.put("areaCode", Long.valueOf(declineWarningDO.getAreaCode())); //大区总
-            processInstanceVariables.put("areaPk", Long.valueOf(declineWarningDO.getAreaCode())); //大区主键
-            processInstanceVariables.put("zonePk", Long.valueOf(declineWarningDO.getAreaCode())); //战区主键
+            processInstanceVariables.put("areaPk", declineWarningDO.getAreaPk()); //大区主键
+            processInstanceVariables.put("zonePk", declineWarningDO.getAreaPk()); //战区主键
 
             List<DeclineWarningSubDO> subDOList = declineWarningSubMap.get(declineWarningDO.getId());
 

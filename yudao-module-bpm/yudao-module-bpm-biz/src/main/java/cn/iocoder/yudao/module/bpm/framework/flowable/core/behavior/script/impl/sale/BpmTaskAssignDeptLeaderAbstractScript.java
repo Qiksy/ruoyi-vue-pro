@@ -49,9 +49,12 @@ public abstract class BpmTaskAssignDeptLeaderAbstractScript implements BpmTaskAs
 //        BpmProcessInstanceExtDO bpmProcessInstanceExtDO = processInstanceExtMapper.selectByProcessInstanceId(execution.getProcessInstanceId());
 //        Map<String, Object> processVariables = bpmProcessInstanceExtDO.getFormVariables();
         Map<String, Object> processVariables = processInstance.getProcessVariables();
+
+        String deptPk;
         if (enumValue.equals(BpmTaskRuleScriptEnum.AREA_LEADER.getId())){
             //大区负责人
             deptId = Long.valueOf(processVariables.get("areaCode").toString());
+            deptPk = processVariables.get("areaPk").toString();
             log.debug("审批角色：大区负责人，获取的变量为：{}",processVariables);
         }else{
             log.debug("审批角色：部门负责人，获取的变量为：{}",processVariables);
@@ -59,10 +62,15 @@ public abstract class BpmTaskAssignDeptLeaderAbstractScript implements BpmTaskAs
             processVariables = bpmProcessInstanceExtDO.getFormVariables();
             //部门负责人
             deptId = Long.valueOf(processVariables.get("zoneCode").toString());
+            deptPk = processVariables.get("zonePk").toString();
         }
 
         // 获得部门负责人
-        DeptRespDTO dept = deptApi.getDept(deptId);
+
+        DeptRespDTO dept = deptApi.getDeptByPk(deptPk);
+        if (dept==null){
+            dept = deptApi.getDept(deptId);
+        }
         if (dept == null) { // 找不到发起人的部门，所以无法使用该规则
             throw exception(new ErrorCode(888,"部门无法找到"));
         }
