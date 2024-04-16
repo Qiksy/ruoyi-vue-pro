@@ -1,9 +1,13 @@
 package cn.iocoder.yudao.module.strain.service.microbebasicinfo;
 
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.FreezingTubeStockPreEntryRespVO;
+import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockinfo.FreezingTubeStockInfoDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDO;
 import cn.iocoder.yudao.module.strain.dal.mysql.culturemediumdatainfo.CultureMediumDataInfoMapper;
+import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockinfo.FreezingTubeStockInfoMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.FreezingTubeStockPreEntryMapper;
+import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.FreezingTubeStockPreEntryService;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -42,6 +46,13 @@ public class MicrobeBasicInfoServiceImpl implements MicrobeBasicInfoService {
     //查询样品数据
     @Resource
     private FreezingTubeStockPreEntryMapper freezingTubeStockPreEntryMapper;
+
+
+    @Resource
+    private FreezingTubeStockInfoMapper freezingTubeStockInfoMapper;
+
+    @Resource
+    private FreezingTubeStockPreEntryService freezingTubeStockPreEntryService;
 
     @Override
     public Long createMicrobeBasicInfo(MicrobeBasicInfoSaveReqVO createReqVO) {
@@ -127,5 +138,6 @@ public class MicrobeBasicInfoServiceImpl implements MicrobeBasicInfoService {
 
         return result;
     }
+
 
 }

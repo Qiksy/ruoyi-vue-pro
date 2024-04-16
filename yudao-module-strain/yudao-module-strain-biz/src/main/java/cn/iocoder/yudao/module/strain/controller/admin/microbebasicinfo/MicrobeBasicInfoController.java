@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.strain.controller.admin.microbebasicinfo;
 
+import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.FreezingTubeStockPreEntryRespVO;
+import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.FreezingTubeStockPreEntryService;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -40,6 +42,9 @@ public class MicrobeBasicInfoController {
 
     @Resource
     private MicrobeBasicInfoService microbeBasicInfoService;
+
+    @Resource
+    private FreezingTubeStockPreEntryService freezingTubeStockPreEntryService;
 
     @PostMapping("/create")
     @Operation(summary = "创建菌种信息")
@@ -94,4 +99,12 @@ public class MicrobeBasicInfoController {
         ExcelUtils.write(response, "菌种信息.xls", "数据", MicrobeBasicInfoRespVO.class, list);
     }
 
+
+    @GetMapping("/storage/list")
+    @Operation(summary = "获取菌种的库存列表")
+    @PreAuthorize("@ss.hasPermission('strain:microbe-basic-info:query')")
+    public CommonResult<List<FreezingTubeStockPreEntryRespVO>> getMicrobeBasicStorageList(@RequestParam("id") Long id) {
+        List<FreezingTubeStockPreEntryRespVO> list = freezingTubeStockPreEntryService.getMicrobeBasicInfoStorageList(id);
+        return success(list);
+    }
 }

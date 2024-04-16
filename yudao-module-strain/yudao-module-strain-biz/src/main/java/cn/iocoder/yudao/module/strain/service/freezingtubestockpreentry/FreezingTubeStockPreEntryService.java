@@ -78,4 +78,11 @@ public interface FreezingTubeStockPreEntryService {
     Map<Long, String> getStockPositionStrMap(List<Long> stockIds);
 
     PageResult<ExpiredWarningRespVO> getExpiredWaringPage(ExpiredWarningReqVO queryVO);
+
+    /**
+     * 获取某个菌种的库存列表
+     * @param id 菌种id
+     * @return list
+     */
+    List<FreezingTubeStockPreEntryRespVO> getMicrobeBasicInfoStorageList(Long id);
 }

@@ -22,11 +22,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.*;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.FreezingTubeStockPreEntryMapper;
@@ -55,6 +55,10 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
      */
     @Resource
     private FreezingTubeStockInfoMapper tubeStockInfoMapper; //槽位信息
+
+
+    @Resource
+    private FreezingTubeStockInfoMapper freezingTubeStockInfoMapper; //冷冻管库存信息
 
 
     @Resource
@@ -299,4 +303,39 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
 
         return (Integer.parseInt(tubePositionX)+1) + "-" + (Integer.parseInt(tubePositionY)+1);
     }
+
+
+    @Override
+    public List<FreezingTubeStockPreEntryRespVO> getMicrobeBasicInfoStorageList(Long id) {
+        List<FreezingTubeStockPreEntryDO> list = freezingTubeStockPreEntryMapper.selectListByMicrobeId(id);
+
+
+        List<FreezingTubeStockPreEntryRespVO> result = BeanUtils.toBean(list, FreezingTubeStockPreEntryRespVO.class);
+
+        //获取槽位id
+        Set<Long> collect = list.stream().map(FreezingTubeStockPreEntryDO::getId).collect(Collectors.toSet());
+        if (collect.isEmpty()){
+            return result;
+        }
+
+        LambdaQueryWrapperX<FreezingTubeStockInfoDO> wrapperX = new LambdaQueryWrapperX<FreezingTubeStockInfoDO>()
+                .in(FreezingTubeStockInfoDO::getStockPreEntryId, collect);
+        List<FreezingTubeStockInfoDO> tubeStockInfoDOList = freezingTubeStockInfoMapper.selectList(wrapperX);
+
+        Map<Long, FreezingTubeStockInfoDO> map = tubeStockInfoDOList.stream().collect(Collectors.toMap(FreezingTubeStockInfoDO::getStockPreEntryId, v -> v));
+
+        for (FreezingTubeStockPreEntryRespVO temp : result) {
+            temp.setStockId(map.getOrDefault(temp.getId(),new FreezingTubeStockInfoDO()).getId());
+        }
+        //根据槽位id获取位置信息
+        Map<Long, String> stockPositionStrMap = getStockPositionStrMap(tubeStockInfoDOList.stream().map(FreezingTubeStockInfoDO::getId).collect(Collectors.toList()));
+
+
+        for (FreezingTubeStockPreEntryRespVO temp : result) {
+            temp.setPositionStr(stockPositionStrMap.get(temp.getStockId()));
+        }
+
+        return result;
+    }
+
 }

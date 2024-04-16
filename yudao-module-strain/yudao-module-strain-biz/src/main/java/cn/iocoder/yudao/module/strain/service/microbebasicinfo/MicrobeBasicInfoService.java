@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.strain.service.microbebasicinfo;
 
 import java.util.*;
+
+import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.FreezingTubeStockPreEntryRespVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.strain.controller.admin.microbebasicinfo.vo.*;
 import cn.iocoder.yudao.module.strain.dal.dataobject.microbebasicinfo.MicrobeBasicInfoDO;
@@ -51,5 +53,6 @@ public interface MicrobeBasicInfoService {
      * @return 菌种信息分页
      */
     PageResult<MicrobeBasicInfoRespVO> getMicrobeBasicInfoPage(MicrobeBasicInfoPageReqVO pageReqVO);
+
 
 }

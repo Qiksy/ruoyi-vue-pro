@@ -89,4 +89,13 @@ public interface FreezingTubeStockPreEntryMapper extends BaseMapperX<FreezingTub
     IPage<FreezingTubeStockPreEntryRespVO> selectPage3(IPage<FreezingTubeStockPreEntryRespVO> iPage, @Param("req") FreezingTubeStockPreEntryPageReqVO pageReqVO);
 
     IPage<ExpiredWarningRespVO> selectPage4(IPage<ExpiredWarningRespVO> iPage,@Param("req") ExpiredWarningReqVO pageReqVO);
+
+    /**
+     * 菌种id查询
+     * @param microId 菌种id
+     * @return
+     */
+    default List<FreezingTubeStockPreEntryDO> selectListByMicrobeId(Long microId){
+        return selectList(new LambdaQueryWrapperX<FreezingTubeStockPreEntryDO>().eq(FreezingTubeStockPreEntryDO::getMicrobeId,microId));
+    }
 }
