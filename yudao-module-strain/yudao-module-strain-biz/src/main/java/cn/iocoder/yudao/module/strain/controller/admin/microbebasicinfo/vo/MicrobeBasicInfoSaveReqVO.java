@@ -79,4 +79,8 @@ public class MicrobeBasicInfoSaveReqVO {
     @Schema(description = "备注", example = "你说的对")
     private String remark;
 
+
+    @Schema(description = "菌种图片")
+    private String microbeImages;
+
 }
