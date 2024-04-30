@@ -20,6 +20,7 @@ import cn.iocoder.yudao.module.system.dal.redis.RedisKeyConstants;
 import cn.iocoder.yudao.module.system.service.user.AdminUserService;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.Getter;
@@ -301,6 +302,9 @@ public class DeptServiceImpl implements DeptService {
         List<String> pkDept = ncDeptList.stream().map(DeptNcDTO::getPkDept).distinct().toList();
         deptMapper.delete(new LambdaQueryWrapper<DeptDO>().notIn(DeptDO::getPkDept, pkDept));
 
+        //3. 更新所有部门的领导人都为空
+        deptMapper.update(new LambdaUpdateWrapper<>(DeptDO.class).set(DeptDO::getLeaderUserId, null));
+
         //3. 设置用户的leaderUserId
         for (DeptNcDTO deptNcDTO : ncDeptList) {
             setLeaderUserId(deptNcDTO, ncDeptList);
@@ -405,14 +409,18 @@ public class DeptServiceImpl implements DeptService {
         }
         String leaderUserPhone = dto.getLeaderUserPhone();
 
-        if (leaderUserPhone == null) {
-            // 如果不为空，则设置为leaderUserId
-            //如果是空的 那就继续找上级的phone，如果找不到就继续找，所以是一个递归的问题
-            leaderUserPhone = findParentLeaderUserPhone(dto.getParentPkDept(), deptDOList);
-        }
-        AdminUserDO user = adminUserService.getUser(leaderUserPhone);//根据用户名查询用户
-        if (user != null) {
-            dto.setLeaderUserId(user.getId());
+        // 不再利用上级领导兼任下级部门的领导人
+
+//        if (leaderUserPhone == null) {
+//            // 如果不为空，则设置为leaderUserId
+//            //如果是空的 那就继续找上级的phone，如果找不到就继续找，所以是一个递归的问题
+//            leaderUserPhone = findParentLeaderUserPhone(dto.getParentPkDept(), deptDOList);
+//        }
+        if (leaderUserPhone!=null && !leaderUserPhone.isEmpty()) {
+            AdminUserDO user = adminUserService.getUser(leaderUserPhone);//根据用户名查询用户
+            if (user != null) {
+                dto.setLeaderUserId(user.getId());
+            }
         }
     }
 
