@@ -141,6 +141,7 @@ public class DeclineStartListener implements TaskListener {
         }
 
 
+
         //其次通知对应的大区总，您有待处理的销售掉量预警，请及时处理
         Long areaCode = (Long) variables.get("areaCode");
         String areaPk =  (String)variables.get("areaPk");
@@ -154,6 +155,21 @@ public class DeclineStartListener implements TaskListener {
 
 //        DeptRespDTO dept = myListener.deptApi.getDept(areaCode);
         Long leaderUserId = dept.getLeaderUserId();
+
+        //如果大区总没有，通知给战区总，战区总也没有的话，推送给劳诗晓
+        if (leaderUserId==null){
+            //查找战区总
+            leaderUserId = myListener.deptApi.getDept(dept.getParentId()).getLeaderUserId();
+        }
+
+        //如果战区总也没有的话
+        if (leaderUserId==null){
+            //查找劳诗晓
+            List<AdminUserRespDTO> temp = myListener.adminUserApi.getUserListByCodes(CollUtil.newArrayList("000130"));
+            AdminUserRespDTO adminUserRespDTO = temp.getFirst();
+            leaderUserId = adminUserRespDTO.getId();
+        }
+
 
         //判断redis key是否存在
         if (Boolean.FALSE.equals(myListener.stringRedisTemplate.hasKey(AREA_LEADER_CONTENT_SEND_RECORD_PREFIX + leaderUserId))) {

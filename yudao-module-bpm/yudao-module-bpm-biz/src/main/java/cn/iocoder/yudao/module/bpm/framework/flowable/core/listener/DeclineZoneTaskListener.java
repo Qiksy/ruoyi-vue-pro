@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.bpm.framework.flowable.core.listener;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.bpm.service.task.BpmProcessInstanceService;
 import cn.iocoder.yudao.module.system.api.dept.DeptApi;
 import cn.iocoder.yudao.module.system.api.dept.dto.DeptRespDTO;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -96,6 +98,24 @@ public class DeclineZoneTaskListener implements TaskListener {
         }
 
         Long leaderUserId = dept.getLeaderUserId();
+
+        if (leaderUserId==null){
+            //找大区总
+            DeptRespDTO areaDept = myListener.deptApi.getDeptByPk((String)variables.get("areaPk"));
+            if (areaDept==null){
+                areaDept = myListener.deptApi.getDept((Long)variables.get("areaCode"));
+            }
+            leaderUserId = areaDept.getLeaderUserId();
+        }
+
+        //大区总也没有的话
+        if (leaderUserId==null){
+            //找劳诗晓
+            List<AdminUserRespDTO> temp = myListener.adminUserApi.getUserListByCodes(CollUtil.newArrayList("000130"));
+            AdminUserRespDTO adminUserRespDTO = temp.getFirst();
+            leaderUserId = adminUserRespDTO.getId();
+        }
+
         ObjectMapper op = new ObjectMapper();
 
         if (Boolean.FALSE.equals(myListener.stringRedisTemplate.hasKey(ZONE_LEADER_CONTENT_SEND_RECORD_PREFIX + leaderUserId))) {
