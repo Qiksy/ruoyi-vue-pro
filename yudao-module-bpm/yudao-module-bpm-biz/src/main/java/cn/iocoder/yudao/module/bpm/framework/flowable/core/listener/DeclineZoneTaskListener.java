@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception0;
 
 /**
  * 审批流程到战区总的时候，进行消息推送
@@ -159,7 +160,7 @@ public class DeclineZoneTaskListener implements TaskListener {
 
             if (wecomeMessageRespDTO2.getErrcode() != 0) {
                 log.info("发送消息失败{}", wecomeMessageRespDTO2);
-                throw exception(wecomeMessageRespDTO2.getErrcode(),"消息发送失败：{}",wecomeMessageRespDTO2.getErrmsg());
+                throw exception0(wecomeMessageRespDTO2.getErrcode(),"消息发送失败：{}",wecomeMessageRespDTO2.getErrmsg());
             }
         }
     }
