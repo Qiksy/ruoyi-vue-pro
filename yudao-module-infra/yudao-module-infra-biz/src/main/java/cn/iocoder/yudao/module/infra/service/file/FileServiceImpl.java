@@ -39,18 +39,18 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @SneakyThrows
-    public String createFile(String name, String path, byte[] content) {
-        return createFile(content, path, name).getUrl();
+    public String createFile(String name, String path, byte[] content,Long businessId) {
+        return createFile(content, path, name, businessId).getUrl();
     }
 
     @Override
     @SneakyThrows
-    public Long createFile2(String name, String path, byte[] content) {
-        FileDO file = createFile(content, path, name);
+    public Long createFile2(String name, String path, byte[] content,Long businessId) {
+        FileDO file = createFile(content, path, name, businessId);
         return file.getId();
     }
 
-    private FileDO createFile(byte[] content, String path,String name ) throws Exception {
+    private FileDO createFile(byte[] content, String path,String name, Long businessId ) throws Exception {
         // 计算默认的 path 名
         String type = FileTypeUtils.getMineType(content, name);
         if (StrUtil.isEmpty(path)) {
@@ -75,6 +75,7 @@ public class FileServiceImpl implements FileService {
         file.setUrl(url);
         file.setType(type);
         file.setSize(content.length);
+        file.setBusinessId(businessId);
         fileMapper.insert(file);
 
         return file;

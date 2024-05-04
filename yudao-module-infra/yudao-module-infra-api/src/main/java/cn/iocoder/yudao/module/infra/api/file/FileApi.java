@@ -14,7 +14,7 @@ public interface FileApi {
      * @return 文件路径
      */
     default String createFile(byte[] content) {
-        return createFile(null, null, content);
+        return createFile(null, null, content,null);
     }
 
     /**
@@ -25,7 +25,7 @@ public interface FileApi {
      * @return 文件路径
      */
     default String createFile(String path, byte[] content) {
-        return createFile(null, path, content);
+        return createFile(null, path, content,null);
     }
 
     /**
@@ -36,6 +36,6 @@ public interface FileApi {
      * @param content 文件内容
      * @return 文件路径
      */
-    String createFile(String name, String path, byte[] content);
+    String createFile(String name, String path, byte[] content,Long businessId);
 
 }

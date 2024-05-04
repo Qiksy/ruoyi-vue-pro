@@ -33,4 +33,8 @@ public class FileRespVO {
     @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
     private LocalDateTime createTime;
 
+
+    @Schema(description = "关联的业务id", example = "1")
+    private Long businessId;
+
 }

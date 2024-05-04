@@ -32,7 +32,7 @@ public class AppFileController {
     public CommonResult<String> uploadFile(AppFileUploadReqVO uploadReqVO) throws Exception {
         MultipartFile file = uploadReqVO.getFile();
         String path = uploadReqVO.getPath();
-        return success(fileService.createFile(file.getOriginalFilename(), path, IoUtil.readBytes(file.getInputStream())));
+        return success(fileService.createFile(file.getOriginalFilename(), path, IoUtil.readBytes(file.getInputStream()), uploadReqVO.getBusinessId()));
     }
 
 }

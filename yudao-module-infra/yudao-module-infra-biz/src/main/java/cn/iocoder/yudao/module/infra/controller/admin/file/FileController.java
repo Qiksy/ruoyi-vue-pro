@@ -46,7 +46,7 @@ public class FileController {
     public CommonResult<String> uploadFile(FileUploadReqVO uploadReqVO) throws Exception {
         MultipartFile file = uploadReqVO.getFile();
         String path = uploadReqVO.getPath();
-        return success(fileService.createFile(file.getOriginalFilename(), path, IoUtil.readBytes(file.getInputStream())));
+        return success(fileService.createFile(file.getOriginalFilename(), path, IoUtil.readBytes(file.getInputStream()),uploadReqVO.getBusinessId()));
     }
 
 
@@ -56,7 +56,7 @@ public class FileController {
     public CommonResult<Long> uploadFile2(FileUploadReqVO uploadReqVO) throws Exception {
         MultipartFile file = uploadReqVO.getFile();
         String path = uploadReqVO.getPath();
-        return success(fileService.createFile2(file.getOriginalFilename(), path, IoUtil.readBytes(file.getInputStream())));
+        return success(fileService.createFile2(file.getOriginalFilename(), path, IoUtil.readBytes(file.getInputStream()),uploadReqVO.getBusinessId()));
     }
 
     @DeleteMapping("/delete")

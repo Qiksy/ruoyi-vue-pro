@@ -27,7 +27,7 @@ public class FileDO extends BaseDO {
     private Long id;
     /**
      * 配置编号
-     *
+     * <p>
      * 关联 {@link FileConfigDO#getId()}
      */
     private Long configId;
@@ -51,5 +51,10 @@ public class FileDO extends BaseDO {
      * 文件大小
      */
     private Integer size;
+
+    /*
+     * 关联的业务id
+     */
+    private Long businessId;
 
 }

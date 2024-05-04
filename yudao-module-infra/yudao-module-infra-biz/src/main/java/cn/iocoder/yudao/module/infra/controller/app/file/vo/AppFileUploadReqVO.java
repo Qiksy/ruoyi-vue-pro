@@ -17,4 +17,8 @@ public class AppFileUploadReqVO {
     @Schema(description = "文件附件", example = "yudaoyuanma.png")
     private String path;
 
+
+    @Schema(description = "关联的业务id", example = "1")
+    private Long businessId;
+
 }
