@@ -80,42 +80,6 @@ public class BpmTaskController {
         return success(BpmTaskConvert.INSTANCE.buildTodoTaskPage(pageResult, processInstanceMap, userMap));
     }
 
-    @GetMapping("todo-page2")
-    @Operation(summary = "获取 Todo 待办任务分页")
-    @PreAuthorize("@ss.hasPermission('bpm:task:query')")
-    public CommonResult<PageResult<MyBpmTaskRespVO>> getTodoTaskPage2(@Valid BpmTaskPageReqVO pageVO) {
-
-        PageResult<Task> pageResult = taskService.getTodoTaskPage2(getLoginUserId(), pageVO);
-        if (CollUtil.isEmpty(pageResult.getList())) {
-            return success(PageResult.empty());
-        }
-
-        //拼接数据
-      // 获得 ProcessInstance Map
-        Map<String, ProcessInstance> processInstanceMap =
-                processInstanceService.getProcessInstanceMap(convertSet(pageResult.getList(), Task::getProcessInstanceId));
-        // 获得 User Map
-        Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(
-                convertSet(processInstanceMap.values(), instance -> Long.valueOf(instance.getStartUserId())));
-
-        PageResult<MyBpmTaskRespVO> result = BpmTaskConvert.INSTANCE.buildTodoTaskForDeclinePage(pageResult, processInstanceMap, userMap);
-
-        List<String> instIds = pageResult.getList().stream().map(Task::getProcessInstanceId).toList();
-        List<DeclineWarningDO> declineWarningDOs = declineWarningService.getDeclineWarningByInstId(instIds);
-
-        Map<String, List<DeclineWarningDO>> collect = declineWarningDOs.stream().collect(Collectors.groupingBy(DeclineWarningDO::getProcessInstanceId));
-
-
-        for (MyBpmTaskRespVO bpmTaskRespVO : result.getList()) {
-            List<DeclineWarningDO> declineWarningDOList = collect.get(bpmTaskRespVO.getProcessInstance().getId());
-            if (declineWarningDOList != null && !declineWarningDOList.isEmpty()) {
-                bpmTaskRespVO.setDeclineWarningInfo(declineWarningDOList.get(0));
-            }
-        }
-
-        return success(result);
-    }
-
     @GetMapping("done-page")
     @Operation(summary = "获取 Done 已办任务分页")
     @PreAuthorize("@ss.hasPermission('bpm:task:query')")
@@ -152,13 +116,6 @@ public class BpmTaskController {
         Map<Long, DeptRespDTO> deptMap = deptApi.getDeptMap(
                 convertSet(userMap.values(), AdminUserRespDTO::getDeptId));
         return success(BpmTaskConvert.INSTANCE.buildTaskPage(pageResult, processInstanceMap, userMap, deptMap));
-    }
-
-    @GetMapping("done-page2")
-    @Operation(summary = "获取 Done 已办任务分页")
-    @PreAuthorize("@ss.hasPermission('bpm:task:query')")
-    public CommonResult<PageResult<BpmTaskRespVO>> getDoneTaskPage2(@Valid BpmTaskPageReqVO pageVO) {
-        return success(taskService.getDoneTaskPage2(getLoginUserId(), pageVO));
     }
 
     @GetMapping("/list-by-process-instance-id")
