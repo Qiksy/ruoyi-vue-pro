@@ -23,8 +23,8 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
-import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
-import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.*;
+
+
 
 import cn.iocoder.yudao.module.strain.controller.admin.outboundapplication.vo.*;
 import cn.iocoder.yudao.module.strain.dal.dataobject.outboundapplication.OutboundApplicationDO;
@@ -118,7 +118,7 @@ public class OutboundApplicationController {
     @GetMapping("/export-excel")
     @Operation(summary = "导出出库申请 Excel")
     @PreAuthorize("@ss.hasPermission('strain:outbound-application:export')")
-    @OperateLog(type = EXPORT)
+    
     public void exportOutboundApplicationExcel(@Valid OutboundApplicationPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);

@@ -22,8 +22,8 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
-import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
-import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.*;
+
+
 
 import cn.iocoder.yudao.module.sale.controller.admin.productionmarsaleclass.vo.*;
 import cn.iocoder.yudao.module.sale.dal.dataobject.productionmarsaleclass.ProductionMarsaleclassDO;
@@ -82,7 +82,7 @@ public class ProductionMarsaleclassController {
     @GetMapping("/export-excel")
     @Operation(summary = "导出销售分类 Excel")
     @PreAuthorize("@ss.hasPermission('sale:production-marsaleclass:export')")
-    @OperateLog(type = EXPORT)
+    
     public void exportProductionMarsaleclassExcel(@Valid ProductionMarsaleclassListReqVO listReqVO,
               HttpServletResponse response) throws IOException {
         List<ProductionMarsaleclassDO> list = productionMarsaleclassService.getProductionMarsaleclassList(listReqVO);

@@ -20,8 +20,8 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
-import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
-import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.*;
+
+
 
 import cn.iocoder.yudao.module.strain.controller.admin.freezingdeviceinfo.vo.*;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingdeviceinfo.FreezingDeviceInfoDO;
@@ -112,7 +112,7 @@ public class FreezingDeviceInfoController {
     @GetMapping("/export-excel")
     @Operation(summary = "导出冷冻设备信息 Excel")
     @PreAuthorize("@ss.hasPermission('strain:freezing-device-info:export')")
-    @OperateLog(type = EXPORT)
+    
     public void exportFreezingDeviceInfoExcel(@Valid FreezingDeviceInfoExportReqVO exportReqVO,
               HttpServletResponse response) throws IOException {
         List<FreezingDeviceInfoDO> list = freezingDeviceInfoService.getFreezingDeviceInfoList(exportReqVO);

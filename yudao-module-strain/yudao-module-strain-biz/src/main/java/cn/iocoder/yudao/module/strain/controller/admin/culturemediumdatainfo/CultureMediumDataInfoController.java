@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.strain.controller.admin.culturemediumdatainfo;
 
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -18,11 +19,11 @@ import java.io.IOException;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
+import static cn.iocoder.yudao.module.strain.enums.LogRecordConstants.EXPORT;
+import static cn.iocoder.yudao.module.strain.enums.LogRecordConstants.MEDIUM_DATA_EXPORT_TYPE;
 
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
-import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
-import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.*;
 
 import cn.iocoder.yudao.module.strain.controller.admin.culturemediumdatainfo.vo.*;
 import cn.iocoder.yudao.module.strain.dal.dataobject.culturemediumdatainfo.CultureMediumDataInfoDO;
@@ -91,7 +92,6 @@ public class CultureMediumDataInfoController {
     @GetMapping("/export-excel")
     @Operation(summary = "导出培养基数据信息 Excel")
     @PreAuthorize("@ss.hasPermission('strain:culture-medium-data-info:export')")
-    @OperateLog(type = EXPORT)
     public void exportCultureMediumDataInfoExcel(@Valid CultureMediumDataInfoExportReqVO exportReqVO,
               HttpServletResponse response) throws IOException {
         List<CultureMediumDataInfoDO> list = cultureMediumDataInfoService.getCultureMediumDataInfoList(exportReqVO);

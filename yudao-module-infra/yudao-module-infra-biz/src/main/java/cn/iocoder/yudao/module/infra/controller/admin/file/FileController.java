@@ -48,7 +48,6 @@ public class FileController {
 
     @PostMapping("/upload2")
     @Operation(summary = "上传文件")
-    @OperateLog(logArgs = false) // 上传文件，没有记录操作日志的必要
     public CommonResult<Long> uploadFile2(FileUploadReqVO uploadReqVO) throws Exception {
         MultipartFile file = uploadReqVO.getFile();
         String path = uploadReqVO.getPath();

@@ -22,8 +22,8 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
-import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
-import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.*;
+
+
 
 import cn.iocoder.yudao.module.sale.controller.admin.productionmarbasclass.vo.*;
 import cn.iocoder.yudao.module.sale.dal.dataobject.productionmarbasclass.ProductionMarbasclassDO;
@@ -82,7 +82,7 @@ public class ProductionMarbasclassController {
     @GetMapping("/export-excel")
     @Operation(summary = "导出物料分类 Excel")
     @PreAuthorize("@ss.hasPermission('sale:production-marbasclass:export')")
-    @OperateLog(type = EXPORT)
+    
     public void exportProductionMarbasclassExcel(@Valid ProductionMarbasclassListReqVO listReqVO,
               HttpServletResponse response) throws IOException {
         List<ProductionMarbasclassDO> list = productionMarbasclassService.getProductionMarbasclassList(listReqVO);

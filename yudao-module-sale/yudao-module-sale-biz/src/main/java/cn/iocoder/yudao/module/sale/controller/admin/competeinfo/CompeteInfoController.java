@@ -37,8 +37,8 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
-import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
-import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.*;
+
+
 
 import cn.iocoder.yudao.module.sale.controller.admin.competeinfo.vo.*;
 import cn.iocoder.yudao.module.sale.dal.dataobject.competeinfo.CompeteInfoDO;
@@ -172,7 +172,7 @@ public class CompeteInfoController {
     @GetMapping("/export-excel")
     @Operation(summary = "导出竞品信息 Excel")
     @PreAuthorize("@ss.hasPermission('sale:compete-info:export')")
-    @OperateLog(type = EXPORT)
+    
     public void exportCompeteInfoExcel(@Valid CompeteInfoPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);

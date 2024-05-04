@@ -22,8 +22,6 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
-import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
-import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.*;
 
 import cn.iocoder.yudao.module.system.controller.admin.printtemplate.vo.*;
 import cn.iocoder.yudao.module.system.dal.dataobject.printtemplate.PrintTemplateDO;
@@ -92,7 +90,6 @@ public class PrintTemplateController {
     @GetMapping("/export-excel")
     @Operation(summary = "导出打印模板 Excel")
     @PreAuthorize("@ss.hasPermission('system:print-template:export')")
-    @OperateLog(type = EXPORT)
     public void exportPrintTemplateExcel(@Valid PrintTemplatePageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);

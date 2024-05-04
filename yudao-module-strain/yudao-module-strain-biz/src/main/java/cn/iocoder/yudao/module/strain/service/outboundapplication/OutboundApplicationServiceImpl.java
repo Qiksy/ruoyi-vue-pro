@@ -4,7 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.iocoder.yudao.framework.common.exception.ErrorCode;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
-import cn.iocoder.yudao.module.bpm.enums.task.BpmProcessInstanceResultEnum;
+import cn.iocoder.yudao.module.bpm.enums.task.BpmTaskStatusEnum;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockinfo.FreezingTubeStockInfoDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.outboundsubapplication.OutboundSubApplicationDO;
@@ -115,7 +115,8 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         // 更新
         OutboundApplicationDO updateObj = BeanUtils.toBean(updateReqVO, OutboundApplicationDO.class);
 
-        updateObj.setApproResult(BpmProcessInstanceResultEnum.PROCESS.getResult().toString());
+
+        updateObj.setApproResult(BpmTaskStatusEnum.RUNNING.getStatus().toString());
         outboundApplicationMapper.updateById(updateObj);
 
         //删除子表
@@ -154,7 +155,7 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         if (outboundApplicationDO == null) {
             throw exception(OUTBOUND_APPLICATION_NOT_EXISTS);
         }
-        if (!BpmProcessInstanceResultEnum.UN_START.getResult().toString().equals(outboundApplicationDO.getApproResult())){
+        if (!BpmTaskStatusEnum.WAIT.getStatus().toString().equals(outboundApplicationDO.getApproResult())){
             throw exception(OUTBOUND_APPLICATION_STATUS_NOT_UN_START);
         }
     }
@@ -266,10 +267,10 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
 
         if (type.equals("apply")){
             //需要设置审批状态为处理中
-            outboundApplicationDO.setApproResult(BpmProcessInstanceResultEnum.PROCESS.getResult().toString());
+            outboundApplicationDO.setApproResult(BpmTaskStatusEnum.RUNNING.getStatus().toString());
         }else if (type.equals("save")){
             //需要设置审批状态为未开始
-            outboundApplicationDO.setApproResult(BpmProcessInstanceResultEnum.UN_START.getResult().toString());
+            outboundApplicationDO.setApproResult(BpmTaskStatusEnum.WAIT.getStatus().toString());
         }
 
         //设置编码
@@ -336,7 +337,7 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         Set<Long> specimenIds = updateReqVO.getSubList().stream().map(OutboundApplicationSubCreateReqVO::getSpecimenId).collect(Collectors.toSet());
 
         //如果是审批通过，则更新单据、更新样品信息和槽位信息
-        if (BpmProcessInstanceResultEnum.APPROVE.getResult().toString().equals(approveResult)){
+        if (BpmTaskStatusEnum.APPROVE.getStatus().toString().equals(approveResult)){
             OutboundApplicationDO mainDO = BeanUtils.toBean(updateReqVO, OutboundApplicationDO.class);
             outboundApplicationMapper.updateById(mainDO);
 
@@ -371,7 +372,7 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
                 status = InventoryStatisEnum.DESTROY_STOCK.getValue();
                 deliverSpecimen(specimenIds, status);
             }
-        }else if (updateReqVO.getApproResult().equals(BpmProcessInstanceResultEnum.REJECT.getResult().toString())){
+        }else if (updateReqVO.getApproResult().equals(BpmTaskStatusEnum.REJECT.getStatus().toString())){
             //如果审批不通过，则设置主表为
             OutboundApplicationDO mainDO = BeanUtils.toBean(updateReqVO, OutboundApplicationDO.class);
             outboundApplicationMapper.updateById(mainDO);

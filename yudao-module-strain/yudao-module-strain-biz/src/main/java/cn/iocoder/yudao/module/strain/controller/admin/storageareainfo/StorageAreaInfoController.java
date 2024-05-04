@@ -21,8 +21,8 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
-import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
-import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.*;
+
+
 
 import cn.iocoder.yudao.module.strain.controller.admin.storageareainfo.vo.*;
 import cn.iocoder.yudao.module.strain.dal.dataobject.storageareainfo.StorageAreaInfoDO;
@@ -91,7 +91,7 @@ public class StorageAreaInfoController {
     @GetMapping("/export-excel")
     @Operation(summary = "导出存放区域信息 Excel")
     @PreAuthorize("@ss.hasPermission('strain:storage-area-info:export')")
-    @OperateLog(type = EXPORT)
+    
     public void exportStorageAreaInfoExcel(@Valid StorageAreaInfoExportReqVO exportReqVO,
               HttpServletResponse response) throws IOException {
         List<StorageAreaInfoDO> list = storageAreaInfoService.getStorageAreaInfoList(exportReqVO);

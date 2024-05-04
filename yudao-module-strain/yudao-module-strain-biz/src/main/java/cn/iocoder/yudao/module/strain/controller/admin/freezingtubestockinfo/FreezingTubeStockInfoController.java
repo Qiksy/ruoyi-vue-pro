@@ -23,8 +23,8 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
-import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
-import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.*;
+
+
 
 import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockinfo.vo.*;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockinfo.FreezingTubeStockInfoDO;
@@ -92,7 +92,7 @@ public class FreezingTubeStockInfoController {
     @GetMapping("/export-excel")
     @Operation(summary = "导出冷冻盒槽位 Excel")
     @PreAuthorize("@ss.hasPermission('strain:freezing-tube-stock-info:export')")
-    @OperateLog(type = EXPORT)
+    
     public void exportFreezingTubeStockInfoExcel(@Valid FreezingTubeStockInfoPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);

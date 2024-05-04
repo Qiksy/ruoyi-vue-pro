@@ -22,8 +22,8 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
-import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
-import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.*;
+
+
 
 import cn.iocoder.yudao.module.sale.controller.admin.customersalesdetail.vo.*;
 import cn.iocoder.yudao.module.sale.dal.dataobject.customersalesdetail.CustomerSalesDetailDO;
@@ -82,7 +82,7 @@ public class CustomerSalesDetailController {
     @GetMapping("/export-excel")
     @Operation(summary = "导出客户销售明细 Excel")
     @PreAuthorize("@ss.hasPermission('sale:customer-sales-detail:export')")
-    @OperateLog(type = EXPORT)
+    
     public void exportCustomerSalesDetailExcel(@Valid CustomerSalesDetailPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);

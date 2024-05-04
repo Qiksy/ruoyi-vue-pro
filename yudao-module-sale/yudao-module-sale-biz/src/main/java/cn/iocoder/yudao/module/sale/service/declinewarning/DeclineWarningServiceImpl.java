@@ -3,10 +3,9 @@ package cn.iocoder.yudao.module.sale.service.declinewarning;
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.exception.ErrorCode;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
-import cn.iocoder.yudao.framework.operatelog.core.util.OperateLogUtils;
 import cn.iocoder.yudao.module.bpm.api.task.BpmProcessInstanceApi;
 import cn.iocoder.yudao.module.bpm.api.task.dto.BpmProcessInstanceCreateReqDTO;
-import cn.iocoder.yudao.module.bpm.enums.task.BpmProcessInstanceResultEnum;
+import cn.iocoder.yudao.module.bpm.enums.task.BpmTaskStatusEnum;
 import cn.iocoder.yudao.module.sale.controller.admin.customersalesdetail.vo.CustomerSalesDetailAnalysisRespVO;
 import cn.iocoder.yudao.module.sale.controller.admin.customersalesdetail.vo.CustomerSalesDetailPageReqVO;
 import cn.iocoder.yudao.module.sale.dal.dataobject.declinewarningsub.DeclineWarningSubDO;
@@ -228,7 +227,7 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
 
             //会写流程id到主表中
             declineWarningDO.setProcessInstanceId(processInstanceId);
-            declineWarningDO.setResult(BpmProcessInstanceResultEnum.PROCESS.getResult()); //正在处理
+            declineWarningDO.setResult(BpmTaskStatusEnum.RUNNING.getStatus()); //正在处理
             declineWarningMapper.updateById(declineWarningDO);
 
 
@@ -309,7 +308,7 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
             mainDO.setSummarize(generateSummarize(tempBaseVO.getAreaName(), saleDate, custCount, totalDeclineNum, totalPreMonthSales, totalCurrMonthSales, totalDeclineRatio));
 
             // 主表设置result为0，表示未开始
-            mainDO.setResult(BpmProcessInstanceResultEnum.UN_START.getResult());
+            mainDO.setResult(BpmTaskStatusEnum.WAIT.getStatus());
 
             declineWarningList.add(mainDO);
 

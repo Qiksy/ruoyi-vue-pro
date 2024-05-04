@@ -36,8 +36,8 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
-import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
-import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.*;
+
+
 import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
 
 import cn.iocoder.yudao.module.sale.controller.admin.declinewarning.vo.*;
@@ -134,7 +134,7 @@ public class DeclineWarningController {
     @GetMapping("/export-excel")
     @Operation(summary = "导出销量预警 Excel")
     @PreAuthorize("@ss.hasPermission('sale:decline-warning:export')")
-    @OperateLog(type = EXPORT)
+    
     public void exportDeclineWarningExcel(@Valid DeclineWarningPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);

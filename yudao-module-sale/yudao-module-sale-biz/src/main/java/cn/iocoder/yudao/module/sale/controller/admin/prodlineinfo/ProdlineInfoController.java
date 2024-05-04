@@ -22,8 +22,8 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
-import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
-import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.*;
+
+
 
 import cn.iocoder.yudao.module.sale.controller.admin.prodlineinfo.vo.*;
 import cn.iocoder.yudao.module.sale.dal.dataobject.prodlineinfo.ProdlineInfoDO;
@@ -82,7 +82,7 @@ public class ProdlineInfoController {
     @GetMapping("/export-excel")
     @Operation(summary = "导出产品线 Excel")
     @PreAuthorize("@ss.hasPermission('sale:prodline-info:export')")
-    @OperateLog(type = EXPORT)
+    
     public void exportProdlineInfoExcel(@Valid ProdlineInfoListReqVO listReqVO,
               HttpServletResponse response) throws IOException {
         List<ProdlineInfoDO> list = prodlineInfoService.getProdlineInfoList(listReqVO);
