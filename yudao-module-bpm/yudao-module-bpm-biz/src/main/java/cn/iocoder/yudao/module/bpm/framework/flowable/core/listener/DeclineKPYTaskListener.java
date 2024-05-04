@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.bpm.framework.flowable.core.listener;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.iocoder.yudao.framework.common.exception.ErrorCode;
 import cn.iocoder.yudao.module.bpm.service.task.BpmProcessInstanceService;
 import cn.iocoder.yudao.module.system.api.dept.DeptApi;
 import cn.iocoder.yudao.module.system.api.tenant.dto.WecomeMessageRespDTO;
@@ -27,6 +28,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception0;
 
 /**
  *
@@ -130,7 +132,7 @@ public class DeclineKPYTaskListener implements TaskListener {
 
         if (wecomeMessageRespDTO.getErrcode() != 0) {
             log.info("发送消息失败{}",wecomeMessageRespDTO);
-            throw exception(wecomeMessageRespDTO.getErrcode(),"消息发送失败：{}",wecomeMessageRespDTO.getErrmsg());
+            throw exception0(wecomeMessageRespDTO.getErrcode(),"消息发送失败：{}",wecomeMessageRespDTO.getErrmsg());
         }
 
 

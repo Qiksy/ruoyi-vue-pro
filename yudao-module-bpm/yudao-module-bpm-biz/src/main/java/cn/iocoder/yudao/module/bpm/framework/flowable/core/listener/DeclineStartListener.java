@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.bpm.framework.flowable.core.listener;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.iocoder.yudao.framework.common.exception.ErrorCode;
 import cn.iocoder.yudao.module.bpm.service.task.BpmProcessInstanceService;
 import cn.iocoder.yudao.module.system.api.dept.DeptApi;
 import cn.iocoder.yudao.module.system.api.dept.dto.DeptRespDTO;
@@ -30,6 +31,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception0;
 
 /**
  * 测试用的执行监听器
@@ -137,7 +139,7 @@ public class DeclineStartListener implements TaskListener {
         }
         if (wecomeMessageRespDTO.getErrcode() != 0) {
             log.info("发送消息失败{}",wecomeMessageRespDTO);
-            throw exception(512,wecomeMessageRespDTO);
+            throw exception(new ErrorCode(512,"发送消息失败"),wecomeMessageRespDTO);
         }
 
 
@@ -197,7 +199,7 @@ public class DeclineStartListener implements TaskListener {
                 log.info("wecomeMessageRespDTO2:{}",wecomeMessageRespDTO2);
                 if (wecomeMessageRespDTO2.getErrcode() != 0) {
                     log.info("发送消息失败{}", wecomeMessageRespDTO2);
-                    throw exception(wecomeMessageRespDTO2.getErrcode(),"消息发送失败：{}",wecomeMessageRespDTO2.getErrmsg());
+                    throw exception0(wecomeMessageRespDTO2.getErrcode(),"消息发送失败：{}",wecomeMessageRespDTO2.getErrmsg());
                 }
                 //利用redisson，将这个人的这个类型的消息记录下来，5分钟内不再发送
                 String key = AREA_LEADER_CONTENT_SEND_RECORD_PREFIX + leaderUserId;
