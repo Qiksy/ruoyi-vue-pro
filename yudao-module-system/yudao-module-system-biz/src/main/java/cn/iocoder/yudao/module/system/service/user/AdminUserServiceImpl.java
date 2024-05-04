@@ -45,6 +45,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.Getter;
 import lombok.Setter;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,6 +71,7 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertSet;
 import static cn.iocoder.yudao.module.system.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.system.enums.LogRecordConstants.*;
 import static cn.iocoder.yudao.module.system.enums.openapi.BoenApiUrlEnums.NC_USER_SYNC_URL;
 
 /**
@@ -119,42 +124,54 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = SYSTEM_USER_TYPE, subType = SYSTEM_USER_CREATE_SUB_TYPE, bizNo = "{{#user.id}}",
+            success = SYSTEM_USER_CREATE_SUCCESS)
     public Long createUser(UserSaveReqVO createReqVO) {
-        // 校验账户配合
+        // 1.1 校验账户配合
         tenantService.handleTenantInfo(tenant -> {
             long count = userMapper.selectCount();
             if (count >= tenant.getAccountCount()) {
                 throw exception(USER_COUNT_MAX, tenant.getAccountCount());
             }
         });
-        // 校验正确性
+        // 1.2 校验正确性
         validateUserForCreateOrUpdate(null, createReqVO.getUsername(),
                 createReqVO.getMobile(), createReqVO.getEmail(), createReqVO.getDeptId(), createReqVO.getPostIds());
-        // 插入用户
+        // 2.1 插入用户
         AdminUserDO user = BeanUtils.toBean(createReqVO, AdminUserDO.class);
         user.setStatus(CommonStatusEnum.ENABLE.getStatus()); // 默认开启
         user.setPassword(encodePassword(createReqVO.getPassword())); // 加密密码
         userMapper.insert(user);
-        // 插入关联岗位
+        // 2.2 插入关联岗位
         if (CollectionUtil.isNotEmpty(user.getPostIds())) {
             userPostMapper.insertBatch(convertList(user.getPostIds(),
                     postId -> new UserPostDO().setUserId(user.getId()).setPostId(postId)));
         }
+
+        // 3. 记录操作日志上下文
+        LogRecordContext.putVariable("user", user);
         return user.getId();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = SYSTEM_USER_TYPE, subType = SYSTEM_USER_UPDATE_SUB_TYPE, bizNo = "{{#updateReqVO.id}}",
+            success = SYSTEM_USER_UPDATE_SUCCESS)
     public void updateUser(UserSaveReqVO updateReqVO) {
         updateReqVO.setPassword(null); // 特殊：此处不更新密码
-        // 校验正确性
-        validateUserForCreateOrUpdate(updateReqVO.getId(), updateReqVO.getUsername(),
+        // 1. 校验正确性
+        AdminUserDO oldUser = validateUserForCreateOrUpdate(updateReqVO.getId(), updateReqVO.getUsername(),
                 updateReqVO.getMobile(), updateReqVO.getEmail(), updateReqVO.getDeptId(), updateReqVO.getPostIds());
-        // 更新用户
+
+        // 2.1 更新用户
         AdminUserDO updateObj = BeanUtils.toBean(updateReqVO, AdminUserDO.class);
         userMapper.updateById(updateObj);
-        // 更新岗位
+        // 2.2 更新岗位
         updateUserPost(updateReqVO, updateObj);
+
+        // 3. 记录操作日志上下文
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, BeanUtils.toBean(oldUser, UserSaveReqVO.class));
+        LogRecordContext.putVariable("user", oldUser);
     }
 
     private void updateUserPost(UserSaveReqVO reqVO, AdminUserDO updateObj) {
@@ -164,7 +181,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         Set<Long> postIds = CollUtil.emptyIfNull(updateObj.getPostIds());
         Collection<Long> createPostIds = CollUtil.subtract(postIds, dbPostIds);
         Collection<Long> deletePostIds = CollUtil.subtract(dbPostIds, postIds);
-        // 执行新增和删除。对于已经授权的菜单，不用做任何处理
+        // 执行新增和删除。对于已经授权的岗位，不用做任何处理
         if (!CollectionUtil.isEmpty(createPostIds)) {
             userPostMapper.insertBatch(convertList(createPostIds,
                     postId -> new UserPostDO().setUserId(userId).setPostId(postId)));
@@ -213,14 +230,21 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
+    @LogRecord(type = SYSTEM_USER_TYPE, subType = SYSTEM_USER_UPDATE_PASSWORD_SUB_TYPE, bizNo = "{{#id}}",
+            success = SYSTEM_USER_UPDATE_PASSWORD_SUCCESS)
     public void updateUserPassword(Long id, String password) {
-        // 校验用户存在
-        validateUserExists(id);
-        // 更新密码
+        // 1. 校验用户存在
+        AdminUserDO user = validateUserExists(id);
+
+        // 2. 更新密码
         AdminUserDO updateObj = new AdminUserDO();
         updateObj.setId(id);
         updateObj.setPassword(encodePassword(password)); // 加密密码
         userMapper.updateById(updateObj);
+
+        // 3. 记录操作日志上下文
+        LogRecordContext.putVariable("user", user);
+        LogRecordContext.putVariable("newPassword", updateObj.getPassword());
     }
 
     @Override
@@ -236,15 +260,21 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = SYSTEM_USER_TYPE, subType = SYSTEM_USER_DELETE_SUB_TYPE, bizNo = "{{#id}}",
+            success = SYSTEM_USER_DELETE_SUCCESS)
     public void deleteUser(Long id) {
-        // 校验用户存在
-        validateUserExists(id);
-        // 删除用户
+        // 1. 校验用户存在
+        AdminUserDO user = validateUserExists(id);
+
+        // 2.1 删除用户
         userMapper.deleteById(id);
-        // 删除用户关联数据
+        // 2.2 删除用户关联数据
         permissionService.processUserDeleted(id);
-        // 删除用户岗位
+        // 2.2 删除用户岗位
         userPostMapper.deleteByUserId(id);
+
+        // 3. 记录操作日志上下文
+        LogRecordContext.putVariable("user", user);
     }
 
     @Override
@@ -339,12 +369,12 @@ public class AdminUserServiceImpl implements AdminUserService {
         return deptIds;
     }
 
-    private void validateUserForCreateOrUpdate(Long id, String username, String mobile, String email,
+    private AdminUserDO validateUserForCreateOrUpdate(Long id, String username, String mobile, String email,
                                                Long deptId, Set<Long> postIds) {
         // 关闭数据权限，避免因为没有数据权限，查询不到数据，进而导致唯一校验不正确
-        DataPermissionUtils.executeIgnore(() -> {
+        return DataPermissionUtils.executeIgnore(() -> {
             // 校验用户存在
-            validateUserExists(id);
+            AdminUserDO user = validateUserExists(id);
             // 校验用户名唯一
             validateUsernameUnique(id, username);
             // 校验手机号唯一
@@ -355,18 +385,20 @@ public class AdminUserServiceImpl implements AdminUserService {
             deptService.validateDeptList(CollectionUtils.singleton(deptId));
             // 校验岗位处于开启状态
             postService.validatePostList(postIds);
+            return user;
         });
     }
 
     @VisibleForTesting
-    void validateUserExists(Long id) {
+    AdminUserDO validateUserExists(Long id) {
         if (id == null) {
-            return;
+            return null;
         }
         AdminUserDO user = userMapper.selectById(id);
         if (user == null) {
             throw exception(USER_NOT_EXISTS);
         }
+        return user;
     }
 
     @VisibleForTesting

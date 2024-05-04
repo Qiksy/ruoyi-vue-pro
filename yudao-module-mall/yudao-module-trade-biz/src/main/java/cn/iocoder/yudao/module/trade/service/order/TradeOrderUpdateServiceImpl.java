@@ -49,12 +49,12 @@ import cn.iocoder.yudao.module.trade.service.price.TradePriceService;
 import cn.iocoder.yudao.module.trade.service.price.bo.TradePriceCalculateReqBO;
 import cn.iocoder.yudao.module.trade.service.price.bo.TradePriceCalculateRespBO;
 import cn.iocoder.yudao.module.trade.service.price.calculator.TradePriceCalculatorHelper;
+import jakarta.annotation.Resource;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +64,8 @@ import java.util.Set;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.*;
 import static cn.iocoder.yudao.framework.common.util.date.LocalDateTimeUtils.minusTime;
+import static cn.iocoder.yudao.framework.common.util.servlet.ServletUtils.getClientIP;
+import static cn.iocoder.yudao.framework.web.core.util.WebFrameworkUtils.getTerminal;
 import static cn.iocoder.yudao.module.trade.enums.ErrorCodeConstants.*;
 
 /**
@@ -158,11 +160,11 @@ public class TradeOrderUpdateServiceImpl implements TradeOrderUpdateService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     @TradeOrderLog(operateType = TradeOrderOperateTypeEnum.MEMBER_CREATE)
-    public TradeOrderDO createOrder(Long userId, String userIp, AppTradeOrderCreateReqVO createReqVO, Integer terminal) {
+    public TradeOrderDO createOrder(Long userId, AppTradeOrderCreateReqVO createReqVO) {
         // 1.1 价格计算
         TradePriceCalculateRespBO calculateRespBO = calculatePrice(userId, createReqVO);
         // 1.2 构建订单
-        TradeOrderDO order = buildTradeOrder(userId, userIp, createReqVO, calculateRespBO, terminal);
+        TradeOrderDO order = buildTradeOrder(userId, createReqVO, calculateRespBO);
         List<TradeOrderItemDO> orderItems = buildTradeOrderItems(order, calculateRespBO);
 
         // 2. 订单创建前的逻辑
@@ -178,15 +180,15 @@ public class TradeOrderUpdateServiceImpl implements TradeOrderUpdateService {
         return order;
     }
 
-    private TradeOrderDO buildTradeOrder(Long userId, String clientIp, AppTradeOrderCreateReqVO createReqVO,
-                                         TradePriceCalculateRespBO calculateRespBO, Integer terminal) {
-        TradeOrderDO order = TradeOrderConvert.INSTANCE.convert(userId, clientIp, createReqVO, calculateRespBO);
+    private TradeOrderDO buildTradeOrder(Long userId, AppTradeOrderCreateReqVO createReqVO,
+                                         TradePriceCalculateRespBO calculateRespBO) {
+        TradeOrderDO order = TradeOrderConvert.INSTANCE.convert(userId, createReqVO, calculateRespBO);
         order.setType(calculateRespBO.getType());
         order.setNo(tradeNoRedisDAO.generate(TradeNoRedisDAO.TRADE_ORDER_NO_PREFIX));
         order.setStatus(TradeOrderStatusEnum.UNPAID.getStatus());
         order.setRefundStatus(TradeOrderRefundStatusEnum.NONE.getStatus());
         order.setProductCount(getSumValue(calculateRespBO.getItems(), TradePriceCalculateRespBO.OrderItem::getCount, Integer::sum));
-        order.setTerminal(terminal);
+        order.setUserIp(getClientIP()).setTerminal(getTerminal());
         // 支付 + 退款信息
         order.setAdjustPrice(0).setPayStatus(false);
         order.setRefundStatus(TradeOrderRefundStatusEnum.NONE.getStatus()).setRefundPrice(0);
@@ -622,23 +624,23 @@ public class TradeOrderUpdateServiceImpl implements TradeOrderUpdateService {
             throw exception(ORDER_UPDATE_PRICE_FAIL_ALREADY);
         }
         // 1.3 支付价格不能为 0
-        int newPayPrice = order.getPayPrice() + order.getAdjustPrice();
+        int newPayPrice = order.getPayPrice() + reqVO.getAdjustPrice();
         if (newPayPrice <= 0) {
             throw exception(ORDER_UPDATE_PRICE_FAIL_PRICE_ERROR);
         }
 
         // 2. 更新订单
         tradeOrderMapper.updateById(new TradeOrderDO().setId(order.getId())
-                .setAdjustPrice(reqVO.getAdjustPrice()).setPayPrice(newPayPrice));
+                .setAdjustPrice(reqVO.getAdjustPrice() + order.getAdjustPrice()).setPayPrice(newPayPrice));
 
         // 3. 更新 TradeOrderItem，需要做 adjustPrice 的分摊
         List<TradeOrderItemDO> orderOrderItems = tradeOrderItemMapper.selectListByOrderId(order.getId());
-        List<Integer> dividePrices = TradePriceCalculatorHelper.dividePrice2(orderOrderItems, newPayPrice);
+        List<Integer> dividePrices = TradePriceCalculatorHelper.dividePrice2(orderOrderItems, reqVO.getAdjustPrice());
         List<TradeOrderItemDO> updateItems = new ArrayList<>();
         for (int i = 0; i < orderOrderItems.size(); i++) {
             TradeOrderItemDO item = orderOrderItems.get(i);
-            updateItems.add(new TradeOrderItemDO().setId(item.getId()).setAdjustPrice(dividePrices.get(i))
-                    .setPayPrice(item.getPayPrice() + dividePrices.get(i)));
+            updateItems.add(new TradeOrderItemDO().setId(item.getId()).setAdjustPrice(item.getAdjustPrice() + dividePrices.get(i))
+                    .setPayPrice((item.getPayPrice() - item.getAdjustPrice()) + dividePrices.get(i)));
         }
         tradeOrderItemMapper.updateBatch(updateItems);
 
@@ -648,6 +650,7 @@ public class TradeOrderUpdateServiceImpl implements TradeOrderUpdateService {
         // 5. 记录订单日志
         TradeOrderLogUtils.setOrderInfo(order.getId(), order.getStatus(), order.getStatus(),
                 MapUtil.<String, Object>builder().put("oldPayPrice", MoneyUtils.fenToYuanStr(order.getPayPrice()))
+                        .put("adjustPrice", MoneyUtils.fenToYuanStr(reqVO.getAdjustPrice()))
                         .put("newPayPrice", MoneyUtils.fenToYuanStr(newPayPrice)).build());
     }
 

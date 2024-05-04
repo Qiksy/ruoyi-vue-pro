@@ -4,9 +4,9 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.system.api.dict.dto.DictDataRespDTO;
 import cn.iocoder.yudao.module.system.dal.dataobject.dict.DictDataDO;
 import cn.iocoder.yudao.module.system.service.dict.DictDataService;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +38,12 @@ public class DictDataApiImpl implements DictDataApi {
     public DictDataRespDTO parseDictData(String dictType, String label) {
         DictDataDO dictData = dictDataService.parseDictData(dictType, label);
         return BeanUtils.toBean(dictData, DictDataRespDTO.class);
+    }
+
+    @Override
+    public List<DictDataRespDTO> getDictDataList(String dictType) {
+        List<DictDataDO> list = dictDataService.getDictDataListByDictType(dictType);
+        return BeanUtils.toBean(list, DictDataRespDTO.class);
     }
 
     /**

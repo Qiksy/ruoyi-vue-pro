@@ -50,6 +50,14 @@ public interface DeptApi {
         return CollectionUtils.convertMap(list, DeptRespDTO::getId);
     }
 
+    /**
+     * 获得指定部门的所有子部门
+     *
+     * @param id 部门编号
+     * @return 子部门列表
+     */
+    List<DeptRespDTO> getChildDeptList(Long id);
+
 
     /**
      * 获取没有负责人的部门信息

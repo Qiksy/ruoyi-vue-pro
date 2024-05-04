@@ -99,7 +99,7 @@ public class SocialUserServiceImpl implements SocialUserService {
     }
 
     @Override
-    public SocialUserRespDTO getSocialUser(Integer userType, Integer socialType, String code, String state) {
+    public SocialUserRespDTO getSocialUserByUserId(Integer userType, Integer socialType, String code, String state) {
         // 获得社交用户
         SocialUserDO socialUser = authSocialUser(socialType, userType, code, state);
         Assert.notNull(socialUser, "社交用户不能为空");
@@ -123,6 +123,19 @@ public class SocialUserServiceImpl implements SocialUserService {
             throw exception(AUTH_THIRD_LOGIN_NOT_BIND);
         }
         return new SocialUserRespDTO(socialUser.getOpenid(), socialUserBind.getUserId());
+    }
+
+    @Override
+    public SocialUserRespDTO getSocialUserByCode(Integer userType, Integer socialType, String code, String state) {
+        // 获得社交用户
+        SocialUserDO socialUser = authSocialUser(socialType, userType, code, state);
+        Assert.notNull(socialUser, "社交用户不能为空");
+
+        // 获得绑定用户
+        SocialUserBindDO socialUserBind = socialUserBindMapper.selectByUserTypeAndSocialUserId(userType,
+                socialUser.getId());
+        return new SocialUserRespDTO(socialUser.getOpenid(), socialUser.getNickname(), socialUser.getAvatar(),
+                socialUserBind != null ? socialUserBind.getUserId() : null);
     }
 
     /**
