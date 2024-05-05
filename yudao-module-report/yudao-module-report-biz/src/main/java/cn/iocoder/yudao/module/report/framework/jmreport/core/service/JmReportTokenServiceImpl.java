@@ -154,7 +154,9 @@ public class JmReportTokenServiceImpl implements JmReportTokenServiceI {
         if (loginUser == null) {
             return null;
         }
-        return StrUtil.toStringOrNull(loginUser.getTenantId());
+//        return StrUtil.toStringOrNull(loginUser.getTenantId());
+        //暂时写死为1，因为我用不到多租户
+        return "1";
     }
 
 
