@@ -134,7 +134,7 @@ public class JmReportTokenServiceImpl implements JmReportTokenServiceI {
         // ② 参考 TenantContextWebFilter 实现（Tenant 的上下文清理，交给 TenantContextWebFilter 完成）
         // 目的：基于 LoginUser 获得到的租户编号，设置到 Tenant 上下文，避免查询数据库时的报错
         TenantContextHolder.setIgnore(false);
-        TenantContextHolder.setTenantId(user.getTenantId());
+        TenantContextHolder.setTenantId(1L);
         return user;
     }
 

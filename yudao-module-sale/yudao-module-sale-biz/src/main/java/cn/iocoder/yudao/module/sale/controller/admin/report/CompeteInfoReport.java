@@ -10,6 +10,8 @@ import cn.iocoder.yudao.module.sale.service.competeinfo.CompeteInfoService;
 import cn.iocoder.yudao.module.sale.service.competeinfosub.CompeteInfoSubService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.StringSerializer;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.annotation.Resource;
 import org.jeecg.modules.jmreport.api.data.IDataSetFactory;
@@ -86,10 +88,23 @@ public class CompeteInfoReport implements IDataSetFactory {
 //        competeInfoRespVOList;
 
         ObjectMapper objectMapper = new ObjectMapper();
+        //解决jackson2无法反序列化LocalDateTime的问题
         objectMapper.registerModule(new JavaTimeModule());
         TypeReference<List<Map<String, Object>>> typeReference = new TypeReference<List<Map<String, Object>>>() {};
 
-        return objectMapper.convertValue(competeInfoRespVOList, typeReference);
+        List<Map<String, Object>> maps = objectMapper.convertValue(competeInfoRespVOList, typeReference);
+
+
+        for (Map<String, Object> map : maps) {
+            for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
+                //如果value是null，全部转成空字符串
+                if (stringObjectEntry.getValue() == null){
+                    map.put(stringObjectEntry.getKey(),"");
+                }
+            }
+        }
+
+        return maps;
     }
 
     /**

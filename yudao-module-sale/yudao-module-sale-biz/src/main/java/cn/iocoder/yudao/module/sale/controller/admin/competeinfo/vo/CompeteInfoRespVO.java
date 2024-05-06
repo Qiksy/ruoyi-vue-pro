@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.sale.controller.admin.competeinfo.vo;
 
 import cn.iocoder.yudao.module.sale.controller.admin.competeinfosub.vo.CompeteInfoSubRespVO;
 import cn.iocoder.yudao.module.sale.dal.dataobject.competeinfosub.CompeteInfoSubDO;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import java.util.*;
