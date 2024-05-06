@@ -38,6 +38,20 @@ public class AdminUserApiImpl implements AdminUserApi {
         return BeanUtils.toBean(user, AdminUserRespDTO.class);
     }
 
+    /**
+     * 通过用户编号查询用户
+     *
+     * @param code
+     */
+    @Override
+    public AdminUserRespDTO getUserByCode(String code) {
+        List<AdminUserRespDTO> userListByCodes = userService.getUserListByCodes(Collections.singletonList(code));
+        if (CollUtil.isEmpty(userListByCodes)) {
+            return null;
+        }
+        return BeanUtils.toBean(userListByCodes.getFirst(), AdminUserRespDTO.class);
+    }
+
     @Override
     public List<AdminUserRespDTO> getUserListBySubordinate(Long id) {
         // 1.1 获取用户负责的部门

@@ -23,6 +23,12 @@ public interface AdminUserApi {
      */
     AdminUserRespDTO getUser(Long id);
 
+
+    /**
+     * 通过用户编号查询用户
+     */
+    AdminUserRespDTO getUserByCode(String code);
+
     /**
      * 通过用户 ID 查询用户下属
      *

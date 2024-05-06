@@ -210,6 +210,10 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
                 throw exception(new ErrorCode(1022,"掉量预警子表为空，不能发起流程"));
             }
 
+            List<String> kptCodeList = subDOList.stream().map(DeclineWarningSubDO::getEmployeeCode)
+                    .distinct().toList();
+            processInstanceVariables.put("kptCodeList",kptCodeList); //科普员id
+
             String kpyIds = subDOList.stream().map(DeclineWarningSubDO::getEmployeeCode)
                     .distinct().collect(Collectors.joining(","));
 
