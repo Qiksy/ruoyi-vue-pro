@@ -219,11 +219,17 @@ public class DeclineWarningServiceImpl implements DeclineWarningService {
 
             processInstanceVariables.put("kpyIds",kpyIds); //科普员id
 
-            if (StringUtils.hasText(declineWarningDO.getProcessInstanceId())){
-                String areaName = declineWarningDO.getAreaName();
-                throw exception(new ErrorCode(1023,areaName+"的预警信息已经发起过流程，无需再次发起"));
+            if (!Objects.equals(BpmTaskStatusEnum.REJECT.getStatus(), declineWarningDO.getResult())
+                    && !Objects.equals(BpmTaskStatusEnum.CANCEL.getStatus(), declineWarningDO.getResult()) ){
+//                如果是不通过或者是已取消的，允许重新发起流程
+                if (StringUtils.hasText(declineWarningDO.getProcessInstanceId())){
+                    String areaName = declineWarningDO.getAreaName();
+                    throw exception(new ErrorCode(1023,areaName+"的预警信息已经发起过流程，无需再次发起"));
 
+                }
             }
+
+
 
             String processInstanceId = processInstanceApi.createProcessInstance(submitApprovedReqVO.getLoginUserId(),
                     new BpmProcessInstanceCreateReqDTO().setProcessDefinitionKey(PROCESS_KEY)

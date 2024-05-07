@@ -5,6 +5,7 @@ import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import jakarta.annotation.Resource;
 import org.flowable.engine.delegate.DelegateExecution;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
  * @author linr
  * @since 2024/5/6 21:22
  */
+@Component
 public class BpmTaskAssignMultiUserCodeExpression {
 
 
