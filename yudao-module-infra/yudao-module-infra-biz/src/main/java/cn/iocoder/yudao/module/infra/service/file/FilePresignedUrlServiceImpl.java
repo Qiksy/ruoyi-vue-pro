@@ -36,7 +36,7 @@ public class FilePresignedUrlServiceImpl implements FilePresignedUrlService{
 
 
     @Getter
-    private final LoadingCache<Long, FileConfigDO> fileConfigCache = buildAsyncReloadingCache(Duration.ofMinutes(2L),
+    private final LoadingCache<Long, FileConfigDO> fileConfigCache = buildAsyncReloadingCache(Duration.ofSeconds(15L),
             new CacheLoader<Long, FileConfigDO>() {
                 @Override
                 public FileConfigDO load(Long configId) {
