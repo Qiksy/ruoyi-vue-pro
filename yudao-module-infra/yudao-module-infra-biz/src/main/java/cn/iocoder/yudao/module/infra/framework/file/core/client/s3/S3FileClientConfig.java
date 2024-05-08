@@ -63,6 +63,9 @@ public class S3FileClientConfig implements FileClientConfig {
     @NotNull(message = "accessSecret 不能为空")
     private String accessSecret;
 
+    @NotNull(message = "privateBucket 不能为空")
+    private boolean privateBucket;
+
     @SuppressWarnings("RedundantIfStatement")
     @AssertTrue(message = "domain 不能为空")
     @JsonIgnore

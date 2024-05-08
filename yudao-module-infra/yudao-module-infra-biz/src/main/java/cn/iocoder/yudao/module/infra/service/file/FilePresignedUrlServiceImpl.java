@@ -6,6 +6,8 @@ import cn.iocoder.yudao.module.infra.dal.dataobject.file.FileDO;
 import cn.iocoder.yudao.module.infra.dal.mysql.file.FileConfigMapper;
 import cn.iocoder.yudao.module.infra.dal.mysql.file.FileMapper;
 import cn.iocoder.yudao.module.infra.framework.file.core.client.FileClient;
+import cn.iocoder.yudao.module.infra.framework.file.core.client.FileClientConfig;
+import cn.iocoder.yudao.module.infra.framework.file.core.client.s3.S3FileClientConfig;
 import cn.iocoder.yudao.module.infra.framework.file.core.enums.FileStorageEnum;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -63,10 +65,13 @@ public class FilePresignedUrlServiceImpl implements FilePresignedUrlService{
     public void wrapPresignedUrl(FileDO fileDO) throws ExecutionException {
         Long configId = fileDO.getConfigId();
         FileConfigDO fileConfigDO = fileConfigCache.getUnchecked(configId);
-
-        if (fileConfigDO.getStorage().equals(FileStorageEnum.S3.getStorage())){
-            //更新fileDO的url
-            fileDO.setUrl(filePresignedUrlCache.getUnchecked(Pair.of(fileDO.getPath(),configId)));
+        FileClientConfig config = fileConfigDO.getConfig();
+        if (config instanceof S3FileClientConfig){
+            S3FileClientConfig s3Config = (S3FileClientConfig) config;
+            if (s3Config.isPrivateBucket()){
+                //更新fileDO的url
+                fileDO.setUrl(filePresignedUrlCache.getUnchecked(Pair.of(fileDO.getPath(),configId)));
+            }
         }
     }
 
