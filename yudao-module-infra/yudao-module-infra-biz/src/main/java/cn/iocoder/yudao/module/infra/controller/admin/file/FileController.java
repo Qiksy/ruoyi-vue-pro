@@ -8,6 +8,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.infra.controller.admin.file.vo.file.*;
 import cn.iocoder.yudao.module.infra.dal.dataobject.file.FileDO;
+import cn.iocoder.yudao.module.infra.service.file.FilePresignedUrlService;
 import cn.iocoder.yudao.module.infra.service.file.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,6 +25,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 import static cn.iocoder.yudao.module.infra.framework.file.core.utils.FileTypeUtils.writeAttachment;
 
@@ -36,6 +41,10 @@ public class FileController {
 
     @Resource
     private FileService fileService;
+
+
+    @Resource
+    private FilePresignedUrlService filePresignedUrlService;
 
     @PostMapping("/upload")
     @Operation(summary = "上传文件", description = "模式一：后端上传文件")
@@ -103,8 +112,11 @@ public class FileController {
     @GetMapping("/page")
     @Operation(summary = "获得文件分页")
     @PreAuthorize("@ss.hasPermission('infra:file:query')")
-    public CommonResult<PageResult<FileRespVO>> getFilePage(@Valid FilePageReqVO pageVO) {
+    public CommonResult<PageResult<FileRespVO>> getFilePage(@Valid FilePageReqVO pageVO) throws ExecutionException {
         PageResult<FileDO> pageResult = fileService.getFilePage(pageVO);
+
+        //获取预览地址
+        filePresignedUrlService.wrapPresignedUrl(pageResult.getList());
         return success(BeanUtils.toBean(pageResult, FileRespVO.class));
     }
 

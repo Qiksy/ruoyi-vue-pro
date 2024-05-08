@@ -52,4 +52,12 @@ public interface FileClient {
         throw new UnsupportedOperationException("不支持的操作");
     }
 
+
+    /**
+     * 获取文件的临时访问地址
+     */
+    default String getPresignedObjectViewUrl(String path) throws Exception {
+        throw new UnsupportedOperationException("不支持的操作");
+    }
+
 }

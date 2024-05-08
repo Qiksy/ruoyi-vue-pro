@@ -5,9 +5,13 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import cn.iocoder.yudao.module.infra.framework.file.core.client.AbstractFileClient;
 import io.minio.*;
+import io.minio.errors.*;
 import io.minio.http.Method;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -128,4 +132,21 @@ public class S3FileClient extends AbstractFileClient<S3FileClientConfig> {
         return new FilePresignedUrlRespDTO(uploadUrl, config.getDomain() + "/" + path);
     }
 
+    /**
+     * 获取文件的临时访问地址
+     *
+     * @param path
+     */
+    @Override
+    public String getPresignedObjectViewUrl(String path) throws Exception {
+        String uploadUrl = client.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder()
+                .method(Method.GET)
+                .bucket(config.getBucket())
+                .object(path)
+                .expiry(3, TimeUnit.HOURS) // 过期时间（秒数）取值范围：1 秒 ~ 7 天
+                .build()
+        );
+        FilePresignedUrlRespDTO filePresignedUrlRespDTO = new FilePresignedUrlRespDTO(uploadUrl, config.getDomain() + "/" + path);
+        return filePresignedUrlRespDTO.getUploadUrl();
+    }
 }
