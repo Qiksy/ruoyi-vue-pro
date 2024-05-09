@@ -18,6 +18,7 @@ import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -118,6 +120,37 @@ public class FileController {
         //获取预览地址
         filePresignedUrlService.wrapPresignedUrl(pageResult.getList());
         return success(BeanUtils.toBean(pageResult, FileRespVO.class));
+    }
+
+
+    @GetMapping("/list-by-business-id")
+    @Operation(summary = "根据业务编号，获得文件列表")
+    @PreAuthorize("@ss.hasPermission('infra:file:query')")
+    public CommonResult<List<FileRespVO>> listFileByBusinessId(@RequestParam("businessId")@NotNull Long businessId) throws ExecutionException {
+        List<FileDO> list = fileService.listFileByBusinessId(businessId);
+        //包装一层，获取预览地址
+        filePresignedUrlService.wrapPresignedUrl(list);
+        return success(BeanUtils.toBean(list, FileRespVO.class));
+    }
+
+
+    @PutMapping("/update-business-id")
+    @Operation(summary = "更新文件的业务编号")
+    @PreAuthorize("@ss.hasPermission('infra:file:update')")
+    public CommonResult<Boolean> updateFileBusinessId( @RequestBody Map<String, Object> request) {
+        fileService.updateFileBusinessId((Long)request.get("id"), (Long)request.get("businessId"));
+        return success(true);
+    }
+
+    @GetMapping("/get")
+    @Operation(summary = "获得文件信息")
+    @PreAuthorize("@ss.hasPermission('infra:file:query')")
+    public CommonResult<FileRespVO> getFile(@RequestParam("id") Long id) throws ExecutionException {
+        FileDO file = fileService.getFile(id);
+        //包装一层，获取预览地址
+        filePresignedUrlService.wrapPresignedUrl(file);
+        return success(BeanUtils.toBean(file, FileRespVO.class));
+
     }
 
 }

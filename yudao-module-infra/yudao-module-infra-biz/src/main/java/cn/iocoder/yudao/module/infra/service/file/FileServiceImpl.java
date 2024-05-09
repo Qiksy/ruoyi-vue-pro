@@ -13,10 +13,14 @@ import cn.iocoder.yudao.module.infra.controller.admin.file.vo.file.FilePageReqVO
 import cn.iocoder.yudao.module.infra.controller.admin.file.vo.file.FilePresignedUrlRespVO;
 import cn.iocoder.yudao.module.infra.dal.dataobject.file.FileDO;
 import cn.iocoder.yudao.module.infra.dal.mysql.file.FileMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.infra.enums.ErrorCodeConstants.FILE_NOT_EXISTS;
@@ -130,4 +134,34 @@ public class FileServiceImpl implements FileService {
                 object -> object.setConfigId(fileClient.getId()));
     }
 
+    /**
+     * 根据业务编号，获得文件列表
+     *
+     * @param businessId 业务编号
+     * @return 文件列表
+     */
+    @Override
+    public List<FileDO> listFileByBusinessId(Long businessId) {
+        if (businessId == null) {
+            return Collections.emptyList();
+        }
+        List<FileDO> fileDOS = fileMapper.selectList(new LambdaQueryWrapper<FileDO>().eq(FileDO::getBusinessId, businessId));
+        return fileDOS;
+    }
+
+    @Override
+    public boolean updateFileBusinessId(Long id, Long businessId) {
+        if (id == null) {
+            return false;
+        }
+        //build创建一个新的对象
+        FileDO fileDO = FileDO.builder().id(id).businessId(businessId).build();
+        fileMapper.updateById(fileDO);
+        return true;
+    }
+
+    @Override
+    public FileDO getFile(Long id) {
+        return fileMapper.selectById(id);
+    }
 }

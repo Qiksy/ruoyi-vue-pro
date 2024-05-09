@@ -6,6 +6,8 @@ import cn.iocoder.yudao.module.infra.controller.admin.file.vo.file.FilePageReqVO
 import cn.iocoder.yudao.module.infra.controller.admin.file.vo.file.FilePresignedUrlRespVO;
 import cn.iocoder.yudao.module.infra.dal.dataobject.file.FileDO;
 
+import java.util.List;
+
 /**
  * 文件 Service 接口
  *
@@ -64,4 +66,19 @@ public interface FileService {
      */
     FilePresignedUrlRespVO getFilePresignedUrl(String path) throws Exception;
 
+    /**
+     * 根据业务编号，获得文件列表
+     * @param businessId 业务编号
+     * @return 文件列表
+     */
+    List<FileDO> listFileByBusinessId(Long businessId);
+
+    /**
+     * @param id 文件id
+     * @param businessId 业务id
+     * @return 是否成功
+     */
+    boolean updateFileBusinessId(Long id, Long businessId);
+
+    FileDO getFile(Long id);
 }
