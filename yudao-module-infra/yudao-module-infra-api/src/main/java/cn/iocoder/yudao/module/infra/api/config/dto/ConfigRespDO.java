@@ -1,0 +1,48 @@
+package cn.iocoder.yudao.module.infra.api.config.dto;
+
+import lombok.Data;
+
+
+@Data
+public class ConfigRespDO {
+
+
+    /**
+     * 参数主键
+     */
+    private Long id;
+    /**
+     * 参数分类
+     */
+    private String category;
+    /**
+     * 参数名称
+     */
+    private String name;
+    /**
+     * 参数键名
+     *
+     * 支持多 DB 类型时，无法直接使用 key + @TableField("config_key") 来实现转换，原因是 "config_key" AS key 而存在报错
+     */
+    private String configKey;
+    /**
+     * 参数键值
+     */
+    private String value;
+    /**
+     * 参数类型
+     *
+     *
+     */
+    private Integer type;
+    /**
+     * 是否可见
+     *
+     * 不可见的参数，一般是敏感参数，前端不可获取
+     */
+    private Boolean visible;
+    /**
+     * 备注
+     */
+    private String remark;
+}

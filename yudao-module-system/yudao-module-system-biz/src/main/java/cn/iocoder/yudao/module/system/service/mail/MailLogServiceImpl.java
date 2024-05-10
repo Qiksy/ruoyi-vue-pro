@@ -7,11 +7,14 @@ import cn.iocoder.yudao.module.system.dal.dataobject.mail.MailLogDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.mail.MailTemplateDO;
 import cn.iocoder.yudao.module.system.dal.mysql.mail.MailLogMapper;
 import cn.iocoder.yudao.module.system.enums.mail.MailSendStatusEnum;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import jakarta.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -45,6 +48,19 @@ public class MailLogServiceImpl implements MailLogService {
                               MailAccountDO account, MailTemplateDO template,
                               String templateContent, Map<String, Object> templateParams, Boolean isSend) {
         MailLogDO.MailLogDOBuilder logDOBuilder = MailLogDO.builder();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String  templateParamsJson = "";
+        try {
+            templateParamsJson = objectMapper.writeValueAsString(templateParams);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        if (templateParamsJson.length()>255){
+            templateParams = new HashMap<>(){{
+                put("templateParams","参数过长，无法存储");
+            }};
+        }
         // 根据是否要发送，设置状态
         logDOBuilder.sendStatus(Objects.equals(isSend, true) ? MailSendStatusEnum.INIT.getStatus()
                 : MailSendStatusEnum.IGNORE.getStatus())
