@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -56,6 +57,7 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
 
 
     @Resource
+    @Lazy
     private MicrobeBasicInfoService microbeBasicInfoService; //菌种信息
 
 
@@ -276,6 +278,9 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
             for (Long stockId : stockIds) {
                 //查询这个位置的具体信息
                 FreezingTubeStockInfoDO tubeStockInfoDO = tubeStockInfoMapper.selectOne("id", stockId);
+                if (tubeStockInfoDO == null) {
+                    continue;
+                }
                 String boxPositionStr = getBoxPositionStr(tubeStockInfoDO);
 
                 //1. 递归查询层级名称 和设备名称
