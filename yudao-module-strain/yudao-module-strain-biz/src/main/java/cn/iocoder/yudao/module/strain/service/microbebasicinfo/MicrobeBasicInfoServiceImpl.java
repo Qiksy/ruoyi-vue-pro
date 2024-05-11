@@ -8,6 +8,8 @@ import cn.iocoder.yudao.module.strain.dal.mysql.culturemediumdatainfo.CultureMed
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockinfo.FreezingTubeStockInfoMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.FreezingTubeStockPreEntryMapper;
 import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.FreezingTubeStockPreEntryService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -25,6 +27,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.strain.dal.mysql.microbebasicinfo.MicrobeBasicInfoMapper;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.module.strain.dal.redis.RedisKeyConstants.STRAIN_MICROBE_INFO;
 import static cn.iocoder.yudao.module.strain.enums.ErrorCodeConstants.*;
 
 /**
@@ -77,6 +80,7 @@ public class MicrobeBasicInfoServiceImpl implements MicrobeBasicInfoService {
     }
 
     @Override
+    @CacheEvict(value = STRAIN_MICROBE_INFO, key = "#updateReqVO.id", beforeInvocation = true) //删除缓存
     public void updateMicrobeBasicInfo(MicrobeBasicInfoSaveReqVO updateReqVO) {
         // 校验存在
         validateMicrobeBasicInfoExists(updateReqVO.getId());
@@ -86,6 +90,7 @@ public class MicrobeBasicInfoServiceImpl implements MicrobeBasicInfoService {
     }
 
     @Override
+    @CacheEvict(value = STRAIN_MICROBE_INFO, key = "#id") //删除缓存
     public void deleteMicrobeBasicInfo(Long id) {
         // 校验存在
         validateMicrobeBasicInfoExists(id);
@@ -114,6 +119,7 @@ public class MicrobeBasicInfoServiceImpl implements MicrobeBasicInfoService {
     }
 
     @Override
+    @Cacheable(value = STRAIN_MICROBE_INFO, key = "#id")
     public MicrobeBasicInfoDO getMicrobeBasicInfo(Long id) {
         return microbeBasicInfoMapper.selectById(id);
     }

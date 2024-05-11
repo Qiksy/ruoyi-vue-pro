@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 @Data
 public class ExpiredWarningRespVO {
 
+    private Long id;
+
     private String specimenCode;
 
     private String chineseName;

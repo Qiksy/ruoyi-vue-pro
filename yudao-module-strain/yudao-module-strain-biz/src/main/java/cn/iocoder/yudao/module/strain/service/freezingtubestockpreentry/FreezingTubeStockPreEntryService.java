@@ -4,6 +4,7 @@ import java.util.*;
 
 import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningReqVO;
 import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningRespVO;
+import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningUpdateReqVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.*;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDO;
@@ -85,4 +86,10 @@ public interface FreezingTubeStockPreEntryService {
      * @return list
      */
     List<FreezingTubeStockPreEntryRespVO> getMicrobeBasicInfoStorageList(Long id);
+
+    /**
+     * 更新过期日期
+     * @param reqVO 过期预警更新
+     */
+    void updateExpiredDate(ExpiredWarningUpdateReqVO reqVO);
 }
