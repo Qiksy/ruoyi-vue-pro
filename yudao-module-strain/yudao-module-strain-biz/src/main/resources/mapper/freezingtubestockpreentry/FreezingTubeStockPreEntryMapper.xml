@@ -25,7 +25,8 @@
         t1.remark,
         t1.thaw_freeze_cycle_count,
         t5.id stock_id,
-        t1.box_code
+        t1.box_code,
+        t1.generation_number
         FROM
         strain_freezing_tube_stock_pre_entry t1
         left join system_users t2 on t1.save_by = t2.id and t2.deleted= 0
