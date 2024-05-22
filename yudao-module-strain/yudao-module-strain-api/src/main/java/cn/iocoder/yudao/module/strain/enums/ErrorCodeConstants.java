@@ -68,4 +68,7 @@ public interface ErrorCodeConstants {
     //获取菌种位置信息失败
     ErrorCode MICROBE_POSITION_INFO_NOT_EXISTS = new ErrorCode(98_012_001, "获取菌种位置信息失败，请联系管理员");
 
+
+    ErrorCode REGENERATION_RECORD_NOT_EXISTS = new ErrorCode(98_013_001, "样品复壮传代记录不存在");
+
 }

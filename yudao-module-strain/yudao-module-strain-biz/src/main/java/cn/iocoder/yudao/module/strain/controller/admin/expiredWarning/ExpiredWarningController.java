@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningReqVO;
 import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningRespVO;
 import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningUpdateReqVO;
+import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.RejuvenateReqVO;
 import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.FreezingTubeStockPreEntryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -39,6 +40,15 @@ public class ExpiredWarningController {
     @PreAuthorize("@ss.hasPermission('strain:expired-waring:update')")
     public CommonResult<Boolean> updateExpiredDate(@RequestBody ExpiredWarningUpdateReqVO reqVO){
         freezingTubeStockPreEntryService.updateExpiredDate(reqVO);
+        return success(true);
+    }
+
+
+    @PutMapping("/rejuvenate")
+    @Operation(summary = "传代 / 复壮")
+    @PreAuthorize("@ss.hasPermission('strain:expired-waring:rejuvenate')")
+    public CommonResult<Boolean> rejuvenate(@RequestBody @Validated RejuvenateReqVO reqVO){
+        freezingTubeStockPreEntryService.rejuvenate(reqVO);
         return success(true);
     }
 

@@ -5,6 +5,7 @@ import java.util.*;
 import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningReqVO;
 import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningRespVO;
 import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningUpdateReqVO;
+import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.RejuvenateReqVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.*;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDO;
@@ -92,4 +93,10 @@ public interface FreezingTubeStockPreEntryService {
      * @param reqVO 过期预警更新
      */
     void updateExpiredDate(ExpiredWarningUpdateReqVO reqVO);
+
+    /**
+     * 传代 / 复壮 并生成记录
+     * @param reqVO vo
+     */
+    void rejuvenate(RejuvenateReqVO reqVO);
 }

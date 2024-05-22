@@ -5,14 +5,17 @@ import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningReqVO;
 import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningRespVO;
 import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningUpdateReqVO;
+import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.RejuvenateReqVO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingdeviceinfo.FreezingDeviceInfoDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockinfo.FreezingTubeStockInfoDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.microbebasicinfo.MicrobeBasicInfoDO;
+import cn.iocoder.yudao.module.strain.dal.dataobject.regenerationrecord.RegenerationRecordDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.storageareainfo.StorageAreaInfoDO;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingdevicehierarchy.FreezingDeviceHierarchyMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingdeviceinfo.FreezingDeviceInfoMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockinfo.FreezingTubeStockInfoMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.microbebasicinfo.MicrobeBasicInfoMapper;
+import cn.iocoder.yudao.module.strain.dal.mysql.regenerationrecord.RegenerationRecordMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.storageareainfo.StorageAreaInfoMapper;
 import cn.iocoder.yudao.module.strain.enums.InventoryStatisEnum;
 import cn.iocoder.yudao.module.strain.service.microbebasicinfo.MicrobeBasicInfoService;
@@ -39,6 +42,8 @@ import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.Freezi
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.strain.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.strain.enums.RejuvenateTypeConstants.PASSAGE_MICROORGANISM;
+import static cn.iocoder.yudao.module.strain.enums.RejuvenateTypeConstants.REJUVENATE;
 
 /**
  * 冷冻管库存预录入 Service 实现类
@@ -54,6 +59,10 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
 
     @Resource
     private MicrobeBasicInfoMapper microbeBasicInfoMapper;  //菌种信息
+
+
+    @Resource
+    private RegenerationRecordMapper regenerationRecordMapper;
 
 
     @Resource
@@ -410,6 +419,63 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
 
         } else {
             throw new IllegalArgumentException("Unknown type: " + type);
+        }
+    }
+
+
+    /**
+     * 传代 / 复壮 并生成记录
+     *
+     * @param reqVO vo
+     */
+    @Override
+    public void rejuvenate(RejuvenateReqVO reqVO) {
+        Long[] ids = reqVO.getIds();
+
+        LambdaQueryWrapperX<FreezingTubeStockPreEntryDO> wrapper = new LambdaQueryWrapperX<>();
+        wrapper.in(FreezingTubeStockPreEntryDO::getId, Arrays.asList(ids));
+
+        // 查询出来，进行更新
+        List<FreezingTubeStockPreEntryDO> doList = freezingTubeStockPreEntryMapper.selectList(wrapper);
+
+        for (FreezingTubeStockPreEntryDO freezingTubeStockPreEntryDO : doList) {
+            Integer generationNumber = freezingTubeStockPreEntryDO.getGenerationNumber();
+            if (generationNumber == null) {
+                generationNumber = 0;
+            }
+            //更新代数
+            freezingTubeStockPreEntryDO.setGenerationNumber(generationNumber + 1);
+            //更新到期时间
+            MicrobeBasicInfoDO microbeBasicInfo = microbeBasicInfoService.getMicrobeBasicInfo(freezingTubeStockPreEntryDO.getMicrobeId());
+            Integer validityPeriodDays = 0;
+            if (microbeBasicInfo != null) {
+                validityPeriodDays = microbeBasicInfo.getValidityPeriodDays();
+            }
+            LocalDateTime currentDate = LocalDateTime.now();
+            //加上有效期天数
+            currentDate = currentDate.plusDays(validityPeriodDays);
+
+            freezingTubeStockPreEntryDO.setExpirationDate(currentDate);
+            freezingTubeStockPreEntryMapper.updateById(freezingTubeStockPreEntryDO);
+
+
+            //构建日志对象
+            RegenerationRecordDO regenerationRecordDO = new RegenerationRecordDO();
+            regenerationRecordDO.setSpecimenId(freezingTubeStockPreEntryDO.getId()); // 设置id
+            regenerationRecordDO.setRemark(reqVO.getRemark()); // 设置备注
+
+            // 构建内容
+            StringBuilder sb = new StringBuilder();
+            if (reqVO.getType().equals(REJUVENATE)){
+                sb.append("复壮操作，");
+            }else if (reqVO.getType().equals(PASSAGE_MICROORGANISM)){
+                sb.append("传代操作，");
+            }
+            sb.append("代数从 ").append(generationNumber).append(" 变为 ").append(generationNumber + 1).append(" 。");
+            regenerationRecordDO.setContent(sb.toString());
+            // 插入对象
+            regenerationRecordMapper.insert(regenerationRecordDO);
+
         }
     }
 }
