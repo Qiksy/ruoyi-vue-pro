@@ -39,7 +39,7 @@ public class FreezingTubeStockPreEntryController {
     private FreezingTubeStockPreEntryService freezingTubeStockPreEntryService;
 
     @PostMapping("/create")
-    @Operation(summary = "创建冷冻管库存预录入")
+    @Operation(summary = "新增样品")
     @PreAuthorize("@ss.hasPermission('strain:freezing-tube-stock-pre-entry:create')")
     public CommonResult<Collection<Long>> createFreezingTubeStockPreEntry(@Valid @RequestBody FreezingTubeStockPreEntrySaveReqVO createReqVO) {
         List<Long> ids = freezingTubeStockPreEntryService.createFreezingTubeStockPreEntry(createReqVO);
