@@ -1,9 +1,12 @@
 package cn.iocoder.yudao.module.strain.service.outboundapplication;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.extra.spring.SpringUtil;
 import cn.iocoder.yudao.framework.common.exception.ErrorCode;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
+import cn.iocoder.yudao.module.bpm.api.task.BpmProcessInstanceApi;
+import cn.iocoder.yudao.module.bpm.api.task.dto.BpmProcessInstanceCreateReqDTO;
 import cn.iocoder.yudao.module.bpm.enums.task.BpmTaskStatusEnum;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockinfo.FreezingTubeStockInfoDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDO;
@@ -20,6 +23,7 @@ import cn.iocoder.yudao.module.system.service.permission.PermissionService;
 import cn.iocoder.yudao.module.system.service.permission.RoleService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -77,9 +81,20 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
     @Resource
     private RoleService roleService;
 
+
+    @Resource
+    private BpmProcessInstanceApi processInstanceApi;
+
+
+    //流程模型的key
+    public static final String OUTBOUND_PROCESS_KEY = "strain-outbound";
+
+
+
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Long createOutboundApplication(OutboundApplicationCreateReqVO createReqVO) {
-        return saveApplication(createReqVO,"save");
+        return getSelf().saveApplication(createReqVO,"save");
     }
 
     @Override
@@ -104,24 +119,25 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
 
     /**
      * 更新并且提交
+     * 1. 先删除子表，再重新插入
+     * 2. 创建流程实例
+     * 3. 更新流程实例和状态到主表
      *
      * @param updateReqVO 更新信息
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateAndSubmitOutboundApplication(OutboundApplicationCreateReqVO updateReqVO) {
+
+
+        // 1. 先删除子表，再重新插入
+
+
         // 校验存在
         validateOutboundApplicationExists(updateReqVO.getId());
-        // 更新
-        OutboundApplicationDO updateObj = BeanUtils.toBean(updateReqVO, OutboundApplicationDO.class);
-
-
-        updateObj.setApproResult(BpmTaskStatusEnum.RUNNING.getStatus().toString());
-        outboundApplicationMapper.updateById(updateObj);
 
         //删除子表
         subApplicationMapper.delete(OutboundSubApplicationDO::getParentId,updateReqVO.getId());
-
         //重新插入子表
         List<OutboundSubApplicationDO> subApplicationDOS = BeanUtils.toBean(updateReqVO.getSubList(), OutboundSubApplicationDO.class);
         //设置子表的parent_id
@@ -129,12 +145,34 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
             subApplicationDO.setParentId(updateReqVO.getId());
         }
 
-
         // 校验是否存在相同的明细正在处理中
         validateSubIsExistsProcess(subApplicationDOS);
-
-
+        // 重新插入这个子表
         subApplicationMapper.insertBatch(subApplicationDOS);
+
+
+
+        //2.创建流程实例
+
+        // 流程变量
+        Map<String,Object> processInstanceVariables = new HashMap<>();
+        String processInstanceId = processInstanceApi.createProcessInstance(SecurityFrameworkUtils.getLoginUserId(),
+                new BpmProcessInstanceCreateReqDTO()
+                        .setProcessDefinitionKey(OUTBOUND_PROCESS_KEY)
+                        .setBusinessKey(updateReqVO.getId().toString())
+                        .setVariables(processInstanceVariables)
+        );
+
+
+        // 主表处理
+
+        OutboundApplicationDO updateObj = BeanUtils.toBean(updateReqVO, OutboundApplicationDO.class);
+
+        //更新状态
+        updateObj.setApproResult(BpmTaskStatusEnum.RUNNING.getStatus().toString());
+        // 更新流程实例id
+        updateObj.setProcessInstanceId(processInstanceId);
+        outboundApplicationMapper.updateById(updateObj);
     }
 
 
@@ -250,10 +288,11 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long createAndApplyOutboundApplication(OutboundApplicationCreateReqVO createReqVO) {
-        return saveApplication(createReqVO,"apply");
+        return getSelf().saveApplication(createReqVO,"apply");
     }
 
-    private Long saveApplication(OutboundApplicationCreateReqVO createReqVO,String type) {
+    @Transactional(rollbackFor = Exception.class)
+    public Long saveApplication(OutboundApplicationCreateReqVO createReqVO,String type) {
         //保存主子表数据
         OutboundApplicationDO outboundApplicationDO = BeanUtils.toBean(createReqVO, OutboundApplicationDO.class);
 
@@ -262,18 +301,9 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         String nickname = adminUserApi.getUser(userId).getNickname();
         outboundApplicationDO.setApplicant(nickname);
 
-        //设置审批状态
-        //设置主表状态为处理中
-
-        if (type.equals("apply")){
-            //需要设置审批状态为处理中
-            outboundApplicationDO.setApproResult(BpmTaskStatusEnum.RUNNING.getStatus().toString());
-        }else if (type.equals("save")){
-            //需要设置审批状态为未开始
-            outboundApplicationDO.setApproResult(BpmTaskStatusEnum.WAIT.getStatus().toString());
-        }
 
         //设置编码
+        long id = DefaultIdentifierGenerator.getInstance().nextId(outboundApplicationDO);
 
         //如果编码为空或者id为空的情况下才需要设置编码
         if (StringUtils.isBlank(outboundApplicationDO.getCode()) || outboundApplicationDO.getId()==null){
@@ -298,6 +328,33 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
                 String newSuffix = String.format("%03d", num);
                 outboundApplicationDO.setCode(codePrefix + now + newSuffix);
             }
+
+            if (outboundApplicationDO.getId()==null){
+                outboundApplicationDO.setId(id);
+            }else{
+                id = outboundApplicationDO.getId();
+            }
+
+        }
+
+        //设置审批状态
+        //设置主表状态为处理中
+        if (type.equals("apply")){
+            //需要设置审批状态为处理中
+            outboundApplicationDO.setApproResult(BpmTaskStatusEnum.RUNNING.getStatus().toString());
+            //创建流程实例
+            HashMap<String, Object> processVariables = new HashMap<>();
+            processInstanceApi.createProcessInstance(SecurityFrameworkUtils.getLoginUserId(),
+                    new BpmProcessInstanceCreateReqDTO()
+                            .setBusinessKey(String.valueOf(id))
+                            .setProcessDefinitionKey(OUTBOUND_PROCESS_KEY)
+                            .setVariables(processVariables)
+            );
+
+            //todo 这里处理流程实例的提交
+        }else if (type.equals("save")){
+            //需要设置审批状态为未开始
+            outboundApplicationDO.setApproResult(BpmTaskStatusEnum.WAIT.getStatus().toString());
         }
 
         //插入数据
@@ -315,8 +372,6 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         // 如果是审批的逻辑，需要检查是否已经存在相同的明细正在处理中
 
         validateSubIsExistsProcess(subApplicationDOS);
-
-
 
 
         //后续需要出库的时候，需要扫码核验，否则不可以出库
@@ -428,5 +483,14 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         }
 
         // todo 删除的菌种不可以重新入库
+    }
+
+
+    /**
+     * 获取自身的代理对象，解决AOP生效的问题
+     * @return
+     */
+    private OutboundApplicationServiceImpl getSelf() {
+        return SpringUtil.getBean(getClass());
     }
 }
