@@ -33,4 +33,10 @@ public class RegenerationRecordRespVO {
     @ExcelProperty("备注")
     private String remark;
 
+
+    /**
+     * 样品编号
+     */
+    private String SpecimenCode;
+
 }

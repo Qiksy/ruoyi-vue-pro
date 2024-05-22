@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.strain.controller.admin.regenerationrecord;
 
+import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDO;
+import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.FreezingTubeStockPreEntryService;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -37,6 +39,9 @@ public class RegenerationRecordController {
 
     @Resource
     private RegenerationRecordService regenerationRecordService;
+
+    @Resource
+    private FreezingTubeStockPreEntryService freezingTubeStockPreEntryService;
 
     @PostMapping("/create")
     @Operation(summary = "创建样品复壮传代记录")
@@ -76,7 +81,19 @@ public class RegenerationRecordController {
     @PreAuthorize("@ss.hasPermission('strain:regeneration-record:query')")
     public CommonResult<PageResult<RegenerationRecordRespVO>> getRegenerationRecordPage(@Valid RegenerationRecordPageReqVO pageReqVO) {
         PageResult<RegenerationRecordDO> pageResult = regenerationRecordService.getRegenerationRecordPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, RegenerationRecordRespVO.class));
+
+        List<RegenerationRecordRespVO> list = BeanUtils.toBean(pageResult.getList(), RegenerationRecordRespVO.class);
+
+        for (RegenerationRecordRespVO vo : list) {
+            FreezingTubeStockPreEntryDO entry = freezingTubeStockPreEntryService.getFreezingTubeStockPreEntry(vo.getSpecimenId());
+            //设置编号
+            if (entry==null){
+                continue;
+            }
+            // todo 以后再优化 查询
+            vo.setSpecimenCode(entry.getCode());
+        }
+        return success(new PageResult<>(list, pageResult.getTotal()));
     }
 
     @GetMapping("/export-excel")
