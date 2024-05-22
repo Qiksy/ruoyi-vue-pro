@@ -118,6 +118,9 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
             //设置融冻次数
             entryDO.setThawFreezeCycleCount(1);
 
+            //设置代数
+            entryDO.setGenerationNumber(1);
+
             //过期时间=保存时间+有效期天数
             entryDO.setExpirationDate(createReqVO.getSaveDate().plusDays(microbeBasicInfoDO.getValidityPeriodDays()));
 
@@ -456,6 +459,10 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
             currentDate = currentDate.plusDays(validityPeriodDays);
 
             freezingTubeStockPreEntryDO.setExpirationDate(currentDate);
+
+            //融冻次数+1
+            freezingTubeStockPreEntryDO.setThawFreezeCycleCount(freezingTubeStockPreEntryDO.getThawFreezeCycleCount() + 1);
+
             freezingTubeStockPreEntryMapper.updateById(freezingTubeStockPreEntryDO);
 
 
