@@ -1,10 +1,12 @@
 package cn.iocoder.yudao.module.bpm.service.oa.listener;
 
+import cn.iocoder.yudao.module.bpm.enums.task.BpmTaskStatusEnum;
 import cn.iocoder.yudao.module.bpm.event.BpmProcessInstanceStatusEvent;
 import cn.iocoder.yudao.module.bpm.event.BpmProcessInstanceStatusEventListener;
 import cn.iocoder.yudao.module.strain.api.OutboundApplicationApi;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 菌种出库申请流程监听器
@@ -37,5 +39,10 @@ public class BpmStrainOutboundApplyListener extends BpmProcessInstanceStatusEven
         Long businessKey = Long.valueOf(event.getBusinessKey());
         Integer result = event.getStatus();
         outboundApplicationApi.updateResult(businessKey, result);
+
+        if(BpmTaskStatusEnum.APPROVE.getStatus().equals(result)){
+            //如果是审批通过了，需要更新菌种库的相关数据
+            outboundApplicationApi.updateStrainStock(businessKey);
+        }
     }
 }

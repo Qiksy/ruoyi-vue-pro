@@ -13,4 +13,10 @@ public interface OutboundApplicationApi {
      * @param result 审批结果
      */
     void updateResult(Long businessKey, Integer result);
+
+    /**
+     * 更新菌种库存
+     * @param businessKey 表单主键
+     */
+    void updateStrainStock(Long businessKey);
 }
