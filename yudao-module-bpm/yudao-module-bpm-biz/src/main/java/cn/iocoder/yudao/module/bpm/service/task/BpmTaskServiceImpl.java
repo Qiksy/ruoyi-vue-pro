@@ -257,7 +257,7 @@ public class BpmTaskServiceImpl implements BpmTaskService {
 
     /**
      * 如果父任务是有前后【加签】的任务，如果它【加签】出来的子任务都被处理，需要处理父任务：
-     *
+     * <p>
      * 1. 如果是【向前】加签，则需要重新激活父任务，让它可以被审批
      * 2. 如果是【向后】加签，则需要完成父任务，让它完成审批
      *
@@ -290,7 +290,7 @@ public class BpmTaskServiceImpl implements BpmTaskService {
             taskService.resolveTask(parentTaskId);
             // 3.1.2 更新流程任务 status
             updateTaskStatus(parentTaskId, BpmTaskStatusEnum.RUNNING.getStatus());
-        // 3.2 情况二：处理向【向后】加签
+            // 3.2 情况二：处理向【向后】加签
         } else if (BpmTaskSignTypeEnum.AFTER.getType().equals(scopeType)) {
             // 只有 parentTask 处于 APPROVING 的情况下，才可以继续 complete 完成
             // 否则，一个未审批的 parentTask 任务，在加签出来的任务都被减签的情况下，就直接完成审批，这样会存在问题
@@ -352,7 +352,7 @@ public class BpmTaskServiceImpl implements BpmTaskService {
     /**
      * 更新流程任务的 status 状态
      *
-     * @param id    任务编号
+     * @param id     任务编号
      * @param status 状态
      */
     private void updateTaskStatus(String id, Integer status) {
@@ -362,7 +362,7 @@ public class BpmTaskServiceImpl implements BpmTaskService {
     /**
      * 更新流程任务的 status 状态、reason 理由
      *
-     * @param id 任务编号
+     * @param id     任务编号
      * @param status 状态
      * @param reason 理由（审批通过、审批不通过的理由）
      */
@@ -670,7 +670,7 @@ public class BpmTaskServiceImpl implements BpmTaskService {
         List<Long> currentAssigneeList = convertListByFlatMap(taskList, task -> // 需要考虑 owner 的情况，因为向后加签时，它暂时没 assignee 而是 owner
                 Stream.of(NumberUtils.parseLong(task.getAssignee()), NumberUtils.parseLong(task.getOwner())));
         if (CollUtil.containsAny(currentAssigneeList, reqVO.getUserIds())) {
-            List<AdminUserRespDTO> userList = adminUserApi.getUserList( CollUtil.intersection(currentAssigneeList, reqVO.getUserIds()));
+            List<AdminUserRespDTO> userList = adminUserApi.getUserList(CollUtil.intersection(currentAssigneeList, reqVO.getUserIds()));
             throw exception(TASK_SIGN_CREATE_USER_REPEAT, String.join(",", convertList(userList, AdminUserRespDTO::getNickname)));
         }
         return taskEntity;
@@ -679,8 +679,8 @@ public class BpmTaskServiceImpl implements BpmTaskService {
     /**
      * 创建加签子任务
      *
-     * @param userIds 被加签的用户 ID
-     * @param taskEntity        被加签的任务
+     * @param userIds    被加签的用户 ID
+     * @param taskEntity 被加签的任务
      */
     private void createSignTaskList(List<String> userIds, TaskEntityImpl taskEntity) {
         if (CollUtil.isEmpty(userIds)) {
@@ -709,7 +709,7 @@ public class BpmTaskServiceImpl implements BpmTaskService {
         // 2.1 向前加签，设置审批人
         if (BpmTaskSignTypeEnum.BEFORE.getType().equals(parentTask.getScopeType())) {
             task.setAssignee(assignee);
-        // 2.2 向后加签，设置 owner 不设置 assignee 是因为不能同时审批，需要等父任务完成
+            // 2.2 向后加签，设置 owner 不设置 assignee 是因为不能同时审批，需要等父任务完成
         } else {
             task.setOwner(assignee);
         }
@@ -833,4 +833,29 @@ public class BpmTaskServiceImpl implements BpmTaskService {
         return convertMap(tasks, Task::getId, Task::getName);
     }
 
+
+    /**
+     * @param loginUserId 登录用户id
+     * @return 统计数据
+     */
+    @Override
+    public BpmTaskStatisticsRespVO getTaskStatistics(Long loginUserId) {
+        // 查询我发起的流程实例
+        Long myStartCount = processInstanceService.getProcessInstanceListByStartUserId(loginUserId);
+
+        //查询已办任务数量
+        Long myDoneCount = historyService.createHistoricTaskInstanceQuery()
+                .taskAssignee(loginUserId.toString())
+                .finished()
+                .count();
+
+        //查询待办任务数量
+        Long myTodoCount = taskService.createTaskQuery().taskAssignee(loginUserId.toString()).active().count();
+
+
+        return BpmTaskStatisticsRespVO.builder()
+                .myStartCount(myStartCount)
+                .doneCount(myDoneCount)
+                .todoCount(myTodoCount).build();
+    }
 }

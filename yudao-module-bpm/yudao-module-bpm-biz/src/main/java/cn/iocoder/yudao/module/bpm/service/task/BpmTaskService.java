@@ -186,4 +186,9 @@ public interface BpmTaskService {
      */
     Map<String, String> getTaskNameByTaskIds(Collection<String> taskIds);
 
+    /**
+     * @param loginUserId 登录用户id
+     * @return 统计数据
+     */
+    BpmTaskStatisticsRespVO getTaskStatistics(Long loginUserId);
 }

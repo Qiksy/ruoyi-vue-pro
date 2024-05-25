@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import org.flowable.bpmn.model.UserTask;
 import org.flowable.engine.history.HistoricProcessInstance;
@@ -226,6 +227,14 @@ public class BpmTaskController {
         Map<Long, DeptRespDTO> deptMap = deptApi.getDeptMap(
                 convertSet(userMap.values(), AdminUserRespDTO::getDeptId));
         return success(BpmTaskConvert.INSTANCE.buildTaskListByParentTaskId(taskList, userMap, deptMap));
+    }
+
+
+    @GetMapping("/statistics")
+    @Operation(summary = "获取流程的统计数据，提供给首页展示（已发起，已办，代办）")
+    @PermitAll
+    public CommonResult<BpmTaskStatisticsRespVO> getTaskStatistics() {
+        return success(taskService.getTaskStatistics(getLoginUserId()));
     }
 
 }

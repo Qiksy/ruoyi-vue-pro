@@ -141,4 +141,10 @@ public interface BpmProcessInstanceService {
      */
     void updateProcessInstanceReject(String id, String reason);
 
+    /**
+     * 获取某个用户发起的流程实例数量
+     * @param loginUserId 用户id
+     * @return 流程实例数量
+     */
+    Long getProcessInstanceListByStartUserId(Long loginUserId);
 }
