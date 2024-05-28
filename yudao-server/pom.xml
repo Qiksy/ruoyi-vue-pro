@@ -155,40 +155,40 @@
 
     </dependencies>
 
-    <profiles>
-        <!-- 本地开发环境 -->
-        <profile>
-            <id>local</id>
-            <properties>
-                <env>local</env>
-            </properties>
-            <activation>
-                <!--默认开发环境-->
-                <activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
-        <!-- 开发环境 -->
-        <profile>
-            <id>dev</id>
-            <properties>
-                <env>dev</env>
-            </properties>
-        </profile>
-        <!-- 生产环境 -->
-        <profile>
-            <id>ps</id>
-            <properties>
-                <env>ps</env>
-            </properties>
-        </profile>
-        <!--正式环境 上面哪个不用-->
-        <profile>
-            <id>prod</id>
-            <properties>
-                <env>prod</env>
-            </properties>
-        </profile>
-    </profiles>
+    <!--<profiles>-->
+    <!--    &lt;!&ndash; 本地开发环境 &ndash;&gt;-->
+    <!--    <profile>-->
+    <!--        <id>local</id>-->
+    <!--        <properties>-->
+    <!--            <env>local</env>-->
+    <!--        </properties>-->
+    <!--        <activation>-->
+    <!--            &lt;!&ndash;默认开发环境&ndash;&gt;-->
+    <!--            <activeByDefault>true</activeByDefault>-->
+    <!--        </activation>-->
+    <!--    </profile>-->
+    <!--    &lt;!&ndash; 开发环境 &ndash;&gt;-->
+    <!--    <profile>-->
+    <!--        <id>dev</id>-->
+    <!--        <properties>-->
+    <!--            <env>dev</env>-->
+    <!--        </properties>-->
+    <!--    </profile>-->
+    <!--    &lt;!&ndash; 生产环境 &ndash;&gt;-->
+    <!--    <profile>-->
+    <!--        <id>ps</id>-->
+    <!--        <properties>-->
+    <!--            <env>ps</env>-->
+    <!--        </properties>-->
+    <!--    </profile>-->
+    <!--    &lt;!&ndash;正式环境 上面哪个不用&ndash;&gt;-->
+    <!--    <profile>-->
+    <!--        <id>prod</id>-->
+    <!--        <properties>-->
+    <!--            <env>prod</env>-->
+    <!--        </properties>-->
+    <!--    </profile>-->
+    <!--</profiles>-->
     <build>
         <!-- 设置构建的 jar 包名 -->
         <finalName>${project.artifactId}</finalName>
@@ -207,18 +207,18 @@
                 </executions>
             </plugin>
         </plugins>
-        <resources>
-            <resource>
-                <!--   指定配置文件的位置  -->
-                <directory>src/main/resources</directory>
-                <includes>
-                    <!--   读取resources下的所有文件，include表示指定文件内的，相对的还有excludes ，排除其下的文件 -->
-                    <include>**/*</include>
-                </includes>
-                <!-- 开启替换标签，比如我们的'@env'就是通过这个替换的         -->
-                <filtering>true</filtering>
-            </resource>
-        </resources>
+        <!--<resources>-->
+        <!--    <resource>-->
+        <!--        &lt;!&ndash;   指定配置文件的位置  &ndash;&gt;-->
+        <!--        <directory>src/main/resources</directory>-->
+        <!--        <includes>-->
+        <!--            &lt;!&ndash;   读取resources下的所有文件，include表示指定文件内的，相对的还有excludes ，排除其下的文件 &ndash;&gt;-->
+        <!--            <include>**/*</include>-->
+        <!--        </includes>-->
+        <!--        &lt;!&ndash; 开启替换标签，比如我们的'@env'就是通过这个替换的         &ndash;&gt;-->
+        <!--        <filtering>true</filtering>-->
+        <!--    </resource>-->
+        <!--</resources>-->
     </build>
 
 </project>
