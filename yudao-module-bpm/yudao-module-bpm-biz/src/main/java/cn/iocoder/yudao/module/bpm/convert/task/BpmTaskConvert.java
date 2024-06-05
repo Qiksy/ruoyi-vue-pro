@@ -8,7 +8,6 @@ import cn.iocoder.yudao.framework.common.util.number.NumberUtils;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.bpm.controller.admin.task.vo.instance.BpmProcessInstanceRespVO;
 import cn.iocoder.yudao.module.bpm.controller.admin.task.vo.task.BpmTaskRespVO;
-import cn.iocoder.yudao.module.bpm.controller.admin.task.vo.task.MyBpmTaskRespVO;
 import cn.iocoder.yudao.module.bpm.dal.dataobject.definition.BpmFormDO;
 import cn.iocoder.yudao.module.bpm.framework.flowable.core.util.FlowableUtils;
 import cn.iocoder.yudao.module.bpm.service.message.dto.BpmMessageSendWhenTaskCreatedReqDTO;
@@ -54,20 +53,7 @@ public interface BpmTaskConvert {
     }
 
 
-    //这个用来自定义返回掉量的结果
-    default PageResult<MyBpmTaskRespVO> buildTodoTaskForDeclinePage(PageResult<Task> pageResult,
-                                                        Map<String, ProcessInstance> processInstanceMap,
-                                                        Map<Long, AdminUserRespDTO> userMap) {
-        return BeanUtils.toBean(pageResult, MyBpmTaskRespVO.class, taskVO -> {
-            ProcessInstance processInstance = processInstanceMap.get(taskVO.getProcessInstanceId());
-            if (processInstance == null) {
-                return;
-            }
-            taskVO.setProcessInstance(BeanUtils.toBean(processInstance, BpmTaskRespVO.ProcessInstance.class));
-            AdminUserRespDTO startUser = userMap.get(NumberUtils.parseLong(processInstance.getStartUserId()));
-            taskVO.getProcessInstance().setStartUser(BeanUtils.toBean(startUser, BpmProcessInstanceRespVO.User.class));
-        });
-    }
+
 
     default PageResult<BpmTaskRespVO> buildTaskPage(PageResult<HistoricTaskInstance> pageResult,
                                                     Map<String, HistoricProcessInstance> processInstanceMap,
