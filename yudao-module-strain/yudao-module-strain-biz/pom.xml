@@ -24,6 +24,12 @@
             <version>${revision}</version>
         </dependency>
 
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-module-system-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
 
         <!--业务组件-->
 
@@ -55,13 +61,18 @@
             <artifactId>yudao-spring-boot-starter-test</artifactId>
         </dependency>
 
-        <!--引入系统模块-->
+        <!--引入模块中的定时任务-->
         <dependency>
             <groupId>cn.iocoder.boot</groupId>
-            <artifactId>yudao-module-system-biz</artifactId>
-            <version>${revision}</version>
-            <scope>compile</scope>
+            <artifactId>yudao-spring-boot-starter-job</artifactId>
         </dependency>
+
+        <!--引入模块中的redis模块-->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-redis</artifactId>
+        </dependency>
+
 
         <!--引入BPM模块-->
         <dependency>
@@ -70,6 +81,8 @@
             <version>${revision}</version>
             <scope>compile</scope>
         </dependency>
+
+
 
     </dependencies>
 

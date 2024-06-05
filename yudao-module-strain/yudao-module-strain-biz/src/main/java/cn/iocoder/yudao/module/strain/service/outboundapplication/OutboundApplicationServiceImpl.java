@@ -17,11 +17,11 @@ import cn.iocoder.yudao.module.strain.dal.mysql.outboundsubapplication.OutboundS
 import cn.iocoder.yudao.module.strain.enums.InventoryStatisEnum;
 import cn.iocoder.yudao.module.strain.enums.OutboundTypeConstants;
 import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.FreezingTubeStockPreEntryService;
+import cn.iocoder.yudao.module.system.api.permission.PermissionApi;
+import cn.iocoder.yudao.module.system.api.permission.RoleApi;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import cn.iocoder.yudao.module.system.enums.permission.RoleCodeEnum;
-import cn.iocoder.yudao.module.system.service.permission.PermissionService;
-import cn.iocoder.yudao.module.system.service.permission.RoleService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
@@ -75,10 +75,8 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
 
 
     @Resource
-    private PermissionService permissionService;
+    private PermissionApi permissionApi;
 
-    @Resource
-    private RoleService roleService;
 
 
     @Resource
@@ -279,7 +277,7 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
 
         PageResult<OutboundApplicationDO> pageResult;
 
-        if (permissionService.hasAnyRoles(loginUserId, RoleCodeEnum.SUPER_ADMIN.getCode())) {
+        if (permissionApi.hasAnyRoles(loginUserId, RoleCodeEnum.SUPER_ADMIN.getCode())) {
             // 超级管理员有所有的权限
             pageResult =  outboundApplicationMapper.selectPage(pageReqVO);
         }else {
@@ -438,7 +436,6 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-
     public void approveOutboundApplication(OutboundApplicationCreateReqVO updateReqVO) {
         String approveResult = updateReqVO.getApproResult();
 

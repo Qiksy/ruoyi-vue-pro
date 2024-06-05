@@ -8,7 +8,8 @@ import cn.iocoder.yudao.module.infra.api.config.dto.ConfigRespDO;
 import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningReqVO;
 import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningRespVO;
 import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.FreezingTubeStockPreEntryService;
-import cn.iocoder.yudao.module.system.service.mail.MailSendService;
+import cn.iocoder.yudao.module.system.api.mail.MailSendApi;
+import cn.iocoder.yudao.module.system.api.mail.dto.MailSendSingleToUserReqDTO;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -32,7 +33,7 @@ public class ExpiredInfoMessageJob implements JobHandler {
     private FreezingTubeStockPreEntryService freezingTubeStockPreEntryService;
 
     @Resource
-    private MailSendService mailSendService;
+    private MailSendApi mailSendApi;
 
 
     @Resource
@@ -96,7 +97,12 @@ public class ExpiredInfoMessageJob implements JobHandler {
         templateParams.put("list", sb.toString());
         //批量发送邮件
         for (String email : emails) {
-            mailSendService.sendSingleMailToAdmin(email, SecurityFrameworkUtils.getLoginUserId(), "strain_expired_message", templateParams);
+            MailSendSingleToUserReqDTO reqDTO = new MailSendSingleToUserReqDTO();
+            reqDTO.setMail(email);
+            reqDTO.setUserId(SecurityFrameworkUtils.getLoginUserId());
+            reqDTO.setTemplateCode("strain_expired_message");
+            reqDTO.setTemplateParams(templateParams);
+            mailSendApi.sendSingleMailToAdmin(reqDTO);
         }
     }
 }

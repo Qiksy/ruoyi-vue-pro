@@ -1,7 +1,7 @@
 package cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo;
 
 import lombok.Data;
-import org.jetbrains.annotations.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * 传代 / 复壮 请求 VO
