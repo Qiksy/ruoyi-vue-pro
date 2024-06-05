@@ -7,6 +7,9 @@ import java.time.LocalDateTime;
 @Data
 public class ExpiredWarningRespVO {
 
+    /**
+     * 样品id
+     */
     private Long id;
 
     private String specimenCode;
@@ -29,6 +32,9 @@ public class ExpiredWarningRespVO {
 
     private String temperature;
 
+    /**
+     * 槽位id
+     */
     private Long stockId;
 
     private String positionStr;

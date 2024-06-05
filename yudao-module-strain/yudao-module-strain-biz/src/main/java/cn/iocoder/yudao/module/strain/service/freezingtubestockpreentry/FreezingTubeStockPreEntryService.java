@@ -8,9 +8,8 @@ import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.Expired
 import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.RejuvenateReqVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.*;
-import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDO;
+import cn.iocoder.yudao.module.strain.dal.dataobject.specimen.SpecimenInfoDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 冷冻管库存预录入 Service 接口
@@ -47,7 +46,7 @@ public interface FreezingTubeStockPreEntryService {
      * @param id 编号
      * @return 冷冻管库存预录入
      */
-    FreezingTubeStockPreEntryDO getFreezingTubeStockPreEntry(Long id);
+    SpecimenInfoDO getFreezingTubeStockPreEntry(Long id);
 
     /**
      * 获得冷冻管库存预录入分页
@@ -55,7 +54,7 @@ public interface FreezingTubeStockPreEntryService {
      * @param pageReqVO 分页查询
      * @return 冷冻管库存预录入分页
      */
-    PageResult<FreezingTubeStockPreEntryDO> getFreezingTubeStockPreEntryPage(FreezingTubeStockPreEntryPageReqVO pageReqVO);
+    PageResult<SpecimenInfoDO> getFreezingTubeStockPreEntryPage(FreezingTubeStockPreEntryPageReqVO pageReqVO);
 
     /**
      * 连表查询分页

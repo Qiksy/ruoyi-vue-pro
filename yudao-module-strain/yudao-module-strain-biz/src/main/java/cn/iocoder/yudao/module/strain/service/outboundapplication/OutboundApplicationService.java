@@ -63,7 +63,7 @@ public interface OutboundApplicationService {
      * @param pageReqVO 分页查询
      * @return 出库申请分页
      */
-    PageResult<OutboundApplicationDO> getOutboundApplicationPageSelf(OutboundApplicationPageReqVO pageReqVO);
+    PageResult<OutboundApplicationRespVO> getOutboundApplicationPageSelf(OutboundApplicationPageReqVO pageReqVO);
 
     Long createAndApplyOutboundApplication(OutboundApplicationCreateReqVO createReqVO);
 
@@ -79,5 +79,13 @@ public interface OutboundApplicationService {
      * 审批通过或者不通过
      * @param updateReqVO 单据数据
      */
+    @Deprecated(since = "2.1.0", forRemoval = true )
     void approveOutboundApplication(OutboundApplicationCreateReqVO updateReqVO);
+
+    /**
+     * 新增子表的样品信息
+     * @param updateReqVO vo
+     * @return 是否成功
+     */
+    boolean addSubList(OutboundApplicationSubInfoUpdateReqVO updateReqVO);
 }

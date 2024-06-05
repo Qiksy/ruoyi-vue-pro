@@ -27,7 +27,10 @@ public class OutboundApplicationPageReqVO extends PageParam {
     @Schema(description = "是否会重新入库 0否 1是")
     private Boolean isRestocked;
 
-    @Schema(description = "出库类型：1正常出库 2销毁出库", example = "2")
+    /**
+     * 详情看 {@link cn.iocoder.yudao.module.strain.enums.OutboundTypeConstants}
+     */
+    @Schema(description = "出库类型：1正常出库 2销毁出库 3 消耗出库 4 传代/复壮出库", example = "2")
     private String type;
 
     @Schema(description = "审批流程实例id", example = "20530")

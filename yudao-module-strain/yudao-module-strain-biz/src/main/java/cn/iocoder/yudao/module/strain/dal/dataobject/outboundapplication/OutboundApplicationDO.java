@@ -43,7 +43,7 @@ public class OutboundApplicationDO extends BaseDO {
     /**
      * 是否会重新入库 0否 1是
      */
-    private Boolean isRestocked;
+//    private Boolean isRestocked;
     /**
      * 出库类型：1正常出库 2销毁出库
      */

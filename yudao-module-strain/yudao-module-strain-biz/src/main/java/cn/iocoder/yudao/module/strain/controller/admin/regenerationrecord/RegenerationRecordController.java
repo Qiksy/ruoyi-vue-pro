@@ -1,6 +1,6 @@
 package cn.iocoder.yudao.module.strain.controller.admin.regenerationrecord;
 
-import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDO;
+import cn.iocoder.yudao.module.strain.dal.dataobject.specimen.SpecimenInfoDO;
 import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.FreezingTubeStockPreEntryService;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 
-import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;
@@ -85,7 +84,7 @@ public class RegenerationRecordController {
         List<RegenerationRecordRespVO> list = BeanUtils.toBean(pageResult.getList(), RegenerationRecordRespVO.class);
 
         for (RegenerationRecordRespVO vo : list) {
-            FreezingTubeStockPreEntryDO entry = freezingTubeStockPreEntryService.getFreezingTubeStockPreEntry(vo.getSpecimenId());
+            SpecimenInfoDO entry = freezingTubeStockPreEntryService.getFreezingTubeStockPreEntry(vo.getSpecimenId());
             //设置编号
             if (entry==null){
                 continue;

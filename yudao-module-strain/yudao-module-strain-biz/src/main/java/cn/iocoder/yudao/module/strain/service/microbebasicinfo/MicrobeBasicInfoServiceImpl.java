@@ -1,19 +1,16 @@
 package cn.iocoder.yudao.module.strain.service.microbebasicinfo;
 
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
-import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.FreezingTubeStockPreEntryRespVO;
-import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockinfo.FreezingTubeStockInfoDO;
-import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDO;
+import cn.iocoder.yudao.module.strain.dal.dataobject.specimen.SpecimenInfoDO;
 import cn.iocoder.yudao.module.strain.dal.mysql.culturemediumdatainfo.CultureMediumDataInfoMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockinfo.FreezingTubeStockInfoMapper;
-import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.FreezingTubeStockPreEntryMapper;
+import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.SpecimenInfoMapper;
 import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.FreezingTubeStockPreEntryService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,7 +18,6 @@ import java.util.stream.Collectors;
 import cn.iocoder.yudao.module.strain.controller.admin.microbebasicinfo.vo.*;
 import cn.iocoder.yudao.module.strain.dal.dataobject.microbebasicinfo.MicrobeBasicInfoDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.strain.dal.mysql.microbebasicinfo.MicrobeBasicInfoMapper;
@@ -48,7 +44,7 @@ public class MicrobeBasicInfoServiceImpl implements MicrobeBasicInfoService {
 
     //查询样品数据
     @Resource
-    private FreezingTubeStockPreEntryMapper freezingTubeStockPreEntryMapper;
+    private SpecimenInfoMapper specimenInfoMapper;
 
 
     @Resource
@@ -104,9 +100,9 @@ public class MicrobeBasicInfoServiceImpl implements MicrobeBasicInfoService {
     }
 
     private void validateMicrobeSpecimenExists(Long id) {
-        LambdaQueryWrapperX<FreezingTubeStockPreEntryDO> lambdaQueryWrapperX = new LambdaQueryWrapperX<FreezingTubeStockPreEntryDO>()
-                .eq(FreezingTubeStockPreEntryDO::getMicrobeId, id);
-        Long count = freezingTubeStockPreEntryMapper.selectCount(lambdaQueryWrapperX);
+        LambdaQueryWrapperX<SpecimenInfoDO> lambdaQueryWrapperX = new LambdaQueryWrapperX<SpecimenInfoDO>()
+                .eq(SpecimenInfoDO::getMicrobeId, id);
+        Long count = specimenInfoMapper.selectCount(lambdaQueryWrapperX);
         if (count > 0) {
             throw exception(MICROBE_BASIC_INFO_EXISTS_FREEZING_TUBE_STOCK_PRE_ENTRY);
         }

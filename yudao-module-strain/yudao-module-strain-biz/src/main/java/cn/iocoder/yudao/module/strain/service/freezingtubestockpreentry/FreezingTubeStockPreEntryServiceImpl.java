@@ -20,7 +20,6 @@ import cn.iocoder.yudao.module.strain.dal.mysql.storageareainfo.StorageAreaInfoM
 import cn.iocoder.yudao.module.strain.enums.InventoryStatisEnum;
 import cn.iocoder.yudao.module.strain.service.microbebasicinfo.MicrobeBasicInfoService;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.context.annotation.Lazy;
@@ -34,11 +33,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.*;
-import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDO;
+import cn.iocoder.yudao.module.strain.dal.dataobject.specimen.SpecimenInfoDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
-import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.FreezingTubeStockPreEntryMapper;
+import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.SpecimenInfoMapper;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.strain.enums.ErrorCodeConstants.*;
@@ -55,7 +54,7 @@ import static cn.iocoder.yudao.module.strain.enums.RejuvenateTypeConstants.REJUV
 public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPreEntryService {
 
     @Resource
-    private FreezingTubeStockPreEntryMapper freezingTubeStockPreEntryMapper;
+    private SpecimenInfoMapper specimenInfoMapper;
 
     @Resource
     private MicrobeBasicInfoMapper microbeBasicInfoMapper;  //菌种信息
@@ -104,10 +103,10 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
         String microbeCode = microbeBasicInfoDO.getCode();
 
         // 获取数量，然后构造多个对象，并且批量插入
-        List<FreezingTubeStockPreEntryDO> doList = new ArrayList<>();
+        List<SpecimenInfoDO> doList = new ArrayList<>();
 
         for (int i = 0; i < createReqVO.getNum(); i++) {
-            FreezingTubeStockPreEntryDO entryDO = new FreezingTubeStockPreEntryDO();
+            SpecimenInfoDO entryDO = new SpecimenInfoDO();
             entryDO.setTubeId(createReqVO.getTubeId()); // 冻藏管
             entryDO.setRemark(createReqVO.getRemark()); // 备注
             entryDO.setMicrobeId(createReqVO.getMicrobeId()); // 菌种
@@ -130,9 +129,9 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
             doList.add(entryDO);
         }
 
-        freezingTubeStockPreEntryMapper.insertBatch(doList);
+        specimenInfoMapper.insertBatch(doList);
 
-        return doList.stream().map(FreezingTubeStockPreEntryDO::getId).toList();//返回id
+        return doList.stream().map(SpecimenInfoDO::getId).toList();//返回id
     }
 
     /**
@@ -147,11 +146,11 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
         //菌种类型
 //        microbeCode = String.format("%02d", Integer.parseInt(microbeCode));
 
-        FreezingTubeStockPreEntryDO entryDO = freezingTubeStockPreEntryMapper.selectOne(new LambdaQueryWrapperX<FreezingTubeStockPreEntryDO>()
-                .select(FreezingTubeStockPreEntryDO::getCode)
-                .likeRight(FreezingTubeStockPreEntryDO::getCode, (microbeCode + "-"))
+        SpecimenInfoDO entryDO = specimenInfoMapper.selectOne(new LambdaQueryWrapperX<SpecimenInfoDO>()
+                .select(SpecimenInfoDO::getCode)
+                .likeRight(SpecimenInfoDO::getCode, (microbeCode + "-"))
                 .last("limit 1")
-                .orderByDesc(FreezingTubeStockPreEntryDO::getCode));
+                .orderByDesc(SpecimenInfoDO::getCode));
 
 
         int serialNumber;
@@ -174,8 +173,8 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
         // 校验存在
         validateFreezingTubeStockPreEntryExists(updateReqVO.getId());
         // 更新
-        FreezingTubeStockPreEntryDO updateObj = BeanUtils.toBean(updateReqVO, FreezingTubeStockPreEntryDO.class);
-        freezingTubeStockPreEntryMapper.updateById(updateObj);
+        SpecimenInfoDO updateObj = BeanUtils.toBean(updateReqVO, SpecimenInfoDO.class);
+        specimenInfoMapper.updateById(updateObj);
     }
 
     @Override
@@ -183,27 +182,27 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
         // 校验存在
         validateFreezingTubeStockPreEntryExists(id);
         // 校验是否已经入库了
-        if (!Objects.equals(freezingTubeStockPreEntryMapper.selectById(id).getStatus(), InventoryStatisEnum.NOT_IN_STOCK.getValue())) {
+        if (!Objects.equals(specimenInfoMapper.selectById(id).getStatus(), InventoryStatisEnum.NOT_IN_STOCK.getValue())) {
             throw exception(FREEZING_TUBE_STOCK_PRE_ENTRY_IN_STOCK);
         }
         // 删除
-        freezingTubeStockPreEntryMapper.deleteById(id);
+        specimenInfoMapper.deleteById(id);
     }
 
     private void validateFreezingTubeStockPreEntryExists(Long id) {
-        if (freezingTubeStockPreEntryMapper.selectById(id) == null) {
+        if (specimenInfoMapper.selectById(id) == null) {
             throw exception(FREEZING_TUBE_STOCK_PRE_ENTRY_NOT_EXISTS);
         }
     }
 
     @Override
-    public FreezingTubeStockPreEntryDO getFreezingTubeStockPreEntry(Long id) {
-        return freezingTubeStockPreEntryMapper.selectById(id);
+    public SpecimenInfoDO getFreezingTubeStockPreEntry(Long id) {
+        return specimenInfoMapper.selectById(id);
     }
 
     @Override
-    public PageResult<FreezingTubeStockPreEntryDO> getFreezingTubeStockPreEntryPage(FreezingTubeStockPreEntryPageReqVO pageReqVO) {
-        return freezingTubeStockPreEntryMapper.selectPage(pageReqVO);
+    public PageResult<SpecimenInfoDO> getFreezingTubeStockPreEntryPage(FreezingTubeStockPreEntryPageReqVO pageReqVO) {
+        return specimenInfoMapper.selectPage(pageReqVO);
     }
 
     /**
@@ -215,7 +214,7 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
     @Override
     public PageResult<FreezingTubeStockPreEntryRespVO> getFreezingTubeStockPreEntryPage2(FreezingTubeStockPreEntryPageReqVO pageReqVO) {
         IPage<FreezingTubeStockPreEntryRespVO> iPage = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
-        freezingTubeStockPreEntryMapper.selectPage2(iPage, pageReqVO);
+        specimenInfoMapper.selectPage2(iPage, pageReqVO);
 
         // 查询这些样品的位置信息
         List<Long> list = iPage.getRecords().stream().map(FreezingTubeStockPreEntryRespVO::getStockId).filter(
@@ -234,7 +233,7 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
     @Override
     public PageResult<ExpiredWarningRespVO> getExpiredWaringPage(ExpiredWarningReqVO pageReqVO) {
         IPage<ExpiredWarningRespVO> iPage = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
-        freezingTubeStockPreEntryMapper.selectPage4(iPage, pageReqVO);
+        specimenInfoMapper.selectPage4(iPage, pageReqVO);
 // 查询这些样品的位置信息
         List<Long> list = iPage.getRecords().stream().map(ExpiredWarningRespVO::getStockId).filter(
                 Objects::nonNull
@@ -258,7 +257,7 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
     @Override
     public PageResult<FreezingTubeStockPreEntryRespVO> getFreezingTubeStockPreEntryPage3(FreezingTubeStockPreEntryPageReqVO pageReqVO) {
         IPage<FreezingTubeStockPreEntryRespVO> iPage = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
-        freezingTubeStockPreEntryMapper.selectPage3(iPage, pageReqVO);
+        specimenInfoMapper.selectPage3(iPage, pageReqVO);
 
         // 查询这些样品的位置信息
         List<Long> list = iPage.getRecords().stream().map(FreezingTubeStockPreEntryRespVO::getStockId).filter(
@@ -335,13 +334,13 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
 
     @Override
     public List<FreezingTubeStockPreEntryRespVO> getMicrobeBasicInfoStorageList(Long id) {
-        List<FreezingTubeStockPreEntryDO> list = freezingTubeStockPreEntryMapper.selectListByMicrobeId(id);
+        List<SpecimenInfoDO> list = specimenInfoMapper.selectListByMicrobeId(id);
 
 
         List<FreezingTubeStockPreEntryRespVO> result = BeanUtils.toBean(list, FreezingTubeStockPreEntryRespVO.class);
 
         //获取槽位id
-        Set<Long> collect = list.stream().map(FreezingTubeStockPreEntryDO::getId).collect(Collectors.toSet());
+        Set<Long> collect = list.stream().map(SpecimenInfoDO::getId).collect(Collectors.toSet());
         if (collect.isEmpty()) {
             return result;
         }
@@ -390,17 +389,17 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
 
         if (type.equals("VALUE")) {
             // 把所有的数据的过期事件，更新到指定值
-            freezingTubeStockPreEntryMapper.update(
-                    new LambdaUpdateWrapper<FreezingTubeStockPreEntryDO>()
-                            .in(FreezingTubeStockPreEntryDO::getId,Arrays.asList(reqVO.getIds()))
-                            .set(FreezingTubeStockPreEntryDO::getExpirationDate, reqVO.getExpiredDate()));
+            specimenInfoMapper.update(
+                    new LambdaUpdateWrapper<SpecimenInfoDO>()
+                            .in(SpecimenInfoDO::getId,Arrays.asList(reqVO.getIds()))
+                            .set(SpecimenInfoDO::getExpirationDate, reqVO.getExpiredDate()));
         } else if (type.equals("EXPIRATION")) {
             // Your code here
-            List<FreezingTubeStockPreEntryDO> entryDOS = freezingTubeStockPreEntryMapper.selectList(new LambdaQueryWrapperX<FreezingTubeStockPreEntryDO>()
-                    .in(FreezingTubeStockPreEntryDO::getId, Arrays.asList(reqVO.getIds())));
+            List<SpecimenInfoDO> entryDOS = specimenInfoMapper.selectList(new LambdaQueryWrapperX<SpecimenInfoDO>()
+                    .in(SpecimenInfoDO::getId, Arrays.asList(reqVO.getIds())));
 
             // 批量更新
-            for (FreezingTubeStockPreEntryDO entryDO : entryDOS) {
+            for (SpecimenInfoDO entryDO : entryDOS) {
 
 
 
@@ -417,7 +416,7 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
                 entryDO.setExpirationDate(currentDate);
 
                 // 更新就删缓存
-                freezingTubeStockPreEntryMapper.updateById(entryDO);
+                specimenInfoMapper.updateById(entryDO);
             }
 
         } else {
@@ -435,13 +434,13 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
     public void rejuvenate(RejuvenateReqVO reqVO) {
         Long[] ids = reqVO.getIds();
 
-        LambdaQueryWrapperX<FreezingTubeStockPreEntryDO> wrapper = new LambdaQueryWrapperX<>();
-        wrapper.in(FreezingTubeStockPreEntryDO::getId, Arrays.asList(ids));
+        LambdaQueryWrapperX<SpecimenInfoDO> wrapper = new LambdaQueryWrapperX<>();
+        wrapper.in(SpecimenInfoDO::getId, Arrays.asList(ids));
 
         // 查询出来，进行更新
-        List<FreezingTubeStockPreEntryDO> doList = freezingTubeStockPreEntryMapper.selectList(wrapper);
+        List<SpecimenInfoDO> doList = specimenInfoMapper.selectList(wrapper);
 
-        for (FreezingTubeStockPreEntryDO freezingTubeStockPreEntryDO : doList) {
+        for (SpecimenInfoDO freezingTubeStockPreEntryDO : doList) {
             Integer generationNumber = freezingTubeStockPreEntryDO.getGenerationNumber();
             if (generationNumber == null) {
                 generationNumber = 0;
@@ -463,7 +462,7 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
             //融冻次数+1
             freezingTubeStockPreEntryDO.setThawFreezeCycleCount(freezingTubeStockPreEntryDO.getThawFreezeCycleCount() + 1);
 
-            freezingTubeStockPreEntryMapper.updateById(freezingTubeStockPreEntryDO);
+            specimenInfoMapper.updateById(freezingTubeStockPreEntryDO);
 
 
             //构建日志对象

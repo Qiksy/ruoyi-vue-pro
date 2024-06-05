@@ -3,17 +3,12 @@ package cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry;
 import java.util.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
-import cn.iocoder.yudao.framework.mybatis.core.query.MPJLambdaWrapperX;
 import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningReqVO;
 import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningRespVO;
-import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDO;
-import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDetailDO;
-import cn.iocoder.yudao.module.system.dal.dataobject.user.AdminUserDO;
+import cn.iocoder.yudao.module.strain.dal.dataobject.specimen.SpecimenInfoDO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.*;
 import org.apache.ibatis.annotations.Param;
@@ -24,28 +19,28 @@ import org.apache.ibatis.annotations.Param;
  * @author 芋道源码
  */
 @Mapper
-public interface FreezingTubeStockPreEntryMapper extends BaseMapperX<FreezingTubeStockPreEntryDO> {
+public interface SpecimenInfoMapper extends BaseMapperX<SpecimenInfoDO> {
 
-    default PageResult<FreezingTubeStockPreEntryDO> selectPage(FreezingTubeStockPreEntryPageReqVO reqVO) {
-        return selectPage(reqVO, new LambdaQueryWrapperX<FreezingTubeStockPreEntryDO>()
-                .eqIfPresent(FreezingTubeStockPreEntryDO::getCode, reqVO.getCode())
-                .eqIfPresent(FreezingTubeStockPreEntryDO::getTubeId, reqVO.getTubeId())
-                .eqIfPresent(FreezingTubeStockPreEntryDO::getBoxId, reqVO.getBoxId())
-                .eqIfPresent(FreezingTubeStockPreEntryDO::getTubePosition, reqVO.getTubePosition())
-                .eqIfPresent(FreezingTubeStockPreEntryDO::getTubePositionX, reqVO.getTubePositionX())
-                .eqIfPresent(FreezingTubeStockPreEntryDO::getTubePositionY, reqVO.getTubePositionY())
-                .eqIfPresent(FreezingTubeStockPreEntryDO::getGenerationNumber, reqVO.getGenerationNumber())
-                .eqIfPresent(FreezingTubeStockPreEntryDO::getThawFreezeCycleCount, reqVO.getThawFreezeCycleCount())
-                .eqIfPresent(FreezingTubeStockPreEntryDO::getDeptId, reqVO.getDeptId())
-                .eqIfPresent(FreezingTubeStockPreEntryDO::getProjectId, reqVO.getProjectId())
-                .eqIfPresent(FreezingTubeStockPreEntryDO::getMicrobeId, reqVO.getMicrobeId())
-                .betweenIfPresent(FreezingTubeStockPreEntryDO::getExpirationDate, reqVO.getExpirationDate())
-                .betweenIfPresent(FreezingTubeStockPreEntryDO::getSaveDate, reqVO.getSaveDate())
-                .eqIfPresent(FreezingTubeStockPreEntryDO::getSaveBy, reqVO.getSaveBy())
-                .betweenIfPresent(FreezingTubeStockPreEntryDO::getCreateTime, reqVO.getCreateTime())
-                .eqIfPresent(FreezingTubeStockPreEntryDO::getRemark, reqVO.getRemark())
-                .eqIfPresent(FreezingTubeStockPreEntryDO::getStatus, reqVO.getStatus())
-                .orderByDesc(FreezingTubeStockPreEntryDO::getId));
+    default PageResult<SpecimenInfoDO> selectPage(FreezingTubeStockPreEntryPageReqVO reqVO) {
+        return selectPage(reqVO, new LambdaQueryWrapperX<SpecimenInfoDO>()
+                .eqIfPresent(SpecimenInfoDO::getCode, reqVO.getCode())
+                .eqIfPresent(SpecimenInfoDO::getTubeId, reqVO.getTubeId())
+                .eqIfPresent(SpecimenInfoDO::getBoxId, reqVO.getBoxId())
+                .eqIfPresent(SpecimenInfoDO::getTubePosition, reqVO.getTubePosition())
+                .eqIfPresent(SpecimenInfoDO::getTubePositionX, reqVO.getTubePositionX())
+                .eqIfPresent(SpecimenInfoDO::getTubePositionY, reqVO.getTubePositionY())
+                .eqIfPresent(SpecimenInfoDO::getGenerationNumber, reqVO.getGenerationNumber())
+                .eqIfPresent(SpecimenInfoDO::getThawFreezeCycleCount, reqVO.getThawFreezeCycleCount())
+                .eqIfPresent(SpecimenInfoDO::getDeptId, reqVO.getDeptId())
+                .eqIfPresent(SpecimenInfoDO::getProjectId, reqVO.getProjectId())
+                .eqIfPresent(SpecimenInfoDO::getMicrobeId, reqVO.getMicrobeId())
+                .betweenIfPresent(SpecimenInfoDO::getExpirationDate, reqVO.getExpirationDate())
+                .betweenIfPresent(SpecimenInfoDO::getSaveDate, reqVO.getSaveDate())
+                .eqIfPresent(SpecimenInfoDO::getSaveBy, reqVO.getSaveBy())
+                .betweenIfPresent(SpecimenInfoDO::getCreateTime, reqVO.getCreateTime())
+                .eqIfPresent(SpecimenInfoDO::getRemark, reqVO.getRemark())
+                .eqIfPresent(SpecimenInfoDO::getStatus, reqVO.getStatus())
+                .orderByDesc(SpecimenInfoDO::getId));
     }
 
     /*
@@ -95,7 +90,7 @@ public interface FreezingTubeStockPreEntryMapper extends BaseMapperX<FreezingTub
      * @param microId 菌种id
      * @return
      */
-    default List<FreezingTubeStockPreEntryDO> selectListByMicrobeId(Long microId){
-        return selectList(new LambdaQueryWrapperX<FreezingTubeStockPreEntryDO>().eq(FreezingTubeStockPreEntryDO::getMicrobeId,microId));
+    default List<SpecimenInfoDO> selectListByMicrobeId(Long microId){
+        return selectList(new LambdaQueryWrapperX<SpecimenInfoDO>().eq(SpecimenInfoDO::getMicrobeId,microId));
     }
 }

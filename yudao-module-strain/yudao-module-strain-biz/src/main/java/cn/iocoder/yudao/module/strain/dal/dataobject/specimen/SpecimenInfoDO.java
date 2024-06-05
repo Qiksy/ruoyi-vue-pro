@@ -1,17 +1,15 @@
-package cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry;
+package cn.iocoder.yudao.module.strain.dal.dataobject.specimen;
 
 import cn.iocoder.yudao.module.strain.enums.InventoryStatisEnum;
 import lombok.*;
-import java.util.*;
+
 import java.time.LocalDateTime;
-import java.time.LocalDateTime;
-import java.time.LocalDateTime;
-import java.time.LocalDateTime;
+
 import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 
 /**
- * 冷冻管库存预录入 DO
+ * 样品信息VO DO
  *
  * @author 芋道源码
  */
@@ -23,7 +21,7 @@ import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FreezingTubeStockPreEntryDO extends BaseDO {
+public class SpecimenInfoDO extends BaseDO {
 
     /**
      * 主键

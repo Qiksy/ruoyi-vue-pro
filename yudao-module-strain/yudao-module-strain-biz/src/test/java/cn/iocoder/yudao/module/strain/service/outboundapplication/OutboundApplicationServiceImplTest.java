@@ -113,7 +113,7 @@ public class OutboundApplicationServiceImplTest extends BaseDbUnitTest {
            o.setCode(null);
            o.setApplicant(null);
            o.setUseage(null);
-           o.setIsRestocked(null);
+//           o.setIsRestocked(null);
            o.setType(null);
            o.setProcessInstanceId(null);
            o.setApproResult(null);
@@ -126,7 +126,7 @@ public class OutboundApplicationServiceImplTest extends BaseDbUnitTest {
        // 测试 useage 不匹配
        outboundApplicationMapper.insert(cloneIgnoreId(dbOutboundApplication, o -> o.setUseage(null)));
        // 测试 isRestocked 不匹配
-       outboundApplicationMapper.insert(cloneIgnoreId(dbOutboundApplication, o -> o.setIsRestocked(null)));
+//       outboundApplicationMapper.insert(cloneIgnoreId(dbOutboundApplication, o -> o.setIsRestocked(null)));
        // 测试 type 不匹配
        outboundApplicationMapper.insert(cloneIgnoreId(dbOutboundApplication, o -> o.setType(null)));
        // 测试 processInstanceId 不匹配

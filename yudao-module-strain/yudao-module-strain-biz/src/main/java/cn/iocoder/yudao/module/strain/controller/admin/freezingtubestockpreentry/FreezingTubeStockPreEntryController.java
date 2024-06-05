@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 
-import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;
@@ -26,7 +25,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 
 import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.*;
-import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDO;
+import cn.iocoder.yudao.module.strain.dal.dataobject.specimen.SpecimenInfoDO;
 import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.FreezingTubeStockPreEntryService;
 
 @Tag(name = "管理后台 - 冷冻管库存预录入")
@@ -68,7 +67,7 @@ public class FreezingTubeStockPreEntryController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('strain:freezing-tube-stock-pre-entry:query')")
     public CommonResult<FreezingTubeStockPreEntryRespVO> getFreezingTubeStockPreEntry(@RequestParam("id") Long id) {
-        FreezingTubeStockPreEntryDO freezingTubeStockPreEntry = freezingTubeStockPreEntryService.getFreezingTubeStockPreEntry(id);
+        SpecimenInfoDO freezingTubeStockPreEntry = freezingTubeStockPreEntryService.getFreezingTubeStockPreEntry(id);
         return success(BeanUtils.toBean(freezingTubeStockPreEntry, FreezingTubeStockPreEntryRespVO.class));
     }
 
@@ -97,7 +96,7 @@ public class FreezingTubeStockPreEntryController {
     public void exportFreezingTubeStockPreEntryExcel(@Valid FreezingTubeStockPreEntryPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<FreezingTubeStockPreEntryDO> list = freezingTubeStockPreEntryService.getFreezingTubeStockPreEntryPage(pageReqVO).getList();
+        List<SpecimenInfoDO> list = freezingTubeStockPreEntryService.getFreezingTubeStockPreEntryPage(pageReqVO).getList();
         // 导出 Excel
         ExcelUtils.write(response, "冷冻管库存预录入.xls", "数据", FreezingTubeStockPreEntryRespVO.class,
                         BeanUtils.toBean(list, FreezingTubeStockPreEntryRespVO.class));

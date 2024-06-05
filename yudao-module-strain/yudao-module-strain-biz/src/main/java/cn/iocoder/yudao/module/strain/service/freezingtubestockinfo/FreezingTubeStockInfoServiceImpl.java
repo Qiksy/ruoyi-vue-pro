@@ -5,18 +5,17 @@ import cn.iocoder.yudao.module.strain.controller.admin.freezingboxinfo.vo.Freezi
 import cn.iocoder.yudao.module.strain.controller.admin.microbebasicinfo.vo.MicrobeBasicInfoRespVO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingboxinfo.FreezingBoxInfoDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingdevicehierarchy.FreezingDeviceHierarchyDO;
-import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDO;
+import cn.iocoder.yudao.module.strain.dal.dataobject.specimen.SpecimenInfoDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.microbebasicinfo.MicrobeBasicInfoDO;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingboxinfo.FreezingBoxInfoMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingdevicehierarchy.FreezingDeviceHierarchyMapper;
-import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.FreezingTubeStockPreEntryMapper;
+import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.SpecimenInfoMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.microbebasicinfo.MicrobeBasicInfoMapper;
 import cn.iocoder.yudao.module.strain.enums.InventoryStatisEnum;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import org.apache.commons.lang3.StringUtils;
-import org.redisson.Redisson;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,6 @@ import java.util.stream.Collectors;
 import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockinfo.vo.*;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockinfo.FreezingTubeStockInfoDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockinfo.FreezingTubeStockInfoMapper;
@@ -55,7 +53,7 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
     private FreezingTubeStockInfoMapper freezingTubeStockInfoMapper;
 
     @Resource
-    private FreezingTubeStockPreEntryMapper freezingTubeStockPreEntryMapper;
+    private SpecimenInfoMapper specimenInfoMapper;
 
 
     @Resource
@@ -126,9 +124,9 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
                 //业务逻辑
                 try {
                     FreezingTubeStockInfoDO freezingTubeStockInfoDO = freezingTubeStockInfoMapper.selectById(tubeStockId);
-                    FreezingTubeStockPreEntryDO entryDO = freezingTubeStockPreEntryMapper.selectOne(
-                            new LambdaQueryWrapperX<FreezingTubeStockPreEntryDO>().
-                                    eq(FreezingTubeStockPreEntryDO::getCode, perStockCode));
+                    SpecimenInfoDO entryDO = specimenInfoMapper.selectOne(
+                            new LambdaQueryWrapperX<SpecimenInfoDO>().
+                                    eq(SpecimenInfoDO::getCode, perStockCode));
                     //判断是否已经入库了
                     if (StringUtils.equals(freezingTubeStockInfoDO.getStatus(), "0") && StringUtils.equals(entryDO.getStatus(), "0")) {
 
@@ -156,7 +154,7 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
                         freezingTubeStockInfoMapper.updateById(freezingTubeStockInfoDO);
                         //更新预备入库信息
                         entryDO.setStatus(InventoryStatisEnum.IN_STOCK.getValue()); //表示已经入库
-                        freezingTubeStockPreEntryMapper.updateById(entryDO);
+                        specimenInfoMapper.updateById(entryDO);
 
 
                         //菌种名称、编号、用途、来源备注
@@ -313,11 +311,11 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
 
         //把关联的样品设置为待入库
 
-        FreezingTubeStockPreEntryDO entryDO = freezingTubeStockPreEntryMapper.selectById(freezingTubeStockInfoDO.getStockPreEntryId());
+        SpecimenInfoDO entryDO = specimenInfoMapper.selectById(freezingTubeStockInfoDO.getStockPreEntryId());
 
         entryDO.setStatus(InventoryStatisEnum.WAIT_STOCK.getValue());
 
-        freezingTubeStockPreEntryMapper.updateById(entryDO);
+        specimenInfoMapper.updateById(entryDO);
     }
 
 
@@ -337,12 +335,12 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
         Long stockPreEntryId = freezingTubeStockInfoDO.getStockPreEntryId(); // 获取冷冻管实例
 
         //冻藏管
-        FreezingTubeStockPreEntryDO tubeInfo = freezingTubeStockPreEntryMapper.selectById(stockPreEntryId);
+        SpecimenInfoDO tubeInfo = specimenInfoMapper.selectById(stockPreEntryId);
         if (tubeInfo != null) {
             //如果存在，就更新它的状态为未入库
             tubeInfo.setStatus(InventoryStatisEnum.NOT_IN_STOCK.getValue());
             //还要设置sockid
-            freezingTubeStockPreEntryMapper.updateById(tubeInfo);
+            specimenInfoMapper.updateById(tubeInfo);
         }
 
 
@@ -382,15 +380,15 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
     @Transactional(rollbackFor = Exception.class)
     public void scannerReStock(String perStockCode) {
 
-        LambdaQueryWrapperX<FreezingTubeStockPreEntryDO> lambdaQueryWrapperX = new LambdaQueryWrapperX<FreezingTubeStockPreEntryDO>().eq(FreezingTubeStockPreEntryDO::getCode, perStockCode);
-        FreezingTubeStockPreEntryDO perStock = freezingTubeStockPreEntryMapper.selectOne(lambdaQueryWrapperX);
+        LambdaQueryWrapperX<SpecimenInfoDO> lambdaQueryWrapperX = new LambdaQueryWrapperX<SpecimenInfoDO>().eq(SpecimenInfoDO::getCode, perStockCode);
+        SpecimenInfoDO perStock = specimenInfoMapper.selectOne(lambdaQueryWrapperX);
 
         int thawFreezeCycleCount = Optional.ofNullable(perStock.getThawFreezeCycleCount()).orElse(1) + 1;
         perStock.setThawFreezeCycleCount(thawFreezeCycleCount);
 
         // 设置库存状态为在库
         perStock.setStatus(IN_STOCK.getValue());
-        freezingTubeStockPreEntryMapper.updateById(perStock);
+        specimenInfoMapper.updateById(perStock);
 
 
         LambdaQueryWrapperX<FreezingTubeStockInfoDO> wrapperX = new LambdaQueryWrapperX<>();

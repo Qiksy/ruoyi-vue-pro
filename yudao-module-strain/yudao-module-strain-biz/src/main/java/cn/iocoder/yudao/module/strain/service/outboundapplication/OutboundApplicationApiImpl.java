@@ -1,17 +1,17 @@
 package cn.iocoder.yudao.module.strain.service.outboundapplication;
 
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.strain.api.OutboundApplicationApi;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockinfo.FreezingTubeStockInfoDO;
-import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDO;
+import cn.iocoder.yudao.module.strain.dal.dataobject.specimen.SpecimenInfoDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.outboundapplication.OutboundApplicationDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.outboundsubapplication.OutboundSubApplicationDO;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockinfo.FreezingTubeStockInfoMapper;
-import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.FreezingTubeStockPreEntryMapper;
+import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.SpecimenInfoMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.outboundapplication.OutboundApplicationMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.outboundsubapplication.OutboundSubApplicationMapper;
 import cn.iocoder.yudao.module.strain.enums.InventoryStatisEnum;
+import cn.iocoder.yudao.module.strain.enums.OutboundTypeConstants;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ public class OutboundApplicationApiImpl implements OutboundApplicationApi {
     private FreezingTubeStockInfoMapper stockInfoMapper;
 
     @Resource
-    private FreezingTubeStockPreEntryMapper freezingTubeStockPreEntryMapper;
+    private SpecimenInfoMapper specimenInfoMapper;
 
 
     @Override
@@ -71,15 +71,14 @@ public class OutboundApplicationApiImpl implements OutboundApplicationApi {
 
         String status;
 
-        if (applicationDO.getIsRestocked() && applicationDO.getType().equals("1")){
-            status = null;
+        if (applicationDO.getType().equals(OutboundTypeConstants.NORMAL) || applicationDO.getType().equals(OutboundTypeConstants.REGENERATION)){
             //回库并且是正常出库的，设置菌种为待回库
-            List<FreezingTubeStockPreEntryDO> specimenList = freezingTubeStockPreEntryMapper.selectList("id", specimenIds);
-            for (FreezingTubeStockPreEntryDO entryDO : specimenList) {
+            List<SpecimenInfoDO> specimenList = specimenInfoMapper.selectList("id", specimenIds);
+            for (SpecimenInfoDO entryDO : specimenList) {
                 entryDO.setStatus(InventoryStatisEnum.WAIT_STOCK.getValue());
             }
             //更新样品数据
-            freezingTubeStockPreEntryMapper.updateBatch(specimenList);
+            specimenInfoMapper.updateBatch(specimenList);
 
             //获取槽位数据
             List<FreezingTubeStockInfoDO> tubeStockInfoDOList = stockInfoMapper.selectList(FreezingTubeStockInfoDO::getStockPreEntryId,specimenIds );
@@ -88,14 +87,14 @@ public class OutboundApplicationApiImpl implements OutboundApplicationApi {
             }
 
             stockInfoMapper.updateBatch(tubeStockInfoDOList);
-        }else if (!applicationDO.getIsRestocked() && applicationDO.getType().equals("1")){
+        }else if (applicationDO.getType().equals(OutboundTypeConstants.CONSUME)){
             //如果是正常出库并且不回库 设置为消耗态
             status = InventoryStatisEnum.DELETE_STOCK.getValue();
 
 
             deliverSpecimen(specimenIds, status);
 
-        } else if (applicationDO.getType().equals("2")){
+        } else if (applicationDO.getType().equals(OutboundTypeConstants.DESTROY)){
             //销毁出库
             status = InventoryStatisEnum.DESTROY_STOCK.getValue();
             deliverSpecimen(specimenIds, status);
@@ -108,12 +107,12 @@ public class OutboundApplicationApiImpl implements OutboundApplicationApi {
      * @param status 状态
      */
     private void deliverSpecimen(Set<Long> specimenIds, String status) {
-        List<FreezingTubeStockPreEntryDO> specimenList = freezingTubeStockPreEntryMapper.selectList("id", specimenIds);
-        for (FreezingTubeStockPreEntryDO entryDO : specimenList) {
+        List<SpecimenInfoDO> specimenList = specimenInfoMapper.selectList("id", specimenIds);
+        for (SpecimenInfoDO entryDO : specimenList) {
             entryDO.setStatus(status);
         }
         //更新样品数据
-        freezingTubeStockPreEntryMapper.updateBatch(specimenList);
+        specimenInfoMapper.updateBatch(specimenList);
 
 //        Set<Long> collect = specimenList.stream().map(FreezingTubeStockPreEntryDO::getId).collect(Collectors.toSet());
         //获取槽位数据，清空菌种

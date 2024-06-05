@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.strain.controller.admin.outboundapplication.vo;
 
 
+import cn.iocoder.yudao.module.strain.enums.OutboundTypeConstants;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -29,10 +30,13 @@ public class OutboundApplicationCreateReqVO {
     @NotNull(message = "用途说明不能为空")
     private String useage;
 
-    @Schema(description = "是否会重新入库 0否 1是", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "是否会重新入库 0否 1是不能为空")
-    private Boolean isRestocked;
+//    @Schema(description = "是否会重新入库 0否 1是", requiredMode = Schema.RequiredMode.REQUIRED)
+////    @NotNull(message = "是否会重新入库 0否 1是不能为空")
+//    private Boolean isRestocked;
 
+    /**
+     * 常量值 {@link OutboundTypeConstants}
+     */
     @Schema(description = "出库类型：1正常出库 2销毁出库", example = "2")
     @NotNull(message = "出库类型不能为空")
     private String type;

@@ -111,8 +111,7 @@ public class OutboundApplicationController {
     @Operation(summary = "获得自己申请的出库申请分页")
     @PreAuthorize("@ss.hasPermission('strain:outbound-application:query')")
     public CommonResult<PageResult<OutboundApplicationRespVO>> getOutboundApplicationPageSelf(@Valid OutboundApplicationPageReqVO pageReqVO) {
-        PageResult<OutboundApplicationDO> pageResult = outboundApplicationService.getOutboundApplicationPageSelf(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, OutboundApplicationRespVO.class));
+        return success(outboundApplicationService.getOutboundApplicationPageSelf(pageReqVO));
     }
 
     @GetMapping("/export-excel")
@@ -128,4 +127,12 @@ public class OutboundApplicationController {
                         BeanUtils.toBean(list, OutboundApplicationRespVO.class));
     }
 
+
+    @PutMapping("/add-subList")
+    @Operation(summary = "新增申请单的菌种数据")
+    @PreAuthorize("@ss.hasPermission('strain:outbound-application:update')")
+    public CommonResult<Boolean> addSubList(@Valid @RequestBody OutboundApplicationSubInfoUpdateReqVO updateReqVO) {
+        outboundApplicationService.addSubList(updateReqVO);
+        return success(true);
+    }
 }

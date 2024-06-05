@@ -9,12 +9,13 @@ import cn.iocoder.yudao.module.bpm.api.task.BpmProcessInstanceApi;
 import cn.iocoder.yudao.module.bpm.api.task.dto.BpmProcessInstanceCreateReqDTO;
 import cn.iocoder.yudao.module.bpm.enums.task.BpmTaskStatusEnum;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockinfo.FreezingTubeStockInfoDO;
-import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockpreentry.FreezingTubeStockPreEntryDO;
+import cn.iocoder.yudao.module.strain.dal.dataobject.specimen.SpecimenInfoDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.outboundsubapplication.OutboundSubApplicationDO;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockinfo.FreezingTubeStockInfoMapper;
-import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.FreezingTubeStockPreEntryMapper;
+import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.SpecimenInfoMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.outboundsubapplication.OutboundSubApplicationMapper;
 import cn.iocoder.yudao.module.strain.enums.InventoryStatisEnum;
+import cn.iocoder.yudao.module.strain.enums.OutboundTypeConstants;
 import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.FreezingTubeStockPreEntryService;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
@@ -32,12 +33,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import cn.iocoder.yudao.module.strain.controller.admin.outboundapplication.vo.*;
 import cn.iocoder.yudao.module.strain.dal.dataobject.outboundapplication.OutboundApplicationDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.strain.dal.mysql.outboundapplication.OutboundApplicationMapper;
@@ -65,7 +64,7 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
 
 
     @Resource
-    private FreezingTubeStockPreEntryMapper freezingTubeStockPreEntryMapper;
+    private SpecimenInfoMapper specimenInfoMapper;
 
 
     @Resource
@@ -242,13 +241,13 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
 
         List<Long> specimenIds = subRespVOS.stream().map(OutboundApplicationSubRespVO::getSpecimenId).filter(Objects::nonNull).toList();
         //直接获取样品的saveBy
-        List<FreezingTubeStockPreEntryDO> specimen = freezingTubeStockPreEntryMapper.selectList("id", specimenIds);
-        Set<Long> collect = specimen.stream().map(FreezingTubeStockPreEntryDO::getSaveBy).filter(Objects::nonNull).collect(Collectors.toSet());
+        List<SpecimenInfoDO> specimen = specimenInfoMapper.selectList("id", specimenIds);
+        Set<Long> collect = specimen.stream().map(SpecimenInfoDO::getSaveBy).filter(Objects::nonNull).collect(Collectors.toSet());
         //用户信息
         List<AdminUserRespDTO> userList = adminUserApi.getUserList(collect);
 
         Map<Long, String> userMap = userList.stream().collect(Collectors.toMap(AdminUserRespDTO::getId, AdminUserRespDTO::getNickname));
-        Map<Long, Long> specimenMap = specimen.stream().collect(Collectors.toMap(FreezingTubeStockPreEntryDO::getId, FreezingTubeStockPreEntryDO::getSaveBy));
+        Map<Long, Long> specimenMap = specimen.stream().collect(Collectors.toMap(SpecimenInfoDO::getId, SpecimenInfoDO::getSaveBy));
 
         for (OutboundApplicationSubRespVO subRespVO : subRespVOS) {
             Long specimenId = subRespVO.getSpecimenId();
@@ -273,16 +272,63 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
      * @return 出库申请分页
      */
     @Override
-    public PageResult<OutboundApplicationDO> getOutboundApplicationPageSelf(OutboundApplicationPageReqVO pageReqVO) {
+    public PageResult<OutboundApplicationRespVO> getOutboundApplicationPageSelf(OutboundApplicationPageReqVO pageReqVO) {
         //权限管理
 
         Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
 
+        PageResult<OutboundApplicationDO> pageResult;
+
         if (permissionService.hasAnyRoles(loginUserId, RoleCodeEnum.SUPER_ADMIN.getCode())) {
-            return outboundApplicationMapper.selectPage(pageReqVO);
+            // 超级管理员有所有的权限
+            pageResult =  outboundApplicationMapper.selectPage(pageReqVO);
+        }else {
+            pageResult = outboundApplicationMapper.selectPage2(pageReqVO, loginUserId);
         }
 
-        return outboundApplicationMapper.selectPage2(pageReqVO,loginUserId);
+
+        PageResult<OutboundApplicationRespVO> finalPageResult = BeanUtils.toBean(pageResult, OutboundApplicationRespVO.class);
+
+        for (OutboundApplicationRespVO parentVo : finalPageResult.getList()) {
+            List<OutboundSubApplicationDO> subApplicationDOS = subApplicationMapper.selectList("parent_id", parentVo.getId());
+            //获取子表数据
+            List<OutboundApplicationSubRespVO> subRespVOS = BeanUtils.toBean(subApplicationDOS, OutboundApplicationSubRespVO.class);
+
+
+            //获取槽位id
+            List<Long> stockIds = subRespVOS.stream().map(OutboundApplicationSubRespVO::getStockId).filter(Objects::nonNull).toList();
+
+            //根据槽位id获取位置信息并设置到
+            Map<Long, String> stockPositionStrMap = freezingTubeStockPreEntryService.getStockPositionStrMap(stockIds);
+            if (!stockPositionStrMap.isEmpty()){
+                for (OutboundApplicationSubRespVO subRespVO : subRespVOS) {
+                    subRespVO.setPositionStr(stockPositionStrMap.get(subRespVO.getStockId()));
+                }
+            }
+            //还需要设置保存人
+
+            List<Long> specimenIds = subRespVOS.stream().map(OutboundApplicationSubRespVO::getSpecimenId).filter(Objects::nonNull).toList();
+            //直接获取样品的saveBy
+            List<SpecimenInfoDO> specimen = specimenInfoMapper.selectList("id", specimenIds);
+            Set<Long> collect = specimen.stream().map(SpecimenInfoDO::getSaveBy).filter(Objects::nonNull).collect(Collectors.toSet());
+            //用户信息
+            List<AdminUserRespDTO> userList = adminUserApi.getUserList(collect);
+
+            Map<Long, String> userMap = userList.stream().collect(Collectors.toMap(AdminUserRespDTO::getId, AdminUserRespDTO::getNickname));
+            Map<Long, Long> specimenMap = specimen.stream().collect(Collectors.toMap(SpecimenInfoDO::getId, SpecimenInfoDO::getSaveBy));
+
+            for (OutboundApplicationSubRespVO subRespVO : subRespVOS) {
+                Long specimenId = subRespVO.getSpecimenId();
+                Long userId = specimenMap.get(specimenId);
+                String userName = userMap.get(userId);
+                subRespVO.setSaveByName(userName);
+            }
+
+            parentVo.setSubList(subRespVOS);
+        }
+
+
+        return finalPageResult;
     }
 
     @Override
@@ -350,8 +396,6 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
                             .setProcessDefinitionKey(OUTBOUND_PROCESS_KEY)
                             .setVariables(processVariables)
             );
-
-            //todo 这里处理流程实例的提交
         }else if (type.equals("save")){
             //需要设置审批状态为未开始
             outboundApplicationDO.setApproResult(BpmTaskStatusEnum.WAIT.getStatus().toString());
@@ -363,6 +407,13 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
 
 
         List<OutboundSubApplicationDO> subApplicationDOS = BeanUtils.toBean(createReqVO.getSubList(), OutboundSubApplicationDO.class);
+
+        if(subApplicationDOS == null || subApplicationDOS.isEmpty()){
+            // 如果是空的或者为null，则直接返回就好了
+            return outboundApplicationDO.getId();
+        }
+
+
         //设置子表的父id
         for (OutboundSubApplicationDO subApplicationDO : subApplicationDOS) {
             subApplicationDO.setParentId(outboundApplicationDO.getId());
@@ -381,11 +432,13 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
 
     /**
      * 审批通过或者不通过
+     * 这里是旧版的逻辑，新版的逻辑是在流程中处理
      *
      * @param updateReqVO 单据数据
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
+
     public void approveOutboundApplication(OutboundApplicationCreateReqVO updateReqVO) {
         String approveResult = updateReqVO.getApproResult();
 
@@ -398,15 +451,14 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
 
             String status;
 
-            if (updateReqVO.getIsRestocked() && updateReqVO.getType().equals("1")){
-                status = null;
-                //回库并且是正常出库的，设置菌种为待回库
-                List<FreezingTubeStockPreEntryDO> specimenList = freezingTubeStockPreEntryMapper.selectList("id", specimenIds);
-                for (FreezingTubeStockPreEntryDO entryDO : specimenList) {
+            if (updateReqVO.getType().equals(OutboundTypeConstants.NORMAL) || updateReqVO.getType().equals(OutboundTypeConstants.REGENERATION) ){
+                // 正常出库 传代/复壮都要正常回库
+                List<SpecimenInfoDO> specimenList = specimenInfoMapper.selectList("id", specimenIds);
+                for (SpecimenInfoDO entryDO : specimenList) {
                     entryDO.setStatus(InventoryStatisEnum.WAIT_STOCK.getValue());
                 }
                 //更新样品数据
-                freezingTubeStockPreEntryMapper.updateBatch(specimenList);
+                specimenInfoMapper.updateBatch(specimenList);
 
                 //获取槽位数据
                 List<FreezingTubeStockInfoDO> tubeStockInfoDOList = stockInfoMapper.selectList(FreezingTubeStockInfoDO::getStockPreEntryId,specimenIds );
@@ -415,17 +467,19 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
                 }
 
                 stockInfoMapper.updateBatch(tubeStockInfoDOList);
-            }else if (!updateReqVO.getIsRestocked() && updateReqVO.getType().equals("1")){
-                //如果是正常出库并且不回库 设置为消耗态
+            }else if (!updateReqVO.getType().equals(OutboundTypeConstants.CONSUME)) {
+                if (updateReqVO.getType().equals(OutboundTypeConstants.DESTROY)){
+                    //销毁出库
+                    status = InventoryStatisEnum.DESTROY_STOCK.getValue();
+                    deliverSpecimen(specimenIds, status);
+                }
+            } else {
+                //消耗出库
                 status = InventoryStatisEnum.DELETE_STOCK.getValue();
 
 
                 deliverSpecimen(specimenIds, status);
 
-            } else if (updateReqVO.getType().equals("2")){
-                //销毁出库
-                status = InventoryStatisEnum.DESTROY_STOCK.getValue();
-                deliverSpecimen(specimenIds, status);
             }
         }else if (updateReqVO.getApproResult().equals(BpmTaskStatusEnum.REJECT.getStatus().toString())){
             //如果审批不通过，则设置主表为
@@ -441,12 +495,12 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
      * @param status 状态
      */
     private void deliverSpecimen(Set<Long> specimenIds, String status) {
-        List<FreezingTubeStockPreEntryDO> specimenList = freezingTubeStockPreEntryMapper.selectList("id", specimenIds);
-        for (FreezingTubeStockPreEntryDO entryDO : specimenList) {
+        List<SpecimenInfoDO> specimenList = specimenInfoMapper.selectList("id", specimenIds);
+        for (SpecimenInfoDO entryDO : specimenList) {
             entryDO.setStatus(status);
         }
         //更新样品数据
-        freezingTubeStockPreEntryMapper.updateBatch(specimenList);
+        specimenInfoMapper.updateBatch(specimenList);
 
 //        Set<Long> collect = specimenList.stream().map(FreezingTubeStockPreEntryDO::getId).collect(Collectors.toSet());
         //获取槽位数据，清空菌种
@@ -485,6 +539,43 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         // todo 删除的菌种不可以重新入库
     }
 
+
+    @Override
+    public boolean addSubList(OutboundApplicationSubInfoUpdateReqVO updateReqVO) {
+        Long parentId = updateReqVO.getId(); // 主表id
+
+        // 判断是否存在
+        boolean parentExists = outboundApplicationMapper.exists(new LambdaQueryWrapperX<OutboundApplicationDO>().eq(OutboundApplicationDO::getId, parentId));
+        if (!parentExists){
+            // 主表不存在，不能新增
+            throw exception(OUTBOUND_APPLICATION_NOT_EXISTS);
+        }
+
+
+        // 查询关联的子表数据，然后与传进来的数据进行对比，重复的去掉
+        List<OutboundSubApplicationDO> subApplicationDOS = subApplicationMapper.selectList("parent_id", parentId);
+        Set<Long> existsSpecimenIds = subApplicationDOS.stream().map(OutboundSubApplicationDO::getSpecimenId).collect(Collectors.toSet());
+        List<Long> list = Arrays.stream(updateReqVO.getSpecimenIds()).toList();
+        list = list.stream().filter(item -> !existsSpecimenIds.contains(item)).toList();
+
+
+        //查询对应的样品信息，然后创建新的子表信息，进行批量插入
+        List<SpecimenInfoDO> specimenList = specimenInfoMapper.selectList("id", list);
+        List<OutboundSubApplicationDO> subList = specimenList.stream().map(item -> {
+            OutboundSubApplicationDO subApplicationDO = new OutboundSubApplicationDO();
+            subApplicationDO.setParentId(parentId);
+            subApplicationDO.setSpecimenId(item.getId());  //样品id 值得就是冷藏管的id
+            subApplicationDO.setSpecimenCode(item.getCode());  // 样品编号
+
+            //todo  未完待续
+
+            return subApplicationDO;
+        }).toList();
+
+
+
+        return false;
+    }
 
     /**
      * 获取自身的代理对象，解决AOP生效的问题
