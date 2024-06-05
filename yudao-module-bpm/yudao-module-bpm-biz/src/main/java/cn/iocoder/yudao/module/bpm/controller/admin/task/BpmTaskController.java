@@ -10,8 +10,6 @@ import cn.iocoder.yudao.module.bpm.dal.dataobject.definition.BpmFormDO;
 import cn.iocoder.yudao.module.bpm.service.definition.BpmFormService;
 import cn.iocoder.yudao.module.bpm.service.task.BpmProcessInstanceService;
 import cn.iocoder.yudao.module.bpm.service.task.BpmTaskService;
-import cn.iocoder.yudao.module.sale.dal.dataobject.declinewarning.DeclineWarningDO;
-import cn.iocoder.yudao.module.sale.service.declinewarning.DeclineWarningService;
 import cn.iocoder.yudao.module.system.api.dept.DeptApi;
 import cn.iocoder.yudao.module.system.api.dept.dto.DeptRespDTO;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
@@ -60,9 +58,6 @@ public class BpmTaskController {
     @Resource
     private DeptApi deptApi;
 
-
-    @Resource
-    private DeclineWarningService declineWarningService;
 
     @GetMapping("todo-page")
     @Operation(summary = "获取 Todo 待办任务分页")
