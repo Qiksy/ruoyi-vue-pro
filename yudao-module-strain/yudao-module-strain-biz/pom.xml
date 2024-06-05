@@ -54,12 +54,16 @@
             <groupId>cn.iocoder.boot</groupId>
             <artifactId>yudao-spring-boot-starter-test</artifactId>
         </dependency>
+
+        <!--引入系统模块-->
         <dependency>
             <groupId>cn.iocoder.boot</groupId>
             <artifactId>yudao-module-system-biz</artifactId>
             <version>${revision}</version>
             <scope>compile</scope>
         </dependency>
+
+        <!--引入BPM模块-->
         <dependency>
             <groupId>cn.iocoder.boot</groupId>
             <artifactId>yudao-module-bpm-api</artifactId>

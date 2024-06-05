@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.bpm.service.oa.listener;
+package cn.iocoder.yudao.module.strain.bpm.listener;
 
 import cn.iocoder.yudao.module.bpm.enums.task.BpmTaskStatusEnum;
 import cn.iocoder.yudao.module.bpm.event.BpmProcessInstanceStatusEvent;

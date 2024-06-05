@@ -75,17 +75,20 @@
             <groupId>org.flowable</groupId>
             <artifactId>flowable-spring-boot-starter-actuator</artifactId>
         </dependency>
-        <dependency>
-            <groupId>cn.iocoder.boot</groupId>
-            <artifactId>yudao-module-sale-biz</artifactId>
-            <version>${revision}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>cn.iocoder.boot</groupId>
-            <artifactId>yudao-module-strain-api</artifactId>
-            <version>2.1.0-snapshot</version>
-            <scope>compile</scope>
-        </dependency>
+
+
+        <!--这里应该注释掉，下层服务禁止依赖上层服务-->
+        <!--<dependency>-->
+        <!--    <groupId>cn.iocoder.boot</groupId>-->
+        <!--    <artifactId>yudao-module-sale-biz</artifactId>-->
+        <!--    <version>${revision}</version>-->
+        <!--    <scope>compile</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+        <!--    <groupId>cn.iocoder.boot</groupId>-->
+        <!--    <artifactId>yudao-module-strain-api</artifactId>-->
+        <!--    <version>2.1.0-snapshot</version>-->
+        <!--    <scope>compile</scope>-->
+        <!--</dependency>-->
     </dependencies>
 </project>

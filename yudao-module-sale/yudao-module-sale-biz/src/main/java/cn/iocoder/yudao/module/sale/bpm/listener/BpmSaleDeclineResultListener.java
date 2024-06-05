@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.bpm.service.oa.listener;
+package cn.iocoder.yudao.module.sale.bpm.listener;
 
 import cn.iocoder.yudao.module.bpm.event.BpmProcessInstanceStatusEvent;
 import cn.iocoder.yudao.module.bpm.event.BpmProcessInstanceStatusEventListener;
