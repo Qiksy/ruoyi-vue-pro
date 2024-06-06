@@ -88,4 +88,11 @@ public interface OutboundApplicationService {
      * @return 是否成功
      */
     boolean addSubList(OutboundApplicationSubInfoUpdateReqVO updateReqVO);
+
+    /**
+     * 将某个单据进行提交审批
+     * @param id
+     * @return
+     */
+    Boolean submit(Long id);
 }

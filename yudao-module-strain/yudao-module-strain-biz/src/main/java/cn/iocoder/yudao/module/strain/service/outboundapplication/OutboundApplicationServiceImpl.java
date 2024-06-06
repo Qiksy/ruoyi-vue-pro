@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.strain.service.outboundapplication;
 
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.iocoder.yudao.framework.common.exception.ErrorCode;
@@ -8,6 +9,7 @@ import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.bpm.api.task.BpmProcessInstanceApi;
 import cn.iocoder.yudao.module.bpm.api.task.dto.BpmProcessInstanceCreateReqDTO;
 import cn.iocoder.yudao.module.bpm.enums.task.BpmTaskStatusEnum;
+import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningRespVO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingtubestockinfo.FreezingTubeStockInfoDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.specimen.SpecimenInfoDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.outboundsubapplication.OutboundSubApplicationDO;
@@ -25,6 +27,7 @@ import cn.iocoder.yudao.module.system.enums.permission.RoleCodeEnum;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -428,6 +431,35 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         return outboundApplicationDO.getId();
     }
 
+
+    /**
+     * 将某个单据进行提交审批
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean submit(Long id) {
+
+        OutboundApplicationDO applicationDO = outboundApplicationMapper.selectById(id);
+
+        //需要设置审批状态为处理中
+        applicationDO.setApproResult(BpmTaskStatusEnum.RUNNING.getStatus().toString());
+        //创建流程实例
+        HashMap<String, Object> processVariables = new HashMap<>();
+        processInstanceApi.createProcessInstance(SecurityFrameworkUtils.getLoginUserId(),
+                new BpmProcessInstanceCreateReqDTO()
+                        .setBusinessKey(String.valueOf(id))
+                        .setProcessDefinitionKey(OUTBOUND_PROCESS_KEY)
+                        .setVariables(processVariables)
+        );
+        //进行更新
+        outboundApplicationMapper.updateById(applicationDO);
+
+        return true;
+    }
+
     /**
      * 审批通过或者不通过
      * 这里是旧版的逻辑，新版的逻辑是在流程中处理
@@ -552,26 +584,27 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         // 查询关联的子表数据，然后与传进来的数据进行对比，重复的去掉
         List<OutboundSubApplicationDO> subApplicationDOS = subApplicationMapper.selectList("parent_id", parentId);
         Set<Long> existsSpecimenIds = subApplicationDOS.stream().map(OutboundSubApplicationDO::getSpecimenId).collect(Collectors.toSet());
-        List<Long> list = Arrays.stream(updateReqVO.getSpecimenIds()).toList();
-        list = list.stream().filter(item -> !existsSpecimenIds.contains(item)).toList();
+//
+        //排除已经存在的
+        List<ExpiredWarningRespVO> list = updateReqVO.getSpecimenInfo().stream().filter(item -> !existsSpecimenIds.contains(item.getId())).toList();
 
 
-        //查询对应的样品信息，然后创建新的子表信息，进行批量插入
-        List<SpecimenInfoDO> specimenList = specimenInfoMapper.selectList("id", list);
-        List<OutboundSubApplicationDO> subList = specimenList.stream().map(item -> {
-            OutboundSubApplicationDO subApplicationDO = new OutboundSubApplicationDO();
-            subApplicationDO.setParentId(parentId);
-            subApplicationDO.setSpecimenId(item.getId());  //样品id 值得就是冷藏管的id
-            subApplicationDO.setSpecimenCode(item.getCode());  // 样品编号
+        List<OutboundSubApplicationDO> newList = new ArrayList<>();
+        for (ExpiredWarningRespVO item : list) {
+            OutboundSubApplicationDO tempDo = new OutboundSubApplicationDO();
+            tempDo.setParentId(updateReqVO.getId()); // 主表id
+            tempDo.setSpecimenId(item.getId());
+            tempDo.setStockId(item.getStockId());
+            tempDo.setSpecimenCode(item.getSpecimenCode());
+            tempDo.setChineseName(item.getChineseName());
+            tempDo.setLatinName(item.getLatinName());
+            newList.add(tempDo);
+        }
 
-            //todo  未完待续
-
-            return subApplicationDO;
-        }).toList();
-
-
-
-        return false;
+        if (!newList.isEmpty()){
+            subApplicationMapper.insertBatch(newList);
+        }
+        return true;
     }
 
     /**

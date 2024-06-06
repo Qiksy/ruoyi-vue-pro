@@ -55,6 +55,15 @@ public class OutboundApplicationController {
     }
 
 
+    @PutMapping("/submit")
+    @Operation(summary = "提交审批")
+    @PreAuthorize("@ss.hasPermission('strain:outbound-application:update')")
+    public CommonResult<Boolean> submit(@NotNull @RequestParam("id") Long id){
+
+        return success(outboundApplicationService.submit(id));
+    }
+
+
     @PutMapping("/update")
     @Operation(summary = "更新出库申请")
     @PreAuthorize("@ss.hasPermission('strain:outbound-application:update')")
