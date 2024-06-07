@@ -20,14 +20,12 @@ import cn.iocoder.yudao.module.strain.enums.InventoryStatisEnum;
 import cn.iocoder.yudao.module.strain.enums.OutboundTypeConstants;
 import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.FreezingTubeStockPreEntryService;
 import cn.iocoder.yudao.module.system.api.permission.PermissionApi;
-import cn.iocoder.yudao.module.system.api.permission.RoleApi;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import cn.iocoder.yudao.module.system.enums.permission.RoleCodeEnum;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
-import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -81,7 +79,6 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
     private PermissionApi permissionApi;
 
 
-
     @Resource
     private BpmProcessInstanceApi processInstanceApi;
 
@@ -90,11 +87,10 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
     public static final String OUTBOUND_PROCESS_KEY = "strain-outbound";
 
 
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long createOutboundApplication(OutboundApplicationCreateReqVO createReqVO) {
-        return getSelf().saveApplication(createReqVO,"save");
+        return getSelf().saveApplication(createReqVO, "save");
     }
 
     @Override
@@ -106,12 +102,27 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         outboundApplicationMapper.updateById(updateObj);
 
         //删除子表
-        subApplicationMapper.delete(OutboundSubApplicationDO::getParentId,updateReqVO.getId());
+        subApplicationMapper.delete(OutboundSubApplicationDO::getParentId, updateReqVO.getId());
 
         //重新插入子表
         List<OutboundSubApplicationDO> subApplicationDOS = BeanUtils.toBean(updateReqVO.getSubList(), OutboundSubApplicationDO.class);
-        //设置子表的parent_id
-        subApplicationDOS.forEach(item->item.setParentId(updateReqVO.getId()));
+        //设置子表的信息
+        for (OutboundSubApplicationDO item : subApplicationDOS) {
+            item.setParentId(updateReqVO.getId());
+
+            //判断主表的类型，然后设置回库状态
+            if (updateObj.getType().equals(OutboundTypeConstants.NORMAL)
+                    || updateReqVO.getType().equals(OutboundTypeConstants.REGENERATION)) {
+                // 正常出库 传代/复壮都要正常回库
+                item.setResave(false); //需要回库
+            } else if (updateReqVO.getType().equals(OutboundTypeConstants.CONSUME)
+                    || updateReqVO.getType().equals(OutboundTypeConstants.DESTROY)) {
+                //消耗出库
+                item.setResave(true);
+            }
+
+        }
+
 
         subApplicationMapper.insertBatch(subApplicationDOS);
     }
@@ -137,12 +148,24 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         validateOutboundApplicationExists(updateReqVO.getId());
 
         //删除子表
-        subApplicationMapper.delete(OutboundSubApplicationDO::getParentId,updateReqVO.getId());
+        subApplicationMapper.delete(OutboundSubApplicationDO::getParentId, updateReqVO.getId());
         //重新插入子表
         List<OutboundSubApplicationDO> subApplicationDOS = BeanUtils.toBean(updateReqVO.getSubList(), OutboundSubApplicationDO.class);
         //设置子表的parent_id
-        for (OutboundSubApplicationDO subApplicationDO : subApplicationDOS) {
-            subApplicationDO.setParentId(updateReqVO.getId());
+        for (OutboundSubApplicationDO item : subApplicationDOS) {
+            item.setParentId(updateReqVO.getId());
+
+            //判断主表的类型，然后设置是否需要回库
+            if (updateReqVO.getType().equals(OutboundTypeConstants.NORMAL)
+                    || updateReqVO.getType().equals(OutboundTypeConstants.REGENERATION)) {
+                // 正常出库 传代/复壮都要正常回库
+                item.setResave(false);
+            } else if (updateReqVO.getType().equals(OutboundTypeConstants.CONSUME)
+                    || updateReqVO.getType().equals(OutboundTypeConstants.DESTROY)) {
+                //消耗出库
+                item.setResave(true);
+            }
+
         }
 
         // 校验是否存在相同的明细正在处理中
@@ -151,11 +174,10 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         subApplicationMapper.insertBatch(subApplicationDOS);
 
 
-
         //2.创建流程实例
 
         // 流程变量
-        Map<String,Object> processInstanceVariables = new HashMap<>();
+        Map<String, Object> processInstanceVariables = new HashMap<>();
         String processInstanceId = processInstanceApi.createProcessInstance(SecurityFrameworkUtils.getLoginUserId(),
                 new BpmProcessInstanceCreateReqDTO()
                         .setProcessDefinitionKey(OUTBOUND_PROCESS_KEY)
@@ -176,7 +198,6 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
     }
 
 
-
     @Override
     public void deleteOutboundApplication(Long id) {
         // 校验存在和是否自由态
@@ -185,7 +206,7 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         // 删除 主表
         outboundApplicationMapper.deleteById(id);
         //删除子表
-        subApplicationMapper.delete(OutboundSubApplicationDO::getParentId,id);
+        subApplicationMapper.delete(OutboundSubApplicationDO::getParentId, id);
     }
 
     private void validateOutboundApplicationStatus(Long id) {
@@ -193,7 +214,7 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         if (outboundApplicationDO == null) {
             throw exception(OUTBOUND_APPLICATION_NOT_EXISTS);
         }
-        if (!BpmTaskStatusEnum.WAIT.getStatus().toString().equals(outboundApplicationDO.getApproResult())){
+        if (!BpmTaskStatusEnum.WAIT.getStatus().toString().equals(outboundApplicationDO.getApproResult())) {
             throw exception(OUTBOUND_APPLICATION_STATUS_NOT_UN_START);
         }
     }
@@ -233,7 +254,7 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
 
         //根据槽位id获取位置信息并设置到
         Map<Long, String> stockPositionStrMap = freezingTubeStockPreEntryService.getStockPositionStrMap(stockIds);
-        if (!stockPositionStrMap.isEmpty()){
+        if (!stockPositionStrMap.isEmpty()) {
             for (OutboundApplicationSubRespVO subRespVO : subRespVOS) {
                 subRespVO.setPositionStr(stockPositionStrMap.get(subRespVO.getStockId()));
             }
@@ -282,8 +303,8 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
 
         if (permissionApi.hasAnyRoles(loginUserId, RoleCodeEnum.SUPER_ADMIN.getCode())) {
             // 超级管理员有所有的权限
-            pageResult =  outboundApplicationMapper.selectPage(pageReqVO);
-        }else {
+            pageResult = outboundApplicationMapper.selectPage(pageReqVO);
+        } else {
             pageResult = outboundApplicationMapper.selectPage2(pageReqVO, loginUserId);
         }
 
@@ -301,7 +322,7 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
 
             //根据槽位id获取位置信息并设置到
             Map<Long, String> stockPositionStrMap = freezingTubeStockPreEntryService.getStockPositionStrMap(stockIds);
-            if (!stockPositionStrMap.isEmpty()){
+            if (!stockPositionStrMap.isEmpty()) {
                 for (OutboundApplicationSubRespVO subRespVO : subRespVOS) {
                     subRespVO.setPositionStr(stockPositionStrMap.get(subRespVO.getStockId()));
                 }
@@ -326,6 +347,10 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
             }
 
             parentVo.setSubList(subRespVOS);
+
+
+            //判断parenVo 是否全部重新入库了
+            parentVo.setAllResave(subRespVOS.stream().anyMatch(vo -> !vo.isResave()));
         }
 
 
@@ -335,11 +360,11 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long createAndApplyOutboundApplication(OutboundApplicationCreateReqVO createReqVO) {
-        return getSelf().saveApplication(createReqVO,"apply");
+        return getSelf().saveApplication(createReqVO, "apply");
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Long saveApplication(OutboundApplicationCreateReqVO createReqVO,String type) {
+    public Long saveApplication(OutboundApplicationCreateReqVO createReqVO, String type) {
         //保存主子表数据
         OutboundApplicationDO outboundApplicationDO = BeanUtils.toBean(createReqVO, OutboundApplicationDO.class);
 
@@ -353,7 +378,7 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         long id = DefaultIdentifierGenerator.getInstance().nextId(outboundApplicationDO);
 
         //如果编码为空或者id为空的情况下才需要设置编码
-        if (StringUtils.isBlank(outboundApplicationDO.getCode()) || outboundApplicationDO.getId()==null){
+        if (StringUtils.isBlank(outboundApplicationDO.getCode()) || outboundApplicationDO.getId() == null) {
             String codePrefix = "CK";
             //获取当前时间
             String now = DateUtil.format(new Date(), "yyyyMMdd");
@@ -376,9 +401,9 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
                 outboundApplicationDO.setCode(codePrefix + now + newSuffix);
             }
 
-            if (outboundApplicationDO.getId()==null){
+            if (outboundApplicationDO.getId() == null) {
                 outboundApplicationDO.setId(id);
-            }else{
+            } else {
                 id = outboundApplicationDO.getId();
             }
 
@@ -386,18 +411,20 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
 
         //设置审批状态
         //设置主表状态为处理中
-        if (type.equals("apply")){
+        if (type.equals("apply")) {
             //需要设置审批状态为处理中
             outboundApplicationDO.setApproResult(BpmTaskStatusEnum.RUNNING.getStatus().toString());
             //创建流程实例
             HashMap<String, Object> processVariables = new HashMap<>();
-            processInstanceApi.createProcessInstance(SecurityFrameworkUtils.getLoginUserId(),
+            String processInstanceId = processInstanceApi.createProcessInstance(SecurityFrameworkUtils.getLoginUserId(),
                     new BpmProcessInstanceCreateReqDTO()
                             .setBusinessKey(String.valueOf(id))
                             .setProcessDefinitionKey(OUTBOUND_PROCESS_KEY)
                             .setVariables(processVariables)
             );
-        }else if (type.equals("save")){
+            // 设置application
+            outboundApplicationDO.setProcessInstanceId(processInstanceId);
+        } else if (type.equals("save")) {
             //需要设置审批状态为未开始
             outboundApplicationDO.setApproResult(BpmTaskStatusEnum.WAIT.getStatus().toString());
         }
@@ -406,18 +433,28 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         outboundApplicationMapper.insert(outboundApplicationDO);
 
 
-
         List<OutboundSubApplicationDO> subApplicationDOS = BeanUtils.toBean(createReqVO.getSubList(), OutboundSubApplicationDO.class);
-
-        if(subApplicationDOS == null || subApplicationDOS.isEmpty()){
+        if (subApplicationDOS == null || subApplicationDOS.isEmpty()) {
             // 如果是空的或者为null，则直接返回就好了
             return outboundApplicationDO.getId();
         }
 
 
         //设置子表的父id
-        for (OutboundSubApplicationDO subApplicationDO : subApplicationDOS) {
-            subApplicationDO.setParentId(outboundApplicationDO.getId());
+        for (OutboundSubApplicationDO item : subApplicationDOS) {
+            item.setParentId(outboundApplicationDO.getId());
+
+
+            //判断主表的类型，然后设置回库状态
+            if (outboundApplicationDO.getType().equals(OutboundTypeConstants.NORMAL)
+                    || outboundApplicationDO.getType().equals(OutboundTypeConstants.REGENERATION)) {
+                // 正常出库 传代/复壮都要正常回库
+                item.setResave(false); //需要回库
+            } else if (outboundApplicationDO.getType().equals(OutboundTypeConstants.CONSUME)
+                    || outboundApplicationDO.getType().equals(OutboundTypeConstants.DESTROY)) {
+                //消耗出库
+                item.setResave(true);
+            }
         }
 
 
@@ -442,19 +479,23 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
     @Transactional(rollbackFor = Exception.class)
     public Boolean submit(Long id) {
 
-        OutboundApplicationDO applicationDO = outboundApplicationMapper.selectById(id);
 
-        //需要设置审批状态为处理中
-        applicationDO.setApproResult(BpmTaskStatusEnum.RUNNING.getStatus().toString());
         //创建流程实例
         HashMap<String, Object> processVariables = new HashMap<>();
-        processInstanceApi.createProcessInstance(SecurityFrameworkUtils.getLoginUserId(),
+        String processInstanceId = processInstanceApi.createProcessInstance(SecurityFrameworkUtils.getLoginUserId(),
                 new BpmProcessInstanceCreateReqDTO()
                         .setBusinessKey(String.valueOf(id))
                         .setProcessDefinitionKey(OUTBOUND_PROCESS_KEY)
                         .setVariables(processVariables)
         );
-        //进行更新
+
+        OutboundApplicationDO applicationDO = outboundApplicationMapper.selectById(id);
+        applicationDO.setProcessInstanceId(processInstanceId);
+
+        //需要设置审批状态为处理中
+        applicationDO.setApproResult(BpmTaskStatusEnum.RUNNING.getStatus().toString());
+
+        //进行更新-
         outboundApplicationMapper.updateById(applicationDO);
 
         return true;
@@ -474,13 +515,13 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         Set<Long> specimenIds = updateReqVO.getSubList().stream().map(OutboundApplicationSubCreateReqVO::getSpecimenId).collect(Collectors.toSet());
 
         //如果是审批通过，则更新单据、更新样品信息和槽位信息
-        if (BpmTaskStatusEnum.APPROVE.getStatus().toString().equals(approveResult)){
+        if (BpmTaskStatusEnum.APPROVE.getStatus().toString().equals(approveResult)) {
             OutboundApplicationDO mainDO = BeanUtils.toBean(updateReqVO, OutboundApplicationDO.class);
             outboundApplicationMapper.updateById(mainDO);
 
             String status;
 
-            if (updateReqVO.getType().equals(OutboundTypeConstants.NORMAL) || updateReqVO.getType().equals(OutboundTypeConstants.REGENERATION) ){
+            if (updateReqVO.getType().equals(OutboundTypeConstants.NORMAL) || updateReqVO.getType().equals(OutboundTypeConstants.REGENERATION)) {
                 // 正常出库 传代/复壮都要正常回库
                 List<SpecimenInfoDO> specimenList = specimenInfoMapper.selectList("id", specimenIds);
                 for (SpecimenInfoDO entryDO : specimenList) {
@@ -490,14 +531,14 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
                 specimenInfoMapper.updateBatch(specimenList);
 
                 //获取槽位数据
-                List<FreezingTubeStockInfoDO> tubeStockInfoDOList = stockInfoMapper.selectList(FreezingTubeStockInfoDO::getStockPreEntryId,specimenIds );
+                List<FreezingTubeStockInfoDO> tubeStockInfoDOList = stockInfoMapper.selectList(FreezingTubeStockInfoDO::getStockPreEntryId, specimenIds);
                 for (FreezingTubeStockInfoDO freezingTubeStockInfoDO : tubeStockInfoDOList) {
                     freezingTubeStockInfoDO.setStatus(InventoryStatisEnum.WAIT_STOCK.getValue());
                 }
 
                 stockInfoMapper.updateBatch(tubeStockInfoDOList);
-            }else if (!updateReqVO.getType().equals(OutboundTypeConstants.CONSUME)) {
-                if (updateReqVO.getType().equals(OutboundTypeConstants.DESTROY)){
+            } else if (!updateReqVO.getType().equals(OutboundTypeConstants.CONSUME)) {
+                if (updateReqVO.getType().equals(OutboundTypeConstants.DESTROY)) {
                     //销毁出库
                     status = InventoryStatisEnum.DESTROY_STOCK.getValue();
                     deliverSpecimen(specimenIds, status);
@@ -510,7 +551,7 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
                 deliverSpecimen(specimenIds, status);
 
             }
-        }else if (updateReqVO.getApproResult().equals(BpmTaskStatusEnum.REJECT.getStatus().toString())){
+        } else if (updateReqVO.getApproResult().equals(BpmTaskStatusEnum.REJECT.getStatus().toString())) {
             //如果审批不通过，则设置主表为
             OutboundApplicationDO mainDO = BeanUtils.toBean(updateReqVO, OutboundApplicationDO.class);
             outboundApplicationMapper.updateById(mainDO);
@@ -521,7 +562,7 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
 
     /**
      * @param specimenIds 样品id
-     * @param status 状态
+     * @param status      状态
      */
     private void deliverSpecimen(Set<Long> specimenIds, String status) {
         List<SpecimenInfoDO> specimenList = specimenInfoMapper.selectList("id", specimenIds);
@@ -548,12 +589,13 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
                 .set(FreezingTubeStockInfoDO::getCreateTime, null)
                 .set(FreezingTubeStockInfoDO::getUpdater, null)
                 .set(FreezingTubeStockInfoDO::getUpdateTime, null);
-        wrapperX.in(FreezingTubeStockInfoDO::getId,tubeStockInfoDOList.stream().map(FreezingTubeStockInfoDO::getId).collect(Collectors.toSet()) );
+        wrapperX.in(FreezingTubeStockInfoDO::getId, tubeStockInfoDOList.stream().map(FreezingTubeStockInfoDO::getId).collect(Collectors.toSet()));
         stockInfoMapper.update(wrapperX);
     }
 
     /**
      * 判断是否已经存在正在处理的明细了
+     *
      * @param subApplicationDOS 子表数据
      */
     private void validateSubIsExistsProcess(List<OutboundSubApplicationDO> subApplicationDOS) {
@@ -561,8 +603,8 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
 
         List<String> specimenCode = subApplicationMapper.selectProcessorBySpecimenIds(specimenIds);
 
-        if (!specimenCode.isEmpty()){
-            throw exception(new ErrorCode(999, String.join(",", specimenCode)+"已经存在于出库单中，正在处理中"));
+        if (!specimenCode.isEmpty()) {
+            throw exception(new ErrorCode(999, String.join(",", specimenCode) + "已经存在于出库单中，正在处理中"));
         }
 
         // todo 删除的菌种不可以重新入库
@@ -574,8 +616,8 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         Long parentId = updateReqVO.getId(); // 主表id
 
         // 判断是否存在
-        boolean parentExists = outboundApplicationMapper.exists(new LambdaQueryWrapperX<OutboundApplicationDO>().eq(OutboundApplicationDO::getId, parentId));
-        if (!parentExists){
+        OutboundApplicationDO parent = outboundApplicationMapper.selectOne(new LambdaQueryWrapperX<OutboundApplicationDO>().eq(OutboundApplicationDO::getId, parentId));
+        if (parent==null) {
             // 主表不存在，不能新增
             throw exception(OUTBOUND_APPLICATION_NOT_EXISTS);
         }
@@ -598,10 +640,23 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
             tempDo.setSpecimenCode(item.getSpecimenCode());
             tempDo.setChineseName(item.getChineseName());
             tempDo.setLatinName(item.getLatinName());
+
+
+            //判断主表的类型，然后设置回库状态
+            if (parent.getType().equals(OutboundTypeConstants.NORMAL)
+                    || parent.getType().equals(OutboundTypeConstants.REGENERATION)) {
+                // 正常出库 传代/复壮都要正常回库
+                tempDo.setResave(false); //需要回库
+            } else if (parent.getType().equals(OutboundTypeConstants.CONSUME)
+                    || parent.getType().equals(OutboundTypeConstants.DESTROY)) {
+                //消耗出库
+                tempDo.setResave(true);
+            }
+
             newList.add(tempDo);
         }
 
-        if (!newList.isEmpty()){
+        if (!newList.isEmpty()) {
             subApplicationMapper.insertBatch(newList);
         }
         return true;
@@ -609,6 +664,7 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
 
     /**
      * 获取自身的代理对象，解决AOP生效的问题
+     *
      * @return
      */
     private OutboundApplicationServiceImpl getSelf() {

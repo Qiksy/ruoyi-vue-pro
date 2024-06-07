@@ -74,9 +74,9 @@ public interface FreezingTubeStockInfoService {
     /**
      * 给冻藏管的融冻次数+1
      * 然后设置在库状态为在库
-     * @param perStockCode 冻藏管的编号
+     * @param specimenCode 样品编码
      */
-    void scannerReStock(String perStockCode);
+    void scannerReStock(String specimenCode);
 
     /**
      * 完全出库，也就是不会设置待回库的

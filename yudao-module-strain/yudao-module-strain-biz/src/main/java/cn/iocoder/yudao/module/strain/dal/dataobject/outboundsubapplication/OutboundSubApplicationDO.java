@@ -53,6 +53,12 @@ public class OutboundSubApplicationDO extends BaseDO {
     private String latinName;
 
 
+    /**
+     * 是否已经重新存储了 0否1是
+     *
+     * 如果是销毁、消耗出库 则不需要重新存储，这个时候设置成为1
+     */
+    private boolean resave;
 
 
 

@@ -5,12 +5,14 @@ import cn.iocoder.yudao.module.strain.controller.admin.freezingboxinfo.vo.Freezi
 import cn.iocoder.yudao.module.strain.controller.admin.microbebasicinfo.vo.MicrobeBasicInfoRespVO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingboxinfo.FreezingBoxInfoDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingdevicehierarchy.FreezingDeviceHierarchyDO;
+import cn.iocoder.yudao.module.strain.dal.dataobject.outboundsubapplication.OutboundSubApplicationDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.specimen.SpecimenInfoDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.microbebasicinfo.MicrobeBasicInfoDO;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingboxinfo.FreezingBoxInfoMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingdevicehierarchy.FreezingDeviceHierarchyMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.SpecimenInfoMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.microbebasicinfo.MicrobeBasicInfoMapper;
+import cn.iocoder.yudao.module.strain.dal.mysql.outboundsubapplication.OutboundSubApplicationMapper;
 import cn.iocoder.yudao.module.strain.enums.InventoryStatisEnum;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
@@ -71,6 +73,9 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
 
     @Resource
     private AdminUserApi adminUserApi; // 系统用户 API
+
+    @Resource
+    private OutboundSubApplicationMapper subApplicationMapper;
 
     /**
      * 槽位id锁前缀
@@ -374,25 +379,35 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
      * 给冻藏管的融冻次数+1
      * 然后设置在库状态为在库
      *
-     * @param perStockCode 冻藏管的编号
+     * 如果样品是来自于传代入库，则需要更新代数
+     *
+     * @param specimenCode 样品编码
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void scannerReStock(String perStockCode) {
+    public void scannerReStock(String specimenCode) {
+        // 查询出库单
+        // todo  如果是传代，就更新
 
-        LambdaQueryWrapperX<SpecimenInfoDO> lambdaQueryWrapperX = new LambdaQueryWrapperX<SpecimenInfoDO>().eq(SpecimenInfoDO::getCode, perStockCode);
-        SpecimenInfoDO perStock = specimenInfoMapper.selectOne(lambdaQueryWrapperX);
+        subApplicationMapper.selectList();
 
-        int thawFreezeCycleCount = Optional.ofNullable(perStock.getThawFreezeCycleCount()).orElse(1) + 1;
-        perStock.setThawFreezeCycleCount(thawFreezeCycleCount);
+
+
+        // 查询菌种数据
+
+        LambdaQueryWrapperX<SpecimenInfoDO> lambdaQueryWrapperX = new LambdaQueryWrapperX<SpecimenInfoDO>().eq(SpecimenInfoDO::getCode, specimenCode);
+        SpecimenInfoDO specimenInfo = specimenInfoMapper.selectOne(lambdaQueryWrapperX);
+
+        int thawFreezeCycleCount = Optional.ofNullable(specimenInfo.getThawFreezeCycleCount()).orElse(1) + 1;
+        specimenInfo.setThawFreezeCycleCount(thawFreezeCycleCount);
 
         // 设置库存状态为在库
-        perStock.setStatus(IN_STOCK.getValue());
-        specimenInfoMapper.updateById(perStock);
+        specimenInfo.setStatus(IN_STOCK.getValue());
+        specimenInfoMapper.updateById(specimenInfo);
 
 
         LambdaQueryWrapperX<FreezingTubeStockInfoDO> wrapperX = new LambdaQueryWrapperX<>();
-        wrapperX.eq(FreezingTubeStockInfoDO::getStockPreEntryId, perStock.getId());
+        wrapperX.eq(FreezingTubeStockInfoDO::getStockPreEntryId, specimenInfo.getId());  //样品id
 
         List<FreezingTubeStockInfoDO> tubeStockInfoDOList = freezingTubeStockInfoMapper.selectList(wrapperX);
 
@@ -404,10 +419,13 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
             throw exception(TUBE_STOCK_TOO_MANY);
         } else {
             //更新
-            FreezingTubeStockInfoDO freezingTubeStockInfoDO = tubeStockInfoDOList.get(0);
+            FreezingTubeStockInfoDO freezingTubeStockInfoDO = tubeStockInfoDOList.getFirst();
             freezingTubeStockInfoDO.setStatus(IN_STOCK.getValue());
             freezingTubeStockInfoDO.setThawFreezeCycleCount(thawFreezeCycleCount);
             freezingTubeStockInfoMapper.updateById(freezingTubeStockInfoDO);
         }
+
+
+
     }
 }

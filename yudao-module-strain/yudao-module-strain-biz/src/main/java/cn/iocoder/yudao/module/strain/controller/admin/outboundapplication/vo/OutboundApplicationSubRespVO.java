@@ -15,4 +15,9 @@ public class OutboundApplicationSubRespVO extends OutboundApplicationSubCreateRe
     private String positionStr;
 
     private String saveByName;
+
+    /**
+     * 是否重新入库
+     */
+    private boolean resave;
 }

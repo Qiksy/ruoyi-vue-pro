@@ -62,4 +62,10 @@ public class OutboundApplicationRespVO {
      */
     private List<OutboundApplicationSubRespVO> subList;
 
+
+    /**
+     * 是否重新入库了
+     */
+    private boolean allResave;
+
 }

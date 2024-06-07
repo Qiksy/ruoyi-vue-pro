@@ -132,8 +132,8 @@ public class FreezingTubeStockInfoController {
     @PutMapping("/scanner-re-stock")
     @Operation(summary = "扫码复存")
     @PreAuthorize("@ss.hasPermission('strain:freezing-tube-stock-info:update')")
-    public CommonResult<Boolean> scannerReStock(@NotNull @RequestParam("perStockCode") String perStockCode) {
-        freezingTubeStockInfoService.scannerReStock(perStockCode);
+    public CommonResult<Boolean> scannerReStock(@NotNull @RequestParam("perStockCode") String specimenCode) {
+        freezingTubeStockInfoService.scannerReStock(specimenCode);
         return success(true);
     }
 
