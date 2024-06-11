@@ -1,10 +1,12 @@
 package cn.iocoder.yudao.module.strain.service.freezingtubestockinfo;
 
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.bpm.enums.task.BpmTaskStatusEnum;
 import cn.iocoder.yudao.module.strain.controller.admin.freezingboxinfo.vo.FreezingBoxInfoDetailVO;
 import cn.iocoder.yudao.module.strain.controller.admin.microbebasicinfo.vo.MicrobeBasicInfoRespVO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingboxinfo.FreezingBoxInfoDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.freezingdevicehierarchy.FreezingDeviceHierarchyDO;
+import cn.iocoder.yudao.module.strain.dal.dataobject.outboundapplication.OutboundApplicationDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.outboundsubapplication.OutboundSubApplicationDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.specimen.SpecimenInfoDO;
 import cn.iocoder.yudao.module.strain.dal.dataobject.microbebasicinfo.MicrobeBasicInfoDO;
@@ -12,8 +14,10 @@ import cn.iocoder.yudao.module.strain.dal.mysql.freezingboxinfo.FreezingBoxInfoM
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingdevicehierarchy.FreezingDeviceHierarchyMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.SpecimenInfoMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.microbebasicinfo.MicrobeBasicInfoMapper;
+import cn.iocoder.yudao.module.strain.dal.mysql.outboundapplication.OutboundApplicationMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.outboundsubapplication.OutboundSubApplicationMapper;
 import cn.iocoder.yudao.module.strain.enums.InventoryStatisEnum;
+import cn.iocoder.yudao.module.strain.enums.OutboundTypeConstants;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -25,6 +29,7 @@ import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -76,6 +81,9 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
 
     @Resource
     private OutboundSubApplicationMapper subApplicationMapper;
+
+    @Resource
+    private OutboundApplicationMapper applicationMapper;
 
     /**
      * 槽位id锁前缀
@@ -387,10 +395,33 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
     @Transactional(rollbackFor = Exception.class)
     public void scannerReStock(String specimenCode) {
         // 查询出库单
-        // todo  如果是传代，就更新
+        LambdaQueryWrapperX<OutboundSubApplicationDO> wrapper = new LambdaQueryWrapperX<>();
+        wrapper.eq(OutboundSubApplicationDO::getSpecimenCode,specimenCode)
+                        .eq(OutboundSubApplicationDO::isResave,false);
+        //查询需要入库的样品
+        List<OutboundSubApplicationDO> subApplicationDOS = subApplicationMapper.selectList(wrapper);
+        //查询父级的id
+        List<Long> list = subApplicationDOS.stream().map(OutboundSubApplicationDO::getParentId).distinct().toList();
+        //查询父级的审批状态为通过，但是没有重新存储的单据，并且类型为传代回库的
+        List<OutboundApplicationDO> outboundApplicationDOS = applicationMapper.selectList(new LambdaQueryWrapperX<OutboundApplicationDO>().in(OutboundApplicationDO::getId)
+                .eq(OutboundApplicationDO::getApproResult, BpmTaskStatusEnum.APPROVE.getStatus())
+                .in(OutboundApplicationDO::getType, new ArrayList<>(){{
+                    add(OutboundTypeConstants.REGENERATION);
+                    add(OutboundTypeConstants.NORMAL);
+                }})
+        );
 
-        subApplicationMapper.selectList();
+        //如果有多张单据，也直接回写了
 
+
+        if (!outboundApplicationDOS.isEmpty()){
+            //这种情况下需要回写 审核单据
+            Set<Long> mainIds = outboundApplicationDOS.stream().map(OutboundApplicationDO::getId).collect(Collectors.toSet());
+            List<OutboundSubApplicationDO> subDO = subApplicationDOS.stream().filter(sub -> mainIds.contains(sub.getParentId())).toList();
+
+            subDO.forEach(vo->vo.setResave(true));
+            subApplicationMapper.updateBatch(subDO);
+        }
 
 
         // 查询菌种数据
@@ -403,6 +434,19 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
 
         // 设置库存状态为在库
         specimenInfo.setStatus(IN_STOCK.getValue());
+
+        long count = outboundApplicationDOS.stream().filter(item -> OutboundTypeConstants.REGENERATION.equals(item.getType())).count();
+        if (count>0){
+        //判断是否需要增加传代的信息
+            specimenInfo.setGenerationNumber(specimenInfo.getGenerationNumber()+1); //代数加1
+            //有效期
+            MicrobeBasicInfoDO microbeBasicInfoDO = microbeBasicInfoMapper.selectOne(new LambdaQueryWrapperX<MicrobeBasicInfoDO>().eq(MicrobeBasicInfoDO::getId, specimenInfo.getMicrobeId()));
+            Integer validityPeriodDays = microbeBasicInfoDO.getValidityPeriodDays();
+            //更新有效期
+            specimenInfo.setExpirationDate(specimenInfo.getExpirationDate().plusDays(validityPeriodDays));
+            specimenInfo.setSaveDate(LocalDateTime.now());
+        }
+
         specimenInfoMapper.updateById(specimenInfo);
 
 
@@ -424,8 +468,5 @@ public class FreezingTubeStockInfoServiceImpl implements FreezingTubeStockInfoSe
             freezingTubeStockInfoDO.setThawFreezeCycleCount(thawFreezeCycleCount);
             freezingTubeStockInfoMapper.updateById(freezingTubeStockInfoDO);
         }
-
-
-
     }
 }

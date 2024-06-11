@@ -45,6 +45,7 @@ public class OutboundApplicationDO extends BaseDO {
      */
 //    private Boolean isRestocked;
     /**
+     * {@link cn.iocoder.yudao.module.strain.enums.OutboundTypeConstants}
      * 出库类型：1正常出库 2销毁出库
      */
     private String type;
