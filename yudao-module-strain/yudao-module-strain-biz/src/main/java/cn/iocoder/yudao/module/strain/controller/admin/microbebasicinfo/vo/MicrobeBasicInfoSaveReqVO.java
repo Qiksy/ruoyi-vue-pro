@@ -83,4 +83,8 @@ public class MicrobeBasicInfoSaveReqVO {
     @Schema(description = "菌种图片")
     private String microbeImages;
 
+
+    @Schema(description = "保存方式")
+    private String storageMode;
+
 }
