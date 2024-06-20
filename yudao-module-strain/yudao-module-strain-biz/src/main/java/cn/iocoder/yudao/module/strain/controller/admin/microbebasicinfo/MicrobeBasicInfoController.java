@@ -1,7 +1,7 @@
 package cn.iocoder.yudao.module.strain.controller.admin.microbebasicinfo;
 
-import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.FreezingTubeStockPreEntryRespVO;
-import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.FreezingTubeStockPreEntryService;
+import cn.iocoder.yudao.module.strain.controller.admin.specimeninfo.vo.SpecimenInfoRespVO;
+import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.SpecimenInfoService;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 
-import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
 
@@ -44,7 +43,7 @@ public class MicrobeBasicInfoController {
     private MicrobeBasicInfoService microbeBasicInfoService;
 
     @Resource
-    private FreezingTubeStockPreEntryService freezingTubeStockPreEntryService;
+    private SpecimenInfoService specimenInfoService;
 
     @PostMapping("/create")
     @Operation(summary = "创建菌种信息")
@@ -103,8 +102,8 @@ public class MicrobeBasicInfoController {
     @GetMapping("/storage/list")
     @Operation(summary = "获取菌种的库存列表")
     @PreAuthorize("@ss.hasPermission('strain:microbe-basic-info:query')")
-    public CommonResult<List<FreezingTubeStockPreEntryRespVO>> getMicrobeBasicStorageList(@RequestParam("id") Long id) {
-        List<FreezingTubeStockPreEntryRespVO> list = freezingTubeStockPreEntryService.getMicrobeBasicInfoStorageList(id);
+    public CommonResult<List<SpecimenInfoRespVO>> getMicrobeBasicStorageList(@RequestParam("id") Long id) {
+        List<SpecimenInfoRespVO> list = specimenInfoService.getMicrobeBasicInfoStorageList(id);
         return success(list);
     }
 }

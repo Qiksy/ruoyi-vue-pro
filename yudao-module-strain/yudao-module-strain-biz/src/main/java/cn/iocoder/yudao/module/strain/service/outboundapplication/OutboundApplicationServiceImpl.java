@@ -1,6 +1,5 @@
 package cn.iocoder.yudao.module.strain.service.outboundapplication;
 
-import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.iocoder.yudao.framework.common.exception.ErrorCode;
@@ -18,7 +17,7 @@ import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.Specim
 import cn.iocoder.yudao.module.strain.dal.mysql.outboundsubapplication.OutboundSubApplicationMapper;
 import cn.iocoder.yudao.module.strain.enums.InventoryStatisEnum;
 import cn.iocoder.yudao.module.strain.enums.OutboundTypeConstants;
-import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.FreezingTubeStockPreEntryService;
+import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.SpecimenInfoService;
 import cn.iocoder.yudao.module.system.api.permission.PermissionApi;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
@@ -61,7 +60,7 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
     private OutboundSubApplicationMapper subApplicationMapper;
 
     @Resource
-    private FreezingTubeStockPreEntryService freezingTubeStockPreEntryService;
+    private SpecimenInfoService specimenInfoService;
 
 
     @Resource
@@ -253,7 +252,7 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
         List<Long> stockIds = subRespVOS.stream().map(OutboundApplicationSubRespVO::getStockId).filter(Objects::nonNull).toList();
 
         //根据槽位id获取位置信息并设置到
-        Map<Long, String> stockPositionStrMap = freezingTubeStockPreEntryService.getStockPositionStrMap(stockIds);
+        Map<Long, String> stockPositionStrMap = specimenInfoService.getStockPositionStrMap(stockIds);
         if (!stockPositionStrMap.isEmpty()) {
             for (OutboundApplicationSubRespVO subRespVO : subRespVOS) {
                 subRespVO.setPositionStr(stockPositionStrMap.get(subRespVO.getStockId()));
@@ -321,7 +320,7 @@ public class OutboundApplicationServiceImpl implements OutboundApplicationServic
             List<Long> stockIds = subRespVOS.stream().map(OutboundApplicationSubRespVO::getStockId).filter(Objects::nonNull).toList();
 
             //根据槽位id获取位置信息并设置到
-            Map<Long, String> stockPositionStrMap = freezingTubeStockPreEntryService.getStockPositionStrMap(stockIds);
+            Map<Long, String> stockPositionStrMap = specimenInfoService.getStockPositionStrMap(stockIds);
             if (!stockPositionStrMap.isEmpty()) {
                 for (OutboundApplicationSubRespVO subRespVO : subRespVOS) {
                     subRespVO.setPositionStr(stockPositionStrMap.get(subRespVO.getStockId()));

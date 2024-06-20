@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo;
+package cn.iocoder.yudao.module.strain.controller.admin.specimeninfo.vo;
 
 import lombok.Data;
 

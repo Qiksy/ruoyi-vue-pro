@@ -7,7 +7,7 @@ import jakarta.annotation.Resource;
 
 import cn.iocoder.yudao.framework.test.core.ut.BaseDbUnitTest;
 
-import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.*;
+import cn.iocoder.yudao.module.strain.controller.admin.specimeninfo.vo.*;
 import cn.iocoder.yudao.module.strain.dal.dataobject.specimen.SpecimenInfoDO;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.SpecimenInfoMapper;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -22,26 +22,26 @@ import static cn.iocoder.yudao.framework.common.util.object.ObjectUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * {@link FreezingTubeStockPreEntryServiceImpl} 的单元测试类
+ * {@link SpecimenInfoServiceImpl} 的单元测试类
  *
  * @author 芋道源码
  */
-@Import(FreezingTubeStockPreEntryServiceImpl.class)
-public class FreezingTubeStockPreEntryServiceImplTest extends BaseDbUnitTest {
+@Import(SpecimenInfoServiceImpl.class)
+public class SpecimenInfoServiceImplTest extends BaseDbUnitTest {
 
     @Resource
-    private FreezingTubeStockPreEntryServiceImpl freezingTubeStockPreEntryService;
+    private SpecimenInfoServiceImpl freezingTubeStockPreEntryService;
 
     @Resource
     private SpecimenInfoMapper specimenInfoMapper;
 
     @Test
-    public void testCreateFreezingTubeStockPreEntry_success() {
+    public void testCreateSpecimenInfo_success() {
         // 准备参数
-        FreezingTubeStockPreEntrySaveReqVO createReqVO = randomPojo(FreezingTubeStockPreEntrySaveReqVO.class).setId(null);
+        SpecimenInfoSaveReqVO createReqVO = randomPojo(SpecimenInfoSaveReqVO.class).setId(null);
 
         // 调用
-        freezingTubeStockPreEntryService.createFreezingTubeStockPreEntry(createReqVO);
+        freezingTubeStockPreEntryService.createSpecimenInfo(createReqVO);
         // 断言
 //        assertNotNull(freezingTubeStockPreEntryId);
 //        // 校验记录的属性是否正确
@@ -50,33 +50,33 @@ public class FreezingTubeStockPreEntryServiceImplTest extends BaseDbUnitTest {
     }
 
     @Test
-    public void testUpdateFreezingTubeStockPreEntry_success() {
+    public void testUpdateSpecimenInfo_success() {
         // mock 数据
         SpecimenInfoDO dbFreezingTubeStockPreEntry = randomPojo(SpecimenInfoDO.class);
         specimenInfoMapper.insert(dbFreezingTubeStockPreEntry);// @Sql: 先插入出一条存在的数据
         // 准备参数
-        FreezingTubeStockPreEntryUpdateReqVO updateReqVO = randomPojo(FreezingTubeStockPreEntryUpdateReqVO.class, o -> {
+        SpecimenInfoUpdateReqVO updateReqVO = randomPojo(SpecimenInfoUpdateReqVO.class, o -> {
             o.setId(dbFreezingTubeStockPreEntry.getId()); // 设置更新的 ID
         });
 
         // 调用
-        freezingTubeStockPreEntryService.updateFreezingTubeStockPreEntry(updateReqVO);
+        freezingTubeStockPreEntryService.updateSpecimenInfo(updateReqVO);
         // 校验是否更新正确
         SpecimenInfoDO freezingTubeStockPreEntry = specimenInfoMapper.selectById(updateReqVO.getId()); // 获取最新的
         assertPojoEquals(updateReqVO, freezingTubeStockPreEntry);
     }
 
     @Test
-    public void testUpdateFreezingTubeStockPreEntry_notExists() {
+    public void testUpdateSpecimenInfo_notExists() {
         // 准备参数
-        FreezingTubeStockPreEntryUpdateReqVO updateReqVO = randomPojo(FreezingTubeStockPreEntryUpdateReqVO.class);
+        SpecimenInfoUpdateReqVO updateReqVO = randomPojo(SpecimenInfoUpdateReqVO.class);
 
         // 调用, 并断言异常
-        assertServiceException(() -> freezingTubeStockPreEntryService.updateFreezingTubeStockPreEntry(updateReqVO), FREEZING_TUBE_STOCK_PRE_ENTRY_NOT_EXISTS);
+        assertServiceException(() -> freezingTubeStockPreEntryService.updateSpecimenInfo(updateReqVO), FREEZING_TUBE_STOCK_PRE_ENTRY_NOT_EXISTS);
     }
 
     @Test
-    public void testDeleteFreezingTubeStockPreEntry_success() {
+    public void testDeleteSpecimenInfo_success() {
         // mock 数据
         SpecimenInfoDO dbFreezingTubeStockPreEntry = randomPojo(SpecimenInfoDO.class);
         specimenInfoMapper.insert(dbFreezingTubeStockPreEntry);// @Sql: 先插入出一条存在的数据
@@ -84,23 +84,23 @@ public class FreezingTubeStockPreEntryServiceImplTest extends BaseDbUnitTest {
         Long id = dbFreezingTubeStockPreEntry.getId();
 
         // 调用
-        freezingTubeStockPreEntryService.deleteFreezingTubeStockPreEntry(id);
+        freezingTubeStockPreEntryService.deleteSpecimenInfo(id);
        // 校验数据不存在了
        assertNull(specimenInfoMapper.selectById(id));
     }
 
     @Test
-    public void testDeleteFreezingTubeStockPreEntry_notExists() {
+    public void testDeleteSpecimenInfo_notExists() {
         // 准备参数
         Long id = randomLongId();
 
         // 调用, 并断言异常
-        assertServiceException(() -> freezingTubeStockPreEntryService.deleteFreezingTubeStockPreEntry(id), FREEZING_TUBE_STOCK_PRE_ENTRY_NOT_EXISTS);
+        assertServiceException(() -> freezingTubeStockPreEntryService.deleteSpecimenInfo(id), FREEZING_TUBE_STOCK_PRE_ENTRY_NOT_EXISTS);
     }
 
     @Test
     @Disabled  // TODO 请修改 null 为需要的值，然后删除 @Disabled 注解
-    public void testGetFreezingTubeStockPreEntryPage() {
+    public void testGetSpecimenInfoPage() {
        // mock 数据
        SpecimenInfoDO dbFreezingTubeStockPreEntry = randomPojo(SpecimenInfoDO.class, o -> { // 等会查询到
            o.setCode(null);
@@ -157,7 +157,7 @@ public class FreezingTubeStockPreEntryServiceImplTest extends BaseDbUnitTest {
        // 测试 status 不匹配
        specimenInfoMapper.insert(cloneIgnoreId(dbFreezingTubeStockPreEntry, o -> o.setStatus(null)));
        // 准备参数
-       FreezingTubeStockPreEntryPageReqVO reqVO = new FreezingTubeStockPreEntryPageReqVO();
+       SpecimenInfoPageReqVO reqVO = new SpecimenInfoPageReqVO();
        reqVO.setCode(null);
        reqVO.setTubeId(null);
        reqVO.setBoxId(null);
@@ -177,7 +177,7 @@ public class FreezingTubeStockPreEntryServiceImplTest extends BaseDbUnitTest {
        reqVO.setStatus(null);
 
        // 调用
-       PageResult<SpecimenInfoDO> pageResult = freezingTubeStockPreEntryService.getFreezingTubeStockPreEntryPage(reqVO);
+       PageResult<SpecimenInfoDO> pageResult = freezingTubeStockPreEntryService.getSpecimenInfo(reqVO);
        // 断言
        assertEquals(1, pageResult.getTotal());
        assertEquals(1, pageResult.getList().size());

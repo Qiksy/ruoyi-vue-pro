@@ -10,7 +10,7 @@ import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.Expired
 import cn.iocoder.yudao.module.strain.dal.dataobject.specimen.SpecimenInfoDO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Mapper;
-import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.*;
+import cn.iocoder.yudao.module.strain.controller.admin.specimeninfo.vo.*;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -21,7 +21,7 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface SpecimenInfoMapper extends BaseMapperX<SpecimenInfoDO> {
 
-    default PageResult<SpecimenInfoDO> selectPage(FreezingTubeStockPreEntryPageReqVO reqVO) {
+    default PageResult<SpecimenInfoDO> selectPage(SpecimenInfoPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<SpecimenInfoDO>()
                 .eqIfPresent(SpecimenInfoDO::getCode, reqVO.getCode())
                 .eqIfPresent(SpecimenInfoDO::getTubeId, reqVO.getTubeId())
@@ -79,9 +79,9 @@ public interface SpecimenInfoMapper extends BaseMapperX<SpecimenInfoDO> {
         return BeanUtils.toBean(result, FreezingTubeStockPreEntryRespVO.class);
     }
      */
-    IPage<FreezingTubeStockPreEntryRespVO> selectPage2(IPage<FreezingTubeStockPreEntryRespVO> page, @Param("req") FreezingTubeStockPreEntryPageReqVO reqVO);
+    IPage<SpecimenInfoRespVO> selectPage2(IPage<SpecimenInfoRespVO> page, @Param("req") SpecimenInfoPageReqVO reqVO);
 
-    IPage<FreezingTubeStockPreEntryRespVO> selectPage3(IPage<FreezingTubeStockPreEntryRespVO> iPage, @Param("req") FreezingTubeStockPreEntryPageReqVO pageReqVO);
+    IPage<SpecimenInfoRespVO> selectPage3(IPage<SpecimenInfoRespVO> iPage, @Param("req") SpecimenInfoPageReqVO pageReqVO);
 
     IPage<ExpiredWarningRespVO> selectPage4(IPage<ExpiredWarningRespVO> iPage,@Param("req") ExpiredWarningReqVO pageReqVO);
 

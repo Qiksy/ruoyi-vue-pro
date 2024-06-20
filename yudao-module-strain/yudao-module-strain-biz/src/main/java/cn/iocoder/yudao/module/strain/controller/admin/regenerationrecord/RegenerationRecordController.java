@@ -1,7 +1,7 @@
 package cn.iocoder.yudao.module.strain.controller.admin.regenerationrecord;
 
 import cn.iocoder.yudao.module.strain.dal.dataobject.specimen.SpecimenInfoDO;
-import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.FreezingTubeStockPreEntryService;
+import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.SpecimenInfoService;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -40,7 +40,7 @@ public class RegenerationRecordController {
     private RegenerationRecordService regenerationRecordService;
 
     @Resource
-    private FreezingTubeStockPreEntryService freezingTubeStockPreEntryService;
+    private SpecimenInfoService specimenInfoService;
 
     @PostMapping("/create")
     @Operation(summary = "创建样品复壮传代记录")
@@ -84,7 +84,7 @@ public class RegenerationRecordController {
         List<RegenerationRecordRespVO> list = BeanUtils.toBean(pageResult.getList(), RegenerationRecordRespVO.class);
 
         for (RegenerationRecordRespVO vo : list) {
-            SpecimenInfoDO entry = freezingTubeStockPreEntryService.getFreezingTubeStockPreEntry(vo.getSpecimenId());
+            SpecimenInfoDO entry = specimenInfoService.getSpecimenInfo(vo.getSpecimenId());
             //设置编号
             if (entry==null){
                 continue;

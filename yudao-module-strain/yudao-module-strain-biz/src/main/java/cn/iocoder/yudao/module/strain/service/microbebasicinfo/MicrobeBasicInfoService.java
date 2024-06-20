@@ -1,13 +1,9 @@
 package cn.iocoder.yudao.module.strain.service.microbebasicinfo;
 
-import java.util.*;
-
-import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.FreezingTubeStockPreEntryRespVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.strain.controller.admin.microbebasicinfo.vo.*;
 import cn.iocoder.yudao.module.strain.dal.dataobject.microbebasicinfo.MicrobeBasicInfoDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 菌种信息 Service 接口

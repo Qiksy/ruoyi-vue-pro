@@ -1,12 +1,10 @@
 package cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockinfo.vo;
 
-import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.FreezingTubeStockPreEntryRespVO;
+import cn.iocoder.yudao.module.strain.controller.admin.specimeninfo.vo.SpecimenInfoRespVO;
 import cn.iocoder.yudao.module.strain.controller.admin.microbebasicinfo.vo.MicrobeBasicInfoRespVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import java.util.*;
-import java.util.*;
-import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDateTime;
 import com.alibaba.excel.annotation.*;
 import cn.iocoder.yudao.framework.excel.core.annotations.DictFormat;
@@ -117,7 +115,7 @@ public class FreezingTubeStockInfoRespVO {
 
     private MicrobeBasicInfoRespVO microbeInfo;
     //预备录入的信息
-    private FreezingTubeStockPreEntryRespVO tubeStockPreEntryInfo;
+    private SpecimenInfoRespVO tubeStockPreEntryInfo;
 
     /**
      * 预录入编号

@@ -1,20 +1,18 @@
-package cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo;
+package cn.iocoder.yudao.module.strain.controller.admin.specimeninfo.vo;
 
 import cn.iocoder.yudao.module.strain.enums.DictTypeConstants;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import java.util.*;
-import java.util.*;
-import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDateTime;
 import com.alibaba.excel.annotation.*;
 import cn.iocoder.yudao.framework.excel.core.annotations.DictFormat;
 import cn.iocoder.yudao.framework.excel.core.convert.DictConvert;
 
-@Schema(description = "管理后台 - 冷冻管库存预录入 Response VO")
+@Schema(description = "管理后台 - 样品录入 Response VO")
 @Data
 @ExcelIgnoreUnannotated
-public class FreezingTubeStockPreEntryRespVO {
+public class SpecimenInfoRespVO {
 
     @Schema(description = "主键", requiredMode = Schema.RequiredMode.REQUIRED, example = "4168")
     @ExcelProperty("主键")

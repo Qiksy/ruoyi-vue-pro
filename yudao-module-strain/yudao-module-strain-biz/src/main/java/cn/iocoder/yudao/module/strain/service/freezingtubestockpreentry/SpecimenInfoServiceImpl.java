@@ -32,7 +32,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.*;
+import cn.iocoder.yudao.module.strain.controller.admin.specimeninfo.vo.*;
 import cn.iocoder.yudao.module.strain.dal.dataobject.specimen.SpecimenInfoDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
@@ -51,7 +51,7 @@ import static cn.iocoder.yudao.module.strain.enums.RejuvenateTypeConstants.REJUV
  */
 @Service
 @Validated
-public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPreEntryService {
+public class SpecimenInfoServiceImpl implements SpecimenInfoService {
 
     @Resource
     private SpecimenInfoMapper specimenInfoMapper;
@@ -94,7 +94,7 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<Long> createFreezingTubeStockPreEntry(FreezingTubeStockPreEntrySaveReqVO createReqVO) {
+    public List<Long> createSpecimenInfo(SpecimenInfoSaveReqVO createReqVO) {
 
 
         Long microbeId = createReqVO.getMicrobeId();
@@ -113,6 +113,7 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
             entryDO.setSaveBy(SecurityFrameworkUtils.getLoginUserId()); // 保存人
             entryDO.setSaveDate(createReqVO.getSaveDate()); // 保存日期
             entryDO.setCode(generateCode(microbeCode, i));
+            entryDO.setBoxCode(createReqVO.getBoxCode()); //设置boxCode
 
             //设置融冻次数
             entryDO.setThawFreezeCycleCount(1);
@@ -169,7 +170,7 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
     }
 
     @Override
-    public void updateFreezingTubeStockPreEntry(FreezingTubeStockPreEntryUpdateReqVO updateReqVO) {
+    public void updateSpecimenInfo(SpecimenInfoUpdateReqVO updateReqVO) {
         // 校验存在
         validateFreezingTubeStockPreEntryExists(updateReqVO.getId());
         // 更新
@@ -178,7 +179,7 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
     }
 
     @Override
-    public void deleteFreezingTubeStockPreEntry(Long id) {
+    public void deleteSpecimenInfo(Long id) {
         // 校验存在
         validateFreezingTubeStockPreEntryExists(id);
         // 校验是否已经入库了
@@ -196,12 +197,12 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
     }
 
     @Override
-    public SpecimenInfoDO getFreezingTubeStockPreEntry(Long id) {
+    public SpecimenInfoDO getSpecimenInfo(Long id) {
         return specimenInfoMapper.selectById(id);
     }
 
     @Override
-    public PageResult<SpecimenInfoDO> getFreezingTubeStockPreEntryPage(FreezingTubeStockPreEntryPageReqVO pageReqVO) {
+    public PageResult<SpecimenInfoDO> getSpecimenInfo(SpecimenInfoPageReqVO pageReqVO) {
         return specimenInfoMapper.selectPage(pageReqVO);
     }
 
@@ -212,12 +213,12 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
      * @return 冷冻管库存预录入分页
      */
     @Override
-    public PageResult<FreezingTubeStockPreEntryRespVO> getFreezingTubeStockPreEntryPage2(FreezingTubeStockPreEntryPageReqVO pageReqVO) {
-        IPage<FreezingTubeStockPreEntryRespVO> iPage = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+    public PageResult<SpecimenInfoRespVO> getSpecimenInfoPage2(SpecimenInfoPageReqVO pageReqVO) {
+        IPage<SpecimenInfoRespVO> iPage = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
         specimenInfoMapper.selectPage2(iPage, pageReqVO);
 
         // 查询这些样品的位置信息
-        List<Long> list = iPage.getRecords().stream().map(FreezingTubeStockPreEntryRespVO::getStockId).filter(
+        List<Long> list = iPage.getRecords().stream().map(SpecimenInfoRespVO::getStockId).filter(
                 Objects::nonNull
         ).toList();
 
@@ -255,12 +256,12 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
      * @return 样品分页
      */
     @Override
-    public PageResult<FreezingTubeStockPreEntryRespVO> getFreezingTubeStockPreEntryPage3(FreezingTubeStockPreEntryPageReqVO pageReqVO) {
-        IPage<FreezingTubeStockPreEntryRespVO> iPage = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+    public PageResult<SpecimenInfoRespVO> getSpecimenInfoPage3(SpecimenInfoPageReqVO pageReqVO) {
+        IPage<SpecimenInfoRespVO> iPage = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
         specimenInfoMapper.selectPage3(iPage, pageReqVO);
 
         // 查询这些样品的位置信息
-        List<Long> list = iPage.getRecords().stream().map(FreezingTubeStockPreEntryRespVO::getStockId).filter(
+        List<Long> list = iPage.getRecords().stream().map(SpecimenInfoRespVO::getStockId).filter(
                 Objects::nonNull
         ).toList();
 
@@ -333,11 +334,11 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
 
 
     @Override
-    public List<FreezingTubeStockPreEntryRespVO> getMicrobeBasicInfoStorageList(Long id) {
+    public List<SpecimenInfoRespVO> getMicrobeBasicInfoStorageList(Long id) {
         List<SpecimenInfoDO> list = specimenInfoMapper.selectListByMicrobeId(id);
 
 
-        List<FreezingTubeStockPreEntryRespVO> result = BeanUtils.toBean(list, FreezingTubeStockPreEntryRespVO.class);
+        List<SpecimenInfoRespVO> result = BeanUtils.toBean(list, SpecimenInfoRespVO.class);
 
         //获取槽位id
         Set<Long> collect = list.stream().map(SpecimenInfoDO::getId).collect(Collectors.toSet());
@@ -351,14 +352,14 @@ public class FreezingTubeStockPreEntryServiceImpl implements FreezingTubeStockPr
 
         Map<Long, FreezingTubeStockInfoDO> map = tubeStockInfoDOList.stream().collect(Collectors.toMap(FreezingTubeStockInfoDO::getStockPreEntryId, v -> v));
 
-        for (FreezingTubeStockPreEntryRespVO temp : result) {
+        for (SpecimenInfoRespVO temp : result) {
             temp.setStockId(map.getOrDefault(temp.getId(), new FreezingTubeStockInfoDO()).getId());
         }
         //根据槽位id获取位置信息
         Map<Long, String> stockPositionStrMap = getStockPositionStrMap(tubeStockInfoDOList.stream().map(FreezingTubeStockInfoDO::getId).collect(Collectors.toList()));
 
 
-        for (FreezingTubeStockPreEntryRespVO temp : result) {
+        for (SpecimenInfoRespVO temp : result) {
             temp.setPositionStr(stockPositionStrMap.get(temp.getStockId()));
         }
 

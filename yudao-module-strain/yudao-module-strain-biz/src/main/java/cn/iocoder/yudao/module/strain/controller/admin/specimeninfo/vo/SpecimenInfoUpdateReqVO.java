@@ -1,8 +1,6 @@
-package cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo;
+package cn.iocoder.yudao.module.strain.controller.admin.specimeninfo.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -14,8 +12,8 @@ import java.time.LocalDateTime;
  * @since 2024/3/4 9:14
  */
 @Data
-@Schema(description = "管理后台 - 冷冻管库存预录入更新 Request VO")
-public class FreezingTubeStockPreEntryUpdateReqVO {
+@Schema(description = "管理后台 - 样品录入 Request VO")
+public class SpecimenInfoUpdateReqVO {
 
 
     @Schema(description = "主键", requiredMode = Schema.RequiredMode.REQUIRED, example = "4168")

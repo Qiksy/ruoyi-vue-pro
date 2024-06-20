@@ -5,7 +5,7 @@ import cn.iocoder.yudao.module.strain.dal.dataobject.specimen.SpecimenInfoDO;
 import cn.iocoder.yudao.module.strain.dal.mysql.culturemediumdatainfo.CultureMediumDataInfoMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockinfo.FreezingTubeStockInfoMapper;
 import cn.iocoder.yudao.module.strain.dal.mysql.freezingtubestockpreentry.SpecimenInfoMapper;
-import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.FreezingTubeStockPreEntryService;
+import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.SpecimenInfoService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -51,7 +51,7 @@ public class MicrobeBasicInfoServiceImpl implements MicrobeBasicInfoService {
     private FreezingTubeStockInfoMapper freezingTubeStockInfoMapper;
 
     @Resource
-    private FreezingTubeStockPreEntryService freezingTubeStockPreEntryService;
+    private SpecimenInfoService specimenInfoService;
 
     @Override
     public Long createMicrobeBasicInfo(MicrobeBasicInfoSaveReqVO createReqVO) {

@@ -6,7 +6,7 @@ import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.Expired
 import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningRespVO;
 import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningUpdateReqVO;
 import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.RejuvenateReqVO;
-import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.FreezingTubeStockPreEntryService;
+import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.SpecimenInfoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -24,13 +24,13 @@ public class ExpiredWarningController {
 
 
     @Resource
-    private FreezingTubeStockPreEntryService freezingTubeStockPreEntryService;
+    private SpecimenInfoService specimenInfoService;
 
     @GetMapping("/page")
     @Operation(summary = "获取即将过期")
     @PreAuthorize("@ss.hasPermission('strain:expired-waring:query')")
     public CommonResult<PageResult<ExpiredWarningRespVO>> getExpiredWarningPage( ExpiredWarningReqVO queryVO){
-        PageResult<ExpiredWarningRespVO> pageResult =  freezingTubeStockPreEntryService.getExpiredWaringPage(queryVO);
+        PageResult<ExpiredWarningRespVO> pageResult =  specimenInfoService.getExpiredWaringPage(queryVO);
         return success(pageResult);
     }
 
@@ -39,7 +39,7 @@ public class ExpiredWarningController {
     @Operation(summary = "更新过期日期")
     @PreAuthorize("@ss.hasPermission('strain:expired-waring:update')")
     public CommonResult<Boolean> updateExpiredDate(@RequestBody ExpiredWarningUpdateReqVO reqVO){
-        freezingTubeStockPreEntryService.updateExpiredDate(reqVO);
+        specimenInfoService.updateExpiredDate(reqVO);
         return success(true);
     }
 
@@ -48,7 +48,7 @@ public class ExpiredWarningController {
     @Operation(summary = "传代 / 复壮")
     @PreAuthorize("@ss.hasPermission('strain:expired-waring:rejuvenate')")
     public CommonResult<Boolean> rejuvenate(@RequestBody @Validated RejuvenateReqVO reqVO){
-        freezingTubeStockPreEntryService.rejuvenate(reqVO);
+        specimenInfoService.rejuvenate(reqVO);
         return success(true);
     }
 

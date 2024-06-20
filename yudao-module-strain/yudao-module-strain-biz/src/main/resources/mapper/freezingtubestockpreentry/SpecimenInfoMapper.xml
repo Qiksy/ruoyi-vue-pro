@@ -10,7 +10,7 @@
      -->
 
     <select id="selectPage2"
-            resultType="cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.FreezingTubeStockPreEntryRespVO">
+            resultType="cn.iocoder.yudao.module.strain.controller.admin.specimeninfo.vo.SpecimenInfoRespVO">
         SELECT
         t2.nickname save_by_name,
         t3.chinese_name microbe_name,
@@ -59,7 +59,7 @@
         order by t1.box_code desc,t1.code,t5.tube_position_x,t5.tube_position_y
     </select>
     <select id="selectPage3"
-            resultType="cn.iocoder.yudao.module.strain.controller.admin.freezingtubestockpreentry.vo.FreezingTubeStockPreEntryRespVO">
+            resultType="cn.iocoder.yudao.module.strain.controller.admin.specimeninfo.vo.SpecimenInfoRespVO">
         SELECT
         t2.nickname save_by_name,
         t3.chinese_name microbe_name,

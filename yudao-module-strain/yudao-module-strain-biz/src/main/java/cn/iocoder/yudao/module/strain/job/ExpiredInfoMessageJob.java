@@ -7,7 +7,7 @@ import cn.iocoder.yudao.module.infra.api.config.ConfigApi;
 import cn.iocoder.yudao.module.infra.api.config.dto.ConfigRespDO;
 import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningReqVO;
 import cn.iocoder.yudao.module.strain.controller.admin.expiredWarning.vo.ExpiredWarningRespVO;
-import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.FreezingTubeStockPreEntryService;
+import cn.iocoder.yudao.module.strain.service.freezingtubestockpreentry.SpecimenInfoService;
 import cn.iocoder.yudao.module.system.api.mail.MailSendApi;
 import cn.iocoder.yudao.module.system.api.mail.dto.MailSendSingleToUserReqDTO;
 import jakarta.annotation.Resource;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 过期信息消息任务
@@ -30,7 +29,7 @@ public class ExpiredInfoMessageJob implements JobHandler {
 
 
     @Resource
-    private FreezingTubeStockPreEntryService freezingTubeStockPreEntryService;
+    private SpecimenInfoService specimenInfoService;
 
     @Resource
     private MailSendApi mailSendApi;
@@ -69,7 +68,7 @@ public class ExpiredInfoMessageJob implements JobHandler {
         expiredWarningReqVO.setPageNo(1);
         expiredWarningReqVO.setPageNo(20);
 
-        PageResult<ExpiredWarningRespVO> pageResult = freezingTubeStockPreEntryService.getExpiredWaringPage(expiredWarningReqVO);
+        PageResult<ExpiredWarningRespVO> pageResult = specimenInfoService.getExpiredWaringPage(expiredWarningReqVO);
 
         Map<String, Object> templateParams = new HashMap<>();
         templateParams.put("total", pageResult.getTotal());
