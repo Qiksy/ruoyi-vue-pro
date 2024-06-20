@@ -48,7 +48,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.util.Assert;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -93,9 +92,14 @@ public class BpmTaskServiceImpl implements BpmTaskService {
                 .active()
                 .includeProcessVariables()
                 .orderByTaskCreateTime().desc(); // 创建时间倒序
-        if (StrUtil.isNotBlank(pageVO.getName())) {
-            taskQuery.taskNameLike("%" + pageVO.getName() + "%");
+        if (StrUtil.isNotBlank(pageVO.getTaskName())) {
+            taskQuery.taskNameLike("%" + pageVO.getTaskName() + "%");
         }
+
+        if (StrUtil.isNotBlank(pageVO.getProcessDefinitionName())){
+            taskQuery.processDefinitionNameLike("%" + pageVO.getProcessDefinitionName()+ "%");
+        }
+
         if (ArrayUtil.isNotEmpty(pageVO.getCreateTime())) {
             taskQuery.taskCreatedAfter(DateUtils.of(pageVO.getCreateTime()[0]));
             taskQuery.taskCreatedAfter(DateUtils.of(pageVO.getCreateTime()[1]));
@@ -105,6 +109,7 @@ public class BpmTaskServiceImpl implements BpmTaskService {
             return PageResult.empty();
         }
         List<Task> tasks = taskQuery.listPage(PageUtils.getStart(pageVO), pageVO.getPageSize());
+        // 旧逻辑： 根据流程定义id ，查询客户掉量的具体信息。但是这里进行重构，应该分开为两个接口才可以
         return new PageResult<>(tasks, count);
     }
 
@@ -115,9 +120,14 @@ public class BpmTaskServiceImpl implements BpmTaskService {
                 .taskAssignee(String.valueOf(userId)) // 分配给自己
                 .includeTaskLocalVariables()
                 .orderByHistoricTaskInstanceEndTime().desc(); // 审批时间倒序
-        if (StrUtil.isNotBlank(pageVO.getName())) {
-            taskQuery.taskNameLike("%" + pageVO.getName() + "%");
+        if (StrUtil.isNotBlank(pageVO.getTaskName())) {
+            taskQuery.taskNameLike("%" + pageVO.getTaskName() + "%");
         }
+
+        if (StrUtil.isNotBlank(pageVO.getProcessDefinitionName())){
+            taskQuery.processDefinitionNameLike("%" + pageVO.getProcessDefinitionName()+ "%");
+        }
+
         if (ArrayUtil.isNotEmpty(pageVO.getCreateTime())) {
             taskQuery.taskCreatedAfter(DateUtils.of(pageVO.getCreateTime()[0]));
             taskQuery.taskCreatedAfter(DateUtils.of(pageVO.getCreateTime()[1]));
@@ -137,8 +147,8 @@ public class BpmTaskServiceImpl implements BpmTaskService {
                 .includeTaskLocalVariables()
                 .taskTenantId(FlowableUtils.getTenantId())
                 .orderByHistoricTaskInstanceEndTime().desc(); // 审批时间倒序
-        if (StrUtil.isNotBlank(pageVO.getName())) {
-            taskQuery.taskNameLike("%" + pageVO.getName() + "%");
+        if (StrUtil.isNotBlank(pageVO.getTaskName())) {
+            taskQuery.taskNameLike("%" + pageVO.getTaskName() + "%");
         }
         if (ArrayUtil.isNotEmpty(pageVO.getCreateTime())) {
             taskQuery.taskCreatedAfter(DateUtils.of(pageVO.getCreateTime()[0]));

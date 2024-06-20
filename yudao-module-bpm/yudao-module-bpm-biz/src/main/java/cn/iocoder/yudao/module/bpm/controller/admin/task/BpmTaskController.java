@@ -58,7 +58,6 @@ public class BpmTaskController {
     @Resource
     private DeptApi deptApi;
 
-
     @GetMapping("todo-page")
     @Operation(summary = "获取 Todo 待办任务分页")
     @PreAuthorize("@ss.hasPermission('bpm:task:query')")

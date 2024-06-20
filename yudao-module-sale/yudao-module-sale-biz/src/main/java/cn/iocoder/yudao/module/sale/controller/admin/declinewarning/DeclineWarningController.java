@@ -119,7 +119,7 @@ public class DeclineWarningController {
         List<Long> ids = list.stream().map(DeclineWarningDO::getId).toList();
         Map<Long,List<DeclineWarningSubDO>> dataMap = declineWarningSubService.getDeclineWarningSubMap(ids);
 
-        //todo 将来这里转换成respVO
+        //将来这里转换成respVO
         List<DeclineWarningRespVO> result = BeanUtils.toBean(list, DeclineWarningRespVO.class);
         for (DeclineWarningRespVO item : result) {
             List<DeclineWarningSubDO> subDOList = dataMap.get(item.getId());

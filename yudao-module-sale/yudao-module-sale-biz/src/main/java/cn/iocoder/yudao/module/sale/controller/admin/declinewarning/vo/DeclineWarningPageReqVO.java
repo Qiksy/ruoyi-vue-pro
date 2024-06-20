@@ -35,6 +35,9 @@ public class DeclineWarningPageReqVO extends PageParam {
     private String competeTime;
 
 
+    private List<String> processInstanceIds;
+
+
 
 
 }
