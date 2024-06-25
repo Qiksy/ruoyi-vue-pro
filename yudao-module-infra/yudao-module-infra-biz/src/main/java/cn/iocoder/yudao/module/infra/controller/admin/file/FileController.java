@@ -125,7 +125,7 @@ public class FileController {
 
     @GetMapping("/list-by-business-id")
     @Operation(summary = "根据业务编号，获得文件列表")
-    @PreAuthorize("@ss.hasPermission('infra:file:query')")
+//    @PreAuthorize("@ss.hasPermission('infra:file:query,infra:file:query:buss')")  //这里默认需要登录就可以了
     public CommonResult<List<FileRespVO>> listFileByBusinessId(@RequestParam("businessId")@NotNull Long businessId) throws ExecutionException {
         List<FileDO> list = fileService.listFileByBusinessId(businessId);
         //包装一层，获取预览地址
@@ -136,7 +136,7 @@ public class FileController {
 
     @PutMapping("/update-business-id")
     @Operation(summary = "更新文件的业务编号")
-    @PreAuthorize("@ss.hasPermission('infra:file:update')")
+//    @PreAuthorize("@ss.hasPermission('infra:file:update')")  //默认需要登录就可以了
     public CommonResult<Boolean> updateFileBusinessId( @RequestBody Map<String, Object> request) {
         fileService.updateFileBusinessId((Long)request.get("id"), (Long)request.get("businessId"));
         return success(true);
