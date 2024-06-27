@@ -250,7 +250,7 @@ tencent:
   assistant: # 企业微信应用 播恩助手
     corp-id: ww8652fdb50bcfb76b
     agent-id: 1000038
-    secret: KHEiw7~yaCJ1K7qL9xQeUutXru_uOk9P7ZUFoCQjE-Bo
+    secret: KHEiw7yaCJ1K7qL9xQeUutXru_uOk9P7ZUFoCQjE-Bo
   assistant-mp:  # 小程序登录
     app-id: wx9a316603a9d547c7
     app-secret: e4df8aad10eb59500d2289ff1a0de326

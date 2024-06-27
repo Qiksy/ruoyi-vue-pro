@@ -171,7 +171,7 @@ public class TencentMiniProgramAuthApiImpl implements TencentMiniProgramAuthApi 
 
         ObjectMapper op = new ObjectMapper();
         WechatSessionRespDTO respDTO = op.readValue(content, WechatSessionRespDTO.class);
-        if (respDTO.getErrcode() != 0) {
+        if (respDTO.getErrcode()!=null && respDTO.getErrcode() != 0) {
             throw exception0(500, "codeToSession错误，错误码: {}，错误信息: {}", respDTO.getErrcode(), respDTO.getErrmsg());
         }
         return respDTO;

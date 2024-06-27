@@ -12,18 +12,4 @@ import java.io.IOException;
 
 public class TencentApiImplTest extends BaseRedisUnitTest {
 
-    @InjectMocks
-    private TencentApiImpl tencentApi;
-
-    @Test
-    public void getAccessToken() {
-        String tencentApiAccessToken;
-        try {
-            tencentApiAccessToken = tencentApi.getAccessToken();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println(tencentApiAccessToken);
-        assert (1==1);
-    }
 }
