@@ -6,7 +6,6 @@ import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.system.api.social.dto.SocialUserBindReqDTO;
 import cn.iocoder.yudao.module.system.api.social.dto.SocialUserRespDTO;
-import cn.iocoder.yudao.module.system.api.tencent.TencentApi;
 import cn.iocoder.yudao.module.system.controller.admin.socail.vo.user.SocialUserPageReqVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.social.SocialUserBindDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.social.SocialUserDO;
@@ -56,8 +55,6 @@ public class SocialUserServiceImpl implements SocialUserService {
     @Resource
     private AdminUserService userService;
 
-    @Resource
-    private TencentApi tencentApi;
 
     @Override
     public List<SocialUserDO> getSocialUserList(Long userId, Integer userType) {

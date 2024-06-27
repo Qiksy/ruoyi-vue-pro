@@ -4,7 +4,6 @@ package cn.iocoder.yudao.module.system.controller.admin.tencent;
 import cn.hutool.crypto.digest.DigestAlgorithm;
 import cn.hutool.crypto.digest.Digester;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
-import cn.iocoder.yudao.module.system.api.tencent.TencentApi;
 import cn.iocoder.yudao.module.system.api.tencent.TencentMiniProgramAuthApi;
 import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
