@@ -86,4 +86,5 @@ public interface SocialUserService {
      */
     PageResult<SocialUserDO> getSocialUserPage(SocialUserPageReqVO pageReqVO);
 
+    SocialUserDO insertOrUpdateSocialUser(String userid, Integer value);
 }

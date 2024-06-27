@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.system.api.social.dto.SocialUserBindReqDTO;
 import cn.iocoder.yudao.module.system.api.social.dto.SocialUserRespDTO;
+import cn.iocoder.yudao.module.system.api.tencent.TencentApi;
 import cn.iocoder.yudao.module.system.controller.admin.socail.vo.user.SocialUserPageReqVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.social.SocialUserBindDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.social.SocialUserDO;
@@ -22,6 +23,9 @@ import org.springframework.validation.annotation.Validated;
 
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.NotNull;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -51,6 +55,9 @@ public class SocialUserServiceImpl implements SocialUserService {
 
     @Resource
     private AdminUserService userService;
+
+    @Resource
+    private TencentApi tencentApi;
 
     @Override
     public List<SocialUserDO> getSocialUserList(Long userId, Integer userType) {
@@ -116,6 +123,7 @@ public class SocialUserServiceImpl implements SocialUserService {
     public SocialUserRespDTO getSocialUserByCode(Integer userType, Integer socialType, String code, String state) {
         // 获得社交用户
         SocialUserDO socialUser = authSocialUser(socialType, userType, code, state);
+        log.info("用户的openId为：{}",socialUser.getOpenid());
         Assert.notNull(socialUser, "社交用户不能为空");
         //这里进行更改，如果是企业微信登录，则从用户表中，根据用户的企业微信id
         if (Objects.equals(socialType, SocialTypeEnum.WECHAT_ENTERPRISE_WEB.getType())||Objects.equals(socialType, SocialTypeEnum.WECHAT_ENTERPRISE.getType())){
@@ -198,4 +206,9 @@ public class SocialUserServiceImpl implements SocialUserService {
         return socialUserMapper.selectPage(pageReqVO);
     }
 
+
+    @Override
+    public SocialUserDO insertOrUpdateSocialUser(String userid, Integer value) {
+        return null;
+    }
 }

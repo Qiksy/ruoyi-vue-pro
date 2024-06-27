@@ -10,7 +10,9 @@ import cn.iocoder.yudao.module.system.api.logger.dto.LoginLogCreateReqDTO;
 import cn.iocoder.yudao.module.system.api.sms.SmsCodeApi;
 import cn.iocoder.yudao.module.system.api.social.dto.SocialUserBindReqDTO;
 import cn.iocoder.yudao.module.system.api.social.dto.SocialUserRespDTO;
-import cn.iocoder.yudao.module.system.api.tencent.TencentApi;
+import cn.iocoder.yudao.module.system.api.tencent.TencentMiniProgramAuthApi;
+import cn.iocoder.yudao.module.system.api.tencent.dto.WechatSessionRespDTO;
+import cn.iocoder.yudao.module.system.api.tencent.dto.WxworkSessionRespDTO;
 import cn.iocoder.yudao.module.system.controller.admin.auth.vo.*;
 import cn.iocoder.yudao.module.system.convert.auth.AuthConvert;
 import cn.iocoder.yudao.module.system.dal.dataobject.oauth2.OAuth2AccessTokenDO;
@@ -41,6 +43,8 @@ import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
 import jakarta.validation.Validator;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.io.IOException;
 import java.util.Objects;
 
@@ -75,7 +79,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     private SmsCodeApi smsCodeApi;
 
     @Resource
-    private TencentApi tencentApi;
+    private TencentMiniProgramAuthApi tencentMiniProgramAuthApi;
 
     /**
      * 验证码的开关，默认为 true
@@ -184,6 +188,56 @@ public class AdminAuthServiceImpl implements AdminAuthService {
         return createTokenAfterLoginSuccess(user.getId(), user.getUsername(), LoginLogTypeEnum.LOGIN_SOCIAL);
     }
 
+
+    /**
+     * 使用小程序快速登录
+     *
+     * @param reqVO 请求登录信息
+     * @return 登录结果
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public AuthLoginRespVO mpLogin(AuthMpWeixinLoginReqVO reqVO) {
+        if ("wxwork".equals(reqVO.getMpType())){
+            //企业微信平台
+
+            // 1. 通过code去获取 userId，corpid，session_key
+            WxworkSessionRespDTO sessionRespDTO = tencentMiniProgramAuthApi.wxworkCode2Session(reqVO.getCode());
+            log.info("在企业微信中的小程序登录，用户的userId为：{}",sessionRespDTO.getUserid());
+
+            // 2. 记录三方用户，有就更新，没有就插入
+            socialUserService.insertOrUpdateSocialUser(sessionRespDTO.getUserid(), UserTypeEnum.ADMIN.getValue());
+
+            // 3. 此处的userId对应的是企业微信通讯录中的明文id。这个时候可以去获取对应的系统用户信息
+            AdminUserDO userByPkPsndoc = userService.getUserByPkPsndoc(sessionRespDTO.getUserid());
+            if (userByPkPsndoc==null){
+                //没有绑定的用户，报错
+                throw exception(AUTH_THIRD_LOGIN_NOT_BIND);
+            }
+            // 4. 创建 Token 令牌，记录登录日志
+            return createTokenAfterLoginSuccess(userByPkPsndoc.getId(), userByPkPsndoc.getUsername(), LoginLogTypeEnum.LOGIN_WORK_WECHAT_MP);
+
+        } else {
+            // 此处是微信的openId
+            // 1.根据code去获取openId
+            WechatSessionRespDTO respDTO =  tencentMiniProgramAuthApi.wechatCode2Session(reqVO.getCode());
+
+            // 2.调用 企业应用 播恩助手的openId转换userId的接口
+            String userId = tencentMiniProgramAuthApi.openId2userId(respDTO.getOpenid());
+
+            // 3. 获取真正的用户信息
+            // 3. 此处的userId对应的是企业微信通讯录中的明文id。这个时候可以去获取对应的系统用户信息
+            AdminUserDO userByPkPsndoc = userService.getUserByPkPsndoc(userId);
+            if (userByPkPsndoc==null){
+                //没有绑定的用户，报错
+                throw exception(AUTH_THIRD_LOGIN_NOT_BIND);
+            }
+            // 4. 创建Token令牌，记录登录日志
+            return  createTokenAfterLoginSuccess(userByPkPsndoc.getId(), userByPkPsndoc.getUsername(), LoginLogTypeEnum.LOGIN_WECHAT_MP);
+
+        }
+    }
+
     @VisibleForTesting
     void validateCaptcha(AuthLoginReqVO reqVO) {
         // 如果验证码关闭，则不进行校验
@@ -234,19 +288,16 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     @Override
     public AuthLoginRespVO workWechatLogin(String code, String state) throws IOException {
         String tencentAccessToken;
-        try {
-            //获取accesstoken
-            tencentAccessToken = tencentApi.getAccessToken();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        //获取accesstoken
+        tencentAccessToken = tencentMiniProgramAuthApi.getSaleAccessToken();
         JsonNode jsonNode = getWeChatUserInfo(code, tencentAccessToken);
 
         if (jsonNode.get("errcode").asInt()!=0){
             //如果失败了，则重试几次
             //需要清除旧的access_token
             for (int i = 0; i < 3; i++) {
-                tencentAccessToken = tencentApi.resetAccessToken();
+                tencentMiniProgramAuthApi.clearSaleAccessToken();
+                tencentAccessToken = tencentMiniProgramAuthApi.getSaleAccessToken();
                 jsonNode = getWeChatUserInfo(code, tencentAccessToken);
                 if (jsonNode.get("errcode").asInt()==0){
                     //如果成功了，跳出循环

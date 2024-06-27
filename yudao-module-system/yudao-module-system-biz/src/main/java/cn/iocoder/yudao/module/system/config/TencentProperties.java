@@ -4,8 +4,13 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * 企业微信应用，微销售
+ * @author linr
+ * @since 2024/6/26 下午3:11
+ */
 @Configuration
-@ConfigurationProperties(prefix = "tencent.work")
+@ConfigurationProperties(prefix = "tencent.sale")
 @Data
 public class TencentProperties {
 

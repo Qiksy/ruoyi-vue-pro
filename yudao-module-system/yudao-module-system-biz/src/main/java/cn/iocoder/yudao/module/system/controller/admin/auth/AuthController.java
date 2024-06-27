@@ -156,6 +156,14 @@ public class AuthController {
         return success(authService.socialLogin(reqVO));
     }
 
+
+    @PostMapping("/mp-weixin-login")
+    @PermitAll
+    @Operation(summary = "使用微信小程序登录",description = "包括微信、企业微信平台的用户登录。如果是企业用户，可以直接返回对应的记录。如果不是企业平台的用户，创建为会员用户")
+    public CommonResult<AuthLoginRespVO> mpQuickLogin(@RequestBody @Valid AuthMpWeixinLoginReqVO reqVO) {
+        return success(authService.mpLogin(reqVO));
+    }
+
     // ============ 企业微信单点登录相关 ============
     @GetMapping("/work-wechat-auth-redirect")
     @PermitAll

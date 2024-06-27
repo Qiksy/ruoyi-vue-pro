@@ -15,6 +15,8 @@ public enum LoginLogTypeEnum {
     LOGIN_MOBILE(103), // 使用手机登陆
     LOGIN_SMS(104), // 使用短信登陆
     LOGIN_WORK_WECHAT(105), // 使用企业微信登陆
+    LOGIN_WORK_WECHAT_MP(106), // 使用企业微信小程序登陆
+    LOGIN_WECHAT_MP(107), // 使用微信小程序登陆
 
     LOGOUT_SELF(200),  // 自己主动登出
     LOGOUT_DELETE(202), // 强制退出

@@ -3,12 +3,10 @@ package cn.iocoder.yudao.module.sale.controller.admin.declinewarning;
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.infra.dal.dataobject.file.FileDO;
 import cn.iocoder.yudao.module.infra.dal.mysql.file.FileMapper;
-import cn.iocoder.yudao.module.sale.controller.admin.declinewarningsub.vo.DeclineWarningSubRespVO;
 import cn.iocoder.yudao.module.sale.dal.dataobject.declinewarningsub.DeclineWarningSubDO;
 import cn.iocoder.yudao.module.sale.service.declinewarningsub.DeclineWarningSubService;
 import cn.iocoder.yudao.module.system.api.tenant.dto.WecomeMessageRespDTO;
-import cn.iocoder.yudao.module.system.api.tencent.TencentApi;
-import com.fasterxml.jackson.databind.JsonNode;
+import cn.iocoder.yudao.module.system.api.tencent.TencentMiniProgramAuthApi;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -22,7 +20,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 
-import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;
@@ -61,7 +58,7 @@ public class DeclineWarningController {
     private FileMapper fileMapper;
 
     @Resource
-    private TencentApi tencentApi;
+    private TencentMiniProgramAuthApi tencentMiniProgramAuthApi;
 
     @PostMapping("/create")
     @Operation(summary = "创建销量预警")
@@ -181,7 +178,7 @@ public class DeclineWarningController {
 
         log.info("jsonNode:{}",op.writeValueAsString(jsonNode));
 
-        WecomeMessageRespDTO wecomeMessageRespDTO = tencentApi.sendWelcomeMessage(op.writeValueAsString(jsonNode));
+        WecomeMessageRespDTO wecomeMessageRespDTO = tencentMiniProgramAuthApi.sendWelcomeMessage(op.writeValueAsString(jsonNode));
         //转为json
         op.writeValueAsString(wecomeMessageRespDTO);
         System.out.println(op.writeValueAsString(wecomeMessageRespDTO));

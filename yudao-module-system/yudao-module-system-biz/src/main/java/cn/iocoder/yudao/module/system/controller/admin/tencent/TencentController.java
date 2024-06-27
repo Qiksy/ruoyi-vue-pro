@@ -5,6 +5,7 @@ import cn.hutool.crypto.digest.DigestAlgorithm;
 import cn.hutool.crypto.digest.Digester;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.module.system.api.tencent.TencentApi;
+import cn.iocoder.yudao.module.system.api.tencent.TencentMiniProgramAuthApi;
 import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TencentController {
 
     @Resource
-    TencentApi tencentApi;
+    TencentMiniProgramAuthApi tencentMiniProgramAuthApi;
 
     /**
      * 获取一个前面
@@ -32,7 +33,7 @@ public class TencentController {
     @GetMapping("/getConfigSignature")
     @SneakyThrows
     public CommonResult<JsonNode> getAccessToken(TencentConfigSignatureReqVO reqVO) {
-        String jsapiTicket = tencentApi.getJsapiTicket();
+        String jsapiTicket = tencentMiniProgramAuthApi.getJsapiTicket();
 
         String url = reqVO.getUrl();
 

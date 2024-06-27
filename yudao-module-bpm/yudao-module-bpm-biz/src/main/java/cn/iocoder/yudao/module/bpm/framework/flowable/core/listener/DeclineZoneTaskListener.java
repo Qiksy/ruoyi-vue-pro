@@ -6,6 +6,7 @@ import cn.iocoder.yudao.module.system.api.dept.DeptApi;
 import cn.iocoder.yudao.module.system.api.dept.dto.DeptRespDTO;
 import cn.iocoder.yudao.module.system.api.tenant.dto.WecomeMessageRespDTO;
 import cn.iocoder.yudao.module.system.api.tencent.TencentApi;
+import cn.iocoder.yudao.module.system.api.tencent.TencentMiniProgramAuthApi;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -56,7 +57,7 @@ public class DeclineZoneTaskListener implements TaskListener {
     private DeptApi deptApi;
 
     @Resource
-    private TencentApi tencentApi;
+    private TencentMiniProgramAuthApi tencentMiniProgramAuthApi;
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -71,7 +72,7 @@ public class DeclineZoneTaskListener implements TaskListener {
         myListener.processInstanceService = this.processInstanceService;
         myListener.adminUserApi = this.adminUserApi;
         myListener.deptApi = this.deptApi;
-        myListener.tencentApi = this.tencentApi;
+        myListener.tencentMiniProgramAuthApi = this.tencentMiniProgramAuthApi;
         myListener.stringRedisTemplate = this.stringRedisTemplate;
         myListener.agentId = this.agentId;
         myListener.isSendMessage = this.isSendMessage;
@@ -141,7 +142,7 @@ public class DeclineZoneTaskListener implements TaskListener {
             WecomeMessageRespDTO wecomeMessageRespDTO2 =  new WecomeMessageRespDTO();
             try {
                 log.info("jsonNode2:{}",op.writeValueAsString(leaderContent));
-                wecomeMessageRespDTO2 = myListener.tencentApi.sendWelcomeMessage(op.writeValueAsString(leaderContent));
+                wecomeMessageRespDTO2 = myListener.tencentMiniProgramAuthApi.sendWelcomeMessage(op.writeValueAsString(leaderContent));
 
 
                 //利用redisson，将这个人的这个类型的消息记录下来，5分钟内不再发送

@@ -7,6 +7,7 @@ import cn.iocoder.yudao.module.system.api.dept.DeptApi;
 import cn.iocoder.yudao.module.system.api.dept.dto.DeptRespDTO;
 import cn.iocoder.yudao.module.system.api.tenant.dto.WecomeMessageRespDTO;
 import cn.iocoder.yudao.module.system.api.tencent.TencentApi;
+import cn.iocoder.yudao.module.system.api.tencent.TencentMiniProgramAuthApi;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -62,7 +63,7 @@ public class DeclineStartListener implements TaskListener {
     private DeptApi deptApi;
 
     @Resource
-    private TencentApi tencentApi;
+    private TencentMiniProgramAuthApi tencentMiniProgramAuthApi;
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -83,7 +84,7 @@ public class DeclineStartListener implements TaskListener {
         myListener.processInstanceService = this.processInstanceService;
         myListener.adminUserApi = this.adminUserApi;
         myListener.deptApi = this.deptApi;
-        myListener.tencentApi = this.tencentApi;
+        myListener.tencentMiniProgramAuthApi = this.tencentMiniProgramAuthApi;
         myListener.stringRedisTemplate = this.stringRedisTemplate;
         myListener.agentId = this.agentId;
         myListener.isSendMessage = this.isSendMessage;
@@ -127,7 +128,7 @@ public class DeclineStartListener implements TaskListener {
         WecomeMessageRespDTO wecomeMessageRespDTO = new WecomeMessageRespDTO();
         try {
             log.info("jsonNode:{}",op.writeValueAsString(kpyContent));
-            wecomeMessageRespDTO = myListener.tencentApi.sendWelcomeMessage(op.writeValueAsString(kpyContent));
+            wecomeMessageRespDTO = myListener.tencentMiniProgramAuthApi.sendWelcomeMessage(op.writeValueAsString(kpyContent));
             log.info("wecomeMessageRespDTO:{}",wecomeMessageRespDTO);
 
         } catch (JsonProcessingException e) {
@@ -195,7 +196,7 @@ public class DeclineStartListener implements TaskListener {
             WecomeMessageRespDTO wecomeMessageRespDTO2 =  new WecomeMessageRespDTO();
             try {
                 log.info("jsonNode2:{}",op.writeValueAsString(leaderContent));
-                wecomeMessageRespDTO2 = myListener.tencentApi.sendWelcomeMessage(op.writeValueAsString(leaderContent));
+                wecomeMessageRespDTO2 = myListener.tencentMiniProgramAuthApi.sendWelcomeMessage(op.writeValueAsString(leaderContent));
                 log.info("wecomeMessageRespDTO2:{}",wecomeMessageRespDTO2);
                 if (wecomeMessageRespDTO2.getErrcode() != 0) {
                     log.info("发送消息失败{}", wecomeMessageRespDTO2);

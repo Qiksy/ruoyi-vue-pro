@@ -64,6 +64,14 @@ public interface AdminAuthService {
      */
     AuthLoginRespVO socialLogin(@Valid AuthSocialLoginReqVO reqVO);
 
+
+    /**
+     * 使用小程序快速登录
+     * @param reqVO 请求登录信息
+     * @return 登录结果
+     */
+    AuthLoginRespVO mpLogin(AuthMpWeixinLoginReqVO reqVO);
+
     /**
      * 刷新访问令牌
      *
