@@ -5,7 +5,6 @@ import cn.iocoder.yudao.module.bpm.service.task.BpmProcessInstanceService;
 import cn.iocoder.yudao.module.system.api.dept.DeptApi;
 import cn.iocoder.yudao.module.system.api.dept.dto.DeptRespDTO;
 import cn.iocoder.yudao.module.system.api.tenant.dto.WecomeMessageRespDTO;
-import cn.iocoder.yudao.module.system.api.tencent.TencentApi;
 import cn.iocoder.yudao.module.system.api.tencent.TencentMiniProgramAuthApi;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
