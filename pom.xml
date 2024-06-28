@@ -27,6 +27,7 @@
         <module>yudao-module-sale</module>
 <!--        <module>yudao-example</module>-->
         <module>yudao-module-strain</module>
+        <module>yudao-module-oa</module>
     </modules>
 
     <name>${project.artifactId}</name>

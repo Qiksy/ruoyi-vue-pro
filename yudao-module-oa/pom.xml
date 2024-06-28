@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cn.iocoder.boot</groupId>
+        <artifactId>yudao</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>yudao-module-oa</artifactId>
+    <packaging>pom</packaging>
+
+
+    <name>${project.artifactId}</name>
+    <description>
+        oa 模块，主要支撑会议签到等功能
+    </description>
+    <modules>
+        <module>yudao-module-oa-api</module>
+        <module>yudao-module-oa-biz</module>
+    </modules>
+
+</project>
