@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.system.controller.admin.auth.vo;
 
+import cn.iocoder.yudao.module.system.enums.common.SexEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,6 +47,18 @@ public class AuthPermissionInfoRespVO {
 
         @Schema(description = "部门编号", requiredMode = Schema.RequiredMode.REQUIRED, example = "2048")
         private Long deptId;
+
+        /**
+         * 用户账号，也就是手机号
+         */
+        @Schema(description = "用户账号", requiredMode = Schema.RequiredMode.REQUIRED, example = "15601691300")
+        private String username;
+
+        /**
+         * 枚举类 {@link SexEnum}
+         */
+        @Schema(description = "性别", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+        private Integer sex;
 
     }
 
