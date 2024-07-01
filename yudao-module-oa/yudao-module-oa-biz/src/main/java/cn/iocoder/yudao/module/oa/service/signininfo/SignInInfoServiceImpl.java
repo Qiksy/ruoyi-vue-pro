@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.oa.service.signininfo;
 
+import cn.iocoder.yudao.module.infra.api.file.FileApi;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -37,16 +38,21 @@ public class SignInInfoServiceImpl implements SignInInfoService {
     @Resource
     private SignInTimeRangeMapper signInTimeRangeMapper;
 
+    @Resource
+    private FileApi fileApi;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long createSignInInfo(SignInInfoSaveReqVO createReqVO) {
         // 插入
         SignInInfoDO signInInfo = BeanUtils.toBean(createReqVO, SignInInfoDO.class);
+        //coverPicId转为coverPicUrl
+        String coverPicUrl = fileApi.getUrlById(createReqVO.getCoverPicId());
+        signInInfo.setCoverPicUrl(coverPicUrl);
         signInInfoMapper.insert(signInInfo);
-
         // 插入子表
-        createSignInRecordList(signInInfo.getId(), createReqVO.getSignInRecords());
-        createSignInTimeRangeList(signInInfo.getId(), createReqVO.getSignInTimeRanges());
+//        createSignInRecordList(signInInfo.getId(), createReqVO.getSignInRecords());
+//        createSignInTimeRangeList(signInInfo.getId(), createReqVO.getSignInTimeRanges());
         // 返回
         return signInInfo.getId();
     }
@@ -102,6 +108,9 @@ public class SignInInfoServiceImpl implements SignInInfoService {
     }
 
     private void createSignInRecordList(Long parentId, List<SignInRecordDO> list) {
+        if (list == null) {
+            return;
+        }
         list.forEach(o -> o.setParentId(parentId));
         signInRecordMapper.insertBatch(list);
     }
@@ -124,6 +133,9 @@ public class SignInInfoServiceImpl implements SignInInfoService {
     }
 
     private void createSignInTimeRangeList(Long parentId, List<SignInTimeRangeDO> list) {
+        if (list == null) {
+            return;
+        }
         list.forEach(o -> o.setParentId(parentId));
         signInTimeRangeMapper.insertBatch(list);
     }

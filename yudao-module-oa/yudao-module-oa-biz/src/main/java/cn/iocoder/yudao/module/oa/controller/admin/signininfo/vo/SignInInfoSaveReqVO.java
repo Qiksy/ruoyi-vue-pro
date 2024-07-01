@@ -1,5 +1,9 @@
 package cn.iocoder.yudao.module.oa.controller.admin.signininfo.vo;
 
+import cn.iocoder.yudao.framework.jackson.core.databind.LocalDateTimeStringDeserializer;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import java.util.*;
@@ -8,6 +12,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import cn.iocoder.yudao.module.oa.dal.dataobject.signinrecord.SignInRecordDO;
 import cn.iocoder.yudao.module.oa.dal.dataobject.signintimerange.SignInTimeRangeDO;
+
+import static cn.iocoder.yudao.framework.common.util.date.DateUtils.*;
 
 @Schema(description = "管理后台 - 会议签到新增/修改 Request VO")
 @Data
@@ -29,9 +35,11 @@ public class SignInInfoSaveReqVO {
     private String description;
 
     @Schema(description = "开始时间")
+    @JsonDeserialize(using = LocalDateTimeStringDeserializer.class)
     private LocalDateTime startDate;
 
     @Schema(description = "结束时间")
+    @JsonDeserialize(using = LocalDateTimeStringDeserializer.class)
     private LocalDateTime endDate;
 
     @Schema(description = "签到时间类型 0全天 1自定义", example = "1")

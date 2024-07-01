@@ -38,4 +38,12 @@ public interface FileApi {
      */
     String createFile(String name, String path, byte[] content,Long businessId);
 
+
+    /**
+     * 通过文件主键，获取文件的访问路径
+     * @param id 主键
+     * @return 文件路径
+     */
+    String getUrlById(Long id);
+
 }

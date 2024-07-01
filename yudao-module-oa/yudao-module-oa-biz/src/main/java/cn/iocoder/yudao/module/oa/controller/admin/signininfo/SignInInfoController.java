@@ -33,7 +33,7 @@ import cn.iocoder.yudao.module.oa.service.signininfo.SignInInfoService;
 
 @Tag(name = "管理后台 - 会议签到")
 @RestController
-@RequestMapping("/oa/sign-in-info")
+@RequestMapping("/oa/meeting")
 @Validated
 public class SignInInfoController {
 
@@ -42,14 +42,14 @@ public class SignInInfoController {
 
     @PostMapping("/create")
     @Operation(summary = "创建会议签到")
-    @PreAuthorize("@ss.hasPermission('oa:sign-in-info:create')")
+    @PreAuthorize("@ss.hasRole('common')")
     public CommonResult<Long> createSignInInfo(@Valid @RequestBody SignInInfoSaveReqVO createReqVO) {
         return success(signInInfoService.createSignInInfo(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新会议签到")
-    @PreAuthorize("@ss.hasPermission('oa:sign-in-info:update')")
+    @PreAuthorize("@ss.hasRole('common')")
     public CommonResult<Boolean> updateSignInInfo(@Valid @RequestBody SignInInfoSaveReqVO updateReqVO) {
         signInInfoService.updateSignInInfo(updateReqVO);
         return success(true);
@@ -58,7 +58,7 @@ public class SignInInfoController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除会议签到")
     @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('oa:sign-in-info:delete')")
+    @PreAuthorize("@ss.hasRole('common')")
     public CommonResult<Boolean> deleteSignInInfo(@RequestParam("id") Long id) {
         signInInfoService.deleteSignInInfo(id);
         return success(true);
@@ -67,7 +67,7 @@ public class SignInInfoController {
     @GetMapping("/get")
     @Operation(summary = "获得会议签到")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('oa:sign-in-info:query')")
+    @PreAuthorize("@ss.hasRole('common')")
     public CommonResult<SignInInfoRespVO> getSignInInfo(@RequestParam("id") Long id) {
         SignInInfoDO signInInfo = signInInfoService.getSignInInfo(id);
         return success(BeanUtils.toBean(signInInfo, SignInInfoRespVO.class));
@@ -75,7 +75,7 @@ public class SignInInfoController {
 
     @GetMapping("/page")
     @Operation(summary = "获得会议签到分页")
-    @PreAuthorize("@ss.hasPermission('oa:sign-in-info:query')")
+    @PreAuthorize("@ss.hasRole('common')")
     public CommonResult<PageResult<SignInInfoRespVO>> getSignInInfoPage(@Valid SignInInfoPageReqVO pageReqVO) {
         PageResult<SignInInfoDO> pageResult = signInInfoService.getSignInInfoPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, SignInInfoRespVO.class));
@@ -83,7 +83,7 @@ public class SignInInfoController {
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出会议签到 Excel")
-    @PreAuthorize("@ss.hasPermission('oa:sign-in-info:export')")
+    @PreAuthorize("@ss.hasRole('common')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportSignInInfoExcel(@Valid SignInInfoPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
@@ -99,7 +99,7 @@ public class SignInInfoController {
     @GetMapping("/sign-in-record/list-by-parent-id")
     @Operation(summary = "获得签到记录列表")
     @Parameter(name = "parentId", description = "主表id")
-    @PreAuthorize("@ss.hasPermission('oa:sign-in-info:query')")
+    @PreAuthorize("@ss.hasRole('common')")
     public CommonResult<List<SignInRecordDO>> getSignInRecordListByParentId(@RequestParam("parentId") Long parentId) {
         return success(signInInfoService.getSignInRecordListByParentId(parentId));
     }
@@ -109,7 +109,7 @@ public class SignInInfoController {
     @GetMapping("/sign-in-time-range/list-by-parent-id")
     @Operation(summary = "获得签到时间范围列表")
     @Parameter(name = "parentId", description = "主表id")
-    @PreAuthorize("@ss.hasPermission('oa:sign-in-info:query')")
+    @PreAuthorize("@ss.hasRole('common')")
     public CommonResult<List<SignInTimeRangeDO>> getSignInTimeRangeListByParentId(@RequestParam("parentId") Long parentId) {
         return success(signInInfoService.getSignInTimeRangeListByParentId(parentId));
     }
