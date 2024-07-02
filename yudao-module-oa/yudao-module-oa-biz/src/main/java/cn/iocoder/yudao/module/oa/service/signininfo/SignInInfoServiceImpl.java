@@ -2,6 +2,8 @@ package cn.iocoder.yudao.module.oa.service.signininfo;
 
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.infra.api.file.FileApi;
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import cn.iocoder.yudao.module.system.service.permission.PermissionService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
@@ -48,6 +50,9 @@ public class SignInInfoServiceImpl implements SignInInfoService {
 
     @Resource
     private PermissionService permissionService;
+
+    @Resource
+    private AdminUserApi adminUserApi;
 
     @Resource
     private FileApi fileApi;
@@ -129,11 +134,29 @@ public class SignInInfoServiceImpl implements SignInInfoService {
         }
 
         // 处理会议状态
-
-
         PageResult<SignInInfoRespVO> bean = BeanUtils.toBean(signInInfoDOPageResult, SignInInfoRespVO.class);
         fillMeetingStatus(bean.getList());
+
+        // 填充创建人消息
+        fillCreator(bean.getList());
+
         return bean;
+    }
+
+    /**
+     * 填充创建人的名称
+     * @param list
+     */
+    private void fillCreator(List<SignInInfoRespVO> list) {
+
+        Set<Long> userIds = list.stream().map(SignInInfoRespVO::getCreator).map(Long::valueOf).collect(Collectors.toSet());
+
+        List<AdminUserRespDTO> userList = adminUserApi.getUserList(userIds);
+        Map<Long, String> userMap = userList.stream().collect(Collectors.toMap(AdminUserRespDTO::getId, AdminUserRespDTO::getNickname));
+
+        for (SignInInfoRespVO vo : list) {
+            vo.setCreatorName(userMap.get(Long.valueOf(vo.getCreator())));
+        }
     }
 
     /**

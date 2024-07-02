@@ -96,4 +96,12 @@ public class SignInInfoRespVO {
     @Schema(description = "状态 进行中、未开始、已结束", example = "1")
     private Integer status;
 
+
+    @Schema(description = "创建人")
+    private String creator;
+
+
+    @Schema(description = "创建人姓名")
+    private String creatorName;
+
 }

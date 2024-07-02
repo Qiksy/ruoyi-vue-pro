@@ -38,7 +38,7 @@ public interface SignInInfoMapper extends BaseMapperX<SignInInfoDO> {
                 .eqIfPresent(SignInInfoDO::getTitlePicId, reqVO.getTitlePicId())
                 .eqIfPresent(SignInInfoDO::getSignTaskCount, reqVO.getSignTaskCount())
                 .betweenIfPresent(SignInInfoDO::getCreateTime, reqVO.getCreateTime())
-                .orderByDesc(SignInInfoDO::getId));
+                .orderByDesc(SignInInfoDO::getStartDate,SignInInfoDO::getId));
     }
 
     default PageResult<SignInInfoDO> selectSelfPage(SignInInfoPageReqVO reqVO, Set<Long> meetingIds){
@@ -63,6 +63,7 @@ public interface SignInInfoMapper extends BaseMapperX<SignInInfoDO> {
                 .eqIfPresent(SignInInfoDO::getSignTaskCount, reqVO.getSignTaskCount())
                 .betweenIfPresent(SignInInfoDO::getCreateTime, reqVO.getCreateTime())
                 .in(SignInInfoDO::getId, meetingIds)
-                .orderByDesc(SignInInfoDO::getStartDate)); // 根据开始时间排序
+                .orderByDesc(SignInInfoDO::getStartDate,SignInInfoDO::getId)); // 根据开始时间排序
+
     }
 }
