@@ -1,12 +1,20 @@
 package cn.iocoder.yudao.module.oa.service.signininfo;
 
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.infra.api.file.FileApi;
+import cn.iocoder.yudao.module.system.service.permission.PermissionService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
+
 import cn.iocoder.yudao.module.oa.controller.admin.signininfo.vo.*;
 import cn.iocoder.yudao.module.oa.dal.dataobject.signininfo.SignInInfoDO;
 import cn.iocoder.yudao.module.oa.dal.dataobject.signinrecord.SignInRecordDO;
@@ -37,6 +45,9 @@ public class SignInInfoServiceImpl implements SignInInfoService {
     private SignInRecordMapper signInRecordMapper;
     @Resource
     private SignInTimeRangeMapper signInTimeRangeMapper;
+
+    @Resource
+    private PermissionService permissionService;
 
     @Resource
     private FileApi fileApi;
@@ -96,8 +107,66 @@ public class SignInInfoServiceImpl implements SignInInfoService {
     }
 
     @Override
-    public PageResult<SignInInfoDO> getSignInInfoPage(SignInInfoPageReqVO pageReqVO) {
-        return signInInfoMapper.selectPage(pageReqVO);
+    public PageResult<SignInInfoRespVO> getSignInInfoPage(SignInInfoPageReqVO pageReqVO) {
+
+        PageResult<SignInInfoDO> signInInfoDOPageResult;
+        //如果是管理员角色，直接返回全部
+        if (permissionService.hasAnyRoles(SecurityFrameworkUtils.getLoginUserId(), "super_admin")) {
+            signInInfoDOPageResult = signInInfoMapper.selectPage(pageReqVO);
+        } else {
+            //只能查询自己创建或者签到的会议
+
+            // 1. 查询自己签到的
+            List<SignInRecordDO> signInRecordDOS = signInRecordMapper.selectList(new LambdaQueryWrapper<SignInRecordDO>().select(SignInRecordDO::getParentId).eq(SignInRecordDO::getUserId, SecurityFrameworkUtils.getLoginUserId()));
+            Set<Long> meetingIds = signInRecordDOS.stream().map(SignInRecordDO::getParentId).collect(Collectors.toSet());
+
+            // 2. 查询自己创建的
+            List<SignInInfoDO> signInInfoDOS = signInInfoMapper.selectList(new LambdaQueryWrapper<SignInInfoDO>().select(SignInInfoDO::getId).eq(SignInInfoDO::getCreator, SecurityFrameworkUtils.getLoginUserId()));
+            signInInfoDOS.stream().map(SignInInfoDO::getId).forEach(meetingIds::add);
+
+
+            signInInfoDOPageResult =  signInInfoMapper.selectSelfPage(pageReqVO, meetingIds);
+        }
+
+        // 处理会议状态
+
+
+        PageResult<SignInInfoRespVO> bean = BeanUtils.toBean(signInInfoDOPageResult, SignInInfoRespVO.class);
+        fillMeetingStatus(bean.getList());
+        return bean;
+    }
+
+    /**
+     * 处理会议记录，如果时间为当天，并且在签到时间范围内，则设置为进行中。
+     * 如果还没有到时间，就显示未开始
+     * 如果已经结束，就显示已结束
+     * @param list 会议记录
+     */
+    private void fillMeetingStatus(List<SignInInfoRespVO> list) {
+        LocalDateTime now = LocalDateTime.now();
+
+        for (SignInInfoRespVO vo : list) {
+            LocalDateTime endDate = vo.getEndDate();
+            LocalDateTime startDate = vo.getStartDate();
+
+
+            // 只比较日期部分，不比较时间部分
+            LocalDate nowDate = now.toLocalDate();
+            LocalDate startDateDate = startDate.toLocalDate();
+            LocalDate endDateDate = endDate.toLocalDate();
+
+            if (nowDate.isBefore(startDateDate)) {
+                //未开始
+                vo.setStatus(0);
+            } else if (nowDate.isAfter(endDateDate)) {
+                //已结束
+                vo.setStatus(1);
+            } else {
+                //进行中
+                vo.setStatus(2);
+            }
+
+        }
     }
 
     // ==================== 子表（签到记录） ====================

@@ -93,4 +93,7 @@ public class SignInInfoRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
+    @Schema(description = "状态 进行中、未开始、已结束", example = "1")
+    private Integer status;
+
 }

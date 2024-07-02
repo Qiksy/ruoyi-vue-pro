@@ -102,6 +102,9 @@ public class TencentMiniProgramAuthApiImpl implements TencentMiniProgramAuthApi 
 
         ObjectMapper op = new ObjectMapper();
         JsonNode jsonNode = op.readTree(response.body());
+        if (jsonNode.get("errcode").asInt() != 0) {
+            throw exception0(500, "openId2userId错误，错误码: {}，错误信息: {}", jsonNode.get("errcode").asInt(), jsonNode.get("errmsg").asText());
+        }
 
         return jsonNode.get("userid").asText();
     }

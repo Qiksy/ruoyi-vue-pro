@@ -41,4 +41,28 @@ public interface SignInInfoMapper extends BaseMapperX<SignInInfoDO> {
                 .orderByDesc(SignInInfoDO::getId));
     }
 
+    default PageResult<SignInInfoDO> selectSelfPage(SignInInfoPageReqVO reqVO, Set<Long> meetingIds){
+        return selectPage(reqVO, new LambdaQueryWrapperX<SignInInfoDO>()
+                .eqIfPresent(SignInInfoDO::getCoverPicId, reqVO.getCoverPicId())
+                .eqIfPresent(SignInInfoDO::getCoverPicUrl, reqVO.getCoverPicUrl())
+                .eqIfPresent(SignInInfoDO::getTitle, reqVO.getTitle())
+                .eqIfPresent(SignInInfoDO::getDescription, reqVO.getDescription())
+                .betweenIfPresent(SignInInfoDO::getStartDate, reqVO.getStartDate())
+                .betweenIfPresent(SignInInfoDO::getEndDate, reqVO.getEndDate())
+                .eqIfPresent(SignInInfoDO::getSignInTimeType, reqVO.getSignInTimeType())
+                .eqIfPresent(SignInInfoDO::getPersonInfoNeed, reqVO.getPersonInfoNeed())
+                .eqIfPresent(SignInInfoDO::getPositionNeed, reqVO.getPositionNeed())
+                .eqIfPresent(SignInInfoDO::getPositionInfo, reqVO.getPositionInfo())
+                .eqIfPresent(SignInInfoDO::getScannerNeed, reqVO.getScannerNeed())
+                .eqIfPresent(SignInInfoDO::getBannerId, reqVO.getBannerId())
+                .eqIfPresent(SignInInfoDO::getBannerUrl, reqVO.getBannerUrl())
+                .eqIfPresent(SignInInfoDO::getLogoId, reqVO.getLogoId())
+                .eqIfPresent(SignInInfoDO::getLogoUrl, reqVO.getLogoUrl())
+                .eqIfPresent(SignInInfoDO::getTitlePicUrl, reqVO.getTitlePicUrl())
+                .eqIfPresent(SignInInfoDO::getTitlePicId, reqVO.getTitlePicId())
+                .eqIfPresent(SignInInfoDO::getSignTaskCount, reqVO.getSignTaskCount())
+                .betweenIfPresent(SignInInfoDO::getCreateTime, reqVO.getCreateTime())
+                .in(SignInInfoDO::getId, meetingIds)
+                .orderByDesc(SignInInfoDO::getStartDate)); // 根据开始时间排序
+    }
 }

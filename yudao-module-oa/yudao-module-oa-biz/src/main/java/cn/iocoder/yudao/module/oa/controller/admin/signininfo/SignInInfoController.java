@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.oa.controller.admin.signininfo;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -77,22 +78,22 @@ public class SignInInfoController {
     @Operation(summary = "获得会议签到分页")
     @PreAuthorize("@ss.hasRole('common')")
     public CommonResult<PageResult<SignInInfoRespVO>> getSignInInfoPage(@Valid SignInInfoPageReqVO pageReqVO) {
-        PageResult<SignInInfoDO> pageResult = signInInfoService.getSignInInfoPage(pageReqVO);
+        PageResult<SignInInfoRespVO> pageResult = signInInfoService.getSignInInfoPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, SignInInfoRespVO.class));
     }
-
-    @GetMapping("/export-excel")
-    @Operation(summary = "导出会议签到 Excel")
-    @PreAuthorize("@ss.hasRole('common')")
-    @ApiAccessLog(operateType = EXPORT)
-    public void exportSignInInfoExcel(@Valid SignInInfoPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
-        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<SignInInfoDO> list = signInInfoService.getSignInInfoPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "会议签到.xls", "数据", SignInInfoRespVO.class,
-                        BeanUtils.toBean(list, SignInInfoRespVO.class));
-    }
+//
+//    @GetMapping("/export-excel")
+//    @Operation(summary = "导出会议签到 Excel")
+//    @PreAuthorize("@ss.hasRole('common')")
+//    @ApiAccessLog(operateType = EXPORT)
+//    public void exportSignInInfoExcel(@Valid SignInInfoPageReqVO pageReqVO,
+//              HttpServletResponse response) throws IOException {
+//        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+//        List<SignInInfoDO> list = signInInfoService.getSignInInfoPage(pageReqVO).getList();
+//        // 导出 Excel
+//        ExcelUtils.write(response, "会议签到.xls", "数据", SignInInfoRespVO.class,
+//                        BeanUtils.toBean(list, SignInInfoRespVO.class));
+//    }
 
     // ==================== 子表（签到记录） ====================
 

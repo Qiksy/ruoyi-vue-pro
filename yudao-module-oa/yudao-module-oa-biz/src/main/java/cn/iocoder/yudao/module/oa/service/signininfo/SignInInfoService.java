@@ -52,7 +52,7 @@ public interface SignInInfoService {
      * @param pageReqVO 分页查询
      * @return 会议签到分页
      */
-    PageResult<SignInInfoDO> getSignInInfoPage(SignInInfoPageReqVO pageReqVO);
+    PageResult<SignInInfoRespVO> getSignInInfoPage(SignInInfoPageReqVO pageReqVO);
 
     // ==================== 子表（签到记录） ====================
 
