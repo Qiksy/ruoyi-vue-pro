@@ -44,7 +44,7 @@ public interface SignInInfoService {
      * @param id 编号
      * @return 会议签到
      */
-    SignInInfoDO getSignInInfo(Long id);
+    SignInInfoRespVO getSignInInfo(Long id);
 
     /**
      * 获得会议签到分页

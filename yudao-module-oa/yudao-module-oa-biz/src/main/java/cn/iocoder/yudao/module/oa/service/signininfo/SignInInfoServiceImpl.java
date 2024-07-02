@@ -6,6 +6,7 @@ import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import cn.iocoder.yudao.module.system.service.permission.PermissionService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.google.common.collect.Lists;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -107,8 +108,15 @@ public class SignInInfoServiceImpl implements SignInInfoService {
     }
 
     @Override
-    public SignInInfoDO getSignInInfo(Long id) {
-        return signInInfoMapper.selectById(id);
+    public SignInInfoRespVO getSignInInfo(Long id) {
+        SignInInfoDO signInInfoDO = signInInfoMapper.selectById(id);
+
+        SignInInfoRespVO respVO = BeanUtils.toBean(signInInfoDO, SignInInfoRespVO.class);
+        fillCreator(Collections.singletonList(respVO));
+
+        fillMeetingStatus(Collections.singletonList(respVO));
+
+        return respVO;
     }
 
     @Override

@@ -70,8 +70,8 @@ public class SignInInfoController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasRole('common')")
     public CommonResult<SignInInfoRespVO> getSignInInfo(@RequestParam("id") Long id) {
-        SignInInfoDO signInInfo = signInInfoService.getSignInInfo(id);
-        return success(BeanUtils.toBean(signInInfo, SignInInfoRespVO.class));
+        SignInInfoRespVO signInInfo = signInInfoService.getSignInInfo(id);
+        return success(signInInfo);
     }
 
     @GetMapping("/page")
