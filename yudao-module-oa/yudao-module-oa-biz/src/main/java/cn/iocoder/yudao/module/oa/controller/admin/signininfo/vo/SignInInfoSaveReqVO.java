@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.oa.controller.admin.signininfo.vo;
 
 import cn.iocoder.yudao.framework.jackson.core.databind.LocalDateTimeStringDeserializer;
+import cn.iocoder.yudao.module.oa.dal.dataobject.signininfo.SignInRecordDO;
+import cn.iocoder.yudao.module.oa.dal.dataobject.signininfo.SignInTimeRangeDO;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -10,8 +12,6 @@ import java.util.*;
 import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
-import cn.iocoder.yudao.module.oa.dal.dataobject.signinrecord.SignInRecordDO;
-import cn.iocoder.yudao.module.oa.dal.dataobject.signintimerange.SignInTimeRangeDO;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.*;
 

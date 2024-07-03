@@ -1,11 +1,12 @@
 package cn.iocoder.yudao.module.oa.service.signininfo;
 
 import java.util.*;
+
+import cn.iocoder.yudao.module.oa.dal.dataobject.signininfo.SignInRecordDO;
+import cn.iocoder.yudao.module.oa.dal.dataobject.signininfo.SignInTimeRangeDO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.oa.controller.admin.signininfo.vo.*;
 import cn.iocoder.yudao.module.oa.dal.dataobject.signininfo.SignInInfoDO;
-import cn.iocoder.yudao.module.oa.dal.dataobject.signinrecord.SignInRecordDO;
-import cn.iocoder.yudao.module.oa.dal.dataobject.signintimerange.SignInTimeRangeDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
@@ -74,4 +75,9 @@ public interface SignInInfoService {
      */
     List<SignInTimeRangeDO> getSignInTimeRangeListByParentId(Long parentId);
 
+    /**
+     * 用户进行签到
+     * @param id 会议id
+     */
+    void signIn(Long id);
 }

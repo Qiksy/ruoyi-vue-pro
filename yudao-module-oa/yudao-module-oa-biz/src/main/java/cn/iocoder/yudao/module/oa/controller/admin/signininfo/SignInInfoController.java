@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.oa.controller.admin.signininfo;
 
+import cn.iocoder.yudao.module.oa.dal.dataobject.signininfo.SignInRecordDO;
+import cn.iocoder.yudao.module.oa.dal.dataobject.signininfo.SignInTimeRangeDO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
@@ -28,8 +30,6 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 import cn.iocoder.yudao.module.oa.controller.admin.signininfo.vo.*;
 import cn.iocoder.yudao.module.oa.dal.dataobject.signininfo.SignInInfoDO;
-import cn.iocoder.yudao.module.oa.dal.dataobject.signinrecord.SignInRecordDO;
-import cn.iocoder.yudao.module.oa.dal.dataobject.signintimerange.SignInTimeRangeDO;
 import cn.iocoder.yudao.module.oa.service.signininfo.SignInInfoService;
 
 @Tag(name = "管理后台 - 会议签到")
@@ -104,6 +104,18 @@ public class SignInInfoController {
     public CommonResult<List<SignInRecordDO>> getSignInRecordListByParentId(@RequestParam("parentId") Long parentId) {
         return success(signInInfoService.getSignInRecordListByParentId(parentId));
     }
+
+
+//    用户点击参与签到
+    @PostMapping("/sign-in-record/sign-in")
+    @Operation(summary = "用户签到")
+    @Parameter(name = "id", description = "编号", required = true)
+    @PreAuthorize("@ss.hasRole('common')")
+    public CommonResult<Boolean> signIn(@RequestParam("id") Long id) {
+        signInInfoService.signIn(id);
+        return success(true);
+    }
+
 
     // ==================== 子表（签到时间范围） ====================
 

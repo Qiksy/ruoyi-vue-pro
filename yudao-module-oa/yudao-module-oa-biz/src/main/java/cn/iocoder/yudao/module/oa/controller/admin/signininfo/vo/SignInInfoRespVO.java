@@ -1,11 +1,11 @@
 package cn.iocoder.yudao.module.oa.controller.admin.signininfo.vo;
 
+import cn.iocoder.yudao.module.oa.dal.dataobject.signininfo.SignInTimeRangeDO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import java.util.*;
-import java.util.*;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
+import java.util.List;
+
 import com.alibaba.excel.annotation.*;
 
 @Schema(description = "管理后台 - 会议签到 Response VO")
@@ -93,7 +93,7 @@ public class SignInInfoRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-    @Schema(description = "状态 进行中、未开始、已结束", example = "1")
+    @Schema(description = "状态 0未开始、1进行中、2已结束", example = "1")
     private Integer status;
 
 
@@ -103,5 +103,13 @@ public class SignInInfoRespVO {
 
     @Schema(description = "创建人姓名")
     private String creatorName;
+
+//    现在是否可以签到
+    private Boolean canSignIn;
+
+    /**
+     * 签到时间段列表
+     */
+    private List<SignInTimeRangeDO> signInTimeRangeList;
 
 }

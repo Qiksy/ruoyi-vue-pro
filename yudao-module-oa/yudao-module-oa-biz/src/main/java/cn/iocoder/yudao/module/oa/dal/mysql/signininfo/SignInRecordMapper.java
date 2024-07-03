@@ -6,7 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
-import cn.iocoder.yudao.module.oa.dal.dataobject.signinrecord.SignInRecordDO;
+import cn.iocoder.yudao.module.oa.dal.dataobject.signininfo.SignInRecordDO;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

@@ -1,11 +1,10 @@
-package cn.iocoder.yudao.module.oa.dal.dataobject.signinrecord;
+package cn.iocoder.yudao.module.oa.dal.dataobject.signininfo;
 
 import lombok.*;
-import java.util.*;
-import java.time.LocalDateTime;
-import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
+
+import java.time.LocalDate;
 
 /**
  * 签到记录 DO
@@ -43,10 +42,7 @@ public class SignInRecordDO extends BaseDO {
      * 行号
      */
     private Integer rw;
-    /**
-     * 活动id
-     */
-    private Long signInInfoId;
+
     /**
      * 扫码信息
      */
@@ -55,6 +51,11 @@ public class SignInRecordDO extends BaseDO {
      * IP地址
      */
     private String ipInfo;
+
+    /**
+     * 签到日期
+     */
+    private LocalDate signDate;
     /**
      * 时间段ID
      */

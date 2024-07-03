@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.oa.dal.dataobject.signintimerange;
+package cn.iocoder.yudao.module.oa.dal.dataobject.signininfo;
 
 import lombok.*;
 
