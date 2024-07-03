@@ -30,6 +30,8 @@ public class SignInRecordDO extends BaseDO {
      * 用户主键
      */
     private Long userId;
+
+    private String userName;
     /**
      * 位置信息
      */

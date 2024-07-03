@@ -355,6 +355,7 @@ public class SignInInfoServiceImpl implements SignInInfoService {
             record.setRangeId(rangeDO.getId());  //所属的时间范围
             record.setSignDate(LocalDate.now()); // 签到日期
             record.setUserId(SecurityFrameworkUtils.getLoginUserId());
+            record.setUserName(SecurityFrameworkUtils.getLoginUserNickname());
             recordDOS.add(record);
         }
         // 插入
