@@ -6,6 +6,8 @@ import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.infra.api.file.FileApi;
 import cn.iocoder.yudao.module.oa.dal.dataobject.signininfo.SignInRecordDO;
 import cn.iocoder.yudao.module.oa.dal.dataobject.signininfo.SignInTimeRangeDO;
+import cn.iocoder.yudao.module.oa.dal.mysql.signininfo.SignInRecordMapper;
+import cn.iocoder.yudao.module.oa.dal.mysql.signininfo.SignInTimeRangeMapper;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import cn.iocoder.yudao.module.system.service.permission.PermissionService;
@@ -30,8 +32,6 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.oa.dal.mysql.signininfo.SignInInfoMapper;
-import cn.iocoder.yudao.module.oa.dal.mysql.signinrecord.SignInRecordMapper;
-import cn.iocoder.yudao.module.oa.dal.mysql.signintimerange.SignInTimeRangeMapper;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.oa.enums.ErrorCodeConstants.*;
@@ -77,7 +77,7 @@ public class SignInInfoServiceImpl implements SignInInfoService {
             SignInTimeRangeDO signInTimeRangeDO = new SignInTimeRangeDO();
             signInTimeRangeDO.setParentId(signInInfo.getId());
             signInTimeRangeDO.setStartTime(LocalTime.MIN);
-            signInTimeRangeDO.setEndTime(LocalTime.MAX);
+            signInTimeRangeDO.setEndTime(LocalTime.of(23,59,59));
             signInTimeRangeMapper.insert(signInTimeRangeDO);
         } else {
             createSignInTimeRangeList(signInInfo.getId(), createReqVO.getSignInTimeRanges());
@@ -353,6 +353,7 @@ public class SignInInfoServiceImpl implements SignInInfoService {
             SignInRecordDO record = new SignInRecordDO();
             record.setParentId(id); // 主表id
             record.setRangeId(rangeDO.getId());  //所属的时间范围
+            record.setSignDate(LocalDate.now()); // 签到日期
             record.setUserId(SecurityFrameworkUtils.getLoginUserId());
             recordDOS.add(record);
         }

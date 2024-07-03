@@ -194,6 +194,7 @@ logging:
     cn.iocoder.yudao.module.sale.dal.mysql: debug
     org.flowable.engine.impl.persistence.entity: debug
     org.flowable.task.service.impl.persistence.entity: debug
+    cn.iocoder.yudao.module.oa.dal.mysql: debug
 
 debug: false
 

@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.oa.dal.mysql.signintimerange;
+package cn.iocoder.yudao.module.oa.dal.mysql.signininfo;
 
 import java.util.*;
 

@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.oa.dal.mysql.signinrecord;
+package cn.iocoder.yudao.module.oa.dal.mysql.signininfo;
 
 import java.util.*;
 

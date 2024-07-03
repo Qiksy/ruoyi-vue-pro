@@ -107,7 +107,7 @@ public class SignInInfoController {
 
 
 //    用户点击参与签到
-    @PostMapping("/sign-in-record/sign-in")
+    @PostMapping("/signIn")
     @Operation(summary = "用户签到")
     @Parameter(name = "id", description = "编号", required = true)
     @PreAuthorize("@ss.hasRole('common')")
