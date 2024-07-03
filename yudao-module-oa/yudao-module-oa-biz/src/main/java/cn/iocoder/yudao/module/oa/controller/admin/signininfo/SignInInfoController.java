@@ -116,6 +116,16 @@ public class SignInInfoController {
         return success(true);
     }
 
+    // 删除某个会议下面的所有签到记录，创建人可用
+    @DeleteMapping("/delete-all-sign-in-record")
+    @Operation(summary = "删除某个会议下面的所有签到记录")
+    @Parameter(name = "id", description = "编号", required = true)
+    @PreAuthorize("@ss.hasRole('common')")
+    public CommonResult<Boolean> deleteAllSignInRecord(@RequestParam("id") Long id) {
+        signInInfoService.deleteAllSignInRecord(id);
+        return success(true);
+    }
+
 
     // ==================== 子表（签到时间范围） ====================
 

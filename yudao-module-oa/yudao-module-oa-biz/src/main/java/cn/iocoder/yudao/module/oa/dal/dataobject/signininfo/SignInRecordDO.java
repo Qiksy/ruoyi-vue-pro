@@ -1,5 +1,12 @@
 package cn.iocoder.yudao.module.oa.dal.dataobject.signininfo;
 
+import cn.iocoder.yudao.framework.jackson.core.databind.TimestampLocalDateTimeDeserializer;
+import cn.iocoder.yudao.framework.jackson.core.databind.TimestampLocalDateTimeSerializer;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import lombok.*;
 import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
@@ -57,6 +64,10 @@ public class SignInRecordDO extends BaseDO {
     /**
      * 签到日期
      */
+    //配置序列化所使用的Serializer Deserializer
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate signDate;
     /**
      * 时间段ID

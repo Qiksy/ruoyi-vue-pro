@@ -90,8 +90,11 @@ public class SignInInfoServiceImpl implements SignInInfoService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateSignInInfo(SignInInfoSaveReqVO updateReqVO) {
+        //先获取
+        SignInInfoDO signInInfoDO = signInInfoMapper.selectById(updateReqVO.getId());
+
         // 校验存在
-        validateSignInInfoExists(updateReqVO.getId());
+        validateSignInInfoExists(signInInfoDO);
         // 更新
         SignInInfoDO updateObj = BeanUtils.toBean(updateReqVO, SignInInfoDO.class);
         signInInfoMapper.updateById(updateObj);
@@ -104,8 +107,15 @@ public class SignInInfoServiceImpl implements SignInInfoService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteSignInInfo(Long id) {
+        //先获取
+        SignInInfoDO signInInfoDO = signInInfoMapper.selectById(id);
+
         // 校验存在
-        validateSignInInfoExists(id);
+        validateSignInInfoExists(signInInfoDO);
+
+        // 校验是否是自己的会议
+        validateSignInInfoCreator(signInInfoDO);
+
         // 删除
         signInInfoMapper.deleteById(id);
 
@@ -114,8 +124,24 @@ public class SignInInfoServiceImpl implements SignInInfoService {
         deleteSignInTimeRangeByParentId(id);
     }
 
-    private void validateSignInInfoExists(Long id) {
-        if (signInInfoMapper.selectById(id) == null) {
+    /**
+     * 校验会议创建者是不是当前用户
+     * @param signInInfoDO
+     */
+    private void validateSignInInfoCreator(SignInInfoDO signInInfoDO) {
+        if (permissionService.hasAnyRoles(SecurityFrameworkUtils.getLoginUserId(),"super_admin") ){
+            //管理员不校验
+            return;
+        }
+
+        if (!signInInfoDO.getCreator().equals(SecurityFrameworkUtils.getLoginUserId().toString())) {
+            throw exception(SIGN_IN_INFO_NOT_CREATOR);
+        }
+    }
+
+
+    private void validateSignInInfoExists(SignInInfoDO signInInfoDO) {
+        if (signInInfoDO == null) {
             throw exception(SIGN_IN_INFO_NOT_EXISTS);
         }
     }
@@ -127,10 +153,16 @@ public class SignInInfoServiceImpl implements SignInInfoService {
         SignInInfoRespVO respVO = BeanUtils.toBean(signInInfoDO, SignInInfoRespVO.class);
         fillCreator(Collections.singletonList(respVO));
 
+        // 时间范围
         List<SignInTimeRangeDO> rangeDOS = getSignInTimeRangeListByParentId(id);
         respVO.setSignInTimeRangeList(rangeDOS);
 
+        // 签到名单
+        List<SignInRecordDO> recordList = getSignInRecordListByParentId(id);
+        // 设置签到名单
+        respVO.setSignInRecordList(recordList);
 
+        //设置状态
         setMeetingStatus( respVO);
         return respVO;
     }
@@ -231,6 +263,7 @@ public class SignInInfoServiceImpl implements SignInInfoService {
         for (SignInInfoRespVO respVO : bean.getList()) {
             //todo 后面再进行优化，不应该把查询放在for循环内
             respVO.setSignInTimeRangeList(getSignInTimeRangeListByParentId(respVO.getId()));
+            respVO.setSignInRecordList(getSignInRecordListByParentId(respVO.getId()));
         }
 
         // 批量设置会议状态
@@ -265,40 +298,6 @@ public class SignInInfoServiceImpl implements SignInInfoService {
         }
     }
 
-    /**
-     * 处理会议记录，如果时间为当天，并且在签到时间范围内，则设置为进行中。
-     * 如果还没有到时间，就显示未开始
-     * 如果已经结束，就显示已结束
-     *
-     * @param list 会议记录
-     */
-    private void fillMeetingStatus(List<SignInInfoRespVO> list) {
-        LocalDateTime now = LocalDateTime.now();
-
-        for (SignInInfoRespVO vo : list) {
-            LocalDateTime endDate = vo.getEndDate();
-            LocalDateTime startDate = vo.getStartDate();
-
-
-            // 只比较日期部分，不比较时间部分
-            LocalDate nowDate = now.toLocalDate();
-            LocalDate startDateDate = startDate.toLocalDate();
-            LocalDate endDateDate = endDate.toLocalDate();
-
-            if (nowDate.isBefore(startDateDate)) {
-                //未开始
-                vo.setStatus(0);
-            } else if (nowDate.isAfter(endDateDate)) {
-                //已结束
-                vo.setStatus(2);
-            } else {
-                //进行中
-                vo.setStatus(1);
-            }
-
-        }
-    }
-
     // ==================== 子表（签到记录） ====================
 
     @Override
@@ -306,21 +305,6 @@ public class SignInInfoServiceImpl implements SignInInfoService {
         return signInRecordMapper.selectListByParentId(parentId);
     }
 
-    //
-//    private void createSignInRecordList(Long parentId, List<SignInRecordDO> list) {
-//        if (list == null) {
-//            return;
-//        }
-//        list.forEach(o -> o.setParentId(parentId));
-//        signInRecordMapper.insertBatch(list);
-//    }
-//
-//    private void updateSignInRecordList(Long parentId, List<SignInRecordDO> list) {
-//        deleteSignInRecordByParentId(parentId);
-//		list.forEach(o -> o.setId(null).setUpdater(null).setUpdateTime(null)); // 解决更新情况下：1）id 冲突；2）updateTime 不更新
-//        createSignInRecordList(parentId, list);
-//    }
-//
     private void deleteSignInRecordByParentId(Long parentId) {
         signInRecordMapper.deleteByParentId(parentId);
     }
@@ -360,6 +344,24 @@ public class SignInInfoServiceImpl implements SignInInfoService {
         }
         // 插入
         signInRecordMapper.insertBatch(recordDOS);
+    }
+
+    /**
+     * 清空所有的签到记录
+     *
+     * @param id 会议id
+     */
+    @Override
+    public void deleteAllSignInRecord(Long id) {
+        //先获取
+        SignInInfoDO signInInfoDO = signInInfoMapper.selectById(id);
+        //校验存在
+        validateSignInInfoExists(signInInfoDO);
+        //校验是否是自己的会议
+        validateSignInInfoCreator(signInInfoDO);
+
+        // 删除
+        deleteSignInRecordByParentId(id);
     }
 
     /**

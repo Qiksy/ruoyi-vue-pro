@@ -14,4 +14,6 @@ public  interface ErrorCodeConstants {
     //不在签到时间范围内
     ErrorCode SIGN_IN_INFO_NOT_IN_TIME_RANGE = new ErrorCode(90_88_004, "不在签到时间范围内");
 
+    ErrorCode SIGN_IN_INFO_NOT_CREATOR = new ErrorCode(90_88_005, "不是会议签到的创建者");
+
 }

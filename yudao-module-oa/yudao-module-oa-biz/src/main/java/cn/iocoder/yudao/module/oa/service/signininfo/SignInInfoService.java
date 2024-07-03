@@ -80,4 +80,10 @@ public interface SignInInfoService {
      * @param id 会议id
      */
     void signIn(Long id);
+
+    /**
+     * 清空所有的签到记录
+     * @param id 会议id
+     */
+    void deleteAllSignInRecord(Long id);
 }

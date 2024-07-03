@@ -102,4 +102,10 @@ public class SignInInfoDO extends BaseDO {
      */
     private Integer signTaskCount;
 
+    private Boolean allCanViewSignInData;
+
+    private Boolean allowForwarding;
+
+    private Boolean allowDeleteSelfRecord;
+
 }

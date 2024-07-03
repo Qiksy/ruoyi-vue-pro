@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.oa.controller.admin.signininfo.vo;
 
+import cn.iocoder.yudao.module.oa.dal.dataobject.signininfo.SignInRecordDO;
 import cn.iocoder.yudao.module.oa.dal.dataobject.signininfo.SignInTimeRangeDO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -111,5 +112,10 @@ public class SignInInfoRespVO {
      * 签到时间段列表
      */
     private List<SignInTimeRangeDO> signInTimeRangeList;
+
+    /**
+     * 签到记录表
+     */
+    private List<SignInRecordDO> signInRecordList;
 
 }
