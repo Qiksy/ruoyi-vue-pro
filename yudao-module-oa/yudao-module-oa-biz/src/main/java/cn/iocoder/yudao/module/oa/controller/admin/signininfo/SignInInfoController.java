@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.oa.controller.admin.signininfo;
 import cn.iocoder.yudao.module.oa.dal.dataobject.signininfo.SignInRecordDO;
 import cn.iocoder.yudao.module.oa.dal.dataobject.signininfo.SignInTimeRangeDO;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.annotation.security.PermitAll;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -89,6 +90,25 @@ public class SignInInfoController {
     public CommonResult<Boolean> stopSignIn(@RequestParam("id") Long id) {
         signInInfoService.stopSignIn(id);
         return success(true);
+    }
+
+
+    @GetMapping("/getSimpleSignInInfo")
+    @Operation(summary = "获得会议签到")
+    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+    @PermitAll
+    public CommonResult<SignInInfoSimpleRespVO> getSimpleSignInInfo(@RequestParam("id") Long id) {
+        SignInInfoRespVO signInInfo = signInInfoService.getSignInInfo(id);
+
+        SignInInfoSimpleRespVO signInInfoRespVO = new SignInInfoSimpleRespVO();
+
+        signInInfoRespVO.setTitle(signInInfo.getTitle());
+        signInInfoRespVO.setDescription(signInInfo.getDescription());
+        signInInfoRespVO.setStartDate(signInInfo.getStartDate());
+        signInInfoRespVO.setEndDate(signInInfo.getEndDate());
+        signInInfoRespVO.setCreatorName(signInInfo.getCreatorName());
+
+        return success(signInInfoRespVO);
     }
 
 //
