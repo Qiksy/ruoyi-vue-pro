@@ -66,9 +66,18 @@ public class SignInInfoServiceImpl implements SignInInfoService {
     public Long createSignInInfo(SignInInfoSaveReqVO createReqVO) {
         // 插入
         SignInInfoDO signInInfo = BeanUtils.toBean(createReqVO, SignInInfoDO.class);
-        //coverPicId转为coverPicUrl
-        String coverPicUrl = fileApi.getUrlById(createReqVO.getCoverPicId());
-        signInInfo.setCoverPicUrl(coverPicUrl);
+        if (signInInfo.getCoverPicId()==null){
+            //没有上传图片
+            signInInfo.setCoverPicId(0L);
+            signInInfo.setCoverPicUrl("https://file.bo-en.com/public/assistant/coverPic.png");
+        }else{
+            //coverPicId转为coverPicUrl
+            String coverPicUrl = fileApi.getUrlById(createReqVO.getCoverPicId());
+            signInInfo.setCoverPicUrl(coverPicUrl);
+        }
+
+
+
         signInInfoMapper.insert(signInInfo);
 
         // 2. 插入子表
