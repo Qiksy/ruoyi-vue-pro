@@ -5,13 +5,10 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import cn.iocoder.yudao.module.infra.framework.file.core.client.AbstractFileClient;
 import io.minio.*;
-import io.minio.errors.*;
 import io.minio.http.Method;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -148,5 +145,27 @@ public class S3FileClient extends AbstractFileClient<S3FileClientConfig> {
         );
         FilePresignedUrlRespDTO filePresignedUrlRespDTO = new FilePresignedUrlRespDTO(uploadUrl, config.getDomain() + "/" + path);
         return filePresignedUrlRespDTO.getUploadUrl();
+    }
+
+
+    @Override
+    public String getUrlByPath(String path)  {
+        try {
+            client.statObject(StatObjectArgs.builder()
+                    .bucket(config.getBucket())
+                    .object(path)
+                    .build());
+//            // 获取文件内容
+//            GetObjectResponse response = client.getObject(GetObjectArgs.builder()
+//                    .bucket(config.getBucket())
+//                    .object(path)
+//                    .build());
+//            byte[] content = IoUtil.readBytes(response);
+//            // 转换为Base64编码
+//            return Base64.getEncoder().encodeToString(content);
+            return config.getDomain()+"/"+path;
+        } catch (Exception e) {
+            return "";
+        }
     }
 }

@@ -12,9 +12,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
 
 @Tag(name = "管理后台 - 腾讯相关接口")
 @RestController
@@ -56,6 +60,15 @@ public class TencentController {
 
         return CommonResult.success(jsonNodes);
     }
+
+
+    @GetMapping("/getWxacodeImageUrl")
+    @PreAuthorize("@ss.hasRole('common')")
+    public CommonResult<String> getWxacodeImageUrl(@RequestParam("scene")String scene, @RequestParam("page") String page) throws IOException {
+        String imageUrl = tencentMiniProgramAuthApi.createMiniProgramQrCode(scene, page, 0);
+        return CommonResult.success(imageUrl);
+    }
+
 
     static class TencentConfigSignatureReqVO {
         private String url;

@@ -66,4 +66,5 @@ public abstract class AbstractFileClient<Config extends FileClientConfig> implem
         return StrUtil.format("{}/admin-api/infra/file/{}/get/{}", domain, getId(), path);
     }
 
+
 }

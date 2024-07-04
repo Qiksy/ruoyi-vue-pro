@@ -81,4 +81,11 @@ public interface FileService {
     boolean updateFileBusinessId(Long id, Long businessId);
 
     FileDO getFile(Long id);
+
+    /**
+     * 判断这个路径，是否存在于文件存储器中，如果不存在，则返回 null
+     * @param path 文件路径
+     * @return
+     */
+    String getUrlByPath(String path);
 }

@@ -164,4 +164,19 @@ public class FileServiceImpl implements FileService {
     public FileDO getFile(Long id) {
         return fileMapper.selectById(id);
     }
+
+    /**
+     * 判断这个路径，是否存在于文件存储器中，如果不存在，则返回 null
+     *
+     * @param path 文件路径
+     * @return
+     */
+    @Override
+    public String getUrlByPath(String path) {
+
+        // 上传到文件存储器
+        FileClient client = fileConfigService.getMasterFileClient();
+        Assert.notNull(client, "客户端(master) 不能为空");
+        return  client.getUrlByPath(path);
+    }
 }

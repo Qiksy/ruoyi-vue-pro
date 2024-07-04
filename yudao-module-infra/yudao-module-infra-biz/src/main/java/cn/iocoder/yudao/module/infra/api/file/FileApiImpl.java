@@ -37,4 +37,16 @@ public class FileApiImpl implements FileApi {
         FileDO file = fileService.getFile(id);
         return (file==null || StringUtils.isBlank(file.getUrl())) ? "" : file.getUrl();
     }
+
+
+    /**
+     * 通过文件路径，判断这个文件是否存在
+     *
+     * @param path
+     * @return
+     */
+    @Override
+    public String getUrlByPath(String path) {
+        return fileService.getUrlByPath(path);
+    }
 }

@@ -48,7 +48,23 @@ public interface TencentMiniProgramAuthApi {
     WechatSessionRespDTO wechatCode2Session(String code);
 
 
+    /**
+     * 获取小程序二维码
+     * @param scene 参数，最长32个字符，且只能支持数字，大小写英文以及部分特殊字符
+     * @param page 跳转页面，不能带有参数，参数需要放在scene中
+     * @return
+     */
+    String createMiniProgramQrCode(String scene, String page,int retryCount ) throws IOException;
+
+    @SneakyThrows
+    String getMiniProgramAccessToken();
+
+    void clearMiniProgramAccessToken();
+
     //////////////// 播恩销售  //////////
+
+
+
 
     /**
      * @return 获取jsapi_ticket

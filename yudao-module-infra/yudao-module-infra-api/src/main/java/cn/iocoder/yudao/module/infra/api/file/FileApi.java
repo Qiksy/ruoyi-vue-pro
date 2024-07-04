@@ -46,4 +46,10 @@ public interface FileApi {
      */
     String getUrlById(Long id);
 
+    /**
+     * 通过文件路径，获取base64
+     * @param path 路径
+     * @return
+     */
+    String getUrlByPath(String path);
 }

@@ -60,4 +60,8 @@ public interface FileClient {
         throw new UnsupportedOperationException("不支持的操作");
     }
 
+    default String getUrlByPath(String path){
+        throw new UnsupportedOperationException("不支持的操作");
+    }
+
 }
