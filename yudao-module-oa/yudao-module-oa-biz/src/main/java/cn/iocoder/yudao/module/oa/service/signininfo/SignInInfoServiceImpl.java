@@ -181,6 +181,14 @@ public class SignInInfoServiceImpl implements SignInInfoService {
      * @param respVO
      */
     private void setMeetingStatus( SignInInfoRespVO respVO) {
+        //手动结束的
+        if (respVO.isFinished()){
+            respVO.setStatus(2);
+            respVO.setCanSignIn(false);
+            return;
+        }
+
+
         Long id = respVO.getId();
         List<SignInTimeRangeDO> rangeDOS = respVO.getSignInTimeRangeList();
     /*
@@ -371,6 +379,25 @@ public class SignInInfoServiceImpl implements SignInInfoService {
 
         // 删除
         deleteSignInRecordByParentId(id);
+    }
+
+    /**
+     * 停止会议签到
+     *
+     * @param id
+     */
+    @Override
+    public void stopSignIn(Long id) {
+        //先获取
+        SignInInfoDO signInInfoDO = signInInfoMapper.selectById(id);
+        //校验存在
+        validateSignInInfoExists(signInInfoDO);
+        //校验是否是自己的会议
+        validateSignInInfoCreator(signInInfoDO);
+
+        // 更新
+        signInInfoDO.setFinished(true);
+        signInInfoMapper.updateById(signInInfoDO);
     }
 
     /**

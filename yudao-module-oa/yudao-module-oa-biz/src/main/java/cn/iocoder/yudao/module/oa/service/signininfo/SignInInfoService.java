@@ -86,4 +86,10 @@ public interface SignInInfoService {
      * @param id 会议id
      */
     void deleteAllSignInRecord(Long id);
+
+    /**
+     * 停止会议签到
+     * @param id
+     */
+    void stopSignIn(Long id);
 }

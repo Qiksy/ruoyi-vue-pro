@@ -108,4 +108,8 @@ public class SignInInfoDO extends BaseDO {
 
     private Boolean allowDeleteSelfRecord;
 
+
+//    是否手动提前结束
+    private Boolean finished;
+
 }

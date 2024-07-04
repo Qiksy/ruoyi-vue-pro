@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.oa.dal.dataobject.signininfo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalTime;
@@ -36,10 +37,12 @@ public class SignInTimeRangeDO extends BaseDO {
     /**
      * 开始时间
      */
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime startTime;
     /**
      * 结束时间
      */
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime endTime;
 
 }

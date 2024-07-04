@@ -118,4 +118,6 @@ public class SignInInfoRespVO {
      */
     private List<SignInRecordDO> signInRecordList;
 
+    private boolean finished;
+
 }

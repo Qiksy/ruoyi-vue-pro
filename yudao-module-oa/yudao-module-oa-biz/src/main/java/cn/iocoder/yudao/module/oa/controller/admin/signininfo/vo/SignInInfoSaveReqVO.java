@@ -84,4 +84,7 @@ public class SignInInfoSaveReqVO {
     @Schema(description = "签到时间范围列表")
     private List<SignInTimeRangeDO> signInTimeRanges;
 
+    @Schema(description = "是否结束")
+    private boolean finished;
+
 }

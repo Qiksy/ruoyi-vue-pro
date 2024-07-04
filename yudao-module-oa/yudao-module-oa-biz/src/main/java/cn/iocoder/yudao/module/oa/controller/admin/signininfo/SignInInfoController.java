@@ -81,6 +81,16 @@ public class SignInInfoController {
         PageResult<SignInInfoRespVO> pageResult = signInInfoService.getSignInInfoPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, SignInInfoRespVO.class));
     }
+
+    @PostMapping("/stop-sign-in")
+    @Operation(summary = "停止会议签到")
+    @Parameter(name = "id", description = "编号", required = true)
+    @PreAuthorize("@ss.hasRole('common')")
+    public CommonResult<Boolean> stopSignIn(@RequestParam("id") Long id) {
+        signInInfoService.stopSignIn(id);
+        return success(true);
+    }
+
 //
 //    @GetMapping("/export-excel")
 //    @Operation(summary = "导出会议签到 Excel")
