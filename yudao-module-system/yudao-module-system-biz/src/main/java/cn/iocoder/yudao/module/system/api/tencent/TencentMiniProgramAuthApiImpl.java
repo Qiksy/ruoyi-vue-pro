@@ -225,8 +225,8 @@ public class TencentMiniProgramAuthApiImpl implements TencentMiniProgramAuthApi 
         ObjectNode objectNode = new ObjectMapper().createObjectNode();
         objectNode.put("scene", scene);  //页面参数
         objectNode.put("page", page);  //页面
-        objectNode.put("check_path", checkPath);  //是否为正式发布后的小程序页面？
-        objectNode.put("env_version", envVersion);  //小程序环境、
+//        objectNode.put("check_path", checkPath);  //是否为正式发布后的小程序页面？
+//        objectNode.put("env_version", envVersion);  //小程序环境、
 
         objectNode.put("width",280);
 

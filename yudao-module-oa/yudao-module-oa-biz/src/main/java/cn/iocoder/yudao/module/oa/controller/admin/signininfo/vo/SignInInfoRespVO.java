@@ -118,6 +118,12 @@ public class SignInInfoRespVO {
      */
     private List<SignInRecordDO> signInRecordList;
 
+    private Boolean allCanViewSignInData;
+
+    private Boolean allowForwarding;
+
+    private Boolean allowDeleteSelfRecord;
+
     private boolean finished;
 
 }

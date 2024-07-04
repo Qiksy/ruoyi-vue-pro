@@ -13,6 +13,7 @@ import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import cn.iocoder.yudao.module.system.service.permission.PermissionService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Lists;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -68,7 +69,7 @@ public class SignInInfoServiceImpl implements SignInInfoService {
         SignInInfoDO signInInfo = BeanUtils.toBean(createReqVO, SignInInfoDO.class);
         if (signInInfo.getCoverPicId()==null){
             //没有上传图片
-            signInInfo.setCoverPicId(0L);
+            signInInfo.setCoverPicId(123L);
             signInInfo.setCoverPicUrl("https://file.bo-en.com/public/assistant/coverPic.png");
         }else{
             //coverPicId转为coverPicUrl
@@ -110,7 +111,7 @@ public class SignInInfoServiceImpl implements SignInInfoService {
 
 //        // 更新子表
 //        updateSignInRecordList(updateReqVO.getId(), updateReqVO.getSignInRecords());
-//        updateSignInTimeRangeList(updateReqVO.getId(), updateReqVO.getSignInTimeRanges());
+        updateSignInTimeRangeList(updateReqVO.getId(), updateReqVO.getSignInTimeRanges());
     }
 
     @Override
@@ -438,9 +439,19 @@ public class SignInInfoServiceImpl implements SignInInfoService {
     }
 
     private void updateSignInTimeRangeList(Long parentId, List<SignInTimeRangeDO> list) {
-        deleteSignInTimeRangeByParentId(parentId);
-        list.forEach(o -> o.setId(null).setUpdater(null).setUpdateTime(null)); // 解决更新情况下：1）id 冲突；2）updateTime 不更新
-        createSignInTimeRangeList(parentId, list);
+//        deleteSignInTimeRangeByParentId(parentId); // 先删除全部
+//        //重新插入，因为我这里id已经是传递过来的所以不会有问题
+//        list.forEach(o -> o.setParentId(parentId).setDeleted(false)); //重新设置parentId、deleted
+//        signInTimeRangeMapper.insertOrUpdateBatch(list);
+
+        // 删除不存在的
+        signInTimeRangeMapper.delete(
+                new LambdaQueryWrapper<SignInTimeRangeDO>()
+                        .eq(SignInTimeRangeDO::getParentId, parentId)
+                        .notIn(SignInTimeRangeDO::getId, list.stream().map(SignInTimeRangeDO::getId).collect(Collectors.toList())));
+        list.forEach(o -> o.setParentId(parentId)); //重新设置parentId
+        signInTimeRangeMapper.insertOrUpdateBatch(list);
+
     }
 
     private void deleteSignInTimeRangeByParentId(Long parentId) {

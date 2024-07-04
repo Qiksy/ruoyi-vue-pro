@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.annotation.security.PermitAll;
 import lombok.SneakyThrows;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,7 +64,7 @@ public class TencentController {
 
 
     @GetMapping("/getWxacodeImageUrl")
-    @PreAuthorize("@ss.hasRole('common')")
+    @PermitAll
     public CommonResult<String> getWxacodeImageUrl(@RequestParam("scene")String scene, @RequestParam("page") String page) throws IOException {
         String imageUrl = tencentMiniProgramAuthApi.createMiniProgramQrCode(scene, page, 0);
         return CommonResult.success(imageUrl);
