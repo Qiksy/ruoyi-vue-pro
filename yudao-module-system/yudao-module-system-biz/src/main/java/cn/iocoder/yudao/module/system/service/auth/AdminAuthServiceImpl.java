@@ -228,6 +228,8 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             // 3. 获取真正的用户信息
             // 3. 此处的userId对应的是企业微信通讯录中的明文id。这个时候可以去获取对应的系统用户信息
             AdminUserDO userByPkPsndoc = userService.getUserByPkPsndoc(userId);
+            log.info("在微信中的小程序登录，用户的userId为：{}",userId);
+            log.info("在微信中的小程序登录，用户的userByPkPsndoc为：{}",userByPkPsndoc);
             if (userByPkPsndoc==null){
                 //没有绑定的用户，报错
                 throw exception(AUTH_THIRD_LOGIN_NOT_BIND);

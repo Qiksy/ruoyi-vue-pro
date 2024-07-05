@@ -33,7 +33,7 @@ public interface TencentMiniProgramAuthApi {
      * @param openid 微信小程序的openid（用户id）
      * @return 返回企业微信通讯录中，成员的明文userid
      */
-    String openId2userId(String openid);
+    String openId2userId(String openid) ;
 
 
 

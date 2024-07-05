@@ -7,6 +7,7 @@ import cn.iocoder.yudao.module.system.api.tenant.dto.WecomeMessageRespDTO;
 import cn.iocoder.yudao.module.system.api.tencent.dto.WechatSessionRespDTO;
 import cn.iocoder.yudao.module.system.api.tencent.dto.WxworkSessionRespDTO;
 import cn.iocoder.yudao.module.system.config.TencentAuthProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -92,8 +94,7 @@ public class TencentMiniProgramAuthApiImpl implements TencentMiniProgramAuthApi 
 
 
     @Override
-    @SneakyThrows
-    public String openId2userId(String openid) {
+    public String openId2userId(String openid)  {
         //将openId转为一个json 字符串 例如 {"openid": "oDjGHs-1yCnGrRovBj2yHij5JAAA"}
         String json = "{\"openid\": \"" + openid + "\"}";
         String accessToken = getSelf().getAssistantAccessToken();
@@ -107,11 +108,23 @@ public class TencentMiniProgramAuthApiImpl implements TencentMiniProgramAuthApi 
                     .build();
 
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
 
         ObjectMapper op = new ObjectMapper();
-        JsonNode jsonNode = op.readTree(response.body());
+        JsonNode jsonNode = null;
+        try {
+            jsonNode = op.readTree(response.body());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         if (jsonNode.get("errcode").asInt() != 0) {
+            log.error("openId2userId错误，错误码: {}，错误信息: {}", jsonNode.get("errcode").asInt(), jsonNode.get("errmsg").asText());
             throw exception0(500, "openId2userId错误，错误码: {}，错误信息: {}", jsonNode.get("errcode").asInt(), jsonNode.get("errmsg").asText());
         }
 
