@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.system.api.tencent.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 /**
@@ -9,6 +10,7 @@ import lombok.Data;
  * @since 2024/6/27 下午2:16
  */
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class WxworkSessionRespDTO {
 
     /*
@@ -37,4 +39,7 @@ public class WxworkSessionRespDTO {
     private Integer errcode;
 
     private String errmsg;
+
+    private String deviceid;
+
 }

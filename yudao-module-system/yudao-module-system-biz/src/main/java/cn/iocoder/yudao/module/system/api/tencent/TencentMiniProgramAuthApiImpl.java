@@ -77,6 +77,7 @@ public class TencentMiniProgramAuthApiImpl implements TencentMiniProgramAuthApi 
         //将content转为WxworkSessionRespDTO
 
         WxworkSessionRespDTO respDTO = op.readValue(content, WxworkSessionRespDTO.class);
+        //转为一个ObjectNode
 
         if (respDTO.getErrcode() == 42001) {
             //access_token过期，需要重新获取一次
