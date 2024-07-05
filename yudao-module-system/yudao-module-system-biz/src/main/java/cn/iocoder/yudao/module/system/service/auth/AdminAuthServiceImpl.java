@@ -227,15 +227,16 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 
             // 3. 获取真正的用户信息
             // 3. 此处的userId对应的是企业微信通讯录中的明文id。这个时候可以去获取对应的系统用户信息
-            AdminUserDO userByPkPsndoc = userService.getUserByPkPsndoc(userId);
+//            AdminUserDO userByPkPsndoc = userService.getUserByPkPsndoc(userId);
+            AdminUserDO userByWecomeId = userService.getUserByWecomeId(userId);
             log.info("在微信中的小程序登录，用户的userId为：{}",userId);
-            log.info("在微信中的小程序登录，用户的userByPkPsndoc为：{}",userByPkPsndoc);
-            if (userByPkPsndoc==null){
+            log.info("在微信中的小程序登录，用户的userByPkPsndoc为：{}",userByWecomeId);
+            if (userByWecomeId==null){
                 //没有绑定的用户，报错
                 throw exception(AUTH_THIRD_LOGIN_NOT_BIND);
             }
             // 4. 创建Token令牌，记录登录日志
-            return  createTokenAfterLoginSuccess(userByPkPsndoc.getId(), userByPkPsndoc.getUsername(), LoginLogTypeEnum.LOGIN_WECHAT_MP);
+            return  createTokenAfterLoginSuccess(userByWecomeId.getId(), userByWecomeId.getUsername(), LoginLogTypeEnum.LOGIN_WECHAT_MP);
 
         }
     }
