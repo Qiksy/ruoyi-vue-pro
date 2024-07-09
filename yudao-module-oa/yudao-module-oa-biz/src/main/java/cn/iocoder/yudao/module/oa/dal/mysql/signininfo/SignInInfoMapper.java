@@ -6,8 +6,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.oa.dal.dataobject.signininfo.SignInInfoDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.oa.controller.admin.signininfo.vo.*;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 会议签到 Mapper
@@ -66,4 +68,6 @@ public interface SignInInfoMapper extends BaseMapperX<SignInInfoDO> {
                 .orderByDesc(SignInInfoDO::getStartDate,SignInInfoDO::getId)); // 根据开始时间排序
 
     }
+
+    IPage<SignInInfoDO> selectPageByUserTable(IPage<SignInInfoDO> page, @Param("req") SignInInfoPageReqVO pageReqVO, @Param("userId") Long loginUserId);
 }

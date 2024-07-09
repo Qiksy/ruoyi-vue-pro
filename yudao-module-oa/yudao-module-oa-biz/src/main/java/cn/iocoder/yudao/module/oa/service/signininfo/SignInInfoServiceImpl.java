@@ -6,12 +6,16 @@ import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.infra.api.file.FileApi;
 import cn.iocoder.yudao.module.oa.dal.dataobject.signininfo.SignInRecordDO;
 import cn.iocoder.yudao.module.oa.dal.dataobject.signininfo.SignInTimeRangeDO;
+import cn.iocoder.yudao.module.oa.dal.dataobject.signinuser.SignInUserDO;
 import cn.iocoder.yudao.module.oa.dal.mysql.signininfo.SignInRecordMapper;
 import cn.iocoder.yudao.module.oa.dal.mysql.signininfo.SignInTimeRangeMapper;
+import cn.iocoder.yudao.module.oa.dal.mysql.signinuser.SignInUserMapper;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import cn.iocoder.yudao.module.system.service.permission.PermissionService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.stereotype.Service;
@@ -54,6 +58,9 @@ public class SignInInfoServiceImpl implements SignInInfoService {
     private SignInTimeRangeMapper signInTimeRangeMapper;
 
     @Resource
+    private SignInUserMapper signInUserMapper;
+
+    @Resource
     private PermissionService permissionService;
 
     @Resource
@@ -93,6 +100,13 @@ public class SignInInfoServiceImpl implements SignInInfoService {
             createSignInTimeRangeList(signInInfo.getId(), createReqVO.getSignInTimeRanges());
         }
 
+        //  往成员表里面插入
+        SignInUserDO signInUserDO = new SignInUserDO();
+        signInUserDO.setUserId(SecurityFrameworkUtils.getLoginUserId());//设置当前用户
+        signInUserDO.setMeetingId(signInInfo.getId()); // 设置主表id
+        signInUserMapper.insert(signInUserDO);
+
+
         // 返回
         return signInInfo.getId();
     }
@@ -114,6 +128,10 @@ public class SignInInfoServiceImpl implements SignInInfoService {
         updateSignInTimeRangeList(updateReqVO.getId(), updateReqVO.getSignInTimeRanges());
     }
 
+    /**
+     * 删除整个会议
+     * @param id 编号
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteSignInInfo(Long id) {
@@ -132,6 +150,9 @@ public class SignInInfoServiceImpl implements SignInInfoService {
         // 删除子表
         deleteSignInRecordByParentId(id);
         deleteSignInTimeRangeByParentId(id);
+
+        //删除成员表
+        signInUserMapper.delete(new LambdaQueryWrapperX<SignInUserDO>().eq(SignInUserDO::getMeetingId,id));
     }
 
     /**
@@ -269,24 +290,9 @@ public class SignInInfoServiceImpl implements SignInInfoService {
             signInInfoDOPageResult = signInInfoMapper.selectPage(pageReqVO);
         } else {
             //只能查询自己创建或者签到的会议
-
-            // 1. 查询自己签到的
-            List<SignInRecordDO> signInRecordDOS = signInRecordMapper.selectList(new LambdaQueryWrapper<SignInRecordDO>().select(SignInRecordDO::getParentId).eq(SignInRecordDO::getUserId, SecurityFrameworkUtils.getLoginUserId()));
-            Set<Long> meetingIds = signInRecordDOS.stream().map(SignInRecordDO::getParentId).collect(Collectors.toSet());
-
-            // 2. 查询自己创建的
-            List<SignInInfoDO> signInInfoDOS = signInInfoMapper.selectList(new LambdaQueryWrapper<SignInInfoDO>().select(SignInInfoDO::getId).eq(SignInInfoDO::getCreator, SecurityFrameworkUtils.getLoginUserId()));
-            signInInfoDOS.stream().map(SignInInfoDO::getId).forEach(meetingIds::add);
-
-            // 如果meetingIds为空，直接返回空
-            if (meetingIds.isEmpty()) {
-                PageResult<SignInInfoRespVO> result = new PageResult<>();
-                result.setList(Collections.emptyList());
-                result.setTotal(0L);
-                return result;
-            }
-
-            signInInfoDOPageResult = signInInfoMapper.selectSelfPage(pageReqVO, meetingIds);
+           IPage<SignInInfoDO> page =  new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+           signInInfoMapper.selectPageByUserTable(page,pageReqVO, SecurityFrameworkUtils.getLoginUserId());
+           signInInfoDOPageResult = new PageResult<>(page.getRecords(),page.getTotal());
         }
 
         // 处理会议状态
@@ -384,6 +390,17 @@ public class SignInInfoServiceImpl implements SignInInfoService {
         }
         // 插入
         signInRecordMapper.insertBatch(recordDOS);
+
+        // 插入成员表
+        Long count = signInUserMapper.selectCount(new LambdaQueryWrapperX<SignInUserDO>().eq(SignInUserDO::getUserId, SecurityFrameworkUtils.getLoginUserId()).eq(SignInUserDO::getMeetingId, id));
+
+        if (count == 0){
+            //如果没有记录，则插入
+            SignInUserDO signInUserDO = new SignInUserDO();
+            signInUserDO.setUserId(SecurityFrameworkUtils.getLoginUserId());//设置当前用户
+            signInUserDO.setMeetingId(id); // 设置主表id
+            signInUserMapper.insert(signInUserDO);
+        }
     }
 
     /**
@@ -402,6 +419,10 @@ public class SignInInfoServiceImpl implements SignInInfoService {
 
         // 删除
         deleteSignInRecordByParentId(id);
+
+        // 删除成员表
+
+        signInUserMapper.delete(new LambdaQueryWrapperX<SignInUserDO>().eq(SignInUserDO::getMeetingId,id));
     }
 
     /**
