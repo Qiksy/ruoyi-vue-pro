@@ -118,12 +118,29 @@ public class SignInInfoRespVO {
      */
     private List<SignInRecordDO> signInRecordList;
 
+    /**
+     * 是否所有人都可以查看签到数据
+     */
     private Boolean allCanViewSignInData;
 
+    /**
+     * 是否允许转发
+     */
     private Boolean allowForwarding;
 
+    /**
+     * 是否允许删除自己的记录
+     */
     private Boolean allowDeleteSelfRecord;
 
+    /**
+     * 是否结束
+     */
     private boolean finished;
+
+    /**
+     * 参与人数
+     */
+    private Integer signInCount;
 
 }

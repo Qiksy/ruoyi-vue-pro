@@ -169,6 +169,20 @@ public class SignInInfoServiceImpl implements SignInInfoService {
 
         // 签到名单
         List<SignInRecordDO> recordList = getSignInRecordListByParentId(id);
+
+
+        //设置总的签到人数
+        int size = recordList.stream().map(SignInRecordDO::getUserId).collect(Collectors.toSet()).size();
+
+
+        respVO.setSignInCount(size);
+
+        if (!signInInfoDO.getAllCanViewSignInData() && !recordList.isEmpty()){
+             // 只有发起人才可以查看所有的签到数据
+            // 所以需要过滤掉其他人的签到记录
+            recordList = recordList.stream().filter(o -> o.getUserId().equals(SecurityFrameworkUtils.getLoginUserId())).collect(Collectors.toList());
+        }
+
         // 设置签到名单
         respVO.setSignInRecordList(recordList);
 
@@ -281,7 +295,15 @@ public class SignInInfoServiceImpl implements SignInInfoService {
         for (SignInInfoRespVO respVO : bean.getList()) {
             //todo 后面再进行优化，不应该把查询放在for循环内
             respVO.setSignInTimeRangeList(getSignInTimeRangeListByParentId(respVO.getId()));
-            respVO.setSignInRecordList(getSignInRecordListByParentId(respVO.getId()));
+
+            //设置签到人数
+            List<SignInRecordDO> recordDOList = getSignInRecordListByParentId(respVO.getId());
+            if (!recordDOList.isEmpty()){
+                int size = recordDOList.stream().map(SignInRecordDO::getUserId).collect(Collectors.toSet()).size();
+                respVO.setSignInCount(size);
+            }else {
+                respVO.setSignInCount(0);
+            }
         }
 
         // 批量设置会议状态

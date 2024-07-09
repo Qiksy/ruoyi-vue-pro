@@ -87,4 +87,12 @@ public class SignInInfoSaveReqVO {
     @Schema(description = "是否结束")
     private boolean finished;
 
+
+    private Boolean allCanViewSignInData;
+
+    private Boolean allowForwarding;
+
+    private Boolean allowDeleteSelfRecord;
+
+
 }
