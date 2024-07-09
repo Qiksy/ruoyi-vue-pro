@@ -198,9 +198,10 @@ public class SignInInfoServiceImpl implements SignInInfoService {
 
         respVO.setSignInCount(size);
 
-        if (!signInInfoDO.getAllCanViewSignInData() && !recordList.isEmpty()){
+        if (!signInInfoDO.getAllCanViewSignInData() && !recordList.isEmpty() && !signInInfoDO.getCreator().equals(SecurityFrameworkUtils.getLoginUserId().toString())){
              // 只有发起人才可以查看所有的签到数据
             // 所以需要过滤掉其他人的签到记录
+            // 发起人不走这个逻辑
             recordList = recordList.stream().filter(o -> o.getUserId().equals(SecurityFrameworkUtils.getLoginUserId())).collect(Collectors.toList());
         }
 
@@ -510,5 +511,30 @@ public class SignInInfoServiceImpl implements SignInInfoService {
     private SignInInfoServiceImpl getSelf() {
         return SpringUtil.getBean(getClass());
     }
+
+
+    /*
+    新的查询逻辑编辑脚本
+        SELECT
+        CONCAT('INSERT INTO `oa_sign_in_user` (`user_id`, `meeting_id`) VALUES (', user_id, ', ', meeting_id, ');')
+    FROM
+        (
+        SELECT DISTINCT
+            creator user_id,
+            id meeting_id
+        FROM
+            oa_sign_in_info
+        WHERE
+            deleted = 0 UNION
+        SELECT DISTINCT
+            user_id,
+            parent_id meeting_id
+        FROM
+            oa_sign_in_record
+        WHERE
+            deleted = 0
+    ) temp;
+
+     */
 
 }
