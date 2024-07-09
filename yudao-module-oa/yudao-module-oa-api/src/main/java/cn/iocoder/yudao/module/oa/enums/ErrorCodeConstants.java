@@ -16,4 +16,6 @@ public  interface ErrorCodeConstants {
 
     ErrorCode SIGN_IN_INFO_NOT_CREATOR = new ErrorCode(90_88_005, "不是会议签到的创建者");
 
+
+    ErrorCode SIGN_IN_USER_NOT_EXISTS = new ErrorCode(90_88_006, "会议签到成员不存在");
 }
