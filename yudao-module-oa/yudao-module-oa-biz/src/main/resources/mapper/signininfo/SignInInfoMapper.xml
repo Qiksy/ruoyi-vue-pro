@@ -12,13 +12,15 @@
 
     <select id="selectPageByUserTable"
             resultType="cn.iocoder.yudao.module.oa.dal.dataobject.signininfo.SignInInfoDO">
-        select * from oa_sign_in_info t1
+        select t1.* from oa_sign_in_info t1
                  left join oa_sign_in_user t2 on t2.meeting_id = t1.id
         where
             t2.user_id = #{userId}
+          and t2.deleted = 0
+          and t1.deleted = 0
         <if test="req.title != null and req.title != ''">
             and t1.title like concat('%', #{req.title}, '%')
         </if>
-        order by t1.start_date,t1.id desc
+        order by t1.start_date desc,t1.id desc
     </select>
 </mapper>

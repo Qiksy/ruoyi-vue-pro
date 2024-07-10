@@ -92,4 +92,11 @@ public interface SignInInfoService {
      * @param id
      */
     void stopSignIn(Long id);
+
+    /**
+     * 退出签到
+     * @param id 会议id
+     * @param isClean 是否清空签到记录
+     */
+    void exit(Long id, Boolean isClean);
 }

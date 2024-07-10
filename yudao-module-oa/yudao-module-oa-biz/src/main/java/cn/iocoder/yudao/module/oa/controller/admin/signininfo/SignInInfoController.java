@@ -111,6 +111,16 @@ public class SignInInfoController {
         return success(signInInfoRespVO);
     }
 
+    @PostMapping("/exit")
+    @Operation(summary = "退出会议")
+    @Parameter(name = "id", description = "编号", required = true)
+    @PreAuthorize("@ss.hasRole('common')")
+    public CommonResult<Boolean> exit(@RequestParam("id") Long id,@RequestParam("isClean") Boolean isClean) {
+        signInInfoService.exit(id,isClean);
+        return success(true);
+    }
+
+
 //
 //    @GetMapping("/export-excel")
 //    @Operation(summary = "导出会议签到 Excel")

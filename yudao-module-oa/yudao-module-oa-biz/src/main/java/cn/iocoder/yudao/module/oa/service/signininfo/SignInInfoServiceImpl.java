@@ -356,6 +356,10 @@ public class SignInInfoServiceImpl implements SignInInfoService {
         signInRecordMapper.deleteByParentId(parentId);
     }
 
+    private void deleteSelfSignInRecordByParentId(Long parentId) {
+        signInRecordMapper.delete(new LambdaQueryWrapperX<SignInRecordDO>().eq(SignInRecordDO::getParentId,parentId).eq(SignInRecordDO::getUserId,SecurityFrameworkUtils.getLoginUserId()));
+    }
+
     /**
      * 用户进行签到
      *
@@ -466,6 +470,29 @@ public class SignInInfoServiceImpl implements SignInInfoService {
         }
 
     }
+
+    /**
+     * 退出签到
+     *
+     * @param id      会议id
+     * @param isClean 是否清空签到记录
+     */
+    @Override
+    public void exit(Long id, Boolean isClean) {
+        //先获取
+        SignInInfoDO signInInfoDO = signInInfoMapper.selectById(id);
+        //校验存在
+        validateSignInInfoExists(signInInfoDO);
+
+        // 删除成员表
+        signInUserMapper.delete(new LambdaQueryWrapperX<SignInUserDO>().eq(SignInUserDO::getMeetingId,id).eq(SignInUserDO::getUserId,SecurityFrameworkUtils.getLoginUserId()));
+
+        if (isClean) {
+            // 删除签到记录
+            deleteSelfSignInRecordByParentId(id);
+        }
+    }
+
 
     // ==================== 子表（签到时间范围） ====================
 
