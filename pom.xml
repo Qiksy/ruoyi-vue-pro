@@ -28,6 +28,7 @@
 <!--        <module>yudao-example</module>-->
         <module>yudao-module-strain</module>
         <module>yudao-module-oa</module>
+        <module>yudao-module-lowcode</module>
     </modules>
 
     <name>${project.artifactId}</name>
