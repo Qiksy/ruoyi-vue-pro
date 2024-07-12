@@ -101,6 +101,12 @@ public class SecurityFrameworkUtils {
         return loginUser != null ? MapUtil.getStr(loginUser.getInfo(), LoginUser.INFO_KEY_NICKNAME) : null;
     }
 
+    @Nullable
+    public static String getUserName(){
+        LoginUser loginUser = getLoginUser();
+        return loginUser != null  ? MapUtil.getStr(loginUser.getInfo(), LoginUser.INFO_KEY_USER_NAME) : null;
+    }
+
     /**
      * 获得当前用户的部门编号，从上下文中
      *
