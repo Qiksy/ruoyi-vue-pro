@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Date;
-import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @TableName("onl_auth_page")
@@ -19,22 +18,22 @@ public class OnlAuthPage implements Serializable {
     @TableId(type = IdType.ASSIGN_ID)
     private String id;
 
-    @Excel(name = "online表id", width = 15.0d)
+//    @Excel(name = "online表id", width = 15.0d)
     private String cgformId;
 
-    @Excel(name = "字段名/按钮编码", width = 15.0d)
+//    @Excel(name = "字段名/按钮编码", width = 15.0d)
     private String code;
 
-    @Excel(name = "1字段 2按钮", width = 15.0d)
+//    @Excel(name = "1字段 2按钮", width = 15.0d)
     private Integer type;
 
-    @Excel(name = "3可编辑 5可见", width = 15.0d)
+//    @Excel(name = "3可编辑 5可见", width = 15.0d)
     private Integer control;
 
-    @Excel(name = "3列表 5表单", width = 15.0d)
+//    @Excel(name = "3列表 5表单", width = 15.0d)
     private Integer page;
 
-    @Excel(name = "1有效 0无效", width = 15.0d)
+//    @Excel(name = "1有效 0无效", width = 15.0d)
     private Integer status;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")

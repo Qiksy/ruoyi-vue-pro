@@ -58,7 +58,7 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 @RestController("onlCgformAuthController")
 /* renamed from: org.jeecg.modules.online.auth.a.a */
 /* loaded from: hibernate-re-3.6.1-beta.jar:org/jeecg/modules/online/auth/a/a.class */
-@Tag(name="online表单权限")
+@Tag(name = "online表单权限")
 public class OnlCgformAuthController {
 
     /* renamed from: a */
@@ -107,7 +107,7 @@ public class OnlCgformAuthController {
             result.success("添加成功！");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            error(500,"操作失败");
+            error(500, "操作失败");
         }
         return result;
     }
@@ -143,7 +143,7 @@ public class OnlCgformAuthController {
             result.success("添加成功！");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            error(500,"操作失败");
+            error(500, "操作失败");
         }
         return result;
     }
@@ -164,7 +164,7 @@ public class OnlCgformAuthController {
                 .eq(OnlAuthPage::getType, 2);
 
         List<OnlAuthPage> list2 = this.onlAuthPageService.list(wrapper);
-        HashMap<String,Object> hashMap = new HashMap<>(5);
+        HashMap<String, Object> hashMap = new HashMap<>(5);
         hashMap.put("buttonList", list);
         hashMap.put("authList", list2);
         return success(hashMap);
@@ -190,7 +190,7 @@ public class OnlCgformAuthController {
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            error(500,"操作失败");
+            error(500, "操作失败");
         }
         return success(onlAuthPage);
     }
@@ -215,7 +215,7 @@ public class OnlCgformAuthController {
         lambdaQueryWrapper.orderByAsc(OnlCgformField::getOrderNum);
         List<OnlCgformField> list = this.onlCgformFieldService.list(lambdaQueryWrapper);
         if (list == null || list.isEmpty()) {
-            error(500,"未找到对应字段信息！");
+            error(500, "未找到对应字段信息！");
         }
         List<OnlAuthPage> list2 = this.onlAuthPageService.list(new LambdaQueryWrapper<OnlAuthPage>().eq(OnlAuthPage::getCgformId, str).eq(OnlAuthPage::getType, 1));
         ArrayList<AuthColumnVO> arrayList = new ArrayList<>();
@@ -268,7 +268,7 @@ public class OnlCgformAuthController {
             result.success("操作成功！");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            error(500,"操作失败");
+            error(500, "操作失败");
         }
         return result;
     }
@@ -278,49 +278,39 @@ public class OnlCgformAuthController {
     @Operation(summary = "创建字段权限信息")
     /* renamed from: b */
     public CommonResult<?> createAuthColumn(@RequestBody AuthColumnVO authColumnVO) {
-        CommonResult<?> result = new CommonResult<>();
         try {
             this.onlAuthPageService.switchAuthColumn(authColumnVO);
-            result.success("操作成功！");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            result.error500("操作失败");
+            error(500, "操作失败");
         }
-        return result;
+        return success("操作成功");
     }
 
     @GetMapping({"/authPage/{cgformId}/{type}"})
     @Operation(summary = "获取表单页面权限")
     /* renamed from: a */
     public CommonResult<List<AuthPageVO>> getAuthPage(@PathVariable("cgformId") String str, @PathVariable("type") Integer num) {
-        CommonResult<List<AuthPageVO>> result = new CommonResult<>();
-        result.setResult(this.onlAuthPageService.queryAuthByFormId(str, num));
-        result.setSuccess(true);
-        return result;
+        return success(this.onlAuthPageService.queryAuthByFormId(str, num));
     }
 
     @GetMapping({"/validAuthData/{cgformId}"})
     @Operation(summary = "获取有效的权限数据")
     /* renamed from: f */
     public CommonResult<List<OnlAuthData>> validAuthData(@PathVariable("cgformId") String str) {
-        CommonResult<List<OnlAuthData>> result = new CommonResult<>();
-        result.setResult(this.onlAuthDataService.list((
+        return success(this.onlAuthDataService.list((
                 new LambdaQueryWrapper<OnlAuthData>().eq(OnlAuthData::getCgformId, str)).eq(OnlAuthData::getStatus, 1)
                 .select(OnlAuthData::getId, OnlAuthData::getRuleName)));
-        result.setSuccess(true);
-        return result;
     }
 
     @GetMapping({"/roleAuth"})
     @Operation(summary = "获取角色权限")
     /* renamed from: a */
     public CommonResult<List<OnlAuthRelation>> getRoleAuth(@RequestParam("roleId") String str, @RequestParam("cgformId") String str2, @RequestParam("type") Integer num, @RequestParam("authMode") String str3) {
-        CommonResult<List<OnlAuthRelation>> result = new CommonResult<>();
-        result.setResult(this.onlAuthRelationService.list(
+
+        return success(this.onlAuthRelationService.list(
                 new LambdaQueryWrapper<OnlAuthRelation>().eq(OnlAuthRelation::getRoleId, str).eq(OnlAuthRelation::getCgformId, str2).eq(OnlAuthRelation::getType, num)
                         .eq(OnlAuthRelation::getAuthMode, str3).select(OnlAuthRelation::getAuthId)));
-        result.setSuccess(true);
-        return result;
     }
 
     @PostMapping({"/roleColumnAuth/{roleId}/{cgformId}"})
@@ -365,8 +355,7 @@ public class OnlCgformAuthController {
     public CommonResult<List<AuthColumnVO>> getAuthColumnByDesformCode(@PathVariable("desformCode") String str) {
         OnlCgformHead onlCgformHead = this.onlCgformHeadService.getOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, str));
         if (onlCgformHead == null) {
-            Result.error("未找到对应字段信息!");
-            return new CommonResult<>();
+            return error(500,"未找到对应表单信息!");
         }
         CommonResult<List<AuthColumnVO>> result = new CommonResult<>();
         LambdaQueryWrapper<OnlCgformField> lambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -374,8 +363,7 @@ public class OnlCgformAuthController {
         lambdaQueryWrapper.orderByAsc(OnlCgformField::getOrderNum);
         List<OnlCgformField> list = this.onlCgformFieldService.list(lambdaQueryWrapper);
         if (list == null || list.isEmpty()) {
-            Result.error("未找到对应字段信息!");
-            return result;
+            return error(500,"未找到对应字段信息!");
         }
         ArrayList<AuthColumnVO> arrayList = new ArrayList<>();
         for (OnlCgformField onlCgformField : list) {
@@ -387,7 +375,7 @@ public class OnlCgformAuthController {
                 arrayList.add(authColumnVO);
             }
         }
-        if (oConvertUtils.isNotEmpty(onlCgformHead.getSubTableStr())) {
+        if (StringUtils.isNotEmpty(onlCgformHead.getSubTableStr())) {
             for (String str2 : onlCgformHead.getSubTableStr().split(CgformUtil.COMMA_SEPARATOR)) {
                 OnlCgformHead onlCgformHead2 = this.onlCgformHeadService.getOne(
                         new LambdaQueryWrapper<OnlCgformHead>()
@@ -395,7 +383,7 @@ public class OnlCgformAuthController {
                 if (onlCgformHead2 != null) {
                     List<OnlCgformField> list2 = this.onlCgformFieldService.list(
                             new LambdaQueryWrapper<OnlCgformField>()
-                            .eq(OnlCgformField::getCgformHeadId, onlCgformHead2.getId()));
+                                    .eq(OnlCgformField::getCgformHeadId, onlCgformHead2.getId()));
                     if (list2 != null) {
                         for (OnlCgformField onlCgformField2 : list2) {
                             if (!CgformUtil.m259i(onlCgformField2.getDbFieldName())) {
@@ -410,8 +398,6 @@ public class OnlCgformAuthController {
                 }
             }
         }
-        result.setResult(arrayList);
-        Result.ok("加载字段权限数据完成");
-        return result;
+        return success(arrayList);
     }
 }

@@ -17,7 +17,7 @@ import org.jeecg.modules.online.cgreport.entity.OnlCgreportParam;
 public class SqlParamsHandler<T> {
 
     /* renamed from: b */
-    private final Map<String, Object> f86b;
+    private final Map<String, Object> map;
 
     /* renamed from: c */
     private final List<T> f87c;
@@ -32,7 +32,7 @@ public class SqlParamsHandler<T> {
     private final Map<String, Object> otherParams = new HashMap<>();
 
     public SqlParamsHandler(Map<String, Object> map, List<T> list) {
-        this.f86b = map;
+        this.map = map;
         this.f87c = list;
     }
 
@@ -62,8 +62,8 @@ public class SqlParamsHandler<T> {
         for (T t : this.f87c) {
             String m51a = m51a(t);
             String m52b = m52b(t);
-            Object obj = this.f86b.get("self_" + m51a);
-            Object obj2 = this.f86b.get(m51a);
+            Object obj = this.map.get("self_" + m51a);
+            Object obj2 = this.map.get(m51a);
             String str4 = "";
             if (oConvertUtils.isNotEmpty(obj)) {
                 str4 = obj.toString();
@@ -99,7 +99,7 @@ public class SqlParamsHandler<T> {
                 }
             } else if (oConvertUtils.isNotEmpty(str4) && (t instanceof OnlCgreportParam)) {
                 this.selfSqlParams.put(m51a, obj);
-                this.f86b.put("popup_param_pre__" + m51a, str4);
+                this.map.put("popup_param_pre__" + m51a, str4);
             }
         }
         return str;

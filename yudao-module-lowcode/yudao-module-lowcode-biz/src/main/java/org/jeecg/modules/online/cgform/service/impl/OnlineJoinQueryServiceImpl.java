@@ -310,7 +310,7 @@ public class OnlineJoinQueryServiceImpl implements IOnlineJoinQueryService {
                     String fieldExtendJson = onlCgformField.getFieldExtendJson();
                     SqlOrder sqlOrder3 = new SqlOrder(onlCgformField.getDbFieldName());
                     sqlOrder3.setAlias(str2);
-                    if (fieldExtendJson != null && !fieldExtendJson.isEmpty() && (string = JSON.parseObject(fieldExtendJson).getString(ExtendJsonKey.f128h)) != null && !string.isEmpty()) {
+                    if (fieldExtendJson != null && !fieldExtendJson.isEmpty() && (string = JSON.parseObject(fieldExtendJson).getString(ExtendJsonKey.ORDER_RULE)) != null && !string.isEmpty()) {
                         sqlOrder3.setRule(string);
                         list2.add(sqlOrder3);
                         z2 = true;

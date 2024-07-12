@@ -1,5 +1,7 @@
 package org.jeecg.modules.online.auth.service.impl;
 
+import cn.iocoder.yudao.framework.security.core.LoginUser;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -7,8 +9,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.shiro.SecurityUtils;
-import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.online.auth.entity.OnlAuthPage;
 import org.jeecg.modules.online.auth.entity.OnlAuthRelation;
 import org.jeecg.modules.online.auth.mapper.OnlAuthPageMapper;
@@ -109,7 +109,7 @@ public class OnlAuthPageServiceImpl extends ServiceImpl<OnlAuthPageMapper, OnlAu
 
     @Override // org.jeecg.modules.online.auth.service.IOnlAuthPageService
     public List<String> queryRoleNoAuthCode(String cgformId, Integer control, Integer page) {
-        return this.baseMapper.queryRoleNoAuthCode(((LoginUser) SecurityUtils.getSubject().getPrincipal()).getId(), cgformId, control, page, null);
+        return this.baseMapper.queryRoleNoAuthCode(SecurityFrameworkUtils.getLoginUserId().toString(), cgformId, control, page, null);
     }
 
     @Override // org.jeecg.modules.online.auth.service.IOnlAuthPageService
@@ -139,13 +139,13 @@ public class OnlAuthPageServiceImpl extends ServiceImpl<OnlAuthPageMapper, OnlAu
 
     @Override // org.jeecg.modules.online.auth.service.IOnlAuthPageService
     public List<String> queryHideCode(String cgformId, boolean isList) {
-        return this.baseMapper.queryRoleNoAuthCode(((LoginUser) SecurityUtils.getSubject().getPrincipal()).getId(), cgformId, 5, isList ? 3 : 5, null);
+        return this.baseMapper.queryRoleNoAuthCode(SecurityFrameworkUtils.getLoginUserId().toString(), cgformId, 5, isList ? 3 : 5, null);
     }
 
     @Override // org.jeecg.modules.online.auth.service.IOnlAuthPageService
     public List<String> queryListHideButton(String userId, String cgformId) {
         if (userId == null) {
-            userId = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getId();
+            userId = SecurityFrameworkUtils.getLoginUserId().toString();
         }
         return this.baseMapper.queryRoleNoAuthCode(userId, cgformId, 5, 3, 2);
     }

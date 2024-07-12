@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.io.Serializable;
 import java.util.Date;
-import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @TableName("onl_auth_data")
@@ -18,22 +17,22 @@ public class OnlAuthData implements Serializable {
     @TableId(type = IdType.ASSIGN_ID)
     private String id;
 
-    @Excel(name = "online表ID", width = 15.0d)
+//    @Excel(name = "online表ID", width = 15.0d)
     private String cgformId;
 
-    @Excel(name = "规则名", width = 15.0d)
+//    @Excel(name = "规则名", width = 15.0d)
     private String ruleName;
 
-    @Excel(name = "规则列", width = 15.0d)
+//    @Excel(name = "规则列", width = 15.0d)
     private String ruleColumn;
 
-    @Excel(name = "规则条件 大于小于like", width = 15.0d)
+//    @Excel(name = "规则条件 大于小于like", width = 15.0d)
     private String ruleOperator;
 
-    @Excel(name = "规则值", width = 15.0d)
+//    @Excel(name = "规则值", width = 15.0d)
     private String ruleValue;
 
-    @Excel(name = "1有效 0无效", width = 15.0d)
+//    @Excel(name = "1有效 0无效", width = 15.0d)
     private Integer status;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")

@@ -300,3 +300,9 @@ ureport:
 sys:
   user:
     init-password: Boen#@lxUfs0618 # 初始化密码
+
+lowcode:
+  firewall:
+    dataSourceSafe: true
+    # 低代码模式（dev:开发模式，prod:发布模式——关闭所有在线开发配置能力）
+    lowCodeMode: prod

@@ -24,17 +24,17 @@ public class ExtendJsonKey {
     public static final String TEXT = "text";
 
     /* renamed from: g */
-    public static final String f127g = "multiSelect";
+    public static final String MULTI_SELECT = "multiSelect";
 
     /* renamed from: h */
-    public static final String f128h = "orderRule";
+    public static final String ORDER_RULE = "orderRule";
 
     /* renamed from: i */
-    public static final String f129i = "validateError";
+    public static final String VALIDATE_ERROR = "validateError";
 
     /* renamed from: j */
-    public static final String f130j = "textField";
+    public static final String TEXT_FIELD = "textField";
 
     /* renamed from: k */
-    public static final String f131k = "showType";
+    public static final String SHOW_TYPE = "showType";
 }

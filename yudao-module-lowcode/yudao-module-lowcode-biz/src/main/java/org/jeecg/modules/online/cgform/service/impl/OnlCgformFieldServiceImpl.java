@@ -777,7 +777,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
                 if ("1".equals(onlCgformField.getSortFlag())) {
                     String fieldExtendJson = onlCgformField.getFieldExtendJson();
                     SqlOrder sqlOrder = new SqlOrder(onlCgformField.getDbFieldName());
-                    if (fieldExtendJson != null && !fieldExtendJson.isEmpty() && (string = JSON.parseObject(fieldExtendJson).getString(ExtendJsonKey.f128h)) != null && !"".equals(string)) {
+                    if (fieldExtendJson != null && !fieldExtendJson.isEmpty() && (string = JSON.parseObject(fieldExtendJson).getString(ExtendJsonKey.ORDER_RULE)) != null && !"".equals(string)) {
                         sqlOrder.setRule(string);
                         arrayList.add(sqlOrder);
                     }

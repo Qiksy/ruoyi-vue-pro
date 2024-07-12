@@ -16,13 +16,13 @@ import java.net.URLDecoder;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -470,11 +470,11 @@ public class CgformUtil {
     public static boolean m186a(OnlCgformField onlCgformField) {
         if (oConvertUtils.isNotEmpty(onlCgformField.getMainField()) && oConvertUtils.isNotEmpty(onlCgformField.getMainTable())) {
             String fieldExtendJson = onlCgformField.getFieldExtendJson();
-            if (oConvertUtils.isNotEmpty(fieldExtendJson) && fieldExtendJson.indexOf(ExtendJsonKey.f130j) > 0) {
+            if (oConvertUtils.isNotEmpty(fieldExtendJson) && fieldExtendJson.indexOf(ExtendJsonKey.TEXT_FIELD) > 0) {
                 onlCgformField.setDictTable(onlCgformField.getMainTable());
                 onlCgformField.setDictField(onlCgformField.getMainField());
                 onlCgformField.setFieldShowType("sel_search");
-                onlCgformField.setDictText(JSON.parseObject(fieldExtendJson).getString(ExtendJsonKey.f130j));
+                onlCgformField.setDictText(JSON.parseObject(fieldExtendJson).getString(ExtendJsonKey.TEXT_FIELD));
                 return true;
             }
             return false;
@@ -764,7 +764,7 @@ public class CgformUtil {
                     var c0006f = new StringProperty(dbFieldName, dbFieldTxt, fieldShowType, onlCgformField.getDbLength());
                     if (oConvertUtils.isNotEmpty(onlCgformField.getFieldValidType())) {
                         CgformValidPatternEnum patternInfoByType = CgformValidPatternEnum.getPatternInfoByType(onlCgformField.getFieldValidType());
-                        String m193a = m193a(ExtendJsonKey.f129i, onlCgformField.getFieldExtendJson());
+                        String m193a = m193a(ExtendJsonKey.VALIDATE_ERROR, onlCgformField.getFieldExtendJson());
                         if (patternInfoByType != null) {
                             if (CgformValidPatternEnum.NOTNULL == patternInfoByType) {
                                 arrayList.add(dbFieldName);
@@ -1607,7 +1607,7 @@ public class CgformUtil {
                 jSONObject2.put("message", onlCgformField.getDbFieldTxt() + "不能重复");
             } else {
                 jSONObject2.put("pattern", onlCgformField.getFieldValidType());
-                String m193a = m193a(ExtendJsonKey.f129i, onlCgformField.getFieldExtendJson());
+                String m193a = m193a(ExtendJsonKey.VALIDATE_ERROR, onlCgformField.getFieldExtendJson());
                 if (oConvertUtils.isEmpty(m193a)) {
                     jSONObject2.put("message", onlCgformField.getDbFieldTxt() + "格式不正确");
                 } else {
@@ -2041,9 +2041,12 @@ public class CgformUtil {
     }
 
     /* renamed from: a */
-    public static String m246a(String str, String str2, StringBuffer stringBuffer) {
-        String str3 = "logs" + File.separator + ((SimpleDateFormat) DateUtils.yyyyMMdd.get()).format(new Date()) + File.separator;
-        String str4 = str + File.separator + str3;
+    public static String generateLogFile(String str, String str2, StringBuffer stringBuffer) {
+        LocalDate now = LocalDate.now();
+        //now转为String
+        String nowStr = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String logPath = "logs" + File.separator + nowStr + File.separator;
+        String str4 = str + File.separator + logPath;
         File file = new File(str4);
         if (!file.exists()) {
             file.mkdirs();
@@ -2056,7 +2059,7 @@ public class CgformUtil {
             bufferedWriter.close();
         } catch (Exception e) {
         }
-        return "/sys/common/static/" + str3 + str5 + ".txt";
+        return "/sys/common/static/" + logPath + str5 + ".txt";
     }
 
     /**

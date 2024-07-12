@@ -56,6 +56,10 @@ public class CommonResult<T> implements Serializable {
         return result;
     }
 
+    public static <T> CommonResult<T> error(String message) {
+        return error(GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode(), message);
+    }
+
     public static <T> CommonResult<T> error(ErrorCode errorCode) {
         return error(errorCode.getCode(), errorCode.getMsg());
     }

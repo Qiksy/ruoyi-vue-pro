@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
-import org.jeecgframework.poi.excel.annotation.Excel;
 
 @TableName("onl_auth_relation")
 /* loaded from: hibernate-re-3.6.1-beta.jar:org/jeecg/modules/online/auth/entity/OnlAuthRelation.class */
@@ -15,13 +14,13 @@ public class OnlAuthRelation implements Serializable {
     @TableId(type = IdType.ASSIGN_ID)
     private String id;
 
-    @Excel(name = "角色id", width = 15.0d)
+//    @Excel(name = "角色id", width = 15.0d)
     private String roleId;
 
-    @Excel(name = "权限id", width = 15.0d)
+//    @Excel(name = "权限id", width = 15.0d)
     private String authId;
 
-    @Excel(name = "1字段 2按钮 3数据权限", width = 15.0d)
+//    @Excel(name = "1字段 2按钮 3数据权限", width = 15.0d)
     private Integer type;
     private String cgformId;
     private String authMode;

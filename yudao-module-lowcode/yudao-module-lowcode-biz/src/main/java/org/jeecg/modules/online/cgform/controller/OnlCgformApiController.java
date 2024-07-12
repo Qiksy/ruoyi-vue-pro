@@ -1,12 +1,19 @@
 package org.jeecg.modules.online.cgform.controller;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.RandomUtil;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.framework.redis.util.RedisUtil;
+import cn.iocoder.yudao.framework.security.core.LoginUser;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,27 +37,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.aspect.annotation.AutoLog;
-import org.jeecg.common.aspect.annotation.OnlineAuth;
-import org.jeecg.common.aspect.annotation.PermissionData;
-import org.jeecg.common.constant.enums.ModuleType;
-import org.jeecg.common.exception.JeecgBootException;
-import org.jeecg.common.system.api.ISysBaseAPI;
-import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.config.LowCodeConfig;
+import org.jeecg.common.constant.ModuleType;
 import org.jeecg.common.system.vo.DictModel;
-import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.common.util.BrowserUtils;
-import org.jeecg.common.util.RedisUtil;
-import org.jeecg.common.util.SpringContextUtils;
-import org.jeecg.common.util.SqlInjectionUtil;
-import org.jeecg.common.util.TokenUtils;
-import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.config.JeecgBaseConfig;
+import org.jeecg.modules.online.annotation.AutoLog;
+import org.jeecg.modules.online.annotation.OnlineAuth;
+import org.jeecg.modules.online.annotation.PermissionData;
 import org.jeecg.modules.online.auth.service.IOnlAuthPageService;
 import org.jeecg.modules.online.cgform.converter.ConvertUtil;
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
@@ -75,19 +70,11 @@ import org.jeecg.modules.online.cgreport.constant.CgReportConstant;
 import org.jeecg.modules.online.config.exception.BusinessException;
 import org.jeecg.modules.online.config.exception.DBException;
 import org.jeecg.modules.online.config.template.DbTableUtil;
-import org.jeecgframework.codegenerate.database.DbReadTableUtil;
-import org.jeecgframework.poi.excel.ExcelExportUtil;
-import org.jeecgframework.poi.excel.ExcelImportUtil;
-import org.jeecgframework.poi.excel.entity.ExportParams;
-import org.jeecgframework.poi.excel.entity.ImportParams;
-import org.jeecgframework.poi.excel.entity.enmus.ExcelType;
-import org.jeecgframework.poi.excel.entity.params.ExcelExportEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.support.incrementer.OracleSequenceMaxValueIncrementer;
 import org.springframework.jdbc.support.incrementer.PostgresSequenceMaxValueIncrementer;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -102,6 +89,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.thymeleaf.spring6.context.SpringContextUtils;
+
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.error;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 /* compiled from: OnlCgformApiController.java */
 @RequestMapping({"/online/cgform/api"})
@@ -129,9 +121,13 @@ public class OnlCgformApiController {
     @Autowired
     private IOnlAuthPageService onlAuthPageService;
 
-    @Autowired
-    @Lazy
-    private ISysBaseAPI sysBaseAPI;
+    @Resource
+    private DictDataApi dictDataApi;
+
+//    @Autowired
+//    @Lazy
+//    系统底层api
+//    private ISysBaseAPI sysBaseAPI;
 
     @Autowired
     private IOnlineService onlineService;
@@ -142,11 +138,11 @@ public class OnlCgformApiController {
     @Value("${jeecg.uploadType}")
     private String uploadType;
 
-    @Autowired
+    @Resource
     private RedisUtil redisUtil;
-
-    @Autowired
-    private JeecgBaseConfig jeecgBaseConfig;
+//
+    @Resource
+    private LowCodeConfig lowCodeConfig;
 
     /* renamed from: a */
     public OnlCgformApiController() {
@@ -155,24 +151,24 @@ public class OnlCgformApiController {
     @PostMapping({"/addAll"})
     @Operation(summary = "新增online在线表单")
     /* renamed from: a */
-    public Result<?> addAll(@RequestBody OnlCgformModel onlCgformModel) {
+    public CommonResult<?> addAll(@RequestBody OnlCgformModel onlCgformModel) {
         try {
             String tableName = onlCgformModel.getHead().getTableName();
             if (DbTableUtil.isTableExistsInDatabase(tableName)) {
-                return Result.error("数据库表[" + tableName + "]已存在,请从数据库导入表单");
+                return error(500,"数据库表[" + tableName + "]已存在,请从数据库导入表单");
             }
             if (onlCgformModel.getHead().getTableType() == 3) {
-                if (oConvertUtils.isEmpty(onlCgformModel.getHead().getRelationType())) {
-                    return Result.error("附表必须选择映射关系！");
+                if (onlCgformModel.getHead().getRelationType()==null) {
+                    return error(500,"附表必须选择映射关系！");
                 }
-                if (oConvertUtils.isEmpty(onlCgformModel.getHead().getTabOrderNum())) {
-                    return Result.error("附表必须填写排序序号！");
+                if (onlCgformModel.getHead().getTabOrderNum()==null) {
+                    return error(500,"附表必须填写排序序号！");
                 }
             }
             return this.onlCgformHeadService.addAll(onlCgformModel);
         } catch (Exception e) {
             logger.error("OnlCgformApiController.addAll()发生异常：" + e.getMessage(), e);
-            return Result.error("操作失败");
+            return error(500,"操作失败");
         }
     }
 
@@ -180,26 +176,26 @@ public class OnlCgformApiController {
      * 编辑索引的时候，会调用这个接口
      *
      * @param onlCgformModel 表单模型
-     * @return Result<?>
+     * @return CommonResult<?>
      */
     @PutMapping({"/editAll"})
     @CacheEvict(value = {"sys:cache:online:list", "sys:cache:online:form"}, allEntries = true, beforeInvocation = true)
     @Operation(summary = "编辑online在线表单")
     /* renamed from: b */
-    public Result<?> editAll(@RequestBody OnlCgformModel onlCgformModel) {
+    public CommonResult<?> editAll(@RequestBody OnlCgformModel onlCgformModel) {
         try {
             if (onlCgformModel.getHead().getTableType() == 3) {
-                if (oConvertUtils.isEmpty(onlCgformModel.getHead().getRelationType())) {
-                    return Result.error("附表必须选择映射关系！");
+                if (onlCgformModel.getHead().getRelationType()==null) {
+                    return error(500,"附表必须选择映射关系！");
                 }
-                if (oConvertUtils.isEmpty(onlCgformModel.getHead().getTabOrderNum())) {
-                    return Result.error("附表必须填写排序序号！");
+                if (onlCgformModel.getHead().getTabOrderNum()==null) {
+                    return error(500,"附表必须填写排序序号！");
                 }
             }
             return this.onlCgformHeadService.editAll(onlCgformModel);
         } catch (Exception e) {
             logger.error("OnlCgformApiController.editAll()发生异常：" + e.getMessage(), e);
-            return Result.error("操作失败");
+            return error("操作失败");
         }
     }
 
@@ -208,23 +204,24 @@ public class OnlCgformApiController {
     @GetMapping({"/getColumns/{code}"})
     @Operation(summary = "online表单加载所有的列")
     /* renamed from: a */
-    public Result<OnlComplexModel> getColumns(@PathVariable("code") String code, HttpServletRequest httpServletRequest) {
-        Result<OnlComplexModel> result = new Result<>();
+    public CommonResult<OnlComplexModel> getColumns(@PathVariable("code") String code, HttpServletRequest httpServletRequest) {
+        CommonResult<OnlComplexModel> result = new CommonResult<>();
         try {
             OnlCgformHead table = this.onlCgformHeadService.getTable(code);
             String parameter = httpServletRequest.getParameter(OnlineConst.LINK_TABLE_SELECT_FIELDS);
-            if (oConvertUtils.isNotEmpty(parameter)) {
+            if (StringUtils.isNotEmpty(parameter)) {
                 table.setSelectFieldString(parameter);
             }
             OnlComplexModel queryOnlineConfig = this.onlineService.queryOnlineConfig(table, ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername());
             queryOnlineConfig.setIsDesForm(table.getIsDesForm());
             queryOnlineConfig.setDesFormCode(table.getDesFormCode());
-            result.setResult(queryOnlineConfig);
-            result.setOnlTable(table.getTableName());
-            return result;
+//            result.setResult(queryOnlineConfig);
+//            result.setOnlTable(table.getTableName());
+
+            return success(queryOnlineConfig);
         } catch (DBException e) {
-            result.error500("实体不存在");
-            return result;
+
+            return error("实体不存在");
         }
     }
 
@@ -233,17 +230,16 @@ public class OnlCgformApiController {
     @GetMapping({"/getData/{code}"})
     @Operation(summary = "online表单加载数据")
     /* renamed from: b */
-    public Result<Map<String, Object>> getData(@PathVariable("code") String code, HttpServletRequest httpServletRequest) {
+    public CommonResult<Map<String, Object>> getData(@PathVariable("code") String code, HttpServletRequest httpServletRequest) {
         Map<String, Object> queryAutolistPage;
-        Result<Map<String, Object>> result = new Result<>();
+        CommonResult<Map<String, Object>> result = new CommonResult<>();
         try {
             OnlCgformHead table = this.onlCgformHeadService.getTable(code);
-            if (oConvertUtils.isEmpty(table.getPhysicId()) && "N".equals(table.getIsDbSynch())) {
-                result.error500("NO_DB_SYNC");
-                return result;
+            if (StringUtils.isEmpty(table.getPhysicId()) && "N".equals(table.getIsDbSynch())) {
+                return error("NO_DB_SYNC");
             }
             String parameter = httpServletRequest.getParameter(OnlineConst.LINK_TABLE_SELECT_FIELDS);
-            if (oConvertUtils.isNotEmpty(parameter)) {
+            if (StringUtils.isNotEmpty(parameter)) {
                 table.setSelectFieldString(parameter);
             }
             try {
@@ -254,7 +250,7 @@ public class OnlCgformApiController {
                     queryAutolistPage = this.onlCgformFieldService.queryAutolistPage(table, m190a, null);
                 }
                 m107a(table, queryAutolistPage);
-                result.setResult(queryAutolistPage);
+                return success(queryAutolistPage);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 result.error500("数据库查询失败，" + e.getMessage());
@@ -275,13 +271,13 @@ public class OnlCgformApiController {
             也获取了新增时候的那个form的schema
             """)
     /* renamed from: c */
-    public Result<?> getFormItem(@PathVariable("code") String code, HttpServletRequest httpServletRequest) {
+    public CommonResult<?> getFormItem(@PathVariable("code") String code, HttpServletRequest httpServletRequest) {
         try {
             OnlCgformHead table = this.onlCgformHeadService.getTable(code);
-            Result<JSONObject> result = new Result<>();
+            CommonResult<JSONObject> result = new CommonResult<>();
             LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
             String parameter = httpServletRequest.getParameter("selectFields");
-            if (oConvertUtils.isNotEmpty(parameter)) {
+            if (StringUtils.isNotEmpty(parameter)) {
                 //todo 这里分割参数之后，没有使用
                 List<String> parameterList = Arrays.asList(parameter.split(CgformUtil.COMMA_SEPARATOR));
             }
@@ -290,7 +286,7 @@ public class OnlCgformApiController {
             result.setOnlTable(table.getTableName());
             return result;
         } catch (DBException e) {
-            return Result.error("表不存在");
+            return error("表不存在");
         }
     }
 
@@ -298,8 +294,8 @@ public class OnlCgformApiController {
     @GetMapping({"/getFormItemBytbname/{table}"})
     /* renamed from: a */
     @Operation(summary = "根据表名加载表单")
-    public Result<?> getFormItemBytbname(@PathVariable("table") String str, @RequestParam(name = "taskId", required = false) String str2) {
-        Result<JSONObject> result = new Result<>();
+    public CommonResult<?> getFormItemBytbname(@PathVariable("table") String str, @RequestParam(name = "taskId", required = false) String str2) {
+        CommonResult<JSONObject> result = new CommonResult<>();
         LambdaQueryWrapper<OnlCgformHead> lambdaQueryWrapper = new LambdaQueryWrapper<OnlCgformHead>();
         lambdaQueryWrapper.eq(OnlCgformHead::getTableName, str);
         OnlCgformHead onlCgformHead = this.onlCgformHeadService.getOne(lambdaQueryWrapper);
@@ -315,21 +311,21 @@ public class OnlCgformApiController {
     @GetMapping({"/getEnhanceJs/{code}"})
     /* renamed from: d */
     @Operation(summary = "获取增强js")
-    public Result<?> getEnhanceJs(@PathVariable("code") String code, HttpServletRequest httpServletRequest) {
-        return Result.ok(this.onlineService.queryEnahcneJsString(code, CgformUtil.FORM));
+    public CommonResult<?> getEnhanceJs(@PathVariable("code") String code, HttpServletRequest httpServletRequest) {
+        return success(this.onlineService.queryEnahcneJsString(code, CgformUtil.FORM));
     }
 
     @AutoLog(operateType = 1, value = "online表单数据查询")
     @GetMapping({"/form/{code}/{id}"})
     @Operation(summary = "online表单数据查询")
     /* renamed from: b */
-    public Result<?> getFormInfo(@PathVariable("code") String code, @PathVariable("id") String id) {
+    public CommonResult<?> getFormInfo(@PathVariable("code") String code, @PathVariable("id") String id) {
         try {
             SqlInjectionUtil.filterContent(id, CgformUtil.SINGLE_QUOTE);
-            return Result.ok(CgformUtil.m224a(this.onlCgformHeadService.queryManyFormData(code, id)));
+            return success(CgformUtil.m224a(this.onlCgformHeadService.queryManyFormData(code, id)));
         } catch (Exception e) {
             logger.error("Online表单查询异常：" + e.getMessage(), e);
-            return Result.error("查询失败，" + e.getMessage());
+            return error("查询失败，" + e.getMessage());
         }
     }
 
@@ -337,43 +333,43 @@ public class OnlCgformApiController {
     @GetMapping({"/detail/{code}/{id}"})
     @Operation(summary = "online表单数据查询")
     /* renamed from: c */
-    public Result<?> getFormDetail(@PathVariable("code") String code, @PathVariable("id") String id) {
+    public CommonResult<?> getFormDetail(@PathVariable("code") String code, @PathVariable("id") String id) {
         try {
             SqlInjectionUtil.filterContent(id, CgformUtil.SINGLE_QUOTE);
             Map<String, Object> queryManyFormData = this.onlCgformHeadService.queryManyFormData(code, id);
             ArrayList<Map<String, Object>> arrayList = new ArrayList<>();
             arrayList.add(CgformUtil.m224a(queryManyFormData));
             this.onlCgformFieldService.handleLinkTableDictData(this.onlCgformHeadService.getTable(code).getId(), arrayList);
-            return Result.ok((Map) arrayList.get(0));
+            return success((Map) arrayList.get(0));
         } catch (Exception e) {
             logger.error("Online表单查询异常：" + e.getMessage(), e);
-            return Result.error("查询失败，" + e.getMessage());
+            return error("查询失败，" + e.getMessage());
         }
     }
 
     @GetMapping({"/subform/{table}/{mainId}"})
     @Operation(summary = "online根据表名查询子表单数据")
     /* renamed from: d */
-    public Result<?> getSubformInfo(@PathVariable("table") String str, @PathVariable("mainId") String str2) {
+    public CommonResult<?> getSubformInfo(@PathVariable("table") String str, @PathVariable("mainId") String str2) {
         try {
             SqlInjectionUtil.filterContent(str2, CgformUtil.SINGLE_QUOTE);
-            return Result.ok(CgformUtil.m224a(this.onlCgformHeadService.querySubFormData(str, str2)));
+            return success(CgformUtil.m224a(this.onlCgformHeadService.querySubFormData(str, str2)));
         } catch (Exception e) {
             logger.error("Online表单查询异常：" + e.getMessage(), e);
-            return Result.error("查询失败，" + e.getMessage());
+            return error("查询失败，" + e.getMessage());
         }
     }
 
     @GetMapping({"/subform/list/{table}/{mainId}"})
     @Operation(summary = "online根据表名查询子表单数据")
     /* renamed from: e */
-    public Result<?> getSubformDetail(@PathVariable("table") String table, @PathVariable("mainId") String mainId) {
+    public CommonResult<?> getSubformDetail(@PathVariable("table") String table, @PathVariable("mainId") String mainId) {
         try {
             SqlInjectionUtil.filterContent(mainId, CgformUtil.SINGLE_QUOTE);
-            return Result.ok(this.onlCgformHeadService.queryManySubFormData(table, mainId));
+            return success(this.onlCgformHeadService.queryManySubFormData(table, mainId));
         } catch (Exception e) {
             logger.error("Online表单查询异常：" + e.getMessage(), e);
-            return Result.error("查询失败，" + e.getMessage());
+            return error("查询失败，" + e.getMessage());
         }
     }
 
@@ -381,7 +377,7 @@ public class OnlCgformApiController {
     @GetMapping({"/form/table_name/{tableName}/{dataId}"})
     @Operation(summary = "online根据表名查询表单数据")
     /* renamed from: f */
-    public Result<?> getFormDataByTableName(@PathVariable("tableName") String tableName, @PathVariable("dataId") String dataId) {
+    public CommonResult<?> getFormDataByTableName(@PathVariable("tableName") String tableName, @PathVariable("dataId") String dataId) {
         try {
             LambdaQueryWrapper<OnlCgformHead> lambdaQueryWrapper = new LambdaQueryWrapper();
             lambdaQueryWrapper.eq((v0) -> {
@@ -392,12 +388,12 @@ public class OnlCgformApiController {
                 throw new Exception("OnlCgform tableName: " + tableName + " 不存在！");
             }
             SqlInjectionUtil.filterContent(dataId, CgformUtil.SINGLE_QUOTE);
-            Result<?> m84b = getFormInfo(onlCgformHead.getId(), dataId);
+            CommonResult<?> m84b = getFormInfo(onlCgformHead.getId(), dataId);
             m84b.setOnlTable(tableName);
             return m84b;
         } catch (Exception e) {
             logger.error("Online表单查询异常，" + e.getMessage(), e);
-            return Result.error("查询失败，" + e.getMessage());
+            return error("查询失败，" + e.getMessage());
         }
     }
 
@@ -407,8 +403,8 @@ public class OnlCgformApiController {
     @CacheEvict(value = {OnlineConst.CACHE_ONLINE_LINK_TABLE}, allEntries = true)
     @Operation(summary = "online表单新增数据新增数据")
     /* renamed from: a */
-    public Result<String> createDataByCode(@PathVariable("code") String code, @RequestBody JSONObject jSONObject, HttpServletRequest httpServletRequest) {
-        Result<String> result = new Result<>();
+    public CommonResult<String> createDataByCode(@PathVariable("code") String code, @RequestBody JSONObject jSONObject, HttpServletRequest httpServletRequest) {
+        CommonResult<String> result = new CommonResult<>();
         try {
             String id = CgformUtil.nextId();
             jSONObject.put("id", id);
@@ -431,15 +427,15 @@ public class OnlCgformApiController {
     @CacheEvict(value = {OnlineConst.CACHE_ONLINE_LINK_TABLE}, allEntries = true)
     @Operation(summary = "online表单修改数据")
     /* renamed from: a */
-    public Result<?> m90a(@PathVariable("code") String str, @RequestBody JSONObject jSONObject) {
+    public CommonResult<?> m90a(@PathVariable("code") String str, @RequestBody JSONObject jSONObject) {
         try {
             String editManyFormData = this.onlCgformHeadService.editManyFormData(str, jSONObject);
-            Result<?> ok = Result.ok("修改成功！");
+            CommonResult<?> ok = Result.ok("修改成功！");
             ok.setOnlTable(editManyFormData);
             return ok;
         } catch (Exception e) {
             logger.error("OnlCgformApiController.formEdit()发生异常：" + e.getMessage(), e);
-            return Result.error("修改失败，" + CgformUtil.m241a(e));
+            return error("修改失败，" + CgformUtil.m241a(e));
         }
     }
 
@@ -448,10 +444,10 @@ public class OnlCgformApiController {
     @AutoLog(operateType = 4, value = "online删除数据", module = ModuleType.ONLINE)
     @Operation(summary = "online表单删除数据")
     /* renamed from: g */
-    public Result<?> m91g(@PathVariable("code") String str, @PathVariable("id") String str2) {
+    public CommonResult<?> m91g(@PathVariable("code") String str, @PathVariable("id") String str2) {
         OnlCgformHead onlCgformHead = (OnlCgformHead) this.onlCgformHeadService.getById(str);
         if (onlCgformHead == null) {
-            return Result.error("实体不存在");
+            return error("实体不存在");
         }
         try {
             String str3 = "";
@@ -475,12 +471,12 @@ public class OnlCgformApiController {
             } else {
                 this.onlCgformHeadService.deleteOneTableInfo(str, str2);
             }
-            Result<?> ok = Result.ok("删除成功!");
+            CommonResult<?> ok = Result.ok("删除成功!");
             ok.setOnlTable(onlCgformHead.getTableName());
             return ok;
         } catch (Exception e) {
             logger.error("OnlCgformApiController.formEdit()发生异常：" + e.getMessage(), e);
-            return Result.error("删除失败," + e.getMessage());
+            return error("删除失败," + e.getMessage());
         }
     }
 
@@ -488,14 +484,14 @@ public class OnlCgformApiController {
     @AutoLog(operateType = 4, value = "online删除数据", module = ModuleType.ONLINE)
     @Operation(summary = "online表单删除数据")
     /* renamed from: h */
-    public Result<?> m92h(@PathVariable("code") String str, @PathVariable("id") String str2) {
+    public CommonResult<?> m92h(@PathVariable("code") String str, @PathVariable("id") String str2) {
         try {
             String deleteDataByCode = this.onlCgformHeadService.deleteDataByCode(str, str2);
-            Result<?> OK = Result.OK("删除成功!", deleteDataByCode);
+            CommonResult<?> OK = Result.OK("删除成功!", deleteDataByCode);
             OK.setOnlTable(deleteDataByCode);
             return OK;
         } catch (JeecgBootException e) {
-            return Result.error(e.getMessage());
+            return error(e.getMessage());
         }
     }
 
@@ -503,24 +499,24 @@ public class OnlCgformApiController {
     @GetMapping({"/getQueryInfo/{code}"})
     @Operation(summary = "获取查询信息")
     /* renamed from: a */
-    public Result<?> m93a(@PathVariable("code") String str) {
+    public CommonResult<?> m93a(@PathVariable("code") String str) {
         try {
-            return Result.ok(this.onlCgformFieldService.getAutoListQueryInfo(str));
+            return success(this.onlCgformFieldService.getAutoListQueryInfo(str));
         } catch (Exception e) {
             logger.error("OnlCgformApiController.getQueryInfo()发生异常：" + e.getMessage(), e);
-            return Result.error("查询失败");
+            return error("查询失败");
         }
     }
 
     @GetMapping({"/getQueryInfoVue3/{code}"})
     @Operation(summary = "获取查询信息")
     /* renamed from: b */
-    public Result<?> getQueryInfoVue3(@PathVariable("code") String str) {
+    public CommonResult<?> getQueryInfoVue3(@PathVariable("code") String str) {
         try {
-            return Result.ok(this.onlineService.getOnlineVue3QueryInfo(str));
+            return success(this.onlineService.getOnlineVue3QueryInfo(str));
         } catch (Exception e) {
             logger.error("OnlCgformApiController.getQueryInfoVue3()发生异常：" + e.getMessage(), e);
-            return Result.error("查询失败");
+            return error("查询失败");
         }
     }
 
@@ -528,14 +524,14 @@ public class OnlCgformApiController {
     @RequiresPermissions({"online:form:syncDb"})
     @Operation(summary = "同步数据库")
     /* renamed from: i */
-    public Result<?> m95i(@PathVariable("code") String code, @PathVariable("synMethod") String synMethod) {
+    public CommonResult<?> m95i(@PathVariable("code") String code, @PathVariable("synMethod") String synMethod) {
         try {
             System.currentTimeMillis();
             this.onlCgformHeadService.doDbSynch(code, synMethod);
-            return Result.ok("同步数据库成功!");
+            return success("同步数据库成功!");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return Result.error("同步数据库失败，" + CgformUtil.m241a(e));
+            return error("同步数据库失败，" + CgformUtil.m241a(e));
         }
     }
 
@@ -552,7 +548,7 @@ public class OnlCgformApiController {
         String tableTxt = onlCgformHead.getTableTxt();
         String parameter = httpServletRequest.getParameter("paramsStr");
         HashMap<String, Object> hashMap = new HashMap<>(5);
-        if (oConvertUtils.isNotEmpty(parameter)) {
+        if (StringUtils.isNotEmpty(parameter)) {
             hashMap = (HashMap<String, Object>) JSONObject.parseObject(parameter, Map.class);
         }
         XSSFWorkbook handleOnlineExport = this.onlineJoinQueryService.handleOnlineExport(onlCgformHead, hashMap);
@@ -612,7 +608,7 @@ public class OnlCgformApiController {
         String tableTxt = onlCgformHead.getTableTxt();
         String parameter = httpServletRequest.getParameter("paramsStr");
         HashMap<String, Object> hashMap = new HashMap<>(5);
-        if (oConvertUtils.isNotEmpty(parameter)) {
+        if (StringUtils.isNotEmpty(parameter)) {
             TypeReference<HashMap<String, Object>> typeReference = new TypeReference<>() {
             };
             hashMap = JSONObject.parseObject(parameter, typeReference);
@@ -623,7 +619,7 @@ public class OnlCgformApiController {
         List<Map<String, Object>> list2 = (List<Map<String, Object>>) pageList.get("records");
         List<Map<String, Object>> arrayList;
         String obj = hashMap.get("selections") == null ? null : hashMap.get("selections").toString();
-        if (oConvertUtils.isNotEmpty(obj)) {
+        if (StringUtils.isNotEmpty(obj)) {
             List<String> m255h = CgformUtil.m255h(obj);
             arrayList = list2.stream().filter(map -> m255h.contains(map.get("id"))).collect(Collectors.toList());
         } else {
@@ -639,9 +635,9 @@ public class OnlCgformApiController {
             logger.error("导出java增强处理出错{}", e.getMessage());
         }
         List<ExcelExportEntity> m257b = CgformUtil.m257b((List<OnlCgformField>) list, "id", this.upLoadPath);
-        if (onlCgformHead.getTableType() == 2 && oConvertUtils.isEmpty(hashMap.get(CgformUtil.f251at))) {
+        if (onlCgformHead.getTableType() == 2 && StringUtils.isEmpty(hashMap.get(CgformUtil.f251at))) {
             String subTableStr = onlCgformHead.getSubTableStr();
-            if (oConvertUtils.isNotEmpty(subTableStr)) {
+            if (StringUtils.isNotEmpty(subTableStr)) {
                 for (String str2 : subTableStr.split(CgformUtil.COMMA_SEPARATOR)) {
                     this.onlineJoinQueryService.addAllSubTableDate(str2, hashMap, arrayList, m257b, false);
                 }
@@ -697,10 +693,10 @@ public class OnlCgformApiController {
     @PostMapping({"/importXls/{code}"})
     @Operation(summary = "导入excel")
     /* renamed from: c */
-    public Result<?> importXls(@PathVariable("code") String str, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
+    public CommonResult<?> importXls(@PathVariable("code") String str, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
         OnlCgformHead onlCgformHead = null;
         System.currentTimeMillis();
-        Result<String> result = new Result<>();
+        CommonResult<String> result = new CommonResult<>();
         String str2 = "";
         String parameter = httpServletRequest.getParameter(CgformUtil.f253av);
         StringBuffer stringBuffer = new StringBuffer();
@@ -712,14 +708,14 @@ public class OnlCgformApiController {
             logger.error(e.getMessage(), e);
         }
         if (onlCgformHead == null) {
-            return Result.error("数据库不存在该表记录");
+            return error("数据库不存在该表记录");
         }
         LambdaQueryWrapper<OnlCgformField> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(OnlCgformField::getCgformHeadId, str);
         List<OnlCgformField> list = this.onlCgformFieldService.list(lambdaQueryWrapper);
         String parameter2 = httpServletRequest.getParameter(CgformUtil.f252au);
         List<String> m238e = CgformUtil.m238e(list);
-        if (oConvertUtils.isEmpty(parameter2) && onlCgformHead.getTableType().intValue() == 2 && oConvertUtils.isNotEmpty(onlCgformHead.getSubTableStr())) {
+        if (StringUtils.isEmpty(parameter2) && onlCgformHead.getTableType().intValue() == 2 && StringUtils.isNotEmpty(onlCgformHead.getSubTableStr())) {
             for (String str3 : onlCgformHead.getSubTableStr().split(CgformUtil.COMMA_SEPARATOR)) {
                 OnlCgformHead onlCgformHead2 = this.onlCgformHeadService.getOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, str3));
                 if (onlCgformHead2 != null) {
@@ -732,7 +728,7 @@ public class OnlCgformApiController {
         }
         JSONObject jSONObject = null;
         String parameter3 = httpServletRequest.getParameter(CgformUtil.f255ax);
-        if (oConvertUtils.isNotEmpty(parameter3)) {
+        if (StringUtils.isNotEmpty(parameter3)) {
             jSONObject = JSONObject.parseObject(parameter3);
         }
         Map<String, MultipartFile> fileMap = ((MultipartHttpServletRequest) httpServletRequest).getFileMap();
@@ -750,7 +746,7 @@ public class OnlCgformApiController {
                 logger.error(str2);
             } else {
                 if (CgformConstant.f333a.equals(onlCgformHead.getTableType()) && onlCgformHead.getRelationType().intValue() == 1 && importExcel.size() > 1) {
-                    return Result.error("一对一的表只能导入一条数据!");
+                    return error("一对一的表只能导入一条数据!");
                 }
                 Object obj = "";
                 ArrayList<Map<String, Object>> arrayList = new ArrayList<>();
@@ -760,7 +756,7 @@ public class OnlCgformApiController {
                     HashMap<String, Object> hashMap = new HashMap<>(5);
                     for (String str4 : keySet) {
                         if (!str4.contains("$subTable$")) {
-                            if (str4.contains("$mainTable$") && oConvertUtils.isNotEmpty(map.get(str4).toString())) {
+                            if (str4.contains("$mainTable$") && StringUtils.isNotEmpty(map.get(str4).toString())) {
                                 z = true;
                                 obj = m100a(onlCgformHead, dataSource, m490a);
                             }
@@ -768,10 +764,10 @@ public class OnlCgformApiController {
                         }
                     }
                     if ("Y".equals(onlCgformHead.getIsTree())) {
-                        if (oConvertUtils.isEmpty(hashMap.get(onlCgformHead.getTreeParentIdField()))) {
+                        if (StringUtils.isEmpty(hashMap.get(onlCgformHead.getTreeParentIdField()))) {
                             hashMap.put(onlCgformHead.getTreeParentIdField(), "0");
                         }
-                        if (oConvertUtils.isEmpty(hashMap.get(onlCgformHead.getTreeIdField()))) {
+                        if (StringUtils.isEmpty(hashMap.get(onlCgformHead.getTreeIdField()))) {
                             hashMap.put(onlCgformHead.getTreeIdField(), "0");
                         }
                     }
@@ -789,9 +785,7 @@ public class OnlCgformApiController {
                     map.put("$mainTable$id", obj);
                 }
                 if (arrayList.isEmpty()) {
-                    result.setSuccess(false);
-                    result.setMessage("导入失败，匹配的数据条数为零!");
-                    return result;
+                    return error("导入失败，匹配的数据条数为零!");
                 }
                 if ("1".equals(parameter)) {
                     Map<String, String> saveOnlineImportDataWithValidate = this.onlCgformSqlService.saveOnlineImportDataWithValidate(onlCgformHead, list, arrayList);
@@ -803,7 +797,7 @@ public class OnlCgformApiController {
                 } else {
                     this.onlCgformSqlService.saveBatchOnlineTable(onlCgformHead, list, arrayList);
                 }
-                if (oConvertUtils.isEmpty(parameter2) && onlCgformHead.getTableType() == 2 && oConvertUtils.isNotEmpty(onlCgformHead.getSubTableStr())) {
+                if (StringUtils.isEmpty(parameter2) && onlCgformHead.getTableType() == 2 && StringUtils.isNotEmpty(onlCgformHead.getSubTableStr())) {
                     for (String str7 : onlCgformHead.getSubTableStr().split(CgformUtil.COMMA_SEPARATOR)) {
                         OnlCgformHead onlCgformHead3 = this.onlCgformHeadService.getOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, str7));
                         if (onlCgformHead3 != null) {
@@ -818,13 +812,13 @@ public class OnlCgformApiController {
                                 for (OnlCgformField onlCgformField : list2) {
                                     String mainTable = onlCgformField.getMainTable();
                                     String mainField = onlCgformField.getMainField();
-                                    boolean z3 = onlCgformHead.getTableName().equals(mainTable) && oConvertUtils.isNotEmpty(mainField);
+                                    boolean z3 = onlCgformHead.getTableName().equals(mainTable) && StringUtils.isNotEmpty(mainField);
                                     String str8 = tableTxt + "_" + onlCgformField.getDbFieldTxt();
                                     if (z3) {
                                         hashMap2.put(onlCgformField.getDbFieldName(), map2.get("$mainTable$" + mainField));
                                     }
                                     Object obj2 = map2.get("$subTable$" + str8);
-                                    if (null != obj2 && oConvertUtils.isNotEmpty(obj2.toString())) {
+                                    if (null != obj2 && StringUtils.isNotEmpty(obj2.toString())) {
                                         z2 = true;
                                         hashMap2.put(onlCgformField.getDbFieldName(), obj2);
                                     }
@@ -851,13 +845,16 @@ public class OnlCgformApiController {
                 }
             }
         }
-        result.setSuccess(true);
+//        result.setSuccess(true);
         if ("1".equals(parameter) && !stringBuffer.isEmpty()) {
-            result.setResult(CgformUtil.m246a(this.upLoadPath, onlCgformHead.getTableTxt(), stringBuffer));
-            result.setMessage(str2);
+            String logPath = CgformUtil.generateLogFile(this.upLoadPath, onlCgformHead.getTableTxt(), stringBuffer);
             result.setCode(201);
+//            导入失败，生成日志
+            String message = String.format("导入失败：{}，详情请查看日志文件：{}", str2, logPath);
+            return error(201,message);
         } else {
-            result.setMessage("导入成功!");
+            return success("导入成功!");
+//            result.setMessage("导入成功!");
         }
         return result;
     }
@@ -865,17 +862,17 @@ public class OnlCgformApiController {
     @PostMapping({"/doButton"})
     @Operation(summary = "执行按钮")
     /* renamed from: a */
-    public Result<?> createDoButton(@RequestBody JSONObject jSONObject) {
+    public CommonResult<?> createDoButton(@RequestBody JSONObject jSONObject) {
         String string = jSONObject.getString("formId");
         String string2 = jSONObject.getString("dataId");
         String string3 = jSONObject.getString("buttonCode");
         jSONObject.getJSONObject("uiFormData");
         try {
             this.onlCgformHeadService.executeCustomerButton(string3, string, string2);
-            return Result.ok("执行成功!");
+            return success("执行成功!");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return Result.error("执行失败," + e.getMessage());
+            return error("执行失败," + e.getMessage());
         }
     }
 
@@ -884,16 +881,16 @@ public class OnlCgformApiController {
         Object obj = null;
         String idType = onlCgformHead.getIdType();
         String idSequence = onlCgformHead.getIdSequence();
-        if (oConvertUtils.isNotEmpty(idType) && "UUID".equalsIgnoreCase(idType)) {
+        if (StringUtils.isNotEmpty(idType) && "UUID".equalsIgnoreCase(idType)) {
             obj = CgformUtil.nextId();
-        } else if (oConvertUtils.isNotEmpty(idType) && "NATIVE".equalsIgnoreCase(idType)) {
-            if (oConvertUtils.isNotEmpty(str) && "oracle".equalsIgnoreCase(str)) {
+        } else if (StringUtils.isNotEmpty(idType) && "NATIVE".equalsIgnoreCase(idType)) {
+            if (StringUtils.isNotEmpty(str) && "oracle".equalsIgnoreCase(str)) {
                 try {
                     obj = new OracleSequenceMaxValueIncrementer(dataSource, "HIBERNATE_SEQUENCE").nextLongValue();
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                 }
-            } else if (oConvertUtils.isNotEmpty(str) && "postgres".equalsIgnoreCase(str)) {
+            } else if (StringUtils.isNotEmpty(str) && "postgres".equalsIgnoreCase(str)) {
                 try {
                     obj = new PostgresSequenceMaxValueIncrementer(dataSource, "HIBERNATE_SEQUENCE").nextLongValue();
                 } catch (Exception e2) {
@@ -902,14 +899,14 @@ public class OnlCgformApiController {
             } else {
                 obj = null;
             }
-        } else if (oConvertUtils.isNotEmpty(idType) && "SEQUENCE".equalsIgnoreCase(idType)) {
-            if (oConvertUtils.isNotEmpty(str) && "oracle".equalsIgnoreCase(str)) {
+        } else if (StringUtils.isNotEmpty(idType) && "SEQUENCE".equalsIgnoreCase(idType)) {
+            if (StringUtils.isNotEmpty(str) && "oracle".equalsIgnoreCase(str)) {
                 try {
                     obj = new OracleSequenceMaxValueIncrementer(dataSource, idSequence).nextLongValue();
                 } catch (Exception e3) {
                     logger.error(e3.getMessage(), e3);
                 }
-            } else if (oConvertUtils.isNotEmpty(str) && "postgres".equalsIgnoreCase(str)) {
+            } else if (StringUtils.isNotEmpty(str) && "postgres".equalsIgnoreCase(str)) {
                 try {
                     obj = new PostgresSequenceMaxValueIncrementer(dataSource, idSequence).nextLongValue();
                 } catch (Exception e4) {
@@ -924,20 +921,25 @@ public class OnlCgformApiController {
         return obj;
     }
 
-    /* renamed from: a */
-    private void m101a(Map<String, Object> map, List<OnlCgformField> list) {
-        List<DictModel> queryTableDictItemsByCode;
+    /**
+     * 填充字典数据
+     * 暂时弃用
+     * @param map
+     * @param list
+     */
+    private void fillDictData(Map<String, Object> map, List<OnlCgformField> list) {
+        List<DictModel> queryTableDictItemsByCode = new ArrayList<>();
         for (OnlCgformField onlCgformField : list) {
             String dictTable = onlCgformField.getDictTable();
             String dictField = onlCgformField.getDictField();
             String dictText = onlCgformField.getDictText();
-            if (!oConvertUtils.isEmpty(dictTable) || !oConvertUtils.isEmpty(dictField)) {
+            if (!StringUtils.isEmpty(dictTable) || !StringUtils.isEmpty(dictField)) {
                 if (!CgformUtil.f218M.equals(onlCgformField.getFieldShowType())) {
                     String valueOf = String.valueOf(map.get(onlCgformField.getDbFieldName()));
-                    if (oConvertUtils.isEmpty(dictTable)) {
-                        queryTableDictItemsByCode = this.sysBaseAPI.queryDictItemsByCode(dictField);
+                    if (StringUtils.isEmpty(dictTable)) {
+//                        queryTableDictItemsByCode = this.sysBaseAPI.queryDictItemsByCode(dictField);
                     } else {
-                        queryTableDictItemsByCode = this.sysBaseAPI.queryTableDictItemsByCode(dictTable, dictText, dictField);
+//                        queryTableDictItemsByCode = this.sysBaseAPI.queryTableDictItemsByCode(dictTable, dictText, dictField);
                     }
                     for (DictModel dictModel : queryTableDictItemsByCode) {
                         if (valueOf.equals(dictModel.getText())) {
@@ -952,44 +954,44 @@ public class OnlCgformApiController {
     @GetMapping({"/checkOnlyTable"})
     @Operation(summary = "校验表是否存在")
     /* renamed from: j */
-    public Result<?> checkOnlyTable(@RequestParam("tbname") String str, @RequestParam("id") String str2) {
-        if (oConvertUtils.isEmpty(str2)) {
+    public CommonResult<?> checkOnlyTable(@RequestParam("tbname") String str, @RequestParam("id") String str2) {
+        if (StringUtils.isEmpty(str2)) {
             if (DbTableUtil.isTableExistsInDatabase(str).booleanValue()) {
-                return Result.ok(-1);
+                return success(-1);
             }
-            if (oConvertUtils.isNotEmpty((OnlCgformHead) this.onlCgformHeadService.getOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, str)))) {
-                return Result.ok(-1);
+            if (this.onlCgformHeadService.getOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, str))!=null) {
+                return success(-1);
             }
         } else if (!str.equals(((OnlCgformHead) this.onlCgformHeadService.getById(str2)).getTableName()) && DbTableUtil.isTableExistsInDatabase(str).booleanValue()) {
-            return Result.ok(-1);
+            return success(-1);
         }
-        return Result.ok(1);
+        return success(1);
     }
 
     @PostMapping({"/codeGenerate"})
     @Operation(summary = "代码生成")
     /* renamed from: b */
-    public Result<?> codeGenerate(@RequestBody JSONObject jSONObject) {
+    public CommonResult<?> codeGenerate(@RequestBody JSONObject jSONObject) {
         List<String> generateOneToMany;
         OnlGenerateModel onlGenerateModel = (OnlGenerateModel) JSONObject.parseObject(jSONObject.toJSONString(), OnlGenerateModel.class);
-        if ((this.jeecgBaseConfig.getFirewall() != null ? this.jeecgBaseConfig.getFirewall().getDataSourceSafe() : false) && !DbReadTableUtil.getProjectPath().equals(onlGenerateModel.getProjectPath())) {
-            onlGenerateModel.setProjectPath(DbReadTableUtil.getProjectPath());
-            logger.warn("数据源安全模式下，自定义代码生成路径无效，使用全局配置的路径 ::{}", DbReadTableUtil.getProjectPath());
-        }
+//        if ((this.lowCodeConfig.getFirewall() != null ? this.lowCodeConfig.getFirewall().getDataSourceSafe() : false)
+//                && !DbReadTableUtil.getProjectPath().equals(onlGenerateModel.getProjectPath())) {
+//            onlGenerateModel.setProjectPath(DbReadTableUtil.getProjectPath());
+//            logger.warn("数据源安全模式下，自定义代码生成路径无效，使用全局配置的路径 ::{}", DbReadTableUtil.getProjectPath());
+//        }
+        //todo 数据源安全模式下，自定义代码生成路径无效，使用全局配置的路径
         try {
             if ("1".equals(onlGenerateModel.getJformType())) {
                 generateOneToMany = this.onlCgformHeadService.generateCode(onlGenerateModel);
             } else {
                 generateOneToMany = this.onlCgformHeadService.generateOneToMany(onlGenerateModel);
             }
-            String str = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername() + onlGenerateModel.getTableName() + oConvertUtils.randomGen(16);
-            Result<?> ok = Result.ok(generateOneToMany);
+            String str = (SecurityFrameworkUtils.getUserName() + onlGenerateModel.getTableName() + RandomUtil.randomString(16));
             this.redisUtil.set(str, onlGenerateModel.getProjectPath().replaceAll("\\\\", "/"), 1800L);
-            ok.setMessage(str);
-            return ok;
+            return success(str);
         } catch (Exception e) {
             e.printStackTrace();
-            return Result.error(e.getMessage());
+            throw exception(e.getMessage());
         }
     }
 
@@ -1006,13 +1008,11 @@ public class OnlCgformApiController {
         Object obj = this.redisUtil.get(pathKey);
         if (obj == null) {
             logger.error("路径失效，请重新操作!");
-            JwtUtil.responseError(httpServletResponse, 500, "路径失效，请重新操作!");
-            return;
+            throw exception("路径失效，请重新操作!");
         }
         if (!str3.replaceAll("\\\\", "/").contains(obj.toString())) {
             logger.error("非法的请求路径，请重新操作!");
-            JwtUtil.responseError(httpServletResponse, 500, "非法的请求路径，请重新操作!");
-            return;
+            throw exception("非法的请求路径，请重新操作!");
         }
         String substring = str3.substring(str3.lastIndexOf("/") + 1);
         File file = new File(str3);
@@ -1086,7 +1086,7 @@ public class OnlCgformApiController {
     /* renamed from: a */
     public void downGenerateCode(@RequestBody JSONObject jSONObject, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         String string = jSONObject.getString("fileList");
-        String string2 = jSONObject.getString("pathKey");
+        String pathKey = jSONObject.getString("pathKey");
         string = URLDecoder.decode(string, StandardCharsets.UTF_8);
         ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(string.split(CgformUtil.COMMA_SEPARATOR)));
 
@@ -1098,18 +1098,16 @@ public class OnlCgformApiController {
             return;
         }
 
-        Object obj = this.redisUtil.get(string2);
+        Object obj = this.redisUtil.get(pathKey);
         if (obj == null) {
             logger.error("路径失效，请重新操作!");
-            JwtUtil.responseError(httpServletResponse, 500, "路径失效，请重新操作!");
-            return;
+            throw exception("路径失效，请重新操作!");
         }
         String obj2 = obj.toString();
         for (String s : arrayList) {
             if (!s.replaceAll("\\\\", "/").contains(obj2)) {
                 logger.error("非法的请求路径，请重新操作!");
-                JwtUtil.responseError(httpServletResponse, 500, "非法的请求路径，请重新操作!");
-                return;
+                throw exception("非法的请求路径，请重新操作!");
             }
         }
         String str3 = "生成代码_" + System.currentTimeMillis() + ".zip";
@@ -1219,12 +1217,12 @@ public class OnlCgformApiController {
     @PermissionData
     @Operation(summary = "树表数据加载")
     /* renamed from: e */
-    public Result<Map<String, Object>> getTreeDatatByCode(@PathVariable("code") String code, HttpServletRequest httpServletRequest) {
-        Result<Map<String, Object>> result = new Result<>();
+    public CommonResult<Map<String, Object>> getTreeDatatByCode(@PathVariable("code") String code, HttpServletRequest httpServletRequest) {
+        CommonResult<Map<String, Object>> result = new CommonResult<>();
         OnlCgformHead onlCgformHead = this.onlCgformHeadService.getById(code);
         if (onlCgformHead == null) {
-            result.error500("实体不存在");
-            return result;
+
+            return error("实体不存在");
         }
         try {
             String tableName = onlCgformHead.getTableName();
@@ -1244,13 +1242,11 @@ public class OnlCgformApiController {
             m190a.put(treeIdField, null);
             Map<String, Object> queryAutoTreeNoPage = this.onlCgformFieldService.queryAutoTreeNoPage(tableName, code, m190a, newArrayList, treeParentIdField);
             m107a(onlCgformHead, queryAutoTreeNoPage);
-            result.setResult(queryAutoTreeNoPage);
+            return success(queryAutoTreeNoPage);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            result.error500("数据库查询失败" + e.getMessage());
+            return error("数据库查询失败" + e.getMessage());
         }
-        result.setOnlTable(onlCgformHead.getTableName());
-        return result;
     }
 
     /* renamed from: a */
@@ -1261,35 +1257,34 @@ public class OnlCgformApiController {
     @PostMapping({"/crazyForm/{name}"})
     @Operation(summary = "保存表单数据")
     /* renamed from: b */
-    public Result<String> createCrazyForm(@PathVariable("name") String str, @RequestBody JSONObject jSONObject) {
-        Result<String> result = new Result<>();
+    public CommonResult<String> createCrazyForm(@PathVariable("name") String str, @RequestBody JSONObject jSONObject) {
+        CommonResult<String> result = new CommonResult<>();
         try {
-            String m240a = CgformUtil.nextId();
-            jSONObject.put("id", m240a);
+            String nextId = CgformUtil.nextId();
+            jSONObject.put("id", nextId);
             this.onlCgformHeadService.addCrazyFormData(str, jSONObject);
-            result.setResult(m240a);
-            result.setMessage("保存成功");
-            return result;
+//            result.setMessage("保存成功");
+            return success(nextId);
         } catch (Exception e) {
             logger.error("OnlCgformApiController.formAddForDesigner()发生异常：" + e.getMessage(), e);
-            return Result.error("保存失败");
+            return error("保存失败");
         }
     }
 
     @PutMapping({"/crazyForm/{name}"})
     @Operation(summary = "更新表单数据crazyForm")
     /* renamed from: c */
-    public Result<?> updateCrazyForm(@PathVariable("name") String str, @RequestBody JSONObject jSONObject) {
+    public CommonResult<?> updateCrazyForm(@PathVariable("name") String str, @RequestBody JSONObject jSONObject) {
         try {
             jSONObject.remove("create_by");
             jSONObject.remove("create_time");
             jSONObject.remove("update_by");
             jSONObject.remove("update_time");
             this.onlCgformHeadService.editCrazyFormData(str, jSONObject);
-            return Result.ok("保存成功!");
+            return success(true);
         } catch (Exception e) {
             logger.error("OnlCgformApiController.formEditForDesigner()发生异常：" + e.getMessage(), e);
-            return Result.error("保存失败");
+            return error("保存失败");
         }
     }
 
@@ -1297,24 +1292,23 @@ public class OnlCgformApiController {
     @GetMapping({"/getErpColumns/{code}"})
     @Operation(summary = "获取表单字段getErpColumns")
     /* renamed from: c */
-    public Result<Map<String, Object>> getErpColumns(@PathVariable("code") String str) {
-        Result<Map<String, Object>> result = new Result<>();
+    public CommonResult<Map<String, Object>> getErpColumns(@PathVariable("code") String str) {
+        CommonResult<Map<String, Object>> result = new CommonResult<>();
         OnlCgformHead onlCgformHead = (OnlCgformHead) this.onlCgformHeadService.getById(str);
         if (onlCgformHead == null) {
-            result.error500("实体不存在");
-            return result;
+            return error("实体不存在");
         }
         HashMap<String, Object> hashMap = new HashMap<>(5);
-        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        hashMap.put(CgReportConstant.MAIN, this.onlineService.queryOnlineConfig(onlCgformHead, loginUser.getUsername()));
+        LoginUser loginUser = (LoginUser) SecurityFrameworkUtils.getLoginUser();
+        hashMap.put(CgReportConstant.MAIN, this.onlineService.queryOnlineConfig(onlCgformHead, String.valueOf(loginUser.getId())));
         if (CgformUtil.ERP.equals(onlCgformHead.getThemeTemplate()) && onlCgformHead.getTableType() == 2) {
             String subTableStr = onlCgformHead.getSubTableStr();
-            if (oConvertUtils.isNotEmpty(subTableStr)) {
+            if (StringUtils.isNotEmpty(subTableStr)) {
                 ArrayList<OnlComplexModel> arrayList = new ArrayList<>();
                 for (String str2 : subTableStr.split(CgformUtil.COMMA_SEPARATOR)) {
                     OnlCgformHead onlCgformHead2 = this.onlCgformHeadService.getOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, str2));
                     if (onlCgformHead2 != null) {
-                        arrayList.add(this.onlineService.queryOnlineConfig(onlCgformHead2, loginUser.getUsername()));
+                        arrayList.add(this.onlineService.queryOnlineConfig(onlCgformHead2, String.valueOf(loginUser.getId())));
                     }
                 }
                 if (!arrayList.isEmpty()) {
@@ -1322,41 +1316,39 @@ public class OnlCgformApiController {
                 }
             }
         }
-        result.setOnlTable(onlCgformHead.getTableName());
-        result.setResult(hashMap);
-        result.setSuccess(true);
-        return result;
+//        result.setOnlTable(onlCgformHead.getTableName());
+//        result.setResult(hashMap);
+//        result.setSuccess(true);
+
+     return success(hashMap);
     }
 
     @AutoLog(operateType = 1, value = "online表单加载", module = ModuleType.ONLINE)
     @GetMapping({"/getErpFormItem/{code}"})
     @Operation(summary = "获取表单getErpFormItem")
     /* renamed from: f */
-    public Result<JSONObject> getErpFormItem(@PathVariable("code") String str, HttpServletRequest httpServletRequest) {
+    public CommonResult<JSONObject> getErpFormItem(@PathVariable("code") String str, HttpServletRequest httpServletRequest) {
         OnlCgformHead onlCgformHead = this.onlCgformHeadService.getById(str);
         if (onlCgformHead == null) {
-            return Result.error("表不存在");
+            return error("表不存在");
         }
-        Result<JSONObject> result = new Result<>();
-        result.setResult(CgformUtil.m247b(this.onlineService.queryOnlineFormObj(onlCgformHead, ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername())));
-        result.setOnlTable(onlCgformHead.getTableName());
-        return result;
+        CommonResult<JSONObject> result = new CommonResult<>();
+
+        return success(CgformUtil.m247b(this.onlineService.queryOnlineFormObj(onlCgformHead,SecurityFrameworkUtils.getUserName())));
     }
 
     @GetMapping({"/querySelectOptions"})
     @Operation(summary = "级联下拉数据加载")
     /* renamed from: a */
-    public Result<List<TreeModel>> querySelectOptions(@ModelAttribute LinkDown linkDown) {
-        Result<List<TreeModel>> result = new Result<>();
+    public CommonResult<List<TreeModel>> querySelectOptions(@ModelAttribute LinkDown linkDown) {
+        CommonResult<List<TreeModel>> result = new CommonResult<>();
         try {
-            result.setResult(this.onlCgformFieldService.queryDataListByLinkDown(linkDown));
-            result.setSuccess(true);
+            return success(this.onlCgformFieldService.queryDataListByLinkDown(linkDown));
         } catch (Exception e) {
             logger.warn("online级联下拉数据加载失败：{}", e.getMessage());
             e.printStackTrace();
-            result.setSuccess(false);
+            return error("online级联下拉数据加载失败");
         }
-        return result;
     }
 
     @GetMapping({"/data/{tableName}/queryById"})
@@ -1367,7 +1359,7 @@ public class OnlCgformApiController {
         lambdaQueryWrapper.eq(OnlCgformHead::getTableName, tableName);
         OnlCgformHead onlCgformHead = this.onlCgformHeadService.getOne(lambdaQueryWrapper);
         if (onlCgformHead == null) {
-            throw new JeecgBootException("Online表单 " + tableName + " 不存在");
+            throw exception("Online表单 {} 不存在",tableName);
         }
         try {
             Map<String, Object> m190a = CgformUtil.m190a(httpServletRequest);
@@ -1387,7 +1379,7 @@ public class OnlCgformApiController {
             return jSONObject;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new JeecgBootException("数据库查询失败，" + e.getMessage());
+            throw exception("数据库查询失败，{}",e.getMessage());
         }
     }
 }

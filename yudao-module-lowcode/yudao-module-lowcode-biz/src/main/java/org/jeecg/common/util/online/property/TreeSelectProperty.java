@@ -126,7 +126,7 @@ public class TreeSelectProperty extends CommonProperty {
             commonJson.put("pidValue", this.pidValue);
         }
         if (this.textField != null) {
-            commonJson.put(ExtendJsonKey.f130j, this.textField);
+            commonJson.put(ExtendJsonKey.TEXT_FIELD, this.textField);
         }
         if (this.hasChildField != null) {
             commonJson.put("hasChildField", this.hasChildField);

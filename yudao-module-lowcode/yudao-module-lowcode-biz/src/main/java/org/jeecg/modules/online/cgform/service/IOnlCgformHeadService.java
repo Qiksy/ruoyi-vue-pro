@@ -1,5 +1,6 @@
 package org.jeecg.modules.online.cgform.service;
 
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import freemarker.template.TemplateException;
@@ -9,7 +10,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import org.hibernate.HibernateException;
-import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.online.cgform.entity.OnlCgformButton;
 import org.jeecg.modules.online.cgform.entity.OnlCgformEnhanceJava;
 import org.jeecg.modules.online.cgform.entity.OnlCgformEnhanceJs;
@@ -23,9 +23,9 @@ import org.jeecg.modules.online.config.exception.DBException;
 
 /* loaded from: hibernate-re-3.6.1-beta.jar:org/jeecg/modules/online/cgform/service/IOnlCgformHeadService.class */
 public interface IOnlCgformHeadService extends IService<OnlCgformHead> {
-    Result<?> addAll(OnlCgformModel onlCgformModel);
+    CommonResult<?> addAll(OnlCgformModel onlCgformModel);
 
-    Result<?> editAll(OnlCgformModel onlCgformModel);
+    CommonResult<?> editAll(OnlCgformModel onlCgformModel);
 
     void doDbSynch(String code, String syncMethod) throws HibernateException, IOException, TemplateException, SQLException, DBException;
 

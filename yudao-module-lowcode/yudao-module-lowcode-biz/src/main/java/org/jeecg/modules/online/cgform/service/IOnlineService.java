@@ -14,7 +14,7 @@ public interface IOnlineService {
 
     JSONObject queryOnlineFormObj(OnlCgformHead onlCgformHead, OnlCgformEnhanceJs onlCgformEnhanceJs);
 
-    JSONObject queryOnlineFormObj(OnlCgformHead onlCgformHead, String str);
+    JSONObject queryOnlineFormObj(OnlCgformHead onlCgformHead, String username);
 
     List<OnlCgformButton> queryFormValidButton(String str);
 

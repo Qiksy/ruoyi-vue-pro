@@ -1314,7 +1314,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
         if ("Y".equals(onlCgformHead.getIsTree())) {
             hashMap.put("pidField", onlCgformHead.getTreeParentIdField());
             hashMap.put("hasChildren", onlCgformHead.getTreeIdField());
-            hashMap.put(ExtendJsonKey.f130j, onlCgformHead.getTreeFieldname());
+            hashMap.put(ExtendJsonKey.TEXT_FIELD, onlCgformHead.getTreeFieldname());
         }
         if (oConvertUtils.isNotEmpty(model.getVueStyle())) {
             hashMap.put("vueStyle", model.getVueStyle());
