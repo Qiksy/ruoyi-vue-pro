@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.HibernateException;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
@@ -809,14 +810,14 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
 
     @Override // org.jeecg.modules.online.cgform.service.IOnlCgformHeadService
     @Transactional(rollbackFor = {Exception.class})
-    public String saveManyFormData(String code, JSONObject json, String xAccessToken) throws DBException, BusinessException {
+    public String saveManyFormData(String code, JSONObject json, String token) throws DBException, BusinessException {
         OnlCgformHead onlCgformHead;
         OnlCgformHead table = getTable(code);
         executeEnhanceJava(CgformConstant.ADD, CgformUtil.f248aq, table, json);
         String m235f = CgformUtil.m235f(table.getTableName());
         if (table.getTableType() == 2) {
             String subTableStr = table.getSubTableStr();
-            if (oConvertUtils.isNotEmpty(subTableStr)) {
+            if (StringUtils.isNotEmpty(subTableStr)) {
                 for (String str : subTableStr.split(CgformUtil.COMMA_SEPARATOR)) {
                     JSONArray jSONArray = json.getJSONArray(str);
                     if (jSONArray != null && !jSONArray.isEmpty() && (onlCgformHead = this.baseMapper.selectOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, str))) != null) {
@@ -824,7 +825,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
                         String str2 = "";
                         String str3 = null;
                         for (OnlCgformField onlCgformField : list) {
-                            if (!oConvertUtils.isEmpty(onlCgformField.getMainField())) {
+                            if (!StringUtils.isEmpty(onlCgformField.getMainField())) {
                                 str2 = onlCgformField.getDbFieldName();
                                 String mainField = onlCgformField.getMainField();
                                 if (json.get(mainField.toLowerCase()) != null) {

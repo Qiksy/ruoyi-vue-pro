@@ -1931,7 +1931,7 @@ public class CgformUtil {
     }
 
     /* renamed from: a */
-    public static String m241a(Exception exc) {
+    public static String exceptionToMessage(Exception exc) {
         String message = exc.getCause() != null ? exc.getCause().getMessage() : exc.getMessage();
         if (message.indexOf("ORA-01452") != -1) {
             message = "ORA-01452: 无法 CREATE UNIQUE INDEX; 找到重复的关键字";

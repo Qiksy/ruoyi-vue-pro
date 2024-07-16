@@ -55,7 +55,7 @@ public interface IOnlCgformHeadService extends IService<OnlCgformHead> {
 
     JSONObject queryFormItem(OnlCgformHead onlCgformHead, String str);
 
-    String saveManyFormData(String str, JSONObject jSONObject, String str2) throws DBException, BusinessException;
+    String saveManyFormData(String str, JSONObject jSONObject, String token) throws DBException, BusinessException;
 
     Map<String, Object> queryManyFormData(String str, String str2) throws DBException;
 
