@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jeecg.common.util.online.ConvertUtils;
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
 
@@ -51,7 +52,7 @@ public class ConvertUtil {
         Map<String, String> config = fieldCommentConverter.getConfig();
         if (config != null) {
             String str = config.get("linkField");
-            if (StrUtils.isNotEmpty(str)) {
+            if (ConvertUtils.isNotEmpty(str)) {
                 for (String str2 : str.split(CgformUtil.COMMA_SEPARATOR)) {
                     Object obj = map.get(str2);
                     if (obj != null) {
@@ -68,7 +69,7 @@ public class ConvertUtil {
         Map<String, String> config = fieldCommentConverter.getConfig();
         if (config != null) {
             String str2 = config.get("treeText");
-            if (StrUtils.isNotEmpty(str2)) {
+            if (ConvertUtils.isNotEmpty(str2)) {
                 map.put(str2, str);
             }
         }

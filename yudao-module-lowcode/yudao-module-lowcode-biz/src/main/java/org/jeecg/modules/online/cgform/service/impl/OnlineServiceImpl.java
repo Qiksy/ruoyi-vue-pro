@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
-import org.jeecg.common.system.api.ISysBaseAPI;
+
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
 
@@ -550,7 +550,7 @@ public class OnlineServiceImpl implements IOnlineService {
         if (StrUtils.isNotEmpty(fieldExtendJson)) {
             onlColumn.setFieldExtendJson(fieldExtendJson);
             if (fieldExtendJson.indexOf(ExtendJsonKey.SHOW_LENGTH) > 0 && (parseObject = JSON.parseObject(fieldExtendJson)) != null && parseObject.get(ExtendJsonKey.SHOW_LENGTH) != null) {
-                onlColumn.setShowLength(Objects.requireNonNull(oConvertUtils.getInt(parseObject.get(ExtendJsonKey.SHOW_LENGTH))));
+                onlColumn.setShowLength(Objects.requireNonNull(ConvertUtils.getInt(parseObject.get(ExtendJsonKey.SHOW_LENGTH))));
             }
         }
         return onlColumn;

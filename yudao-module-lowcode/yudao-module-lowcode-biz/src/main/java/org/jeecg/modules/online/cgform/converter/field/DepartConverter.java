@@ -1,11 +1,11 @@
 package org.jeecg.modules.online.cgform.converter.field;
 
+import cn.hutool.extra.spring.SpringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import java.util.ArrayList;
-import org.jeecg.common.system.api.ISysBaseAPI;
-import org.jeecg.common.util.SpringContextUtils;
 
+import org.jeecg.common.util.online.ConvertUtils;
 import org.jeecg.modules.online.cgform.converter.common.ForeseeConvert;
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
 import org.jeecg.modules.online.cgform.constant.ExtendJsonKey;
@@ -17,15 +17,15 @@ import org.jeecg.modules.online.cgform.utils.CgformUtil;
 public class DepartConverter extends ForeseeConvert {
     public DepartConverter(OnlCgformField onlCgformField) {
         String str;
-        ISysBaseAPI iSysBaseAPI = (ISysBaseAPI) SpringContextUtils.getBean(ISysBaseAPI.class);
+        ISysBaseAPI iSysBaseAPI = (ISysBaseAPI) SpringUtil.getBean(ISysBaseAPI.class);
         String str2 = CgformUtil.DEPART_NAME;
         str = "ID";
         String fieldExtendJson = onlCgformField.getFieldExtendJson();
-        if (StrUtils.isNotEmpty(fieldExtendJson)) {
+        if (ConvertUtils.isNotEmpty(fieldExtendJson)) {
             JSONObject parseObject = JSON.parseObject(fieldExtendJson);
-            str = parseObject.containsKey(ExtendJsonKey.STORE) ? StrUtils.camelToUnderline(parseObject.getString(ExtendJsonKey.STORE)) : "ID";
+            str = parseObject.containsKey(ExtendJsonKey.STORE) ? ConvertUtils.camelToUnderline(parseObject.getString(ExtendJsonKey.STORE)) : "ID";
             if (parseObject.containsKey(ExtendJsonKey.TEXT)) {
-                str2 = StrUtils.camelToUnderline(parseObject.getString(ExtendJsonKey.TEXT));
+                str2 = ConvertUtils.camelToUnderline(parseObject.getString(ExtendJsonKey.TEXT));
             }
         }
         this.dictlList = iSysBaseAPI.queryTableDictItemsByCode(CgformUtil.SYS_DEPART, str2, str);
@@ -34,7 +34,7 @@ public class DepartConverter extends ForeseeConvert {
 
     @Override // org.jeecg.modules.online.cgform.converter.p010a.C0030b, org.jeecg.modules.online.cgform.converter.FieldCommentConverter
     public String converterToVal(String txt) {
-        if (StrUtils.isEmpty(txt)) {
+        if (ConvertUtils.isEmpty(txt)) {
             return null;
         }
         ArrayList arrayList = new ArrayList();
@@ -49,7 +49,7 @@ public class DepartConverter extends ForeseeConvert {
 
     @Override // org.jeecg.modules.online.cgform.converter.p010a.C0030b, org.jeecg.modules.online.cgform.converter.FieldCommentConverter
     public String converterToTxt(String val) {
-        if (StrUtils.isEmpty(val)) {
+        if (ConvertUtils.isEmpty(val)) {
             return null;
         }
         ArrayList arrayList = new ArrayList();

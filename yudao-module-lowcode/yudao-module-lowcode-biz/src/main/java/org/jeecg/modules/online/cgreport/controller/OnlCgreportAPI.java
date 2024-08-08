@@ -25,7 +25,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.PermissionData;
 import org.jeecg.common.exception.JeecgBootException;
-import org.jeecg.common.system.api.ISysBaseAPI;
+
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DynamicDataSourceModel;
 import org.jeecg.common.util.BrowserUtils;
@@ -332,11 +332,11 @@ public class OnlCgreportAPI {
                 ArrayList<ExcelExportEntity> arrayList2 = new ArrayList();
                 for (int i = 0; i < list.size(); i++) {
                     String str2 = (String) ( list.get(i)).get(CgReportConstant.FIELD_TYPE);
-                    if ("1".equals(oConvertUtils.getString(( list.get(i)).get("is_show")))) {
+                    if ("1".equals(ConvertUtils.getString(( list.get(i)).get("is_show")))) {
                         String obj = ( list.get(i)).get(CgReportConstant.FIELD_NAME).toString();
                         ExcelExportEntity excelExportEntity = new ExcelExportEntity(( list.get(i)).get("field_txt").toString(), obj, 15);
                         Object obj2 = ( list.get(i)).get(CgReportConstant.DICT_CODE);
-                        List<DictModel> queryColumnDictList = this.onlCgreportHeadService.queryColumnDictList(oConvertUtils.getString(obj2), list2, obj);
+                        List<DictModel> queryColumnDictList = this.onlCgreportHeadService.queryColumnDictList(ConvertUtils.getString(obj2), list2, obj);
                         if (queryColumnDictList != null && !queryColumnDictList.isEmpty()) {
                             ArrayList<String> arrayList3 = new ArrayList<>();
                             for (DictModel dictModel : queryColumnDictList) {
@@ -370,7 +370,7 @@ public class OnlCgreportAPI {
                         }
                         arrayList2.add(excelExportEntity);
                     }
-                    if ("1".equals(oConvertUtils.getString(( list.get(i)).get("is_total")))) {
+                    if ("1".equals(ConvertUtils.getString(( list.get(i)).get("is_total")))) {
                         arrayList.add(( list.get(i)).get(CgReportConstant.FIELD_NAME).toString());
                     }
                 }

@@ -1,11 +1,12 @@
 package org.jeecg.modules.online.cgform.rule;
 
-import com.alibaba.fastjson.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.RandomUtils;
+
+import org.apache.commons.lang3.RandomUtils;
 import org.jeecg.common.handler.IFillRuleHandler;
+import org.jeecg.common.util.online.ConvertUtils;
+import org.json.JSONObject;
 
 /* loaded from: hibernate-re-3.6.1-beta.jar:org/jeecg/modules/online/cgform/rule/OrderNumberRule.class */
 public class OrderNumberRule implements IFillRuleHandler {
@@ -15,9 +16,9 @@ public class OrderNumberRule implements IFillRuleHandler {
         if (params != null && (obj = params.get("prefix")) != null) {
             str = obj.toString();
         }
-        String str2 = str + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (RandomUtils.nextInt(90) + 10);
+        String str2 = str + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (RandomUtils.nextInt(0,90) + 10);
         String string = formData.getString("name");
-        if (!StringUtils.isEmpty(string)) {
+        if (!ConvertUtils.isEmpty(string)) {
             str2 = str2 + string;
         }
         return str2;

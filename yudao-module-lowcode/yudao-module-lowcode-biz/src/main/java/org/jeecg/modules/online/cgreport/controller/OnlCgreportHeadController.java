@@ -12,7 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.exception.JeecgBootException;
-import org.jeecg.common.system.api.ISysBaseAPI;
+
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.modules.base.service.BaseCommonService;

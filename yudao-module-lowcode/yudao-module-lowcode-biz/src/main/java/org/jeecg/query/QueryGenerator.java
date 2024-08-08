@@ -156,7 +156,7 @@ public class QueryGenerator {
 				if (null != value && value.toString().startsWith(COMMA) && value.toString().endsWith(COMMA)) {
 					String multiLikeval = value.toString().replace(",,", COMMA);
 					String[] vals = multiLikeval.substring(1, multiLikeval.length()).split(COMMA);
-					final String field = StrUtils.camelToUnderline(column);
+					final String field = ConvertUtils.camelToUnderline(column);
 					if(vals.length>1) {
 						queryWrapper.and(j -> {
                             log.info("---查询过滤器，Query规则---field:{}, rule:{}, value:{}", field, "like", vals[0]);
@@ -244,7 +244,7 @@ public class QueryGenerator {
 		}
 		//update-end-author:scott date:2022-11-07 for:避免用户自定义表无默认字段{创建时间}，导致排序报错
 		
-		if (StrUtils.isNotEmpty(column) && StrUtils.isNotEmpty(order)) {
+		if (ConvertUtils.isNotEmpty(column) && ConvertUtils.isNotEmpty(order)) {
 			//字典字段，去掉字典翻译文本后缀
 			if(column.endsWith(CommonConstant.DICT_TEXT_SUFFIX)) {
 				column = column.substring(0, column.lastIndexOf(CommonConstant.DICT_TEXT_SUFFIX));
@@ -263,7 +263,7 @@ public class QueryGenerator {
 			if (column.contains(",")) {
 				List<String> columnList = Arrays.asList(column.split(","));
 				String columnStrNew = columnList.stream().map(c -> fieldColumnMap.get(c)).collect(Collectors.joining(","));
-				if (StrUtils.isNotEmpty(columnStrNew)) {
+				if (ConvertUtils.isNotEmpty(columnStrNew)) {
 					column = columnStrNew;
 				}
 			}else{
@@ -329,9 +329,9 @@ public class QueryGenerator {
                 }
 				// update-begin-author:sunjianlei date:20220119 for: 【JTC-573】 过滤空条件查询，防止 sql 拼接多余的 and
 				List<QueryCondition> filterConditions = conditions.stream().filter(
-						rule -> StrUtils.isNotEmpty(rule.getField())
-								&& StrUtils.isNotEmpty(rule.getRule())
-								&& StrUtils.isNotEmpty(rule.getVal())
+						rule -> ConvertUtils.isNotEmpty(rule.getField())
+								&& ConvertUtils.isNotEmpty(rule.getRule())
+								&& ConvertUtils.isNotEmpty(rule.getVal())
 				).collect(Collectors.toList());
 				if (filterConditions.size() == 0) {
 					return;
@@ -342,9 +342,9 @@ public class QueryGenerator {
                 queryWrapper.and(andWrapper -> {
                     for (int i = 0; i < filterConditions.size(); i++) {
                         QueryCondition rule = filterConditions.get(i);
-                        if (StrUtils.isNotEmpty(rule.getField())
-                                && StrUtils.isNotEmpty(rule.getRule())
-                                && StrUtils.isNotEmpty(rule.getVal())) {
+                        if (ConvertUtils.isNotEmpty(rule.getField())
+                                && ConvertUtils.isNotEmpty(rule.getRule())
+                                && ConvertUtils.isNotEmpty(rule.getVal())) {
 
                             log.debug("SuperQuery ==> " + rule.toString());
 
@@ -357,7 +357,7 @@ public class QueryGenerator {
 							}
 							// update-begin--author:sunjianlei date:20210702 for：【/issues/I3VR8E】高级查询没有类型转换，查询参数都是字符串类型 ----
 							String dbType = rule.getDbType();
-							if (StrUtils.isNotEmpty(dbType)) {
+							if (ConvertUtils.isNotEmpty(dbType)) {
 								try {
 									String valueStr = String.valueOf(queryValue);
 									switch (dbType.toLowerCase().trim()) {
@@ -537,7 +537,7 @@ public class QueryGenerator {
 	}
 	
 	private static void addQueryByRule(QueryWrapper<?> queryWrapper,String name,String type,String value,QueryRuleEnum rule) throws ParseException {
-		if(StrUtils.isNotEmpty(value)) {
+		if(ConvertUtils.isNotEmpty(value)) {
 			//update-begin--Author:sunjianlei  Date:20220104 for：【JTC-409】修复逗号分割情况下没有转换类型，导致类型严格的数据库查询报错 -------------------
 			// 针对数字类型字段，多值查询
 			if(value.contains(COMMA)){
@@ -631,10 +631,10 @@ public class QueryGenerator {
 	 * @param value        查询条件值
 	 */
 	public static void addEasyQuery(QueryWrapper<?> queryWrapper, String name, QueryRuleEnum rule, Object value) {
-		if (name==null || value == null || rule == null || StrUtils.isEmpty(value)) {
+		if (name==null || value == null || rule == null || ConvertUtils.isEmpty(value)) {
 			return;
 		}
-		name = StrUtils.camelToUnderline(name);
+		name = ConvertUtils.camelToUnderline(name);
 		log.debug("---高级查询 Query规则---field:{} , rule:{} , value:{}",name,rule.getValue(),value);
 		switch (rule) {
 		case GT:
@@ -769,7 +769,7 @@ public class QueryGenerator {
 	* @Return: java.lang.String
 	*/
 	public static String trimSingleQuote(String ruleValue) {
-		if (StrUtils.isEmpty(ruleValue)) {
+		if (ConvertUtils.isEmpty(ruleValue)) {
 			return "";
 		}
 		if (ruleValue.startsWith(QueryGenerator.SQL_SQ)) {
@@ -798,7 +798,7 @@ public class QueryGenerator {
 	 * 获取sql中的#{key} 这个key组成的set
 	 */
 	public static Set<String> getSqlRuleParams(String sql) {
-		if(StrUtils.isEmpty(sql)){
+		if(ConvertUtils.isEmpty(sql)){
 			return null;
 		}
 		Set<String> varParams = new HashSet<String>();
@@ -838,7 +838,7 @@ public class QueryGenerator {
 		PropertyDescriptor[] origDescriptors = PropertyUtils.getPropertyDescriptors(clazz);
 		String sqlAnd = " and ";
 		for (String c : ruleMap.keySet()) {
-			if(StrUtils.isNotEmpty(c) && c.startsWith(SQL_RULES_COLUMN)){
+			if(ConvertUtils.isNotEmpty(c) && c.startsWith(SQL_RULES_COLUMN)){
 				sb.append(sqlAnd+getSqlRuleValue(ruleMap.get(c).getRuleValue()));
 			}
 		}
@@ -863,7 +863,7 @@ public class QueryGenerator {
 				}else {
 					value = NumberUtils.parseNumber(dataRule.getRuleValue(),propType);
 				}
-				String filedSql = SqlConcatUtil.getSingleSqlByRule(rule, StrUtils.camelToUnderline(column), value,isString);
+				String filedSql = SqlConcatUtil.getSingleSqlByRule(rule, ConvertUtils.camelToUnderline(column), value,isString);
 				sb.append(sqlAnd+filedSql);
 			}
 		}
@@ -882,7 +882,7 @@ public class QueryGenerator {
 		Map<String,SysPermissionDataRuleModel> ruleMap = getRuleMap();
 		PropertyDescriptor[] origDescriptors = PropertyUtils.getPropertyDescriptors(clazz);
 		for (String c : ruleMap.keySet()) {
-			if(StrUtils.isNotEmpty(c) && c.startsWith(SQL_RULES_COLUMN)){
+			if(ConvertUtils.isNotEmpty(c) && c.startsWith(SQL_RULES_COLUMN)){
 				queryWrapper.and(i ->i.apply(getSqlRuleValue(ruleMap.get(c).getRuleValue())));
 			}
 		}

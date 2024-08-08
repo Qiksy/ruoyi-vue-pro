@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.exception.JeecgBootException;
-import org.jeecg.common.system.api.ISysBaseAPI;
+
 import org.jeecg.common.system.query.MatchTypeEnum;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.query.QueryRuleEnum;
@@ -46,7 +46,7 @@ import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.CommonUtils;
 import org.jeecg.common.util.DateUtils;
-import org.jeecg.common.util.SpringContextUtils;
+
 import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.UUIDGenerator;
 
@@ -683,7 +683,7 @@ public class CgformUtil {
         new JSONObject();
         ArrayList arrayList = new ArrayList<>();
         ArrayList arrayList2 = new ArrayList<>();
-        OnlCgformHeadMapper onlCgformHeadMapper = SpringContextUtils.getBean(OnlCgformHeadMapper.class);
+        OnlCgformHeadMapper onlCgformHeadMapper = SpringUtil.getBean(OnlCgformHeadMapper.class);
         ArrayList arrayList3 = new ArrayList<>();
         for (OnlCgformField onlCgformField : list) {
             String dbFieldName = onlCgformField.getDbFieldName();
@@ -824,7 +824,7 @@ public class CgformUtil {
         new JSONObject();
         ArrayList arrayList = new ArrayList();
         ArrayList arrayList2 = new ArrayList();
-        ISysBaseAPI iSysBaseAPI = (ISysBaseAPI) SpringContextUtils.getBean(ISysBaseAPI.class);
+        ISysBaseAPI iSysBaseAPI = (ISysBaseAPI) SpringUtil.getBean(ISysBaseAPI.class);
         for (OnlCgformField onlCgformField : list) {
             String dbFieldName = onlCgformField.getDbFieldName();
             if (!"id".equals(dbFieldName)) {
@@ -1233,7 +1233,7 @@ public class CgformUtil {
                     return false;
                 }
                 if ("spring".equals(cgJavaType)) {
-                    if (SpringContextUtils.getBean(cgJavaValue) == null) {
+                    if (SpringUtil.getBean(cgJavaValue) == null) {
                         return false;
                     }
                     return true;
@@ -2075,7 +2075,7 @@ public class CgformUtil {
         } else {
             jSONObject2 = jSONObject.getJSONObject("schema").getJSONObject(PROPERTIES);
         }
-        ISysBaseAPI iSysBaseAPI = SpringContextUtils.getBean(ISysBaseAPI.class);
+        ISysBaseAPI iSysBaseAPI = SpringUtil.getBean(ISysBaseAPI.class);
         for (String key : jSONObject2.keySet()) {
             JSONObject jSONObject3 = jSONObject2.getJSONObject(key);
             String string = jSONObject3.getString(VIEW);

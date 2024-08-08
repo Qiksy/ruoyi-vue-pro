@@ -47,7 +47,7 @@ public class SqlConcatUtil {
         if (value == null) {
             return "";
         }
-        field =  alias+ StrUtils.camelToUnderline(field);
+        field =  alias+ ConvertUtils.camelToUnderline(field);
         QueryRuleEnum rule = QueryGenerator.convert2Rule(value);
         return getSingleSqlByRule(rule, field, value, isString, dataBaseType);
     }

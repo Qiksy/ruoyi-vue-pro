@@ -1,7 +1,6 @@
 package org.jeecg.common.util.online;
 
 import cn.hutool.core.util.ReUtil;
-import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.constant.CommonConstant;
@@ -12,7 +11,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception0;
 
 /**
  * sql注入处理工具类
@@ -378,7 +376,7 @@ public class SqlInjectionUtil {
 	 * @return
 	 */
 	public static String getSqlInjectSortField(String sortField) {
-		String field = SqlInjectionUtil.getSqlInjectField(StrUtils.camelToUnderline((sortField)));
+		String field = SqlInjectionUtil.getSqlInjectField(ConvertUtils.camelToUnderline((sortField)));
 		return field;
 	}
 

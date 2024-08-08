@@ -16,7 +16,7 @@ import org.jeecg.common.system.query.QueryRuleEnum;
 import org.jeecg.common.system.util.JeecgDataAutorUtils;
 import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
 import org.jeecg.common.util.DateUtils;
-import org.jeecg.common.util.SpringContextUtils;
+
 
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
@@ -1090,7 +1090,7 @@ public class ConditionHandler {
         }
         try {
             JSONArray parseArray = JSONArray.parseArray(URLDecoder.decode(obj.toString(), "UTF-8"));
-            IOnlCgformFieldService iOnlCgformFieldService = (IOnlCgformFieldService) SpringContextUtils.getBean(IOnlCgformFieldService.class);
+            IOnlCgformFieldService iOnlCgformFieldService = (IOnlCgformFieldService) SpringUtil.getBean(IOnlCgformFieldService.class);
             ArrayList arrayList = new ArrayList();
             arrayList.add("JEECG_SUPER_QUERY_MAIN_TABLE");
             if (this.subTableStr != null && !"".equals(this.subTableStr)) {

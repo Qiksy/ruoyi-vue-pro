@@ -26,14 +26,14 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.enums.CgformEnum;
 import org.jeecg.common.exception.JeecgBootException;
-import org.jeecg.common.system.api.ISysBaseAPI;
+
 import org.jeecg.common.util.CommonUtils;
 import org.jeecg.common.util.MyClassLoader;
-import org.jeecg.common.util.SpringContextUtils;
+
 import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.UUIDGenerator;
 
-import org.jeecg.common.util.online.StrUtils;
+import org.jeecg.common.util.online.ConvertUtils;
 import org.jeecg.modules.online.auth.entity.OnlAuthData;
 import org.jeecg.modules.online.auth.entity.OnlAuthPage;
 import org.jeecg.modules.online.auth.entity.OnlAuthRelation;
@@ -158,7 +158,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
             if (onlCgformField.getOrderNum() == null) {
                 onlCgformField.setOrderNum(i);
             }
-            if (StrUtils.isNotEmpty(onlCgformField.getMainTable()) && StrUtils.isNotEmpty(onlCgformField.getMainField())) {
+            if (ConvertUtils.isNotEmpty(onlCgformField.getMainTable()) && ConvertUtils.isNotEmpty(onlCgformField.getMainField())) {
                 z = true;
             }
             setDefaultLength(onlCgformField);
@@ -331,9 +331,9 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
      */
     /* renamed from: a */
     private void removeSubTableRelation(String tableName, String subTable) {
-        if (StrUtils.isNotEmpty(tableName)) {
+        if (ConvertUtils.isNotEmpty(tableName)) {
             OnlCgformHead onlCgformHead = this.baseMapper.selectOne( new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, tableName));
-            if (onlCgformHead != null && StrUtils.isNotEmpty(onlCgformHead.getSubTableStr())) {
+            if (onlCgformHead != null && ConvertUtils.isNotEmpty(onlCgformHead.getSubTableStr())) {
                 String[] split = onlCgformHead.getSubTableStr().split(CgformUtil.COMMA_SEPARATOR);
                 ArrayList<String> arrayList = new ArrayList<>();
                 for (String str3 : split) {
@@ -395,10 +395,10 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
                 //1. 执行表结构的变更
                 DbTableProcess dbTableProcess = new DbTableProcess(onlineDataBaseConfig);
                 for (String str : dbTableProcess.getUpdateSQL(cgformConfigModel)) {
-                    if (!StrUtils.isEmpty(str) && !StrUtils.isEmpty(str.trim())) {
+                    if (!ConvertUtils.isEmpty(str) && !ConvertUtils.isEmpty(str.trim())) {
                         String[] split = str.split(";");
                         for (String str2 : split) {
-                            if (!StrUtils.isEmpty(str2) && !StrUtils.isEmpty(str2.trim())) {
+                            if (!ConvertUtils.isEmpty(str2) && !ConvertUtils.isEmpty(str2.trim())) {
                                 // 执行sql
                                 this.baseMapper.executeDDL(str2);
                             }
@@ -523,14 +523,14 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
             String mainTable = null;
             for (OnlCgformField onlCgformField : this.fieldService.list(new LambdaQueryWrapper<OnlCgformField>().eq(OnlCgformField::getCgformHeadId, onlCgformHead.getId()))) {
                 mainTable = onlCgformField.getMainTable();
-                if (StrUtils.isNotEmpty(mainTable)) {
+                if (ConvertUtils.isNotEmpty(mainTable)) {
                     //如果有外键，旧删除
                     break;
                 }
             }
-            if (StrUtils.isNotEmpty(mainTable) && (mainTableHead = this.baseMapper.selectOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, mainTable))) != null) {
+            if (ConvertUtils.isNotEmpty(mainTable) && (mainTableHead = this.baseMapper.selectOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, mainTable))) != null) {
                 String subTableStr = mainTableHead.getSubTableStr();
-                if (StrUtils.isNotEmpty(subTableStr)) {
+                if (ConvertUtils.isNotEmpty(subTableStr)) {
                     //子表不为空
                     List<String> list = new ArrayList<>(Arrays.asList(subTableStr.split(CgformUtil.COMMA_SEPARATOR)));
                     // 删除目前的这个表
@@ -635,7 +635,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
                 onlCgformField.setCgformHeadId(generate);
                 onlCgformField.setDbFieldNameOld(columnVo.getFieldDbName().toLowerCase());
                 onlCgformField.setDbFieldName(columnVo.getFieldDbName().toLowerCase());
-                if (StrUtils.isNotEmpty(columnVo.getFiledComment())) {
+                if (ConvertUtils.isNotEmpty(columnVo.getFiledComment())) {
                     onlCgformField.setDbFieldTxt(columnVo.getFiledComment());
                 } else {
                     onlCgformField.setDbFieldTxt(columnVo.getFieldName());
@@ -647,9 +647,9 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
                 onlCgformField.setIsShowList(1);
                 onlCgformField.setOrderNum(i + 1);
                 onlCgformField.setQueryMode("single");
-                onlCgformField.setDbLength(oConvertUtils.getInt(columnVo.getPrecision()));
+                onlCgformField.setDbLength(ConvertUtils.getInt(columnVo.getPrecision()));
                 onlCgformField.setFieldLength(120);
-                onlCgformField.setDbPointLength(oConvertUtils.getInt(columnVo.getScale()));
+                onlCgformField.setDbPointLength(ConvertUtils.getInt(columnVo.getScale()));
                 onlCgformField.setFieldShowType(ExtendJsonKey.TEXT);
                 onlCgformField.setDbIsNull("Y".equals(columnVo.getNullable()) ? 1 : 0);
                 onlCgformField.setIsReadOnly(0);
@@ -695,13 +695,13 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
                 } else {
                     onlCgformField.setDbType(DataBaseConst.STRING);
                 }
-                if (!StrUtils.isEmpty(columnVo.getPrecision()) || !StrUtils.isNotEmpty(columnVo.getCharmaxLength())) {
-                    if (StrUtils.isNotEmpty(columnVo.getPrecision())) {
+                if (!ConvertUtils.isEmpty(columnVo.getPrecision()) || !ConvertUtils.isNotEmpty(columnVo.getCharmaxLength())) {
+                    if (ConvertUtils.isNotEmpty(columnVo.getPrecision())) {
                         onlCgformField.setDbLength(Integer.valueOf(columnVo.getPrecision()));
                     } else if (onlCgformField.getDbType().equals("int")) {
                         onlCgformField.setDbLength(10);
                     }
-                    if (StrUtils.isNotEmpty(columnVo.getScale())) {
+                    if (ConvertUtils.isNotEmpty(columnVo.getScale())) {
                         onlCgformField.setDbPointLength(Integer.valueOf(columnVo.getScale()));
                     }
                 } else if (Long.valueOf(columnVo.getCharmaxLength()) >= 3000) {
@@ -715,7 +715,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
                 } else {
                     onlCgformField.setDbLength(Integer.valueOf(columnVo.getCharmaxLength()));
                 }
-                if (oConvertUtils.getInt(columnVo.getPrecision()) == -1 && oConvertUtils.getInt(columnVo.getScale()) == 0) {
+                if (ConvertUtils.getInt(columnVo.getPrecision()) == -1 && ConvertUtils.getInt(columnVo.getScale()) == 0) {
                     onlCgformField.setDbType(DataBaseConst.TEXT);
                 }
                 if ("Blob".equals(onlCgformField.getDbType()) || DataBaseConst.TEXT.equals(onlCgformField.getDbType()) || "Date".equals(onlCgformField.getDbType())) {
@@ -728,7 +728,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
         } catch (Exception e2) {
             logger.error(e2.getMessage(), e2);
         }
-        if (StrUtils.isEmpty(onlCgformHead.getFormCategory())) {
+        if (ConvertUtils.isEmpty(onlCgformHead.getFormCategory())) {
             onlCgformHead.setFormCategory("bdfl_include");
         }
         save(onlCgformHead);
@@ -737,7 +737,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
 
     /* renamed from: b */
     private boolean m334b(String str, String str2) {
-        if (StrUtils.isEmpty(str2)) {
+        if (ConvertUtils.isEmpty(str2)) {
             return false;
         }
         for (String str3 : str2.split(CgformUtil.COMMA_SEPARATOR)) {
@@ -755,9 +755,9 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
             OnlCgformHead onlCgformHead3 = this.baseMapper.selectById(onlCgformHead.getId());
             for (int i = 0; i < list.size(); i++) {
                 String mainTable = list.get(i).getMainTable();
-                if (!StrUtils.isEmpty(mainTable) && (onlCgformHead2 = this.baseMapper.selectOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, mainTable))) != null) {
+                if (!ConvertUtils.isEmpty(mainTable) && (onlCgformHead2 = this.baseMapper.selectOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, mainTable))) != null) {
                     String subTableStr = onlCgformHead2.getSubTableStr();
-                    if (StrUtils.isEmpty(subTableStr)) {
+                    if (ConvertUtils.isEmpty(subTableStr)) {
                         subTableStr = onlCgformHead3.getTableName();
                     } else if (!m334b(onlCgformHead3.getTableName(), subTableStr)) {
                         ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(subTableStr.split(CgformUtil.COMMA_SEPARATOR)));
@@ -767,7 +767,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
                                 break;
                             }
                             OnlCgformHead onlCgformHead4 = this.baseMapper.selectOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, (String) arrayList.get(i2)));
-                            if (onlCgformHead4 == null || onlCgformHead3.getTabOrderNum() >= oConvertUtils.getInt(onlCgformHead4.getTabOrderNum(), 0)) {
+                            if (onlCgformHead4 == null || onlCgformHead3.getTabOrderNum() >= ConvertUtils.getInt(onlCgformHead4.getTabOrderNum(), 0)) {
                                 i2++;
                             } else {
                                 arrayList.add(i2, onlCgformHead3.getTableName());
@@ -869,7 +869,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
                 break;
             }
             OnlCgformField next = it.next();
-            if (StrUtils.isNotEmpty(next.getMainField())) {
+            if (ConvertUtils.isNotEmpty(next.getMainField())) {
                 str = next.getDbFieldName();
                 break;
             }
@@ -907,7 +907,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
                 break;
             }
             OnlCgformField next = it.next();
-            if (StrUtils.isNotEmpty(next.getMainField())) {
+            if (ConvertUtils.isNotEmpty(next.getMainField())) {
                 str = next.getDbFieldName();
                 str2 = next.getMainTable();
                 str3 = next.getMainField();
@@ -921,7 +921,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
         Map<String, Object> queryFormData = this.fieldService.queryFormData(arrayList, str2, mainId);
         List<Map<String, Object>> querySubFormData = null;
         if (str3 != null) {
-            querySubFormData = this.fieldService.querySubFormData(queryFormFields, table, str, oConvertUtils.getString(oConvertUtils.getString(queryFormData.get(str3)), oConvertUtils.getString(queryFormData.get(str3.toUpperCase()))));
+            querySubFormData = this.fieldService.querySubFormData(queryFormFields, table, str, ConvertUtils.getString(ConvertUtils.getString(queryFormData.get(str3)), ConvertUtils.getString(queryFormData.get(str3.toUpperCase()))));
         }
         if (querySubFormData != null && querySubFormData.isEmpty()) {
             return Collections.emptyList();
@@ -943,7 +943,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
         Map<String, Object> queryFormData = this.fieldService.queryFormData(queryFormFields, table.getTableName(), id);
         if (table.getTableType().intValue() == 2) {
             String subTableStr = table.getSubTableStr();
-            if (StrUtils.isNotEmpty(subTableStr)) {
+            if (ConvertUtils.isNotEmpty(subTableStr)) {
                 for (String str : subTableStr.split(CgformUtil.COMMA_SEPARATOR)) {
                     OnlCgformHead onlCgformHead = this.baseMapper.selectOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, str));
                     if (onlCgformHead != null) {
@@ -951,7 +951,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
                         String str2 = "";
                         String str3 = null;
                         for (OnlCgformField onlCgformField : queryFormFields2) {
-                            if (!StrUtils.isEmpty(onlCgformField.getMainField())) {
+                            if (!ConvertUtils.isEmpty(onlCgformField.getMainField())) {
                                 str2 = onlCgformField.getDbFieldName();
                                 str3 = CgformUtil.m253a(queryFormData, onlCgformField.getMainField());
                             }
@@ -982,7 +982,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
         }
         if (table.getTableType() == 2) {
             String subTableStr = table.getSubTableStr();
-            if (StrUtils.isNotEmpty(subTableStr)) {
+            if (ConvertUtils.isNotEmpty(subTableStr)) {
                 for (String str : subTableStr.split(CgformUtil.COMMA_SEPARATOR)) {
                     OnlCgformHead onlCgformHead = this.baseMapper.selectOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, str));
                     if (onlCgformHead != null) {
@@ -990,7 +990,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
                         String str2 = "";
                         String str3 = null;
                         for (OnlCgformField onlCgformField : list) {
-                            if (!StrUtils.isEmpty(onlCgformField.getMainField())) {
+                            if (!ConvertUtils.isEmpty(onlCgformField.getMainField())) {
                                 str2 = onlCgformField.getDbFieldName();
                                 String mainField = onlCgformField.getMainField();
                                 if (json.get(mainField.toLowerCase()) != null) {
@@ -1001,7 +1001,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
                                 }
                             }
                         }
-                        if (!StrUtils.isEmpty(str3)) {
+                        if (!ConvertUtils.isEmpty(str3)) {
                             this.fieldService.deleteAutoList(str, str2, str3);
                             JSONArray jSONArray = json.getJSONArray(str);
                             if (jSONArray != null && !jSONArray.isEmpty()) {
@@ -1092,7 +1092,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
         if (onlCgformEnhanceJava != null) {
             String cgJavaType = onlCgformEnhanceJava.getCgJavaType();
             String cgJavaValue = onlCgformEnhanceJava.getCgJavaValue();
-            if (StrUtils.isNotEmpty(cgJavaValue)) {
+            if (ConvertUtils.isNotEmpty(cgJavaValue)) {
                 Object obj = null;
                 if ("class".equals(cgJavaType)) {
                     try {
@@ -1103,7 +1103,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
                         throw new RuntimeException(e);
                     }
                 } else if ("spring".equals(cgJavaType)) {
-                    obj = SpringContextUtils.getBean(cgJavaValue);
+                    obj = SpringUtil.getBean(cgJavaValue);
                 } else if ("http".equals(cgJavaType)) {
                     obj = m340b(onlCgformEnhanceJava);
                 }
@@ -1141,7 +1141,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
 
     /* renamed from: a */
     private void m342a(JSONObject jSONObject, OnlCgformEnhanceSql onlCgformEnhanceSql) {
-        if (onlCgformEnhanceSql != null && StrUtils.isNotEmpty(onlCgformEnhanceSql.getCgbSql())) {
+        if (onlCgformEnhanceSql != null && ConvertUtils.isNotEmpty(onlCgformEnhanceSql.getCgbSql())) {
             for (String str : CgformUtil.m215a(onlCgformEnhanceSql.getCgbSql(), jSONObject).split(";")) {
                 if (str != null && !str.toLowerCase().trim().isEmpty()) {
                     ( this.baseMapper).executeDDL(str);
@@ -1244,7 +1244,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
         List<String> queryFormDisabledCode;
         List<OnlCgformField> queryAvailableFields = this.fieldService.queryAvailableFields(head.getId(), head.getTableName(), head.getTaskId(), false);
         List<String> arrayList = new ArrayList<>();
-        if (StrUtils.isEmpty(head.getTaskId())) {
+        if (ConvertUtils.isEmpty(head.getTaskId())) {
             List<String> queryFormDisabledCode2 = this.onlAuthPageService.queryFormDisabledCode(head.getId());
             if (queryFormDisabledCode2 != null && !queryFormDisabledCode2.isEmpty() && queryFormDisabledCode2.get(0) != null) {
                 arrayList.addAll(queryFormDisabledCode2);
@@ -1258,13 +1258,13 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
         JSONObject m192a = CgformUtil.m192a(queryAvailableFields, arrayList, (TreeSelectColumn) null);
         if (head.getTableType() == 2) {
             String subTableStr = head.getSubTableStr();
-            if (StrUtils.isNotEmpty(subTableStr)) {
+            if (ConvertUtils.isNotEmpty(subTableStr)) {
                 for (String str : subTableStr.split(CgformUtil.COMMA_SEPARATOR)) {
                     OnlCgformHead onlCgformHead = this.baseMapper.selectOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, str));
                     if (onlCgformHead != null) {
                         List<OnlCgformField> queryAvailableFields2 = this.fieldService.queryAvailableFields(onlCgformHead.getId(), onlCgformHead.getTableName(), head.getTaskId(), false);
 
-                        if (StrUtils.isNotEmpty(head.getTaskId())) {
+                        if (ConvertUtils.isNotEmpty(head.getTaskId())) {
                             queryFormDisabledCode = this.fieldService.queryDisabledFields(onlCgformHead.getTableName(), head.getTaskId());
                         } else {
                             queryFormDisabledCode = this.onlAuthPageService.queryFormDisabledCode(onlCgformHead.getId());
@@ -1304,7 +1304,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
         HashMap<String,String> hashMap = new HashMap<>(5);
         hashMap.put("scroll", onlCgformHead.getScroll() == null ? "0" : onlCgformHead.getScroll().toString());
         String formTemplate = onlCgformHead.getFormTemplate();
-        if (StrUtils.isEmpty(formTemplate)) {
+        if (ConvertUtils.isEmpty(formTemplate)) {
             tableVo.setFieldRowNum(1);
         } else {
             tableVo.setFieldRowNum(Integer.parseInt(formTemplate));
@@ -1314,7 +1314,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
             hashMap.put("hasChildren", onlCgformHead.getTreeIdField());
             hashMap.put(ExtendJsonKey.TEXT_FIELD, onlCgformHead.getTreeFieldname());
         }
-        if (StrUtils.isNotEmpty(model.getVueStyle())) {
+        if (ConvertUtils.isNotEmpty(model.getVueStyle())) {
             hashMap.put("vueStyle", model.getVueStyle());
         }
         tableVo.setExtendParams(hashMap);
@@ -1340,7 +1340,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
         mainTableVo.setFtlDescription(model.getFtlDescription());
         mainTableVo.setTableName(model.getTableName());
         String formTemplate = this.baseMapper.selectOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getId, model.getCode())).getFormTemplate();
-        if (StrUtils.isEmpty(formTemplate)) {
+        if (ConvertUtils.isEmpty(formTemplate)) {
             mainTableVo.setFieldRowNum(1);
         } else {
             mainTableVo.setFieldRowNum(Integer.parseInt(formTemplate));
@@ -1373,7 +1373,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
             }
         }
         CgformEnum cgformEnumByConfig = CgformEnum.getCgformEnumByConfig(model.getJspMode());
-        if (StrUtils.isNotEmpty(model.getVueStyle())) {
+        if (ConvertUtils.isNotEmpty(model.getVueStyle())) {
             List<String> asList = null;
             if (cgformEnumByConfig != null) {
                 asList = Arrays.asList(cgformEnumByConfig.getVueStyle());
@@ -1402,7 +1402,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
         lambdaQueryWrapper.orderByAsc(OnlCgformField::getOrderNum);
         OnlCgformField onlCgformField = null;
         for (OnlCgformField onlCgformField2 : this.fieldService.list(lambdaQueryWrapper)) {
-            if (StrUtils.isNotEmpty(onlCgformField2.getMainTable())) {
+            if (ConvertUtils.isNotEmpty(onlCgformField2.getMainTable())) {
                 onlCgformField = onlCgformField2;
             }
             ColumnVo columnVo = new ColumnVo();
@@ -1421,7 +1421,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
             columnVo.setDictTable(onlCgformField2.getDictTable());
             columnVo.setDictText(onlCgformField2.getDictText());
             columnVo.setFieldDbName(onlCgformField2.getDbFieldName());
-            columnVo.setFieldName(oConvertUtils.camelName(onlCgformField2.getDbFieldName()));
+            columnVo.setFieldName(ConvertUtils.camelName(onlCgformField2.getDbFieldName()));
             columnVo.setFiledComment(onlCgformField2.getDbFieldTxt());
             columnVo.setFieldDbType(onlCgformField2.getDbType());
             columnVo.setFieldType(m346b(onlCgformField2.getDbType()));
@@ -1433,7 +1433,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
                 columnVo.setNullable("Y");
             }
             if (CgformUtil.f217L.equals(onlCgformField2.getFieldShowType())) {
-                if (StrUtils.isNotEmpty(onlCgformField2.getFieldExtendJson())) {
+                if (ConvertUtils.isNotEmpty(onlCgformField2.getFieldExtendJson())) {
                     columnVo.setDictField(onlCgformField2.getFieldExtendJson());
                 } else {
                     columnVo.setDictField("is_open");
@@ -1462,12 +1462,12 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
             columnVo.setSort("1".equals(onlCgformField2.getSortFlag()) ? "Y" : "N");
             Integer num = 1;
             columnVo.setReadonly(num.equals(onlCgformField2.getIsReadOnly()) ? "Y" : "N");
-            if (StrUtils.isNotEmpty(onlCgformField2.getFieldDefaultValue()) && !onlCgformField2.getFieldDefaultValue().trim().startsWith("${") && !onlCgformField2.getFieldDefaultValue().trim().startsWith("#{") && !onlCgformField2.getFieldDefaultValue().trim().startsWith("{{")) {
+            if (ConvertUtils.isNotEmpty(onlCgformField2.getFieldDefaultValue()) && !onlCgformField2.getFieldDefaultValue().trim().startsWith("${") && !onlCgformField2.getFieldDefaultValue().trim().startsWith("#{") && !onlCgformField2.getFieldDefaultValue().trim().startsWith("{{")) {
                 columnVo.setDefaultVal(onlCgformField2.getFieldDefaultValue());
             }
-            if (("file".equals(onlCgformField2.getFieldShowType()) || "image".equals(onlCgformField2.getFieldShowType())) && StrUtils.isNotEmpty(onlCgformField2.getFieldExtendJson())) {
+            if (("file".equals(onlCgformField2.getFieldShowType()) || "image".equals(onlCgformField2.getFieldShowType())) && ConvertUtils.isNotEmpty(onlCgformField2.getFieldExtendJson())) {
                 JSONObject parseObject2 = JSONObject.parseObject(onlCgformField2.getFieldExtendJson());
-                if (StrUtils.isNotEmpty(parseObject2.getString(ExtendJsonKey.UPLOADNUM))) {
+                if (ConvertUtils.isNotEmpty(parseObject2.getString(ExtendJsonKey.UPLOADNUM))) {
                     columnVo.setUploadnum(parseObject2.getString(ExtendJsonKey.UPLOADNUM));
                 }
             }
@@ -1509,9 +1509,9 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
         if (onlCgformHead2.getTableType() == 2 && (subTableStr = onlCgformHead2.getSubTableStr()) != null) {
             for (String str : subTableStr.split(CgformUtil.COMMA_SEPARATOR)) {
                 String string = json.getString("sub-table-design_" + str);
-                if (StrUtils.isEmpty(string)) {
+                if (ConvertUtils.isEmpty(string)) {
                     string = json.getString("sub-table-one2one_" + str);
-                    i = StrUtils.isEmpty(string) ? i + 1 : 0;
+                    i = ConvertUtils.isEmpty(string) ? i + 1 : 0;
                 }
                 JSONArray parseArray = JSONArray.parseArray(string);
                 if (parseArray != null && !parseArray.isEmpty() && (onlCgformHead = this.baseMapper.selectOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, str))) != null) {
@@ -1519,7 +1519,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
                     String str2 = "";
                     String str3 = null;
                     for (OnlCgformField onlCgformField : list) {
-                        if (!StrUtils.isEmpty(onlCgformField.getMainField())) {
+                        if (!ConvertUtils.isEmpty(onlCgformField.getMainField())) {
                             str2 = onlCgformField.getDbFieldName();
                             str3 = json.getString(onlCgformField.getMainField());
                         }
@@ -1546,7 +1546,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
         }
         if (onlCgformHead.getTableType().intValue() == 2) {
             String subTableStr = onlCgformHead.getSubTableStr();
-            if (StrUtils.isNotEmpty(subTableStr)) {
+            if (ConvertUtils.isNotEmpty(subTableStr)) {
                 for (String str : subTableStr.split(CgformUtil.COMMA_SEPARATOR)) {
                     OnlCgformHead onlCgformHead2 = this.baseMapper.selectOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, str));
                     if (onlCgformHead2 != null) {
@@ -1554,20 +1554,20 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
                         String str2 = "";
                         String str3 = null;
                         for (OnlCgformField onlCgformField : list) {
-                            if (!StrUtils.isEmpty(onlCgformField.getMainField())) {
+                            if (!ConvertUtils.isEmpty(onlCgformField.getMainField())) {
                                 str2 = onlCgformField.getDbFieldName();
                                 str3 = json.getString(onlCgformField.getMainField());
                             }
                         }
-                        if (!StrUtils.isEmpty(str3)) {
+                        if (!ConvertUtils.isEmpty(str3)) {
                             this.fieldService.deleteAutoList(str, str2, str3);
                             String string = json.getString("sub-table-design_" + str);
-                            if (StrUtils.isEmpty(string)) {
+                            if (ConvertUtils.isEmpty(string)) {
                                 string = json.getString("sub-table-one2one_" + str);
-                                if (StrUtils.isEmpty(string)) {
+                                if (ConvertUtils.isEmpty(string)) {
                                 }
                             }
-                            if (!StrUtils.isEmpty(string) && (parseArray = JSONArray.parseArray(string)) != null && !parseArray.isEmpty()) {
+                            if (!ConvertUtils.isEmpty(string) && (parseArray = JSONArray.parseArray(string)) != null && !parseArray.isEmpty()) {
                                 for (int i = 0; i < parseArray.size(); i++) {
                                     JSONObject jSONObject = parseArray.getJSONObject(i);
                                     jSONObject.put(str2, str3);
@@ -1905,7 +1905,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
         }
         JSONObject parseObject = JSON.parseObject(JSON.toJSONString(queryManyFormData));
         String subTableStr = onlCgformHead.getSubTableStr();
-        if (StrUtils.isNotEmpty(subTableStr)) {
+        if (ConvertUtils.isNotEmpty(subTableStr)) {
             ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(subTableStr.split(CgformUtil.COMMA_SEPARATOR)));
             LambdaQueryWrapper<OnlCgformHead> lambdaQueryWrapper2 = new LambdaQueryWrapper<>();
             lambdaQueryWrapper2.in(OnlCgformHead::getTableName, arrayList);
@@ -2009,7 +2009,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
     }
 
     private DataBaseConfig getOnlineDataBaseConfig() {
-        if (StrUtils.isEmpty(this.onlineDatasource)) {
+        if (ConvertUtils.isEmpty(this.onlineDatasource)) {
             return this.dataBaseConfig;
         }
         DataSourceProperty dataSourceProperty = CommonUtils.getDataSourceProperty(this.onlineDatasource);

@@ -3,8 +3,9 @@ package org.jeecg.modules.online.cgform.utils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.jeecg.common.system.api.ISysBaseAPI;
-import org.jeecg.common.util.SpringContextUtils;
+
+
+import cn.hutool.extra.spring.SpringUtil;
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
 import org.jeecgframework.poi.handler.impl.ExcelDataHandlerDefaultImpl;
 import org.jeecgframework.poi.util.PoiPublicUtil;
@@ -27,7 +28,7 @@ public class CgFormExcelHandler extends ExcelDataHandlerDefaultImpl {
     String f177d = "online";
 
     /* renamed from: b */
-    ISysBaseAPI f175b = (ISysBaseAPI) SpringContextUtils.getBean(ISysBaseAPI.class);
+    ISysBaseAPI f175b = (ISysBaseAPI) SpringUtil.getBean(ISysBaseAPI.class);
 
     public CgFormExcelHandler(List<OnlCgformField> list, String str, String str2) {
         this.f174a = m179a(list);

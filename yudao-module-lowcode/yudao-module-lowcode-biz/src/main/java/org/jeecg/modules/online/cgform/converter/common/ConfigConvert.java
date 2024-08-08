@@ -2,10 +2,13 @@ package org.jeecg.modules.online.cgform.converter.common;
 
 import java.util.List;
 import java.util.Map;
-import org.jeecg.common.system.api.ISysBaseAPI;
-import org.jeecg.common.system.vo.DictModel;
-import org.jeecg.common.util.SpringContextUtils;
 
+import cn.hutool.extra.spring.SpringUtil;
+
+import org.jeecg.common.system.vo.DictModel;
+
+
+import org.jeecg.common.util.online.ConvertUtils;
 import org.jeecg.modules.online.cgform.converter.FieldCommentConverter;
 
 /* compiled from: ConfigConvert.java */
@@ -14,7 +17,7 @@ import org.jeecg.modules.online.cgform.converter.FieldCommentConverter;
 public class ConfigConvert implements FieldCommentConverter {
 
     /* renamed from: a */
-    protected ISysBaseAPI f159a;
+    protected ISysBaseAPI baseApi;
 
     /* renamed from: b */
     protected String dbFieldName;
@@ -29,7 +32,7 @@ public class ConfigConvert implements FieldCommentConverter {
     protected String f163e;
 
     public ConfigConvert() {
-        this.f159a = SpringContextUtils.getBean(ISysBaseAPI.class);
+        this.baseApi = SpringUtil.getBean(ISysBaseAPI.class);
     }
 
     public ConfigConvert(String str, String str2, String str3) {
@@ -74,7 +77,7 @@ public class ConfigConvert implements FieldCommentConverter {
     @Override // org.jeecg.modules.online.cgform.converter.FieldCommentConverter
     public String converterToVal(String txt) {
         String str;
-        if (StrUtils.isNotEmpty(txt)) {
+        if (ConvertUtils.isNotEmpty(txt)) {
             String str2 = this.f163e + "= '" + txt + "'";
             int indexOf = this.f161c.indexOf("where");
             if (indexOf > 0) {
@@ -83,7 +86,7 @@ public class ConfigConvert implements FieldCommentConverter {
             } else {
                 str = this.f161c;
             }
-            List queryFilterTableDictInfo = this.f159a.queryFilterTableDictInfo(str, this.f163e, this.f162d, str2);
+            List queryFilterTableDictInfo = this.baseApi.queryFilterTableDictInfo(str, this.f163e, this.f162d, str2);
             if (queryFilterTableDictInfo != null && !queryFilterTableDictInfo.isEmpty()) {
                 return ((DictModel) queryFilterTableDictInfo.get(0)).getValue();
             }
@@ -95,7 +98,7 @@ public class ConfigConvert implements FieldCommentConverter {
     @Override // org.jeecg.modules.online.cgform.converter.FieldCommentConverter
     public String converterToTxt(String val) {
         String str;
-        if (StrUtils.isNotEmpty(val)) {
+        if (ConvertUtils.isNotEmpty(val)) {
             String str2 = this.f162d + "= '" + val + "'";
             int indexOf = this.f161c.indexOf("where");
             if (indexOf > 0) {
@@ -104,7 +107,7 @@ public class ConfigConvert implements FieldCommentConverter {
             } else {
                 str = this.f161c;
             }
-            List queryFilterTableDictInfo = this.f159a.queryFilterTableDictInfo(str, this.f163e, this.f162d, str2);
+            List queryFilterTableDictInfo = this.baseApi.queryFilterTableDictInfo(str, this.f163e, this.f162d, str2);
             if (queryFilterTableDictInfo != null && !queryFilterTableDictInfo.isEmpty()) {
                 return ((DictModel) queryFilterTableDictInfo.get(0)).getText();
             }

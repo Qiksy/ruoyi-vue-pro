@@ -3,8 +3,9 @@ package org.jeecg.modules.online.cgform.converter.field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import cn.hutool.extra.spring.SpringUtil;
 import org.jeecg.common.system.vo.DictModel;
-import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.modules.online.cgform.converter.common.ForeseeConvert;
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
@@ -30,7 +31,7 @@ public class LinkTableConverter extends ForeseeConvert {
         List<DictModel> arrayList = new ArrayList<>();
         try {
             String str = dictText.split(CgformUtil.COMMA_SEPARATOR)[0];
-            this.onlCgformFieldService = SpringContextUtils.getBean(IOnlCgformFieldService.class);
+            this.onlCgformFieldService = SpringUtil.getBean(IOnlCgformFieldService.class);
             List<Map<String, Object>> queryLinkTableDictList = this.onlCgformFieldService.queryLinkTableDictList(dictTable, dictText, dictField);
             if (queryLinkTableDictList != null && !queryLinkTableDictList.isEmpty()) {
                 for (Map<String, Object> map : queryLinkTableDictList) {

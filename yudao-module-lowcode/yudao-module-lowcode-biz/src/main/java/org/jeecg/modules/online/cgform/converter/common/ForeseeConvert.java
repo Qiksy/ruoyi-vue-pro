@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import org.jeecg.common.system.vo.DictModel;
 
+import org.jeecg.common.util.online.ConvertUtils;
 import org.jeecg.modules.online.cgform.converter.FieldCommentConverter;
 
 /* compiled from: ForeseeConvert.java */
@@ -35,7 +36,7 @@ public class ForeseeConvert implements FieldCommentConverter {
 
     @Override // org.jeecg.modules.online.cgform.converter.FieldCommentConverter
     public String converterToVal(String txt) {
-        if (StrUtils.isNotEmpty(txt)) {
+        if (ConvertUtils.isNotEmpty(txt)) {
             for (DictModel dictModel : this.dictlList) {
                 if (dictModel.getText().equals(txt)) {
                     return dictModel.getValue();
@@ -48,7 +49,7 @@ public class ForeseeConvert implements FieldCommentConverter {
 
     @Override // org.jeecg.modules.online.cgform.converter.FieldCommentConverter
     public String converterToTxt(String val) {
-        if (StrUtils.isNotEmpty(val)) {
+        if (ConvertUtils.isNotEmpty(val)) {
             for (DictModel dictModel : this.dictlList) {
                 if (dictModel.getValue() != null && dictModel.getValue().equals(val)) {
                     return dictModel.getText();

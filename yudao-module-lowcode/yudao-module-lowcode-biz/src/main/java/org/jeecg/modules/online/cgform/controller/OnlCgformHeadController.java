@@ -19,7 +19,7 @@ import java.util.*;
 
 import org.jeecg.common.constant.CgformEnum;
 import org.jeecg.codegenerate.DbReadTableUtil;
-import org.jeecg.common.util.online.StrUtils;
+import org.jeecg.common.util.online.ConvertUtils;
 import org.jeecg.modules.online.annotation.PermissionData;
 import org.jeecg.modules.online.cgform.entity.OnlCgformButton;
 import org.jeecg.modules.online.cgform.entity.OnlCgformEnhanceJava;
@@ -477,7 +477,7 @@ public class OnlCgformHeadController {
         if (!"admin".equals(SecurityFrameworkUtils.getUserName())) {
             return error("noadminauth");
         }
-        if (StrUtils.isEmpty(str)) {
+        if (ConvertUtils.isEmpty(str)) {
             return error("未识别的表名信息");
         }
         if (f142c != null && f142c.equals(str)) {
@@ -486,7 +486,7 @@ public class OnlCgformHeadController {
         f142c = str;
         String[] split = str.split(CgformUtil.COMMA_SEPARATOR);
         for (int i = 0; i < split.length; i++) {
-            if (StrUtils.isNotEmpty(split[i]) && this.onlCgformHeadService.count(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, split[i])) <= 0) {
+            if (ConvertUtils.isNotEmpty(split[i]) && this.onlCgformHeadService.count(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, split[i])) <= 0) {
                 this.onlCgformHeadService.saveDbTable2Online(split[i]);
             }
         }
@@ -531,7 +531,7 @@ public class OnlCgformHeadController {
 //        }
         JSONArray jSONArray = new JSONArray();
         for (File file : Objects.requireNonNull(new File(parentPath).listFiles())) {
-            if (file.isDirectory() && StrUtils.isNotEmpty(file.getPath())) {
+            if (file.isDirectory() && ConvertUtils.isNotEmpty(file.getPath())) {
                 JSONObject jSONObject = new JSONObject();
                 System.out.println(file.getPath());
                 jSONObject.put("key", file.getAbsolutePath());
@@ -559,7 +559,7 @@ public class OnlCgformHeadController {
         hashMap.put(CgReportConstant.MAIN, onlCgformHead);
         if (onlCgformHead.getTableType() == 2) {
             String subTableStr = onlCgformHead.getSubTableStr();
-            if (StrUtils.isNotEmpty(subTableStr)) {
+            if (ConvertUtils.isNotEmpty(subTableStr)) {
                 ArrayList<OnlCgformHead> arrayList = new ArrayList<>();
                 for (String str2 : subTableStr.split(CgformUtil.COMMA_SEPARATOR)) {
                     LambdaQueryWrapper<OnlCgformHead> lambdaQueryWrapper = new LambdaQueryWrapper<>();

@@ -42,7 +42,7 @@ public class DataBaseConfig {
     }
 
     public String getUrl() {
-        return oConvertUtils.getString(this.url, this.dmDataBaseConfig.getUrl());
+        return ConvertUtils.getString(this.url, this.dmDataBaseConfig.getUrl());
     }
 
     public void setUrl(String url) {
@@ -50,7 +50,7 @@ public class DataBaseConfig {
     }
 
     public String getUsername() {
-        return oConvertUtils.getString(this.username, this.dmDataBaseConfig.getUsername());
+        return ConvertUtils.getString(this.username, this.dmDataBaseConfig.getUsername());
     }
 
     public void setUsername(String username) {
@@ -58,7 +58,7 @@ public class DataBaseConfig {
     }
 
     public String getPassword() {
-        return oConvertUtils.getString(this.password, this.dmDataBaseConfig.getPassword());
+        return ConvertUtils.getString(this.password, this.dmDataBaseConfig.getPassword());
     }
 
     public void setPassword(String password) {
@@ -66,7 +66,7 @@ public class DataBaseConfig {
     }
 
     public String getDriverClassName() {
-        return oConvertUtils.getString(this.driverClassName, this.dmDataBaseConfig.getDriverClassName());
+        return ConvertUtils.getString(this.driverClassName, this.dmDataBaseConfig.getDriverClassName());
     }
 
     public void setDriverClassName(String driverClassName) {

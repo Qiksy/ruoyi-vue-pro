@@ -19,7 +19,7 @@ import net.sf.jsqlparser.JSQLParserException;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.exception.JeecgBootException;
-import org.jeecg.common.system.api.ISysBaseAPI;
+
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DynamicDataSourceModel;
@@ -108,7 +108,7 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
         String sql2 = sqlParamsHandler.m47a(sql);
         Map<String, Object> selfSqlParams = sqlParamsHandler.getSelfSqlParams();
         HashMap<String,Object> hashMap = new HashMap<>(5);
-        Page<Map<String, Object>> page = new Page<>(oConvertUtils.getInt(params.get("pageNo"), 1), oConvertUtils.getInt(params.get("pageSize"), 10));
+        Page<Map<String, Object>> page = new Page<>(ConvertUtils.getInt(params.get("pageNo"), 1), ConvertUtils.getInt(params.get("pageSize"), 10));
         LambdaQueryWrapper<OnlCgreportItem> lambdaQueryWrapper2 = new LambdaQueryWrapper<>();
         lambdaQueryWrapper2.eq(OnlCgreportItem::getCgrheadId, onlCgreportHeadId);
         ArrayList<String> arrayList = new ArrayList<>();
@@ -188,8 +188,8 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
 
     @Override // org.jeecg.modules.online.cgreport.service.IOnlCgreportHeadService
     public Map<String, Object> executeSelectSqlDynamic(String dbKey, String sql, Map<String, Object> params, String onlCgreportHeadId) {
-        int i = oConvertUtils.getInt(params.get("pageNo"), 1);
-        int i2 = oConvertUtils.getInt(params.get("pageSize"), 10);
+        int i = ConvertUtils.getInt(params.get("pageNo"), 1);
+        int i2 = ConvertUtils.getInt(params.get("pageSize"), 10);
         DynamicDataSourceModel cacheDynamicDataSourceModel = DataSourceCachePool.getCacheDynamicDataSourceModel(dbKey);
         if (ReUtil.contains(" order\\s+by ", sql.toLowerCase()) && "3".equalsIgnoreCase(cacheDynamicDataSourceModel.getDbType())) {
             throw exception("SqlServer不支持SQL内排序!");

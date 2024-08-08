@@ -12,7 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jeecg.common.exception.JeecgBootException;
-import org.jeecg.common.system.api.ISysBaseAPI;
+
 import org.jeecg.common.system.vo.DictModel;
 
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
@@ -115,7 +115,7 @@ public class OnlCgreportAPIService implements IOnlCgreportAPIService {
         for (OnlCgreportItem onlCgreportItem : list) {
             String fieldType = onlCgreportItem.getFieldType();
             String fieldName = onlCgreportItem.getFieldName();
-            if ("1".equals(oConvertUtils.getString(onlCgreportItem.getIsShow()))) {
+            if ("1".equals(ConvertUtils.getString(onlCgreportItem.getIsShow()))) {
                 ExcelExportEntity excelExportEntity = new ExcelExportEntity(onlCgreportItem.getFieldTxt(), fieldName, 15);
                 m439a(onlCgreportItem, excelExportEntity);
                 if (OnlFormShowType.DATE.equalsIgnoreCase(onlCgreportItem.getFieldType())) {
@@ -141,7 +141,7 @@ public class OnlCgreportAPIService implements IOnlCgreportAPIService {
                 }
                 arrayList.add(excelExportEntity);
             }
-            if ("1".equals(oConvertUtils.getString(onlCgreportItem.getIsTotal()))) {
+            if ("1".equals(ConvertUtils.getString(onlCgreportItem.getIsTotal()))) {
                 arrayList2.add(fieldName);
             }
         }
@@ -187,7 +187,7 @@ public class OnlCgreportAPIService implements IOnlCgreportAPIService {
 
     /* renamed from: a */
     private void m439a(OnlCgreportItem onlCgreportItem, ExcelExportEntity excelExportEntity) {
-        List<DictModel> queryColumnDictList = this.onlCgreportHeadService.queryColumnDictList(oConvertUtils.getString(onlCgreportItem.getDictCode()), null, null);
+        List<DictModel> queryColumnDictList = this.onlCgreportHeadService.queryColumnDictList(ConvertUtils.getString(onlCgreportItem.getDictCode()), null, null);
         if (queryColumnDictList != null && !queryColumnDictList.isEmpty()) {
             ArrayList<String> arrayList = new ArrayList<>();
             for (DictModel dictModel : queryColumnDictList) {

@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
-import org.jeecg.common.util.SpringContextUtils;
+
 import org.jeecg.modules.online.cgform.converter.ConvertUtil;
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
 import org.jeecg.modules.online.cgform.entity.OnlCgformHead;
@@ -76,14 +76,14 @@ public class OnlCgformSqlServiceImpl implements IOnlCgformSqlService {
 
     @Override // org.jeecg.modules.online.cgform.service.IOnlCgformSqlService
     public void saveOrUpdateSubData(String subDataJsonStr, OnlCgformHead head, List<OnlCgformField> subFiledList) throws BusinessException {
-        m355a(subDataJsonStr, head, subFiledList, SpringContextUtils.getBean(OnlCgformFieldMapper.class));
+        m355a(subDataJsonStr, head, subFiledList, SpringUtil.getBean(OnlCgformFieldMapper.class));
     }
 
     @Override // org.jeecg.modules.online.cgform.service.IOnlCgformSqlService
     public Map<String, String> saveOnlineImportDataWithValidate(OnlCgformHead head, List<OnlCgformField> fieldList, List<Map<String, Object>> dataList) {
         StringBuffer stringBuffer = new StringBuffer();
         OnlineImportValidator onlineImportValidator = new OnlineImportValidator(fieldList);
-        OnlCgformFieldMapper onlCgformFieldMapper = SpringContextUtils.getBean(OnlCgformFieldMapper.class);
+        OnlCgformFieldMapper onlCgformFieldMapper = SpringUtil.getBean(OnlCgformFieldMapper.class);
         int i = 0;
         int i2 = 0;
         int size = dataList.size();

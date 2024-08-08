@@ -3,6 +3,7 @@ package org.jeecg.modules.online.cgform.converter.field;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jeecg.common.util.online.ConvertUtils;
 import org.jeecg.modules.online.cgform.converter.common.ConfigConvert;
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
@@ -31,7 +32,7 @@ public class CatTreeConverter extends ConfigConvert {
 
     @Override // org.jeecg.modules.online.cgform.converter.p010a.C0029a, org.jeecg.modules.online.cgform.converter.FieldCommentConverter
     public Map<String, String> getConfig() {
-        if (StrUtils.isEmpty(this.treeText)) {
+        if (ConvertUtils.isEmpty(this.treeText)) {
             return null;
         }
         HashMap<String,String> hashMap = new HashMap<>(5);

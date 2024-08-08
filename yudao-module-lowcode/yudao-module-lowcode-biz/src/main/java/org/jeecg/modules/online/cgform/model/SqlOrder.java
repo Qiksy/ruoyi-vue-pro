@@ -1,7 +1,7 @@
 package org.jeecg.modules.online.cgform.model;
 
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 
+import org.jeecg.common.util.online.ConvertUtils;
 
 /* compiled from: SqlOrder.java */
 /* renamed from: org.jeecg.modules.online.cgform.model.h */
@@ -43,7 +43,7 @@ public class SqlOrder {
 
     public String getRealSql() {
         String str;
-        String str2 = this.alias + StrUtils.camelToUnderline(this.column);
+        String str2 = this.alias + ConvertUtils.camelToUnderline(this.column);
         if ("asc".equals(this.rule)) {
             str = str2 + " asc";
         } else {

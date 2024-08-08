@@ -58,7 +58,7 @@ public class EnhanceJsUtil {
     /* renamed from: a */
     public static String m266a(String str, String str2, String str3) {
         String str4;
-        String str5 = "(" + oConvertUtils.getString(str3) + str2 + "\\s*\\(\\)\\s*\\{)";
+        String str5 = "(" + ConvertUtils.getString(str3) + str2 + "\\s*\\(\\)\\s*\\{)";
         String str6 = str2 + ":function(that){const getAction=this._getAction,postAction=this._postAction,deleteAction=this._deleteAction;";
         String m267b = m267b(str, "\\}\\s*\r*\n*\\s*" + str5, "}," + str6);
         if (m267b == null) {

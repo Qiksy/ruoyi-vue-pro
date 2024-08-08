@@ -2,6 +2,7 @@ package org.jeecg.modules.online.cgform.enhance.impl.http;
 
 import com.alibaba.fastjson.JSONObject;
 
+import org.jeecg.common.util.online.ConvertUtils;
 import org.jeecg.modules.online.cgform.enhance.impl.http.base.CgformEnhanceHttpInter;
 import org.jeecg.modules.online.cgform.entity.OnlCgformEnhanceJava;
 import org.slf4j.Logger;
@@ -23,9 +24,9 @@ public class CgformEnhanceHttpFormImpl implements CgformEnhanceHttpInter {
         jSONObject.put("tableName", tableName);
         jSONObject.put("record", record);
         Object sendPost = sendPost(jSONObject, enhance);
-        if (sendPost != null && oConvertUtils.getInt(sendPost) == null && (sendPost instanceof JSONObject)) {
+        if (sendPost != null && ConvertUtils.getInt(sendPost) == null && (sendPost instanceof JSONObject)) {
             JSONObject jSONObject2 = (JSONObject) sendPost;
-            oConvertUtils.getInt(jSONObject2.get("code"));
+            ConvertUtils.getInt(jSONObject2.get("code"));
             JSONObject jSONObject3 = jSONObject2.getJSONObject("record");
             if (jSONObject3 != null) {
                 record.putAll(jSONObject3);

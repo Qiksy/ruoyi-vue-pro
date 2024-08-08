@@ -9,7 +9,6 @@ import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import org.hibernate.HibernateException;
 import org.jeecg.modules.online.cgform.entity.OnlCgformButton;
 import org.jeecg.modules.online.cgform.entity.OnlCgformEnhanceJava;
 import org.jeecg.modules.online.cgform.entity.OnlCgformEnhanceJs;

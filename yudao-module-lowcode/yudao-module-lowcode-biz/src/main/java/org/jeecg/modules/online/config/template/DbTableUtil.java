@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.jeecg.common.util.CommonUtils;
-import org.jeecg.common.util.SpringContextUtils;
+
 import org.jeecg.common.util.dynamic.db.DbTypeUtils;
 
 import org.jeecg.modules.online.config.exception.DBException;
@@ -232,7 +232,7 @@ public class DbTableUtil {
                 if (dataBaseConfig != null) {
                     username = dataBaseConfig.getUsername();
                 } else {
-                    username = ((DataBaseConfig) SpringContextUtils.getBean(DataBaseConfig.class)).getUsername();
+                    username = ((DataBaseConfig) SpringUtil.getBean(DataBaseConfig.class)).getUsername();
                 }
                 if (DbTypeUtils.dbTypeIsOracle(m499c) || DbType.DB2.equals(m499c)) {
                     username = username != null ? username.toUpperCase() : null;

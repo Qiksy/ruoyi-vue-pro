@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.exception.JeecgBootException;
-import org.jeecg.common.system.api.ISysBaseAPI;
+
 import org.jeecg.common.system.util.JeecgDataAutorUtils;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
@@ -1076,7 +1076,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
             HashSet<String> hashSet2 = new HashSet<>();
             hashSet2.addAll(set);
             hashSet2.addAll(hashSet);
-            hashSet2.removeIf(oConvertUtils::isEmpty);
+            hashSet2.removeIf(ConvertUtils::isEmpty);
             for (String str4 : hashSet2) {
                 if (set.contains(str4) && !hashSet.contains(str4)) {
                     i2++;

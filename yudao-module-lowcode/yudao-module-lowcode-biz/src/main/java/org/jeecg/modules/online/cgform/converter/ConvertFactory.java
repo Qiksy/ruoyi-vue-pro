@@ -4,9 +4,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.jeecg.common.util.MyClassLoader;
-import org.jeecg.common.util.SpringContextUtils;
 
+import cn.hutool.extra.spring.SpringUtil;
+import org.jeecg.common.util.MyClassLoader;
+
+
+import org.jeecg.common.util.online.ConvertUtils;
 import org.jeecg.modules.online.cgform.converter.field.CatTreeConverter;
 import org.jeecg.modules.online.cgform.converter.field.DepartConverter;
 import org.jeecg.modules.online.cgform.converter.field.DictEasyConverter;
@@ -126,7 +129,7 @@ public class ConvertFactory {
         FieldCommentConverter m173a;
         HashMap<String,FieldCommentConverter> hashMap = new HashMap<>(5);
         for (OnlCgformField onlCgformField : list) {
-            if (StrUtils.isNotEmpty(onlCgformField.getConverter())) {
+            if (ConvertUtils.isNotEmpty(onlCgformField.getConverter())) {
                 m173a = m175a(onlCgformField.getConverter().trim());
             } else {
                 m173a = m173a(onlCgformField);
@@ -148,7 +151,7 @@ public class ConvertFactory {
                 f145a.error(e.getMessage(), e);
             }
         } else {
-            obj = SpringContextUtils.getBean(str);
+            obj = SpringUtil.getBean(str);
         }
         if (obj != null && (obj instanceof FieldCommentConverter)) {
             return (FieldCommentConverter) obj;
