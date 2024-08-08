@@ -105,6 +105,16 @@ public class ConvertUtils extends StrUtil {
             return null;
         }
     }
+    public static int getInt(Object object, int defval) {
+        if (isEmpty(object)) {
+            return (defval);
+        }
+        try {
+            return (Integer.parseInt(object.toString()));
+        } catch (NumberFormatException e) {
+            return (defval);
+        }
+    }
 
     public static String getString(Object object) {
         if (isEmpty(object)) {
@@ -112,4 +122,27 @@ public class ConvertUtils extends StrUtil {
         }
         return (object.toString().trim());
     }
+
+    public static String getString(int i) {
+        return (String.valueOf(i));
+    }
+
+    public static String getString(float i) {
+        return (String.valueOf(i));
+    }
+
+    public static String getString(String s, String defval) {
+        if (isEmpty(s)) {
+            return (defval);
+        }
+        return (s.trim());
+    }
+
+    public static String getString(Object s, String defval) {
+        if (isEmpty(s)) {
+            return (defval);
+        }
+        return (s.toString().trim());
+    }
+
 }

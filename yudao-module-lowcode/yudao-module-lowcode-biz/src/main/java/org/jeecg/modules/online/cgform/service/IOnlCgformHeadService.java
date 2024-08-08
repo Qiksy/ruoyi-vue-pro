@@ -26,7 +26,7 @@ public interface IOnlCgformHeadService extends IService<OnlCgformHead> {
 
     CommonResult<?> editAll(OnlCgformModel onlCgformModel);
 
-    void doDbSynch(String code, String syncMethod) throws HibernateException, IOException, TemplateException, SQLException, DBException;
+    void doDbSynch(String code, String syncMethod) throws  IOException, TemplateException, SQLException, DBException;
 
     void deleteRecordAndTable(String str) throws DBException, SQLException;
 

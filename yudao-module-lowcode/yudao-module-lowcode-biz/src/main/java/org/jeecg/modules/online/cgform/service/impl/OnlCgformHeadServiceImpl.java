@@ -1,5 +1,6 @@
 package org.jeecg.modules.online.cgform.service.impl;
 
+import cn.hutool.extra.spring.SpringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
@@ -8,6 +9,7 @@ import com.baomidou.dynamic.datasource.creator.DataSourceProperty;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import freemarker.template.TemplateException;
 import java.io.IOException;
@@ -16,24 +18,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.*;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.HibernateException;
 import org.jeecg.codegenerate.DbReadTableUtil;
 import org.jeecg.codegenerate.generate.pojo.ColumnVo;
 import org.jeecg.codegenerate.generate.pojo.TableVo;
-import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.CgformEnum;
 import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.constant.enums.CgformEnum;
-import org.jeecg.common.exception.JeecgBootException;
 
-import org.jeecg.common.util.CommonUtils;
 import org.jeecg.common.util.MyClassLoader;
 
-import org.jeecg.common.util.SqlInjectionUtil;
-import org.jeecg.common.util.UUIDGenerator;
-
 import org.jeecg.common.util.online.ConvertUtils;
+import org.jeecg.common.util.online.SqlInjectionUtil;
 import org.jeecg.modules.online.auth.entity.OnlAuthData;
 import org.jeecg.modules.online.auth.entity.OnlAuthPage;
 import org.jeecg.modules.online.auth.entity.OnlAuthRelation;
@@ -351,14 +346,13 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
      * 同步在线表单到数据库
      * @param code
      * @param syncMethod
-     * @throws HibernateException
      * @throws IOException
      * @throws TemplateException
      * @throws SQLException
      * @throws DBException
      */
     @Override // org.jeecg.modules.online.cgform.service.IOnlCgformHeadService
-    public void doDbSynch(String code, String syncMethod) throws HibernateException, IOException, TemplateException, SQLException, DBException {
+    public void doDbSynch(String code, String syncMethod) throws  IOException, TemplateException, SQLException, DBException {
         OnlCgformHead onlCgformHead = getById(code);
         if (onlCgformHead == null) {
             throw new DBException("实体配置不存在");
@@ -623,7 +617,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
         onlCgformHead.setIsDesForm("N");
         onlCgformHead.setScroll(1);
         onlCgformHead.setThemeTemplate(CgformUtil.SYNC_TYPE_NORMAL);
-        String generate = UUIDGenerator.generate();
+        String generate = DefaultIdentifierGenerator.getInstance().nextUUID(null);
         onlCgformHead.setId(generate);
         ArrayList<OnlCgformField> arrayList = new ArrayList<>();
         try {
