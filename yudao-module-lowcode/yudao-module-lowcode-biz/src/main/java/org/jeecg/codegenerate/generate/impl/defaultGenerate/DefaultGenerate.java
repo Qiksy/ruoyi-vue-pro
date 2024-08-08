@@ -20,94 +20,93 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.jeecg.codegenerate.generate.a.a;
+import lombok.extern.slf4j.Slf4j;
+import org.jeecg.codegenerate.generate.a.TemplateReaderUtil;
 import org.jeecg.codegenerate.generate.util.FileUtils;
 import org.jeecg.codegenerate.generate.util.NonceUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jeecg.common.config.LowCodeProperties;
 
+@Slf4j
 public class DefaultGenerate {
-    private static final Logger a = LoggerFactory.getLogger(DefaultGenerate.class);
     protected static String c = "UTF-8";
-    private static final String b = "__";
+    private static final String underLine = "__";
     protected List<String> d = new ArrayList();
 
     public DefaultGenerate() {
     }
 
-    protected void a(org.jeecg.codegenerate.generate.a.a  var1, String var2, Map<String, Object> var3) throws Exception {
-        for(int var4 = 0; var4 < var1.c().size(); ++var4) {
-            File var5 = (File)var1.c().get(var4);
-            this.a(var2, var5, var3, var1);
+    protected void a(TemplateReaderUtil templateReaderUtil, String var2, Map<String, Object> var3) throws Exception {
+        for(int i = 0; i < templateReaderUtil.loadTemplate().size(); ++i) {
+            File template = templateReaderUtil.loadTemplate().get(i);
+            this.a(var2, template, var3, templateReaderUtil);
         }
 
     }
 
-    protected void a(String var1, File file, Map<String, Object> var3, org.jeecg.codegenerate.generate.a.a  var4) throws Exception {
+    protected void a(String var1, File file, Map<String, Object> var3, TemplateReaderUtil readerUtil) throws Exception {
         if (file == null) {
             throw new IllegalStateException("'templateRootDir' must be not null");
         } else {
-            a.info("  load template from templateRootDir = '" + file.getAbsolutePath() + "',stylePath ='" + var4.b() + "',  out GenerateRootDir:" + org.jeecgframework.codegenerate.a.a.f);
-            List<File> var5 = FileUtils.getFileList(file);
+            log.info("  load template from templateRootDir = '" + file.getAbsolutePath() + "',stylePath ='" + readerUtil.getStylePath() + "',  out GenerateRootDir:" + LowCodeProperties.projectPath);
+            List<File> fileList = FileUtils.getFileList(file);
 
-            for(int var6 = 0; var6 < var5.size(); ++var6) {
-                File var7 = (File)var5.get(var6);
-                this.a(var1, file, var3, var7, var4);
+            for (File tempFile : fileList) {
+                this.a(var1, file, var3, tempFile, readerUtil);
             }
 
         }
     }
 
-    protected void a(String var1, File var2, Map<String, Object> var3, File var4, org.jeecg.codegenerate.generate.a.a var5) throws Exception {
-        String var6 = org.jeecgframework.codegenerate.generate.util.a.a(var2, var4);
+    protected void a(String var1, File var2, Map<String, Object> var3, File var4, TemplateReaderUtil templateReaderUtil) throws Exception {
+        String relativePath = FileUtils.getRelativePath(var2, var4);
 
         try {
-            if (var5.b() != null && !"".equals(var5.b()) && !var6.replace(File.separator, ".").startsWith(var5.b())) {
+            if (templateReaderUtil.getStylePath() != null && !"".equals(templateReaderUtil.getStylePath()) && !relativePath.replace(File.separator, ".").startsWith(templateReaderUtil.getStylePath())) {
                 return;
             }
 
-            String var7 = a(var3, var6, var5);
+            String var7 = a(var3, relativePath, templateReaderUtil);
             String var8;
             if (var7.startsWith("java")) {
-                var8 = var1 + File.separator + org.jeecgframework.codegenerate.a.a.h.replace(".", File.separator);
+                var8 = var1 + File.separator + LowCodeProperties.sourceRootPackage.replace(".", File.separator);
                 var7 = var7.substring("java".length());
                 var7 = var8 + var7;
-                this.a(var6, var7, var3, var5);
+                this.a(relativePath, var7, var3, templateReaderUtil);
             } else if (var7.startsWith("webapp")) {
-                var8 = var1 + File.separator + org.jeecgframework.codegenerate.a.a.i.replace(".", File.separator);
+                var8 = var1 + File.separator + LowCodeProperties.webRootPackage.replace(".", File.separator);
                 var7 = var7.substring("webapp".length());
                 var7 = var8 + var7;
-                this.a(var6, var7, var3, var5);
+                this.a(relativePath, var7, var3, templateReaderUtil);
             }
         } catch (Exception var10) {
-            a.error(var10.toString(), var10);
+            log.error(var10.toString(), var10);
         }
 
     }
 
-    protected void a(String var1, String var2, Map<String, Object> var3, org.jeecgframework.codegenerate.generate.a.a var4) throws Exception {
-        if (var2.endsWith("i")) {
-            var2 = var2.substring(0, var2.length() - 1);
+    protected void a(String var1, String fileName, Map<String, Object> var3, TemplateReaderUtil var4) throws Exception {
+        if (fileName.endsWith("i")) {
+            fileName = fileName.substring(0, fileName.length() - 1);
         }
 
-        boolean var5 = NonceUtils.a(var2);
-        if (var2.contains("__") && !var5) {
-            var2 = var2.replace("__", ".");
+        boolean var5 = NonceUtils.a(fileName);
+        if (fileName.contains(underLine) && !var5) {
+            fileName = fileName.replace(underLine, ".");
         }
 
-        String var6 = var2;
-        if (var2.endsWith(".vue")) {
-            var6 = var2.substring(0, var2.length() - 4);
+        String var6 = fileName;
+        if (fileName.endsWith(".vue")) {
+            var6 = fileName.substring(0, fileName.length() - 4);
         }
 
-        if (!var6.contains("vue") || var4 == null || !g.c(var4.a()) || var2.contains(var4.a() + File.separator)) {
+        if (!var6.contains("vue") || var4 == null || !g.c(var4.a()) || fileName.contains(var4.a() + File.separator)) {
             Template var7 = this.a(var1, var4);
             var7.setOutputEncoding(c);
-            File var8 = org.jeecgframework.codegenerate.generate.util.a.c(var2);
-            a.info("[generate]\t template:" + var1 + " ==> " + var2);
+            File var8 = FileUtils.c(fileName);
+            log.info("[generate]\t template:" + var1 + " ==> " + fileName);
             org.jeecgframework.codegenerate.generate.util.b.a(var7, var3, var8, c);
             if (!this.a(var8)) {
-                this.d.add("生成成功：" + var2);
+                this.d.add("生成成功：" + fileName);
             }
 
             if (this.a(var8)) {
@@ -117,7 +116,7 @@ public class DefaultGenerate {
         }
     }
 
-    protected Template a(String var1, org.jeecgframework.codegenerate.generate.a.a var2) throws IOException {
+    protected Template a(String var1, TemplateReaderUtil var2) throws IOException {
         return org.jeecgframework.codegenerate.generate.util.b.a(var2.c(), c, var1).getTemplate(var1);
     }
 
@@ -148,7 +147,7 @@ public class DefaultGenerate {
                                 String var9 = var6.substring(var2.length());
                                 String var10 = var1.getParentFile().getAbsolutePath();
                                 var9 = var10 + File.separator + var9;
-                                a.info("[generate]\t split file:" + var1.getAbsolutePath() + " ==> " + var9);
+                                log.info("[generate]\t split file:" + var1.getAbsolutePath() + " ==> " + var9);
                                 var8 = new OutputStreamWriter(new FileOutputStream(var9), "UTF-8");
                                 var5.add(var8);
                                 this.d.add("生成成功：" + var9);
@@ -268,7 +267,7 @@ public class DefaultGenerate {
 
     }
 
-    protected static String a(Map<String, Object> var0, String var1, org.jeecgframework.codegenerate.generate.a.a var2) throws Exception {
+    protected static String a(Map<String, Object> var0, String var1, TemplateReaderUtil readerUtil) throws Exception {
         String var3 = var1;
         boolean var4 = true;
         int var9;
@@ -282,14 +281,14 @@ public class DefaultGenerate {
             }
 
             if (!"true".equals(String.valueOf(var6))) {
-                a.error("[not-generate]\t test expression '@" + var5 + "' is false,template:" + var1);
+                log.error("[not-generate]\t test expression '@" + var5 + "' is false,template:" + var1);
                 return null;
             }
         }
 
-        Configuration var10 = org.jeecgframework.codegenerate.generate.util.b.a(var2.c(), c, "/");
+        Configuration var10 = org.jeecgframework.codegenerate.generate.util.b.a(readerUtil.c(), c, "/");
         var3 = org.jeecgframework.codegenerate.generate.util.b.a(var3, var0, var10);
-        String var11 = var2.b();
+        String var11 = readerUtil.b();
         if (var11 != null && var11 != "") {
             var3 = var3.substring(var11.length() + 1);
         }

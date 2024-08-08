@@ -42,11 +42,17 @@ public class FileUtils {
 
     }
 
-    public static String a(File var0, File var1) {
-        if (var0.equals(var1)) {
+    /**
+     * 返回他们之前的想读路径
+     * @param file
+     * @param file1
+     * @return
+     */
+    public static String getRelativePath(File file, File file1) {
+        if (file.equals(file1)) {
             return "";
         } else {
-            return var0.getParentFile() == null ? var1.getAbsolutePath().substring(var0.getAbsolutePath().length()) : var1.getAbsolutePath().substring(var0.getAbsolutePath().length() + 1);
+            return file.getParentFile() == null ? file1.getAbsolutePath().substring(file.getAbsolutePath().length()) : file1.getAbsolutePath().substring(file.getAbsolutePath().length() + 1);
         }
     }
 
