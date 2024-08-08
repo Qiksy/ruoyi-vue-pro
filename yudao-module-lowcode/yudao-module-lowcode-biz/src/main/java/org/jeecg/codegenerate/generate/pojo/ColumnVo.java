@@ -3,10 +3,7 @@
 // (powered by FernFlower decompiler)
 //
 
-package org.jeecg.codegenerate.pojo;
-
-
-import lombok.Data;
+package org.jeecg.codegenerate.generate.pojo;
 
 
 public class ColumnVo extends CgFormColumnExtendVo {

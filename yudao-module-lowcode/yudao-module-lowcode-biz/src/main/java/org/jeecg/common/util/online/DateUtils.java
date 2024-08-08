@@ -1,4 +1,4 @@
-package org.jeecg.codegenerate.util;
+package org.jeecg.common.util.online;
 
 import org.jeecg.common.constant.SymbolConstant;
 import org.springframework.util.StringUtils;

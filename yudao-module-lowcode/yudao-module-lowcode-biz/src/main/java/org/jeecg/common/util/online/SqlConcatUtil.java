@@ -1,10 +1,9 @@
-package org.jeecg.codegenerate.util;
+package org.jeecg.common.util.online;
 
 import cn.hutool.extra.spring.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.constant.DataBaseConstant;
 import org.jeecg.common.constant.SymbolConstant;
-import org.jeecg.common.util.online.StrUtils;
 import org.jeecg.query.QueryGenerator;
 import org.jeecg.query.QueryRuleEnum;
 

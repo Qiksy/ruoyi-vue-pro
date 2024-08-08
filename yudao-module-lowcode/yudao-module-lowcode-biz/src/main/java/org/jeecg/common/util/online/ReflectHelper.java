@@ -1,8 +1,7 @@
-package org.jeecg.codegenerate.util;
+package org.jeecg.common.util.online;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.extern.slf4j.Slf4j;
-import org.jeecg.common.util.online.StrUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

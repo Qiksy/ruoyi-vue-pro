@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.jeecg.codegenerate.util.DateUtils;
-import org.jeecg.codegenerate.util.ReflectHelper;
-import org.jeecg.codegenerate.util.SqlConcatUtil;
+import org.jeecg.common.util.online.DateUtils;
+import org.jeecg.common.util.online.ReflectHelper;
+import org.jeecg.common.util.online.SqlConcatUtil;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;
 import org.jeecg.common.system.vo.SysPermissionDataRuleModel;

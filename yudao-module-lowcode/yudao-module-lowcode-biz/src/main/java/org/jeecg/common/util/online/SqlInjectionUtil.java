@@ -378,7 +378,7 @@ public class SqlInjectionUtil {
 	 * @return
 	 */
 	public static String getSqlInjectSortField(String sortField) {
-		String field = SqlInjectionUtil.getSqlInjectField(com.baomidou.mybatisplus.core.toolkit.StrUtils.camelToUnderline((sortField)));
+		String field = SqlInjectionUtil.getSqlInjectField(StrUtils.camelToUnderline((sortField)));
 		return field;
 	}
 

@@ -1,4 +1,4 @@
-package org.jeecg.codegenerate.pojo;
+package org.jeecg.codegenerate.generate.pojo;
 
 import lombok.Data;
 
