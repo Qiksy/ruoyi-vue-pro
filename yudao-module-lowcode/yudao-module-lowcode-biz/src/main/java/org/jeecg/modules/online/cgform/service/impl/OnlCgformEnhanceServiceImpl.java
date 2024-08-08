@@ -3,7 +3,7 @@ package org.jeecg.modules.online.cgform.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 
 import java.util.List;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.modules.online.cgform.entity.OnlCgformEnhanceJava;
 import org.jeecg.modules.online.cgform.entity.OnlCgformEnhanceSql;
 import org.jeecg.modules.online.cgform.mapper.OnlCgformEnhanceJavaMapper;
@@ -63,7 +63,7 @@ public class OnlCgformEnhanceServiceImpl implements IOnlCgformEnhanceService {
         if (selectCount == null) {
             return true;
         }
-        if ((selectCount == 1 && oConvertUtils.isEmpty(onlCgformEnhanceJava.getId())) || selectCount == 2) {
+        if ((selectCount == 1 && StrUtils.isEmpty(onlCgformEnhanceJava.getId())) || selectCount == 2) {
             return false;
         }
         return true;
@@ -78,7 +78,7 @@ public class OnlCgformEnhanceServiceImpl implements IOnlCgformEnhanceService {
         if (selectCount == null) {
             return true;
         }
-        if ((selectCount == 1 && oConvertUtils.isEmpty(onlCgformEnhanceSql.getId())) || selectCount > 1) {
+        if ((selectCount == 1 && StrUtils.isEmpty(onlCgformEnhanceSql.getId())) || selectCount > 1) {
             return false;
         }
         return true;

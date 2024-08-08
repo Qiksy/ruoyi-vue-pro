@@ -21,7 +21,7 @@ import org.jeecg.common.system.util.JeecgDataAutorUtils;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
 import org.jeecg.common.util.dynamic.db.DbTypeUtils;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.modules.online.auth.service.IOnlAuthDataService;
 import org.jeecg.modules.online.cgform.converter.ConvertUtil;
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
@@ -187,7 +187,7 @@ public class OnlineJoinQueryServiceImpl implements IOnlineJoinQueryService {
             OnlCgformField onlCgformField = list.get(i);
             String dbFieldName = onlCgformField.getDbFieldName();
             if (!"id".equals(dbFieldName) && 1 == onlCgformField.getIsShowList()) {
-                if (CgformUtil.f223R.equals(onlCgformField.getFieldShowType()) && oConvertUtils.isNotEmpty(onlCgformField.getDictText())) {
+                if (CgformUtil.f223R.equals(onlCgformField.getFieldShowType()) && StrUtils.isNotEmpty(onlCgformField.getDictText())) {
                     list2.add(str + onlCgformField.getDictText());
                 }
                 list2.add(str + dbFieldName);
@@ -215,7 +215,7 @@ public class OnlineJoinQueryServiceImpl implements IOnlineJoinQueryService {
                     break;
                 }
                 OnlCgformField next = it.next();
-                if (oConvertUtils.isNotEmpty(next.getMainField()) && oConvertUtils.isNotEmpty(next.getMainTable())) {
+                if (StrUtils.isNotEmpty(next.getMainField()) && StrUtils.isNotEmpty(next.getMainTable())) {
                     onlTable.setMainField(next.getMainField());
                     onlTable.setJoinField(next.getDbFieldName());
                     break;
@@ -600,7 +600,7 @@ public class OnlineJoinQueryServiceImpl implements IOnlineJoinQueryService {
             } else {
                 List<Map<String, Object>> arrayList = new ArrayList<>();
                 String obj = params.get("selections") == null ? null : params.get("selections").toString();
-                if (oConvertUtils.isNotEmpty(obj)) {
+                if (StrUtils.isNotEmpty(obj)) {
                     z = false;
                     if (m181a) {
                         Map<String, List<String>> m256f = CgformUtil.m256f(obj, new ArrayList<>(queryInfo.getTableAliasMap().values()));
@@ -621,9 +621,9 @@ public class OnlineJoinQueryServiceImpl implements IOnlineJoinQueryService {
                 } catch (BusinessException e) {
                     logger.error("导出java增强处理出错", e.getMessage());
                 }
-                if (head.getTableType().intValue() == 2 && !m181a && oConvertUtils.isEmpty(params.get(CgformUtil.f251at))) {
+                if (head.getTableType().intValue() == 2 && !m181a && StrUtils.isEmpty(params.get(CgformUtil.f251at))) {
                     String subTableStr = head.getSubTableStr();
-                    if (oConvertUtils.isNotEmpty(subTableStr)) {
+                    if (StrUtils.isNotEmpty(subTableStr)) {
                         for (String str : subTableStr.split(CgformUtil.COMMA_SEPARATOR)) {
                             addAllSubTableDate(str, params, arrayList, m257b, z2);
                         }
@@ -641,7 +641,7 @@ public class OnlineJoinQueryServiceImpl implements IOnlineJoinQueryService {
 
     @Override // org.jeecg.modules.online.cgform.service.IOnlineJoinQueryService
     public void addAllSubTableDate(String subTable, Map<String, Object> params, List<Map<String, Object>> result, List<ExcelExportEntity> entityList, boolean subEntityExist) {
-        if (oConvertUtils.isEmpty(subTable)) {
+        if (StrUtils.isEmpty(subTable)) {
             return;
         }
         OnlCgformHead onlCgformHead = (OnlCgformHead) this.onlCgformHeadService.getOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, subTable));
@@ -657,7 +657,7 @@ public class OnlineJoinQueryServiceImpl implements IOnlineJoinQueryService {
                 break;
             }
             OnlCgformField onlCgformField = (OnlCgformField) it.next();
-            if (oConvertUtils.isNotEmpty(onlCgformField.getMainField())) {
+            if (StrUtils.isNotEmpty(onlCgformField.getMainField())) {
                 str = onlCgformField.getMainField();
                 str2 = onlCgformField.getDbFieldName();
                 break;

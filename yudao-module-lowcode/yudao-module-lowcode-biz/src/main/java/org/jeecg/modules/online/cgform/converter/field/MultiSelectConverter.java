@@ -6,7 +6,7 @@ import java.util.List;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.util.SpringContextUtils;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.modules.online.cgform.converter.common.ForeseeConvert;
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
@@ -21,9 +21,9 @@ public class MultiSelectConverter extends ForeseeConvert {
         String dictText = onlCgformField.getDictText();
         String dictField = onlCgformField.getDictField();
         List<DictModel> dictModelList = new ArrayList<>();
-        if (oConvertUtils.isNotEmpty(dictTable)) {
+        if (StrUtils.isNotEmpty(dictTable)) {
             dictModelList =  iSysBaseAPI.queryTableDictItemsByCode(dictTable, dictText, dictField);
-        } else if (oConvertUtils.isNotEmpty(dictField)) {
+        } else if (StrUtils.isNotEmpty(dictField)) {
             dictModelList =  iSysBaseAPI.queryDictItemsByCode(dictField);
         }
         this.dictlList = dictModelList;
@@ -32,7 +32,7 @@ public class MultiSelectConverter extends ForeseeConvert {
 
     @Override // org.jeecg.modules.online.cgform.converter.p010a.C0030b, org.jeecg.modules.online.cgform.converter.FieldCommentConverter
     public String converterToVal(String txt) {
-        if (oConvertUtils.isEmpty(txt)) {
+        if (StrUtils.isEmpty(txt)) {
             return null;
         }
         ArrayList<String> arrayList = new ArrayList<>();
@@ -47,7 +47,7 @@ public class MultiSelectConverter extends ForeseeConvert {
 
     @Override // org.jeecg.modules.online.cgform.converter.p010a.C0030b, org.jeecg.modules.online.cgform.converter.FieldCommentConverter
     public String converterToTxt(String val) {
-        if (oConvertUtils.isEmpty(val)) {
+        if (StrUtils.isEmpty(val)) {
             return null;
         }
         ArrayList<String> arrayList = new ArrayList<>();

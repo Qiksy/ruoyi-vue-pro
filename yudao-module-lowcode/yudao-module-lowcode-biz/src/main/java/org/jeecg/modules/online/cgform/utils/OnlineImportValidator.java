@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
 import org.jeecg.modules.online.cgform.enums.CgformValidPatternEnum;
 
@@ -59,7 +59,7 @@ public class OnlineImportValidator {
                 }
             }
             if (onlCgformField.getDbIsNull() == 0 || "1".equals(onlCgformField.getFieldMustInput())) {
-                if (oConvertUtils.isEmpty(onlCgformField.getDbDefaultVal())) {
+                if (StrUtils.isEmpty(onlCgformField.getDbDefaultVal())) {
                     this.notNullFieldList.put(onlCgformField.getDbFieldName(), onlCgformField);
                 }
             }

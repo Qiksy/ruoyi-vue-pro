@@ -26,7 +26,7 @@ import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.schema.TargetType;
 import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.dynamic.db.DbTypeUtils;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
 import org.jeecg.modules.online.config.exception.DBException;
@@ -94,7 +94,7 @@ public class DbTableProcess {
             hashMap.put("hibernate.connection.username", dbConfig.getUsername());
             String password = dbConfig.getPassword();
             if (password != null) {
-                if (dbConfig.getDruid() != null && oConvertUtils.isNotEmpty(dbConfig.getDruid().getPublicKey())) {
+                if (dbConfig.getDruid() != null && StrUtils.isNotEmpty(dbConfig.getDruid().getPublicKey())) {
                     try {
                         hashMap.put("hibernate.connection.password", ConfigTools.decrypt(dbConfig.getDruid().getPublicKey(), password));
                     } catch (Exception e) {
@@ -455,10 +455,10 @@ public class DbTableProcess {
                 indexInfo.getMetaData();
                 while (indexInfo.next()) {
                     String string = indexInfo.getString("INDEX_NAME");
-                    if (oConvertUtils.isEmpty(string)) {
+                    if (StrUtils.isEmpty(string)) {
                         string = indexInfo.getString("index_name");
                     }
-                    if (oConvertUtils.isNotEmpty(string)) {
+                    if (StrUtils.isNotEmpty(string)) {
                         arrayList.add(string);
                     }
                 }

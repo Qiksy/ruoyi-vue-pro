@@ -17,7 +17,7 @@ import org.jeecg.common.system.util.JeecgDataAutorUtils;
 import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.SpringContextUtils;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
 import org.jeecg.modules.online.cgform.utils.OnlFormShowType;
@@ -572,7 +572,7 @@ public class ConditionHandler {
                 onlineFieldConfig.setIsSearch(1);
                 onlineFieldConfig.setMode("single");
             }
-            if (oConvertUtils.isNotEmpty(onlineFieldConfig.getMainField()) && oConvertUtils.isNotEmpty(onlineFieldConfig.getMainTable())) {
+            if (StrUtils.isNotEmpty(onlineFieldConfig.getMainField()) && StrUtils.isNotEmpty(onlineFieldConfig.getMainTable())) {
                 onlineFieldConfig.setIsSearch(1);
                 onlineFieldConfig.setMode("single");
             }
@@ -626,7 +626,7 @@ public class ConditionHandler {
         if (loadDataSearchConditon != null && loadDataSearchConditon.size() > 0) {
             for (int i = 0; i < loadDataSearchConditon.size() && (sysPermissionDataRuleModel = (SysPermissionDataRuleModel) loadDataSearchConditon.get(i)) != null; i++) {
                 String ruleValue = sysPermissionDataRuleModel.getRuleValue();
-                if (!oConvertUtils.isEmpty(ruleValue)) {
+                if (!StrUtils.isEmpty(ruleValue)) {
                     if (QueryRuleEnum.SQL_RULES.getValue().equals(sysPermissionDataRuleModel.getRuleConditions())) {
                         m23b("", QueryGenerator.getSqlRuleValue(ruleValue));
                     } else {
@@ -649,7 +649,7 @@ public class ConditionHandler {
     /* renamed from: a */
     private OnlineFieldConfig m13a(String str, List<OnlineFieldConfig> list) {
         if (list != null && str != null) {
-            String camelToUnderline = oConvertUtils.camelToUnderline(str);
+            String camelToUnderline = StrUtils.camelToUnderline(str);
             for (int i = 0; i < list.size(); i++) {
                 OnlineFieldConfig onlineFieldConfig = list.get(i);
                 String name = onlineFieldConfig.getName();
@@ -672,7 +672,7 @@ public class ConditionHandler {
         if (list2 != null && list2.size() > 0) {
             for (int i = 0; i < list2.size() && (sysPermissionDataRuleModel = list2.get(i)) != null; i++) {
                 String ruleValue = sysPermissionDataRuleModel.getRuleValue();
-                if (!oConvertUtils.isEmpty(ruleValue)) {
+                if (!StrUtils.isEmpty(ruleValue)) {
                     if (QueryRuleEnum.SQL_RULES.getValue().equals(sysPermissionDataRuleModel.getRuleConditions())) {
                         m23b("", QueryGenerator.getSqlRuleValue(ruleValue));
                     } else {
@@ -1107,7 +1107,7 @@ public class ConditionHandler {
                 for (int i2 = 0; i2 < parseArray.size(); i2++) {
                     JSONObject jSONObject = parseArray.getJSONObject(i2);
                     String string = jSONObject.getString("field");
-                    if (!oConvertUtils.isEmpty(string)) {
+                    if (!StrUtils.isEmpty(string)) {
                         String[] split = string.split(CgformUtil.COMMA_SEPARATOR);
                         OnlineFieldConfig onlineFieldConfig = new OnlineFieldConfig(jSONObject);
                         if ("JEECG_SUPER_QUERY_MAIN_TABLE".equals(str2) && split.length == 1) {

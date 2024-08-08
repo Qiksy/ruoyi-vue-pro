@@ -9,7 +9,7 @@ import java.util.Map;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.RestUtil;
 import org.jeecg.common.util.SpringContextUtils;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.modules.online.cgform.entity.OnlCgformEnhanceJava;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +34,7 @@ public interface CgformEnhanceHttpInter {
             return null;
         }
         String cgJavaValue = enhance.getCgJavaValue();
-        if (oConvertUtils.isEmpty(cgJavaValue)) {
+        if (StrUtils.isEmpty(cgJavaValue)) {
             return null;
         }
         if (!cgJavaValue.startsWith("http") && !cgJavaValue.startsWith("https")) {
@@ -44,18 +44,18 @@ public interface CgformEnhanceHttpInter {
         ResponseEntity<String> request = RestUtil.request(cgJavaValue, HttpMethod.POST, getHeaders(SpringContextUtils.getHttpServletRequest()), (JSONObject) null, params, String.class);
         if (request.getStatusCode() == HttpStatus.OK) {
             String str = (String) request.getBody();
-            if (oConvertUtils.isNotEmpty(str)) {
+            if (StrUtils.isNotEmpty(str)) {
                 try {
                     JSONObject parseObject = JSON.parseObject(str);
                     if (parseObject.getBoolean("success")) {
                         return parseObject.get("result");
                     }
-                    throw new JeecgBootException(parseObject.getString("message"));
+                    throw exception(parseObject.getString("message"));
                 } catch (JeecgBootException e) {
                     throw e;
                 } catch (Exception e2) {
                     logger.warn("请求Online表单Java增强http接口时转换数据出错：" + e2.getMessage() + "\n body: " + str);
-                    throw new JeecgBootException("Online表单Java增强http接口JSON转换失败！");
+                    throw exception("Online表单Java增强http接口JSON转换失败！");
                 }
             }
             return null;

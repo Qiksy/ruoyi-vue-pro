@@ -13,7 +13,7 @@ import javax.sql.DataSource;
 import org.jeecg.common.util.CommonUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.dynamic.db.DbTypeUtils;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.modules.online.config.exception.DBException;
 import org.jeecg.modules.online.config.database.DataBaseConfig;
 import org.jeecg.modules.online.config.service.DbTableHandleI;
@@ -91,7 +91,7 @@ public class DbTableUtil {
     }
 
     public static String getDatabaseType() throws SQLException, DBException {
-        if (oConvertUtils.isNotEmpty(f555a)) {
+        if (StrUtils.isNotEmpty(f555a)) {
             return f555a;
         }
         return m490a((DataSource) SpringContextUtils.getApplicationContext().getBean(DataSource.class));

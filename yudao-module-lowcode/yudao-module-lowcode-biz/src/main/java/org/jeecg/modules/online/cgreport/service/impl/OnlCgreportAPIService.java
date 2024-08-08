@@ -14,7 +14,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.DictModel;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
 import org.jeecg.modules.online.cgform.utils.OnlFormShowType;
 import org.jeecg.modules.online.cgreport.entity.OnlCgreportHead;
@@ -72,28 +72,28 @@ public class OnlCgreportAPIService implements IOnlCgreportAPIService {
     @Override // org.jeecg.modules.online.cgreport.service.IOnlCgreportAPIService
     public Map<String, Object> getData(String id, String code, Map<String, Object> params) {
         OnlCgreportHead onlCgreportHead = null;
-        if (oConvertUtils.isNotEmpty(id)) {
+        if (StrUtils.isNotEmpty(id)) {
             onlCgreportHead = this.onlCgreportHeadService.getById(id);
-        } else if (oConvertUtils.isNotEmpty(code)) {
+        } else if (StrUtils.isNotEmpty(code)) {
             LambdaQueryWrapper<OnlCgreportHead> lambdaQueryWrapper = new LambdaQueryWrapper<>();
             lambdaQueryWrapper.eq(OnlCgreportHead::getCode, code);
             onlCgreportHead = this.onlCgreportHeadService.getOne(lambdaQueryWrapper);
         }
         if (onlCgreportHead == null) {
-            throw new JeecgBootException("实体不存在");
+            throw exception("实体不存在");
         }
         try {
             return executeSelectSqlRoute(onlCgreportHead.getDbSource(), onlCgreportHead.getCgrSql().trim(), params, onlCgreportHead.getId());
         } catch (Exception e) {
             f476a.error(e.getMessage(), e);
-            throw new JeecgBootException("SQL执行失败：" + e.getMessage());
+            throw exception("SQL执行失败：" + e.getMessage());
         }
     }
 
     @Override // org.jeecg.modules.online.cgreport.service.IOnlCgreportAPIService
     public Map<String, Object> executeSelectSqlRoute(String dbKey, String sql, Map<String, Object> params, String headId) throws Exception {
         if (!this.onlReportQueryBlackListHandler.isPass(sql)) {
-            throw new JeecgBootException(this.onlReportQueryBlackListHandler.getError());
+            throw exception(this.onlReportQueryBlackListHandler.getError());
         }
         if (StringUtils.isNotBlank(dbKey)) {
             return this.onlCgreportHeadService.executeSelectSqlDynamic(dbKey, sql, params, headId);
@@ -124,7 +124,7 @@ public class OnlCgreportAPIService implements IOnlCgreportAPIService {
                     excelExportEntity.setFormat("yyyy-MM-dd HH:mm:ss");
                 }
                 String groupTitle = onlCgreportItem.getGroupTitle();
-                if (oConvertUtils.isNotEmpty(groupTitle)) {
+                if (StrUtils.isNotEmpty(groupTitle)) {
                     ArrayList<String> arrayList3 = new ArrayList();
                     if (hashMap.containsKey(groupTitle)) {
                         arrayList3 = (ArrayList<String>) hashMap.get(groupTitle);
@@ -136,7 +136,7 @@ public class OnlCgreportAPIService implements IOnlCgreportAPIService {
                     hashMap.put(groupTitle, arrayList3);
                     excelExportEntity.setColspan(true);
                 }
-                if (oConvertUtils.isNotEmpty(fieldType) && oConvertUtils.isEmpty(onlCgreportItem.getDictCode()) && ("Integer".equals(fieldType) || "Long".equals(fieldType))) {
+                if (StrUtils.isNotEmpty(fieldType) && StrUtils.isEmpty(onlCgreportItem.getDictCode()) && ("Integer".equals(fieldType) || "Long".equals(fieldType))) {
                     excelExportEntity.setType(4);
                 }
                 arrayList.add(excelExportEntity);
@@ -202,7 +202,7 @@ public class OnlCgreportAPIService implements IOnlCgreportAPIService {
             excelExportEntity.setReplace(arrayList.toArray(new String[arrayList.size()]));
         }
         String replaceVal = onlCgreportItem.getReplaceVal();
-        if (oConvertUtils.isNotEmpty(replaceVal)) {
+        if (StrUtils.isNotEmpty(replaceVal)) {
             excelExportEntity.setReplace(replaceVal.split(CgformUtil.COMMA_SEPARATOR));
         }
     }

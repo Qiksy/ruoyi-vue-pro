@@ -6,7 +6,7 @@ import java.util.List;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.util.SpringContextUtils;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.modules.online.cgform.converter.common.ForeseeConvert;
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
 
@@ -20,9 +20,9 @@ public class DictEasyConverter extends ForeseeConvert {
         String dictText = onlCgformField.getDictText();
         String dictField = onlCgformField.getDictField();
         List<DictModel> arrayList = new ArrayList<>();
-        if (oConvertUtils.isNotEmpty(dictTable)) {
+        if (StrUtils.isNotEmpty(dictTable)) {
             arrayList = iSysBaseAPI.queryTableDictItemsByCode(dictTable, dictText, dictField);
-        } else if (oConvertUtils.isNotEmpty(dictField)) {
+        } else if (StrUtils.isNotEmpty(dictField)) {
             arrayList = iSysBaseAPI.queryDictItemsByCode(dictField);
         }
         this.dictlList = arrayList;

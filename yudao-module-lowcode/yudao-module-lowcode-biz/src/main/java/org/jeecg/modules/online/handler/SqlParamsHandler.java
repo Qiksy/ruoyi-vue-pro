@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jeecg.common.exception.JeecgBootException;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
 import org.jeecg.modules.online.cgreport.entity.OnlCgreportParam;
 
@@ -65,11 +65,11 @@ public class SqlParamsHandler<T> {
             Object obj = this.map.get("self_" + m51a);
             Object obj2 = this.map.get(m51a);
             String str4 = "";
-            if (oConvertUtils.isNotEmpty(obj)) {
+            if (StrUtils.isNotEmpty(obj)) {
                 str4 = obj.toString();
-            } else if (oConvertUtils.isNotEmpty(obj2)) {
+            } else if (StrUtils.isNotEmpty(obj2)) {
                 str4 = obj2.toString();
-            } else if (oConvertUtils.isNotEmpty(m52b)) {
+            } else if (StrUtils.isNotEmpty(m52b)) {
                 str4 = m52b;
             }
             String str5 = "${" + m51a + "}";
@@ -97,7 +97,7 @@ public class SqlParamsHandler<T> {
                     str = replaceAll;
                     this.selfSqlParams.put(str6, str4);
                 }
-            } else if (oConvertUtils.isNotEmpty(str4) && (t instanceof OnlCgreportParam)) {
+            } else if (StrUtils.isNotEmpty(str4) && (t instanceof OnlCgreportParam)) {
                 this.selfSqlParams.put(m51a, obj);
                 this.map.put("popup_param_pre__" + m51a, str4);
             }
@@ -111,7 +111,7 @@ public class SqlParamsHandler<T> {
         if (t instanceof OnlCgreportParam) {
             return ((OnlCgreportParam) t).getParamName();
         }
-        throw new JeecgBootException("不支持的类型：" + t.getClass().getName());
+        throw exception("不支持的类型：" + t.getClass().getName());
     }
 
     /* JADX WARN: Multi-variable type inference failed */
@@ -120,7 +120,7 @@ public class SqlParamsHandler<T> {
         if (t instanceof OnlCgreportParam) {
             return ((OnlCgreportParam) t).getParamValue();
         }
-        throw new JeecgBootException("不支持的类型：" + t.getClass().getName());
+        throw exception("不支持的类型：" + t.getClass().getName());
     }
 
     public Map<String, Object> getSelfSqlParams() {

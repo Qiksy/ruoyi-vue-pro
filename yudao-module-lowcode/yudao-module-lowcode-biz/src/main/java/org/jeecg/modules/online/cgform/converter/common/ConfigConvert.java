@@ -5,7 +5,7 @@ import java.util.Map;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.util.SpringContextUtils;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.modules.online.cgform.converter.FieldCommentConverter;
 
 /* compiled from: ConfigConvert.java */
@@ -74,7 +74,7 @@ public class ConfigConvert implements FieldCommentConverter {
     @Override // org.jeecg.modules.online.cgform.converter.FieldCommentConverter
     public String converterToVal(String txt) {
         String str;
-        if (oConvertUtils.isNotEmpty(txt)) {
+        if (StrUtils.isNotEmpty(txt)) {
             String str2 = this.f163e + "= '" + txt + "'";
             int indexOf = this.f161c.indexOf("where");
             if (indexOf > 0) {
@@ -95,7 +95,7 @@ public class ConfigConvert implements FieldCommentConverter {
     @Override // org.jeecg.modules.online.cgform.converter.FieldCommentConverter
     public String converterToTxt(String val) {
         String str;
-        if (oConvertUtils.isNotEmpty(val)) {
+        if (StrUtils.isNotEmpty(val)) {
             String str2 = this.f162d + "= '" + val + "'";
             int indexOf = this.f161c.indexOf("where");
             if (indexOf > 0) {

@@ -72,7 +72,7 @@ public class OnlCgreportItemController {
         lambdaQueryWrapper.eq(OnlCgreportHead::getCode, str);
         OnlCgreportHead onlCgreportHead = this.onlCgreportHeadService.getOne(lambdaQueryWrapper);
         if (onlCgreportHead == null) {
-            throw new JeecgBootException("该报表不存在");
+            throw exception("该报表不存在");
         }
         QueryWrapper<OnlCgreportItem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("cgrhead_id", onlCgreportHead.getId());

@@ -1,7 +1,7 @@
 package org.jeecg.modules.online.cgform.enhance.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.modules.online.cgform.enhance.CgformEnhanceJavaImportInter;
 import org.jeecg.modules.online.cgform.enums.EnhanceDataEnum;
 import org.jeecg.modules.online.cgform.utils.OnlineImportValidator;
@@ -21,7 +21,7 @@ public class CgformEnhanceImportDemo implements CgformEnhanceJavaImportInter {
 
     @Override // org.jeecg.modules.online.cgform.enhance.CgformEnhanceJavaImportInter
     public EnhanceDataEnum execute(String tableName, JSONObject json) throws BusinessException {
-        if (oConvertUtils.isEmpty(json.get("name"))) {
+        if (StrUtils.isEmpty(json.get("name"))) {
             json.put("name", "默认值");
             return EnhanceDataEnum.INSERT;
         }

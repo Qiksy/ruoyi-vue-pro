@@ -2,7 +2,7 @@ package org.jeecg.modules.online.cgform.converter.field;
 
 import org.jeecg.common.constant.ProvinceCityArea;
 import org.jeecg.common.util.SpringContextUtils;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.modules.online.cgform.converter.common.ForeseeConvert;
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
 
@@ -24,7 +24,7 @@ public class PcaConverter extends ForeseeConvert {
 
     @Override // org.jeecg.modules.online.cgform.converter.p010a.C0030b, org.jeecg.modules.online.cgform.converter.FieldCommentConverter
     public String converterToVal(String txt) {
-        if (oConvertUtils.isEmpty(txt)) {
+        if (StrUtils.isEmpty(txt)) {
             return null;
         }
         return this.cityArea.getCode(txt);
@@ -32,7 +32,7 @@ public class PcaConverter extends ForeseeConvert {
 
     @Override // org.jeecg.modules.online.cgform.converter.p010a.C0030b, org.jeecg.modules.online.cgform.converter.FieldCommentConverter
     public String converterToTxt(String val) {
-        if (oConvertUtils.isEmpty(val)) {
+        if (StrUtils.isEmpty(val)) {
             return null;
         }
         return this.cityArea.getText(val);

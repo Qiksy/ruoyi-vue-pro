@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.SysCategoryModel;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.modules.online.cgform.enhance.CgformEnhanceJavaListInter;
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
 import org.jeecg.modules.online.cgform.service.IOnlCgformFieldService;
@@ -39,13 +39,13 @@ public class CgformEnhanceExportDemo implements CgformEnhanceJavaListInter {
         List<SysCategoryModel> queryAllSysCategory = this.sysBaseAPI.queryAllSysCategory();
         for (Map<String, Object> map : data) {
             String string = oConvertUtils.getString(map.get("fen_tree"));
-            if (!oConvertUtils.isEmpty(string)) {
+            if (!StrUtils.isEmpty(string)) {
                 List<SysCategoryModel> list = queryAllSysCategory.stream().filter(sysCategoryModel -> sysCategoryModel.getId().equals(string)).collect(Collectors.toList());
                 if (!list.isEmpty()) {
                     map.put("fen_tree", list.get(0).getName());
                 }
                 String string2 = oConvertUtils.getString(map.get("sel_search"));
-                if (!oConvertUtils.isEmpty(string2) && (queryFormFieldByTableNameAndField = this.onlCgformFieldService.queryFormFieldByTableNameAndField(tableName, "sel_search")) != null && !oConvertUtils.isEmpty(queryFormFieldByTableNameAndField.getDictTable()) && (queryTableDictByKeys = this.sysBaseAPI.queryTableDictByKeys(queryFormFieldByTableNameAndField.getDictTable(), queryFormFieldByTableNameAndField.getDictText(), queryFormFieldByTableNameAndField.getDictField(), new String[]{string2})) != null && !queryTableDictByKeys.isEmpty()) {
+                if (!StrUtils.isEmpty(string2) && (queryFormFieldByTableNameAndField = this.onlCgformFieldService.queryFormFieldByTableNameAndField(tableName, "sel_search")) != null && !StrUtils.isEmpty(queryFormFieldByTableNameAndField.getDictTable()) && (queryTableDictByKeys = this.sysBaseAPI.queryTableDictByKeys(queryFormFieldByTableNameAndField.getDictTable(), queryFormFieldByTableNameAndField.getDictText(), queryFormFieldByTableNameAndField.getDictField(), new String[]{string2})) != null && !queryTableDictByKeys.isEmpty()) {
                     map.put("sel_search", queryTableDictByKeys.get(0));
                 }
             }

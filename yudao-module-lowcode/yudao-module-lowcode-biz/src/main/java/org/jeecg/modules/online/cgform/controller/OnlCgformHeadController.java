@@ -1,5 +1,7 @@
 package org.jeecg.modules.online.cgform.controller;
 
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -14,15 +16,11 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.*;
 
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.aspect.annotation.PermissionData;
-import org.jeecg.common.constant.enums.CgformEnum;
-import org.jeecg.common.exception.JeecgBootException;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.system.util.JwtUtil;
-import org.jeecg.common.util.oConvertUtils;
+
+import org.jeecg.common.constant.CgformEnum;
+import org.jeecg.codegenerate.DbReadTableUtil;
+import org.jeecg.common.util.online.StrUtils;
+import org.jeecg.modules.online.annotation.PermissionData;
 import org.jeecg.modules.online.cgform.entity.OnlCgformButton;
 import org.jeecg.modules.online.cgform.entity.OnlCgformEnhanceJava;
 import org.jeecg.modules.online.cgform.entity.OnlCgformEnhanceJs;
@@ -34,12 +32,13 @@ import org.jeecg.modules.online.cgform.service.IOnlCgformFieldService;
 import org.jeecg.modules.online.cgform.service.IOnlCgformHeadService;
 import org.jeecg.modules.online.cgreport.constant.CgReportConstant;
 import org.jeecg.modules.online.config.exception.DBException;
-import org.jeecgframework.codegenerate.database.DbReadTableUtil;
+import org.jeecg.query.QueryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,6 +48,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.error;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 /* compiled from: OnlCgformHeadController.java */
 @RequestMapping({"/online/cgform/head"})
@@ -97,31 +99,32 @@ public class OnlCgformHeadController {
     @PermissionData
     /* renamed from: a */
     @Operation(summary="online表单-查询")
-    public Result<IPage<OnlCgformHead>> getList(OnlCgformHead onlCgformHead,
-                                                @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                                @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-                                                HttpServletRequest httpServletRequest) {
-        Result<IPage<OnlCgformHead>> result = new Result<>();
+    public CommonResult<IPage<OnlCgformHead>> getList(OnlCgformHead onlCgformHead,
+                                                      @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                                      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                      HttpServletRequest httpServletRequest) {
+        CommonResult<IPage<OnlCgformHead>> result = new CommonResult<>();
         IPage<OnlCgformHead> page = this.onlCgformHeadService.page(new Page<>(pageNo, pageSize), QueryGenerator.initQueryWrapper(onlCgformHead, httpServletRequest.getParameterMap()));
         if (onlCgformHead.getCopyType() != null && onlCgformHead.getCopyType() == 0) {
             this.onlCgformHeadService.initCopyState(page.getRecords());
         }
-        result.setSuccess(true);
-        result.setResult(page);
-        return result;
+//        result.setSuccess(true);
+//        result.setResult(page);
+        
+        return success(page);
     }
 
     @PostMapping({"/add"})
     @Operation(summary="online表单-新增")
     /* renamed from: a */
-    public Result<OnlCgformHead> addOnlCgFormHead(@RequestBody OnlCgformHead onlCgformHead) {
-        Result<OnlCgformHead> result = new Result<>();
+    public CommonResult<OnlCgformHead> addOnlCgFormHead(@RequestBody OnlCgformHead onlCgformHead) {
+        CommonResult<OnlCgformHead> result = new CommonResult<>();
         try {
             this.onlCgformHeadService.save(onlCgformHead);
-            result.success("添加成功！");
+            success("添加成功！");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            result.error500("操作失败");
+            return error("操作失败");
         }
         return result;
     }
@@ -130,12 +133,12 @@ public class OnlCgformHeadController {
     @CacheEvict(value = {"sys:cache:online:list", "sys:cache:online:form"}, allEntries = true, beforeInvocation = true)
     @Operation(summary="online表单-编辑")
     /* renamed from: b */
-    public Result<OnlCgformHead> edit(@RequestBody OnlCgformHead onlCgformHead) {
-        Result<OnlCgformHead> result = new Result<>();
+    public CommonResult<OnlCgformHead> edit(@RequestBody OnlCgformHead onlCgformHead) {
+        CommonResult<OnlCgformHead> result = new CommonResult<>();
         if (this.onlCgformHeadService.getById(onlCgformHead.getId()) == null) {
-            result.error500("未找到对应实体");
+            return error("未找到对应实体");
         } else if (this.onlCgformHeadService.updateById(onlCgformHead)) {
-            result.success("修改成功!");
+            success("修改成功!");
         }
         return result;
     }
@@ -143,44 +146,44 @@ public class OnlCgformHeadController {
     @DeleteMapping({"/delete"})
     @Operation(summary="online表单-删除")
     /* renamed from: a */
-    public Result<?> delete(@RequestParam(name = "id", required = true) String str) {
+    public CommonResult<?> delete(@RequestParam(name = "id", required = true) String str) {
         try {
             this.onlCgformHeadService.deleteRecordAndTable(str);
-            return Result.ok("删除成功!");
+            return  success("删除成功!");
         } catch (SQLException e) {
-            return Result.error("删除失败" + e.getMessage());
+            return error("删除失败" + e.getMessage());
         } catch (DBException e2) {
-            return Result.error("删除失败" + e2.getMessage());
+            return error("删除失败" + e2.getMessage());
         }
     }
 
     @DeleteMapping({"/removeRecord"})
     @Operation(summary="online表单-删除记录")
     /* renamed from: b */
-    public Result<?> removeRecord(@RequestParam(name = "id", required = true) String str) {
+    public CommonResult<?> removeRecord(@RequestParam(name = "id", required = true) String str) {
         try {
             this.onlCgformHeadService.deleteRecord(str);
-            return Result.ok("移除成功!");
+            return  success("移除成功!");
         } catch (SQLException e) {
-            return Result.error("移除失败" + e.getMessage());
+            return error("移除失败" + e.getMessage());
         } catch (DBException e2) {
-            return Result.error("移除失败" + e2.getMessage());
+            return error("移除失败" + e2.getMessage());
         }
     }
 
     @DeleteMapping({"/deleteBatch"})
     @Operation(summary="online表单-批量删除")
     /* renamed from: a */
-    public Result<OnlCgformHead> deleteBatch(@RequestParam(name = "ids", required = true) String str, @RequestParam(name = "flag") String str2) {
-        Result<OnlCgformHead> result = new Result<>();
+    public CommonResult<OnlCgformHead> deleteBatch(@RequestParam(name = "ids", required = true) String str, @RequestParam(name = "flag") String str2) {
+        CommonResult<OnlCgformHead> result = new CommonResult<>();
         if (str == null || "".equals(str.trim())) {
-            result.error500("参数不识别！");
+            return error("参数不识别！");
         } else {
             this.onlCgformHeadService.deleteBatch(str, str2);
             if ("1".equals(str2)) {
-                result.success("删除成功!");
+                success("删除成功!");
             } else {
-                result.success("移除成功!");
+                success("移除成功!");
             }
         }
         return result;
@@ -189,59 +192,59 @@ public class OnlCgformHeadController {
     @GetMapping({"/queryById"})
     @Operation(summary="online表单-查询byid")
     /* renamed from: c */
-    public Result<OnlCgformHead> queryById(@RequestParam(name = "id", required = true) String str) {
-        Result<OnlCgformHead> result = new Result<>();
+    public CommonResult<OnlCgformHead> queryById(@RequestParam(name = "id", required = true) String str) {
+        CommonResult<OnlCgformHead> result = new CommonResult<>();
         OnlCgformHead onlCgformHead = (OnlCgformHead) this.onlCgformHeadService.getById(str);
         if (onlCgformHead == null) {
-            result.error500("未找到对应实体");
+            return error("未找到对应实体");
         } else {
-            result.setResult(onlCgformHead);
-            result.setSuccess(true);
+//            result.setResult(onlCgformHead);
+//            result.setSuccess(true);
+            return success(onlCgformHead);
         }
-        return result;
     }
 
     @GetMapping({"/queryByTableNames"})
     @Operation(summary="online表单-通过表名查询")
     /* renamed from: d */
-    public Result<?> queryByTableNames(@RequestParam(name = "tableNames", required = true) String str) {
+    public CommonResult<?> queryByTableNames(@RequestParam(name = "tableNames", required = true) String str) {
         LambdaQueryWrapper<OnlCgformHead> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.in(OnlCgformHead::getTableName, Arrays.asList(str.split(CgformUtil.COMMA_SEPARATOR)));
         List<OnlCgformHead> list = this.onlCgformHeadService.list(lambdaQueryWrapper);
         if (list == null) {
-            return Result.error("未找到对应实体");
+            return error("未找到对应实体");
         }
-        return Result.ok(list);
+        return  success(list);
     }
 
     @PostMapping({"/enhanceJs/{code}"})
     @CacheEvict(value = {"sys:cache:online:list", "sys:cache:online:form"}, allEntries = true, beforeInvocation = true)
     /* renamed from: a */
     @Operation(summary="online表单-增强js保存")
-    public Result<?> createEnhanceJs(@PathVariable("code") String str, @RequestBody OnlCgformEnhanceJs onlCgformEnhanceJs) {
+    public CommonResult<?> createEnhanceJs(@PathVariable("code") String str, @RequestBody OnlCgformEnhanceJs onlCgformEnhanceJs) {
         try {
             onlCgformEnhanceJs.setCgformHeadId(str);
             this.onlCgformHeadService.saveEnhance(onlCgformEnhanceJs);
-            return Result.ok("保存成功!");
+            return  success("保存成功!");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return Result.error("保存失败!");
+            return error("保存失败!");
         }
     }
 
     @GetMapping({"/enhanceJs/{code}"})
     /* renamed from: a */
     @Operation(summary="online表单-增强js查询")
-    public Result<?> getEnhanceJs(@PathVariable("code") String code, HttpServletRequest httpServletRequest) {
+    public CommonResult<?> getEnhanceJs(@PathVariable("code") String code, HttpServletRequest httpServletRequest) {
         try {
             OnlCgformEnhanceJs queryEnhance = this.onlCgformHeadService.queryEnhance(code, httpServletRequest.getParameter("type"));
             if (queryEnhance == null) {
-                return Result.error("查询为空");
+                return error("查询为空");
             }
-            return Result.ok(queryEnhance);
+            return  success(queryEnhance);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return Result.error("查询失败!");
+            return error("查询失败!");
         }
     }
 
@@ -249,75 +252,77 @@ public class OnlCgformHeadController {
     @CacheEvict(value = {"sys:cache:online:list", "sys:cache:online:form"}, allEntries = true, beforeInvocation = true)
     @Operation(summary="online表单-增强js编辑")
     /* renamed from: b */
-    public Result<?> updateEnhanceJs(@PathVariable("code") String str, @RequestBody OnlCgformEnhanceJs onlCgformEnhanceJs) {
+    public CommonResult<?> updateEnhanceJs(@PathVariable("code") String str, @RequestBody OnlCgformEnhanceJs onlCgformEnhanceJs) {
         try {
             onlCgformEnhanceJs.setCgformHeadId(str);
             this.onlCgformHeadService.editEnhance(onlCgformEnhanceJs);
-            return Result.ok("保存成功!");
+            return  success("保存成功!");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return Result.error("保存失败!");
+            return error("保存失败!");
         }
     }
 
     @GetMapping({"/enhanceButton/{formId}"})
     /* renamed from: b */
     @Operation(summary="online表单-增强按钮查询")
-    public Result<?> getEnhanceButton(@PathVariable("formId") String str, HttpServletRequest httpServletRequest) {
+    public CommonResult<?> getEnhanceButton(@PathVariable("formId") String str, HttpServletRequest httpServletRequest) {
         try {
             List<OnlCgformButton> queryButtonList = this.onlCgformHeadService.queryButtonList(str);
             if (queryButtonList == null || queryButtonList.isEmpty()) {
-                return Result.error("查询为空");
+                return error("查询为空");
             }
-            return Result.ok(queryButtonList);
+            return  success(queryButtonList);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return Result.error("查询失败!");
+            return error("查询失败!");
         }
     }
 
     @GetMapping({"/enhanceSql/{formId}"})
     @Operation(summary="online表单-增强sql查询")
     /* renamed from: c */
-    public Result<?> getEnhanceSql(@PathVariable("formId") String str, HttpServletRequest httpServletRequest) {
-        return Result.OK(this.onlCgformEnhanceService.queryEnhanceSqlList(str));
+    public CommonResult<?> getEnhanceSql(@PathVariable("formId") String str, HttpServletRequest httpServletRequest) {
+        return  success(this.onlCgformEnhanceService.queryEnhanceSqlList(str));
     }
 
     @PostMapping({"/enhanceSql/{formId}"})
-    @RequiresPermissions({"online:form:enhanceSql:save"})
+//    @RequiresPermissions({"online:form:enhanceSql:save"})
+    @PreAuthorize("@ss.hasPermission('online:form:enhanceSql:save')")
     @CacheEvict(value = {"sys:cache:online:list", "sys:cache:online:form"}, allEntries = true, beforeInvocation = true)
     @Operation(summary="online表单-增强sql保存")
     /* renamed from: a */
-    public Result<?> createEnhanceSql(@PathVariable("formId") String str, @RequestBody OnlCgformEnhanceSql onlCgformEnhanceSql) {
+    public CommonResult<?> createEnhanceSql(@PathVariable("formId") String str, @RequestBody OnlCgformEnhanceSql onlCgformEnhanceSql) {
         try {
             onlCgformEnhanceSql.setCgformHeadId(str);
             if (this.onlCgformEnhanceService.checkOnlyEnhance(onlCgformEnhanceSql)) {
                 this.onlCgformEnhanceService.saveEnhanceSql(onlCgformEnhanceSql);
-                return Result.ok("保存成功!");
+                return  success("保存成功!");
             }
-            return Result.error("保存失败,该按钮已存在增强配置!");
+            return error("保存失败,该按钮已存在增强配置!");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return Result.error("保存失败!");
+            return error("保存失败!");
         }
     }
 
-    @RequiresPermissions({"online:form:enhanceSql:edit"})
+//    @RequiresPermissions({"online:form:enhanceSql:edit"})
+    @PreAuthorize("@ss.hasPermission('online:form:enhanceSql:edit')")
     @PutMapping({"/enhanceSql/{formId}"})
     @CacheEvict(value = {"sys:cache:online:list", "sys:cache:online:form"}, allEntries = true, beforeInvocation = true)
     @Operation(summary="online表单-增强sql编辑")
     /* renamed from: b */
-    public Result<?> updateEnhanceSql(@PathVariable("formId") String str, @RequestBody OnlCgformEnhanceSql onlCgformEnhanceSql) {
+    public CommonResult<?> updateEnhanceSql(@PathVariable("formId") String str, @RequestBody OnlCgformEnhanceSql onlCgformEnhanceSql) {
         try {
             onlCgformEnhanceSql.setCgformHeadId(str);
             if (this.onlCgformEnhanceService.checkOnlyEnhance(onlCgformEnhanceSql)) {
                 this.onlCgformEnhanceService.updateEnhanceSql(onlCgformEnhanceSql);
-                return Result.ok("保存成功!");
+                return  success("保存成功!");
             }
-            return Result.error("保存失败,该按钮已存在增强配置!");
+            return error("保存失败,该按钮已存在增强配置!");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return Result.error("保存失败!");
+            return error("保存失败!");
         }
     }
 
@@ -325,13 +330,13 @@ public class OnlCgformHeadController {
     @CacheEvict(value = {"sys:cache:online:list", "sys:cache:online:form"}, allEntries = true, beforeInvocation = true)
     @Operation(summary="online表单-增强sql删除")
     /* renamed from: e */
-    public Result<?> deleteEnhanceSql(@RequestParam(name = "id", required = true) String str) {
+    public CommonResult<?> deleteEnhanceSql(@RequestParam(name = "id", required = true) String str) {
         try {
             this.onlCgformEnhanceService.deleteEnhanceSql(str);
-            return Result.ok("删除成功");
+            return  success("删除成功");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return Result.error("删除失败!");
+            return error("删除失败!");
         }
     }
 
@@ -339,31 +344,31 @@ public class OnlCgformHeadController {
     @CacheEvict(value = {"sys:cache:online:list", "sys:cache:online:form"}, allEntries = true, beforeInvocation = true)
     @Operation(summary="online表单-增强sql批量删除")
     /* renamed from: f */
-    public Result<?> deleteBatchEnhanceSql(@RequestParam(name = "ids", required = true) String str) {
+    public CommonResult<?> deleteBatchEnhanceSql(@RequestParam(name = "ids", required = true) String str) {
         try {
             this.onlCgformEnhanceService.deleteBatchEnhanceSql(Arrays.asList(str.split(CgformUtil.COMMA_SEPARATOR)));
-            return Result.ok("删除成功");
+            return  success("删除成功");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return Result.error("删除失败!");
+            return error("删除失败!");
         }
     }
 
     @GetMapping({"/enhanceJava/{formId}"})
     @Operation(summary="online表单-增强java查询")
     /* renamed from: a */
-    public Result<?> getEnhanceJava(@PathVariable("formId") String str, OnlCgformEnhanceJava onlCgformEnhanceJava) {
-        return Result.OK(this.onlCgformEnhanceService.queryEnhanceJavaList(str));
+    public CommonResult<?> getEnhanceJava(@PathVariable("formId") String str, OnlCgformEnhanceJava onlCgformEnhanceJava) {
+        return  success(this.onlCgformEnhanceService.queryEnhanceJavaList(str));
     }
 
     @PostMapping({"/enhanceJava/{formId}"})
     @CacheEvict(value = {"sys:cache:online:list", "sys:cache:online:form"}, allEntries = true, beforeInvocation = true)
     @Operation(summary="online表单-增强java保存")
     /* renamed from: b */
-    public Result<?> createEnhanceJava(@PathVariable("formId") String str, @RequestBody OnlCgformEnhanceJava onlCgformEnhanceJava) {
+    public CommonResult<?> createEnhanceJava(@PathVariable("formId") String str, @RequestBody OnlCgformEnhanceJava onlCgformEnhanceJava) {
         try {
             if ("1".equals(onlCgformEnhanceJava.getActiveStatus()) && !CgformUtil.m209a(onlCgformEnhanceJava)) {
-                return Result.error("类实例化失败，请检查!");
+                return error("类实例化失败，请检查!");
             }
             onlCgformEnhanceJava.setCgformHeadId(str);
             String buttonCode = onlCgformEnhanceJava.getButtonCode();
@@ -372,12 +377,12 @@ public class OnlCgformHeadController {
             }
             if (this.onlCgformEnhanceService.checkOnlyEnhance(onlCgformEnhanceJava)) {
                 this.onlCgformEnhanceService.saveEnhanceJava(onlCgformEnhanceJava);
-                return Result.ok("保存成功!");
+                return  success("保存成功!");
             }
-            return Result.error("保存失败：一个按钮、事件只能有一个增强！");
+            return error("保存失败：一个按钮、事件只能有一个增强！");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return Result.error("保存失败!");
+            return error("保存失败!");
         }
     }
 
@@ -385,10 +390,10 @@ public class OnlCgformHeadController {
     @CacheEvict(value = {"sys:cache:online:list", "sys:cache:online:form"}, allEntries = true, beforeInvocation = true)
     @Operation(summary="online表单-增强java编辑")
     /* renamed from: c */
-    public Result<?> updateEnhanceJava(@PathVariable("formId") String str, @RequestBody OnlCgformEnhanceJava onlCgformEnhanceJava) {
+    public CommonResult<?> updateEnhanceJava(@PathVariable("formId") String str, @RequestBody OnlCgformEnhanceJava onlCgformEnhanceJava) {
         try {
             if ("1".equals(onlCgformEnhanceJava.getActiveStatus()) && !CgformUtil.m209a(onlCgformEnhanceJava)) {
-                return Result.error("类实例化失败，请检查!");
+                return error("类实例化失败，请检查!");
             }
             onlCgformEnhanceJava.setCgformHeadId(str);
             String buttonCode = onlCgformEnhanceJava.getButtonCode();
@@ -397,12 +402,12 @@ public class OnlCgformHeadController {
             }
             if (this.onlCgformEnhanceService.checkOnlyEnhance(onlCgformEnhanceJava)) {
                 this.onlCgformEnhanceService.updateEnhanceJava(onlCgformEnhanceJava);
-                return Result.ok("保存成功!");
+                return  success("保存成功!");
             }
-            return Result.error("保存失败：一个按钮、事件只能有一个增强！");
+            return error("保存失败：一个按钮、事件只能有一个增强！");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return Result.error("保存失败!");
+            return error("保存失败!");
         }
     }
 
@@ -410,13 +415,13 @@ public class OnlCgformHeadController {
     @CacheEvict(value = {"sys:cache:online:list", "sys:cache:online:form"}, allEntries = true, beforeInvocation = true)
     @Operation(summary="online表单-增强java删除")
     /* renamed from: g */
-    public Result<?> deleteEnhanceJava(@RequestParam(name = "id") String str) {
+    public CommonResult<?> deleteEnhanceJava(@RequestParam(name = "id") String str) {
         try {
             this.onlCgformEnhanceService.deleteEnhanceJava(str);
-            return Result.ok("删除成功");
+            return  success("删除成功");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return Result.error("删除失败!");
+            return error("删除失败!");
         }
     }
 
@@ -424,23 +429,24 @@ public class OnlCgformHeadController {
     @CacheEvict(value = {"sys:cache:online:list", "sys:cache:online:form"}, allEntries = true, beforeInvocation = true)
     @Operation(summary="online表单-增强java批量删除")
     /* renamed from: h */
-    public Result<?> deleteBatchEnhanceJava(@RequestParam(name = "ids") String str) {
+    public CommonResult<?> deleteBatchEnhanceJava(@RequestParam(name = "ids") String str) {
         try {
             this.onlCgformEnhanceService.deleteBatchEnhanceJava(Arrays.asList(str.split(CgformUtil.COMMA_SEPARATOR)));
-            return Result.ok("删除成功");
+            return  success("删除成功");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return Result.error("删除失败!");
+            return error("删除失败!");
         }
     }
 
-    @RequiresPermissions({"online:form:queryTables"})
+//    @RequiresPermissions({"online:form:queryTables"})
+    @PreAuthorize("@ss.hasPermission('online:form:queryTables')")
     @GetMapping({"/queryTables"})
     @Operation(summary="online表单-查询数据库表")
     /* renamed from: a */
-    public Result<?> queryTables(@RequestParam(name = "tableName", required = false) String tableName, @RequestParam(name = "pageNo", defaultValue = "1") Integer num, @RequestParam(name = "pageSize", defaultValue = "10") Integer num2, HttpServletRequest httpServletRequest) {
-        if (!"admin".equals(JwtUtil.getUserNameByToken(httpServletRequest))) {
-            return Result.error("noadminauth");
+    public CommonResult<?> queryTables(@RequestParam(name = "tableName", required = false) String tableName, @RequestParam(name = "pageNo", defaultValue = "1") Integer num, @RequestParam(name = "pageSize", defaultValue = "10") Integer num2, HttpServletRequest httpServletRequest) {
+        if (!"admin".equals(SecurityFrameworkUtils.getUserName())) {
+            return error("noadminauth");
         }
         try {
             List<String> readAllTableNames = DbReadTableUtil.readAllTableNames();
@@ -457,45 +463,46 @@ public class OnlCgformHeadController {
                     arrayList.add(hashMap);
                 }
             }
-            return Result.ok(arrayList);
+            return  success(arrayList);
         } catch (SQLException e) {
             logger.error(e.getMessage(), e);
-            return Result.error("同步失败，未获取数据库表信息");
+            return error("同步失败，未获取数据库表信息");
         }
     }
 
     @PostMapping({"/transTables/{tbnames}"})
     @Operation(summary="online表单-同步数据库表")
     /* renamed from: d */
-    public Result<?> createTransTables(@PathVariable("tbnames") String str, HttpServletRequest httpServletRequest) {
-        if (!"admin".equals(JwtUtil.getUserNameByToken(httpServletRequest))) {
-            return Result.error("noadminauth");
+    public CommonResult<?> createTransTables(@PathVariable("tbnames") String str, HttpServletRequest httpServletRequest) {
+        if (!"admin".equals(SecurityFrameworkUtils.getUserName())) {
+            return error("noadminauth");
         }
-        if (oConvertUtils.isEmpty(str)) {
-            return Result.error("未识别的表名信息");
+        if (StrUtils.isEmpty(str)) {
+            return error("未识别的表名信息");
         }
         if (f142c != null && f142c.equals(str)) {
-            return Result.error("不允许重复生成!");
+            return error("不允许重复生成!");
         }
         f142c = str;
         String[] split = str.split(CgformUtil.COMMA_SEPARATOR);
         for (int i = 0; i < split.length; i++) {
-            if (oConvertUtils.isNotEmpty(split[i]) && this.onlCgformHeadService.count(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, split[i])) <= 0) {
+            if (StrUtils.isNotEmpty(split[i]) && this.onlCgformHeadService.count(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, split[i])) <= 0) {
                 this.onlCgformHeadService.saveDbTable2Online(split[i]);
             }
         }
         f142c = null;
-        return Result.ok("同步完成!");
+        return  success("同步完成!");
     }
 
-    @RequiresPermissions({"online:codeGenerate:projectPath"})
+//    @RequiresPermissions({"online:codeGenerate:projectPath"})
     @GetMapping({"/rootFile"})
     @Operation(summary="online表单-获取项目在服务器的根目录")
     /* renamed from: a */
-    public Result<?> rootFile() {
-        if (!SecurityUtils.getSubject().hasRole("admin")) {
-            throw new JeecgBootException("权限不足，只有admin角色才有权限，获取服务器目录！");
-        }
+    @PreAuthorize("@ss.hasPermission('online:codeGenerate:projectPath') && @ss.hasRole('admin')")
+    public CommonResult<?> rootFile() {
+//        if (!SecurityUtils.getSubject().hasRole("admin")) {
+//            throw exception("权限不足，只有admin角色才有权限，获取服务器目录！");
+//        }
         JSONArray jSONArray = new JSONArray();
         for (File file : File.listRoots()) {
             JSONObject jSONObject = new JSONObject();
@@ -510,20 +517,21 @@ public class OnlCgformHeadController {
             }
             jSONArray.add(jSONObject);
         }
-        return Result.ok(jSONArray);
+        return  success(jSONArray);
     }
 
-    @RequiresPermissions({"online:codeGenerate:projectPath"})
+//    @RequiresPermissions({"online:codeGenerate:projectPath"})
     @GetMapping({"/fileTree"})
     @Operation(summary="online表单-获取服务器目录的文件树")
+    @PreAuthorize("@ss.hasPermission('online:codeGenerate:projectPath') && @ss.hasRole('admin')")
     /* renamed from: i */
-    public Result<?> m158i(@RequestParam(name = "parentPath", required = true) String parentPath) {
-        if (!SecurityUtils.getSubject().hasRole("admin")) {
-            throw new JeecgBootException("权限不足，只有admin角色才有权限，获取服务器目录！");
-        }
+    public CommonResult<?> m158i(@RequestParam(name = "parentPath", required = true) String parentPath) {
+//        if (!SecurityUtils.getSubject().hasRole("admin")) {
+//            throw exception("权限不足，只有admin角色才有权限，获取服务器目录！");
+//        }
         JSONArray jSONArray = new JSONArray();
         for (File file : Objects.requireNonNull(new File(parentPath).listFiles())) {
-            if (file.isDirectory() && oConvertUtils.isNotEmpty(file.getPath())) {
+            if (file.isDirectory() && StrUtils.isNotEmpty(file.getPath())) {
                 JSONObject jSONObject = new JSONObject();
                 System.out.println(file.getPath());
                 jSONObject.put("key", file.getAbsolutePath());
@@ -536,22 +544,22 @@ public class OnlCgformHeadController {
                 jSONArray.add(jSONObject);
             }
         }
-        return Result.ok(jSONArray);
+        return  success(jSONArray);
     }
 
     @GetMapping({"/tableInfo"})
     @Operation(summary="online表单-表信息")
     /* renamed from: j */
-    public Result<?> tableInfo(@RequestParam(name = "code", required = true) String str) {
+    public CommonResult<?> tableInfo(@RequestParam(name = "code", required = true) String str) {
         OnlCgformHead onlCgformHead = this.onlCgformHeadService.getById(str);
         if (onlCgformHead == null) {
-            return Result.error("未找到对应实体");
+            return error("未找到对应实体");
         }
         HashMap<String,Object> hashMap = new HashMap<>(5);
         hashMap.put(CgReportConstant.MAIN, onlCgformHead);
         if (onlCgformHead.getTableType() == 2) {
             String subTableStr = onlCgformHead.getSubTableStr();
-            if (oConvertUtils.isNotEmpty(subTableStr)) {
+            if (StrUtils.isNotEmpty(subTableStr)) {
                 ArrayList<OnlCgformHead> arrayList = new ArrayList<>();
                 for (String str2 : subTableStr.split(CgformUtil.COMMA_SEPARATOR)) {
                     LambdaQueryWrapper<OnlCgformHead> lambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -581,13 +589,13 @@ public class OnlCgformHeadController {
         }
         hashMap.put("jspModeList", CgformEnum.getJspModelList(tableType));
         hashMap.put("projectPath", DbReadTableUtil.getProjectPath());
-        return Result.ok(hashMap);
+        return  success(hashMap);
     }
 
     @PostMapping({"/copyOnline"})
     @Operation(summary="online表单-复制表")
     /* renamed from: k */
-    public Result<?> m160k(@RequestParam(name = "code", required = true) String str) throws Exception {
+    public CommonResult<?> m160k(@RequestParam(name = "code", required = true) String str) throws Exception {
         OnlCgformHead onlCgformHead = null;
         try {
             onlCgformHead = this.onlCgformHeadService.getById(str);
@@ -595,24 +603,21 @@ public class OnlCgformHeadController {
             e.printStackTrace();
         }
         if (onlCgformHead == null) {
-            return Result.error("未找到对应实体");
+            return error("未找到对应实体");
         }
         this.onlCgformHeadService.copyOnlineTableConfig(onlCgformHead);
-        return Result.ok();
+        return  success(true);
     }
 
     @GetMapping({"/copyOnlineTable/{id}"})
     @Operation(summary="online表单-复制表")
     /* renamed from: b */
-    public Result<?> copyOnlineTable(@PathVariable("id") String str, @RequestParam(name = "tableName") String str2) {
+    public CommonResult<?> copyOnlineTable(@PathVariable("id") String str, @RequestParam(name = "tableName") String str2) {
         try {
             this.onlCgformHeadService.copyOnlineTable(str, str2);
-            return Result.ok();
-        } catch (JeecgBootException e) {
-            return Result.error(e.getMessage());
-        } catch (Exception e2) {
-            logger.error(e2.getMessage(), e2);
-            return Result.error(e2.getMessage());
+            return  success(true);
+        } catch (Exception e) {
+            return error(e.getMessage());
         }
     }
 

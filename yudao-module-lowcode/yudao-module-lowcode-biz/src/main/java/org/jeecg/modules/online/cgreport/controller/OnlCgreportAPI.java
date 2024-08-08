@@ -30,7 +30,7 @@ import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DynamicDataSourceModel;
 import org.jeecg.common.util.BrowserUtils;
 import org.jeecg.common.util.SqlInjectionUtil;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.common.util.security.JdbcSecurityUtil;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
 import org.jeecg.modules.online.cgreport.entity.OnlCgreportHead;
@@ -151,7 +151,7 @@ public class OnlCgreportAPI {
             hashMap2.put("sorter", "true");
             arrayList.add(hashMap2);
             String dictCode = onlCgreportItem.getDictCode();
-            if (oConvertUtils.isNotEmpty(dictCode)) {
+            if (StrUtils.isNotEmpty(dictCode)) {
                 List<DictModel> list2 = null;
                 if (dictCode.toLowerCase().indexOf("select ") == 0) {
                     this.sysBaseAPI.dictTableWhiteListCheckByDict(dictCode);
@@ -205,7 +205,7 @@ public class OnlCgreportAPI {
             Map<String, Object> m430a = CgReportSqlUtil.m430a(httpServletRequest);
             Object obj = m430a.get(CgReportConstant.ORDER_FIELD);
             Object obj2 = m430a.get(CgReportConstant.ORDER_VALUE);
-            if (oConvertUtils.isEmpty(obj) || oConvertUtils.isEmpty(obj2)) {
+            if (StrUtils.isEmpty(obj) || StrUtils.isEmpty(obj2)) {
                 return Result.error("order_field 和 order_value 参数不能为空！");
             }
             String str2 = "force_" + obj;
@@ -271,8 +271,8 @@ public class OnlCgreportAPI {
     @Operation(summary = "导出多sheet报表")
     /* renamed from: a */
     public void m396a(@PathVariable("reportId") String str, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        if (oConvertUtils.isEmpty(str)) {
-            throw new JeecgBootException("参数错误");
+        if (StrUtils.isEmpty(str)) {
+            throw exception("参数错误");
         }
         Workbook reportWorkbook = this.cgreportAPIService.getReportWorkbook(str, CgReportSqlUtil.m430a(httpServletRequest));
         httpServletResponse.setContentType("application/vnd.ms-excel");
@@ -317,7 +317,7 @@ public class OnlCgreportAPI {
     @Operation(summary = "导出报表")
     /* renamed from: b */
     public void m397b(@PathVariable("reportId") String str, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        if (oConvertUtils.isNotEmpty(str)) {
+        if (StrUtils.isNotEmpty(str)) {
             try {
                 List<Map<String,Object>> list = (List<Map<String,Object>>) this.onlCgreportHeadService.queryCgReportConfig(str).get(CgReportConstant.ITEMS);
                 httpServletRequest.setAttribute("getAll", true);
@@ -349,10 +349,10 @@ public class OnlCgreportAPI {
                             excelExportEntity.setReplace(arrayList3.toArray(new String[arrayList3.size()]));
                         }
                         Object obj3 = ((Map<?, ?>) list.get(i)).get("replace_val");
-                        if (oConvertUtils.isNotEmpty(obj3)) {
+                        if (StrUtils.isNotEmpty(obj3)) {
                             excelExportEntity.setReplace(obj3.toString().split(CgformUtil.COMMA_SEPARATOR));
                         }
-                        if (oConvertUtils.isNotEmpty(( list.get(i)).get("group_title"))) {
+                        if (StrUtils.isNotEmpty(( list.get(i)).get("group_title"))) {
                             String obj4 = ( list.get(i)).get("group_title").toString();
                             List<String> arrayList4 = new ArrayList<>();
                             if (hashMap2.containsKey(obj4)) {
@@ -365,7 +365,7 @@ public class OnlCgreportAPI {
                             hashMap2.put(obj4, arrayList4);
                             excelExportEntity.setColspan(true);
                         }
-                        if (oConvertUtils.isNotEmpty(str2) && oConvertUtils.isEmpty(obj2) && ("Integer".equals(str2) || "Long".equals(str2))) {
+                        if (StrUtils.isNotEmpty(str2) && StrUtils.isEmpty(obj2) && ("Integer".equals(str2) || "Long".equals(str2))) {
                             excelExportEntity.setType(4);
                         }
                         arrayList2.add(excelExportEntity);
@@ -435,10 +435,10 @@ public class OnlCgreportAPI {
                     throw th;
                 }
             } catch (Exception e5) {
-                throw new JeecgBootException("动态报表配置不存在!");
+                throw exception("动态报表配置不存在!");
             }
         }
-        throw new JeecgBootException("参数错误");
+        throw exception("参数错误");
     }
 
     @GetMapping({"/getRpColumns/{code}"})
@@ -539,7 +539,7 @@ public class OnlCgreportAPI {
     public Result<?> m400a(@RequestParam("fieldId") String str, @RequestParam(name = "keyword", required = false) String str2) {
         OnlCgreportItem onlCgreportItem = (OnlCgreportItem) this.onlCgreportItemService.getById(str);
         if (onlCgreportItem == null) {
-            throw new JeecgBootException("指定字段不存在");
+            throw exception("指定字段不存在");
         }
         return Result.ok(this.onlCgreportHeadService.queryDictSelectData(onlCgreportItem.getDictCode(), str2));
     }

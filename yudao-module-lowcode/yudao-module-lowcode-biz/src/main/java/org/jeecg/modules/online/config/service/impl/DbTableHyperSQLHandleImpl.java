@@ -1,7 +1,7 @@
 package org.jeecg.modules.online.config.service.impl;
 
 import java.util.List;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.modules.online.cgform.constant.ExtendJsonKey;
 import org.jeecg.modules.online.cgform.utils.OnlFormShowType;
 import org.jeecg.modules.online.config.template.ColumnMeta;
@@ -15,7 +15,7 @@ public class DbTableHyperSQLHandleImpl implements DbTableHandleI {
     @Override // org.jeecg.modules.online.config.service.DbTableHandleI
     public String getAddColumnSql(ColumnMeta columnMeta) {
         String str = " ADD " + columnMeta.getColumnName() + " " + m508a(columnMeta);
-        if (oConvertUtils.isNotEmpty(columnMeta.getFieldDefault())) {
+        if (StrUtils.isNotEmpty(columnMeta.getFieldDefault())) {
             str = str + " DEFAULT " + columnMeta.getFieldDefault();
             if (!"Y".equals(columnMeta.getIsNullable())) {
                 str = str + " NOT NULL";
@@ -159,7 +159,7 @@ public class DbTableHyperSQLHandleImpl implements DbTableHandleI {
         }
         String fieldDefault = oleMeta.getFieldDefault();
         String fieldDefault2 = newMeta.getFieldDefault();
-        if ((!oConvertUtils.isEmpty(fieldDefault) || !oConvertUtils.isEmpty(fieldDefault2)) && !fieldDefault2.equals(fieldDefault)) {
+        if ((!StrUtils.isEmpty(fieldDefault) || !StrUtils.isEmpty(fieldDefault2)) && !fieldDefault2.equals(fieldDefault)) {
             z = true;
         }
         if (z) {

@@ -1,7 +1,7 @@
 package org.jeecg.modules.online.config.service.impl;
 
 import java.util.List;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.modules.online.cgform.constant.ExtendJsonKey;
 import org.jeecg.modules.online.cgform.utils.OnlFormShowType;
 import org.jeecg.modules.online.config.template.ColumnMeta;
@@ -14,7 +14,7 @@ public class DbTableDB2HandleImpl implements DbTableHandleI {
     @Override // org.jeecg.modules.online.config.service.DbTableHandleI
     public String getAddColumnSql(ColumnMeta columnMeta) {
         String str = " ADD " + columnMeta.getColumnName() + " " + m504a(columnMeta);
-        if (oConvertUtils.isNotEmpty(columnMeta.getFieldDefault())) {
+        if (StrUtils.isNotEmpty(columnMeta.getFieldDefault())) {
             str = str + " DEFAULT " + columnMeta.getFieldDefault();
             if (!"Y".equals(columnMeta.getIsNullable())) {
                 str = str + " NOT NULL";
@@ -135,8 +135,8 @@ public class DbTableDB2HandleImpl implements DbTableHandleI {
         }
         String fieldDefault = oleMeta.getFieldDefault();
         String fieldDefault2 = newMeta.getFieldDefault();
-        if ((!oConvertUtils.isEmpty(fieldDefault) || !oConvertUtils.isEmpty(fieldDefault2)) && !fieldDefault2.equals(fieldDefault)) {
-            updateSQL.add(String.format("alter table %s alter column %s set default %s", tableName, columnName, oConvertUtils.isEmpty(fieldDefault2) ? "NULL" : fieldDefault2));
+        if ((!StrUtils.isEmpty(fieldDefault) || !StrUtils.isEmpty(fieldDefault2)) && !fieldDefault2.equals(fieldDefault)) {
+            updateSQL.add(String.format("alter table %s alter column %s set default %s", tableName, columnName, StrUtils.isEmpty(fieldDefault2) ? "NULL" : fieldDefault2));
         }
         if (!oleMeta.isCommentEqual2(newMeta)) {
             updateSQL.add(String.format("COMMENT ON COLUMN %s.%s IS '%s'", tableName, columnName, newMeta.getComment()));

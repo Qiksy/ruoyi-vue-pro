@@ -26,7 +26,7 @@ import org.jeecg.common.system.vo.DynamicDataSourceModel;
 import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.dynamic.db.DataSourceCachePool;
 import org.jeecg.common.util.dynamic.db.DynamicDBUtil;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.common.util.sqlparse.JSqlParserUtils;
 import org.jeecg.common.util.sqlparse.vo.SelectSqlInfo;
 import org.jeecg.config.JeecgBaseConfig;
@@ -154,7 +154,7 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
         String m6a = conditionHandler.m6a(arrayList2, params);
         Map<String, Object> sqlParams = conditionHandler.getSqlParams();
         if (ReUtil.contains(" order\\s+by ", sql3.toLowerCase()) && "SQLSERVER".equalsIgnoreCase(str)) {
-            throw new JeecgBootException("SqlServer不支持SQL内排序!");
+            throw exception("SqlServer不支持SQL内排序!");
         }
         String str4 = "select * from (" + sql3 + ") jeecg_rp_temp ";
         if (!m6a.trim().isEmpty()) {
@@ -192,7 +192,7 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
         int i2 = oConvertUtils.getInt(params.get("pageSize"), 10);
         DynamicDataSourceModel cacheDynamicDataSourceModel = DataSourceCachePool.getCacheDynamicDataSourceModel(dbKey);
         if (ReUtil.contains(" order\\s+by ", sql.toLowerCase()) && "3".equalsIgnoreCase(cacheDynamicDataSourceModel.getDbType())) {
-            throw new JeecgBootException("SqlServer不支持SQL内排序!");
+            throw exception("SqlServer不支持SQL内排序!");
         }
         LambdaQueryWrapper<OnlCgreportParam> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(OnlCgreportParam::getCgrheadId, onlCgreportHeadId);
@@ -301,7 +301,7 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
 
     @Override // org.jeecg.modules.online.cgreport.service.IOnlCgreportHeadService
     public List<String> getSqlParams(String sql) {
-        if (oConvertUtils.isEmpty(sql)) {
+        if (StrUtils.isEmpty(sql)) {
             return null;
         }
         ArrayList<String> arrayList = new ArrayList<>();
@@ -315,7 +315,7 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
 
     /* renamed from: a */
     private List<String> m441a(String str, String str2) throws SQLException, DBException, JSQLParserException {
-        if (oConvertUtils.isEmpty(str)) {
+        if (StrUtils.isEmpty(str)) {
             return null;
         }
         String trim = str.replace("[^><]=", CgReportConstant.EQUAL).trim();
@@ -328,13 +328,13 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
             throw new AssertionError();
         }
         if (parseSelectSqlInfo != null && this.jeecgBaseConfig.getFirewall() != null && this.jeecgBaseConfig.getFirewall().getDataSourceSafe() && parseSelectSqlInfo.isSelectAll()) {
-            throw new JeecgBootException("不允许使用 *");
+            throw exception("不允许使用 *");
         }
         Set<String> set = null;
         if (StringUtils.isNotBlank(str2)) {
             DynamicDataSourceModel cacheDynamicDataSourceModel = DataSourceCachePool.getCacheDynamicDataSourceModel(str2);
             if (ReUtil.contains(" order\\s+by ", m429a.toLowerCase()) && "3".equalsIgnoreCase(cacheDynamicDataSourceModel.getDbType())) {
-                throw new JeecgBootException("SqlServer不支持SQL内排序!");
+                throw exception("SqlServer不支持SQL内排序!");
             }
             Map<String, Object> m433a = CgReportSqlUtil.m433a(str2, m429a);
             if (m433a == null) {
@@ -345,14 +345,14 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
                     }
                 }
                 if (m433a == null) {
-                    throw new JeecgBootException("该报表sql没有数据");
+                    throw exception("该报表sql没有数据");
                 }
             }
             set = m433a.keySet();
         } else {
             String databaseType = DbTableUtil.getDatabaseType();
             if (ReUtil.contains(" order\\s+by ", m429a.toLowerCase()) && "SQLSERVER".equalsIgnoreCase(databaseType)) {
-                throw new JeecgBootException("SqlServer不支持SQL内排序!");
+                throw exception("SqlServer不支持SQL内排序!");
             }
             List<Map<String, Object>> records = this.mapper.executeParseSql(new Page<>(1L, 1L), m429a).getRecords();
             if (records.isEmpty()) {
@@ -363,7 +363,7 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
                     }
                 }
                 if (set == null) {
-                    throw new JeecgBootException("该报表sql没有数据");
+                    throw exception("该报表sql没有数据");
                 }
             } else {
                 set = records.get(0).keySet();
@@ -442,7 +442,7 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
             jSONObject.put("sorter", "true");
             jSONObject.put("isTotal", onlCgreportItem.getIsTotal());
             jSONObject.put("groupTitle", onlCgreportItem.getGroupTitle());
-            if (oConvertUtils.isNotEmpty(onlCgreportItem.getGroupTitle())) {
+            if (StrUtils.isNotEmpty(onlCgreportItem.getGroupTitle())) {
                 z = true;
             }
             String fieldType = onlCgreportItem.getFieldType();
@@ -482,7 +482,7 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
     @Override // org.jeecg.modules.online.cgreport.service.IOnlCgreportHeadService
     public List<DictModel> queryColumnDict(String dictCode, JSONArray records, String fieldName) {
         List<DictModel> list = null;
-        if (oConvertUtils.isNotEmpty(dictCode)) {
+        if (StrUtils.isNotEmpty(dictCode)) {
             if (dictCode.trim().toLowerCase().indexOf("select ") == 0 && (fieldName == null || !records.isEmpty())) {
                 String dictCode2 = dictCode.trim();
                 int lastIndexOf = dictCode2.lastIndexOf(";");
@@ -516,7 +516,7 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
     public List<DictModel> queryColumnDictList(String dictCode, List<Map<String, Object>> records, String fieldName) {
         String m253a;
         List<DictModel> list = null;
-        if (oConvertUtils.isNotEmpty(dictCode)) {
+        if (StrUtils.isNotEmpty(dictCode)) {
             String dictCode2 = dictCode.trim();
             if (dictCode2.toLowerCase().indexOf("select ") == 0 && (fieldName == null || !records.isEmpty())) {
                 if (dictCode2.endsWith(";")) {

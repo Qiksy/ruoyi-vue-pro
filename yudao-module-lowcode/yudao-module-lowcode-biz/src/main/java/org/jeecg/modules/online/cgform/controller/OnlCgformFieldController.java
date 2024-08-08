@@ -1,5 +1,6 @@
 package org.jeecg.modules.online.cgform.controller;
 
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -11,13 +12,12 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Arrays;
 
-import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
 import org.jeecg.modules.online.cgform.entity.OnlCgformHead;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
 import org.jeecg.modules.online.cgform.service.IOnlCgformFieldService;
 import org.jeecg.modules.online.cgform.service.IOnlCgformHeadService;
+import org.jeecg.query.QueryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +29,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.error;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 /* compiled from: OnlCgformFieldController.java */
 @RequestMapping({"/online/cgform/field"})
@@ -52,12 +55,12 @@ public class OnlCgformFieldController {
     @GetMapping({"/listByHeadCode"})
     @Operation(summary="online表单明细-通过表头编码查询")
     /* renamed from: a */
-    public Result<?> geiListByHeadCode(@RequestParam("headCode") String str) {
+    public CommonResult<?> geiListByHeadCode(@RequestParam("headCode") String str) {
         LambdaQueryWrapper<OnlCgformHead> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(OnlCgformHead::getTableName, str);
         OnlCgformHead onlCgformHead = (OnlCgformHead) this.onlCgformHeadService.getOne(lambdaQueryWrapper);
         if (onlCgformHead == null) {
-            return Result.error("表名[" + str + "]不存在！");
+            return error("表名[" + str + "]不存在！");
         }
         return getListByHeadId(onlCgformHead.getId());
     }
@@ -65,36 +68,36 @@ public class OnlCgformFieldController {
     @GetMapping({"/listByHeadId"})
     @Operation(summary="online表单明细-通过表头主键查询")
     /* renamed from: b */
-    public Result<?> getListByHeadId(@RequestParam("headId") String headId) {
+    public CommonResult<?> getListByHeadId(@RequestParam("headId") String headId) {
         QueryWrapper<OnlCgformField> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("cgform_head_id", headId);
         queryWrapper.orderByAsc("order_num");
-        return Result.ok(this.onlCgformFieldService.list(queryWrapper));
+        return success(this.onlCgformFieldService.list(queryWrapper));
     }
 
     @GetMapping({"/list"})
     /* renamed from: a */
     @Operation(summary="online表单明细-通过参数查询")
-    public Result<IPage<OnlCgformField>> getList(OnlCgformField onlCgformField, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+    public CommonResult<IPage<OnlCgformField>> getList(OnlCgformField onlCgformField, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                                  @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest httpServletRequest) {
-        Result<IPage<OnlCgformField>> result = new Result<>();
+        CommonResult<IPage<OnlCgformField>> result = new CommonResult<>();
         IPage<OnlCgformField> page = this.onlCgformFieldService.page(new Page<>(pageNo, pageSize), QueryGenerator.initQueryWrapper(onlCgformField, httpServletRequest.getParameterMap()));
-        result.setSuccess(true);
-        result.setResult(page);
-        return result;
+//        result.setSuccess(true);
+//        result.setResult(page);
+        return success(page);
     }
 
     @PostMapping({"/add"})
     @Operation(summary="online表单明细-增加")
     /* renamed from: a */
-    public Result<OnlCgformField> add(@RequestBody OnlCgformField onlCgformField) {
-        Result<OnlCgformField> result = new Result<>();
+    public CommonResult<OnlCgformField> add(@RequestBody OnlCgformField onlCgformField) {
+        CommonResult<OnlCgformField> result = new CommonResult<>();
         try {
             this.onlCgformFieldService.save(onlCgformField);
-            result.success("添加成功！");
+            success("添加成功！");
         } catch (Exception e) {
             f139a.error(e.getMessage(), e);
-            result.error500("操作失败");
+            return error("操作失败");
         }
         return result;
     }
@@ -102,12 +105,12 @@ public class OnlCgformFieldController {
     @PutMapping({"/edit"})
     @Operation(summary="online表单明细-修改")
     /* renamed from: b */
-    public Result<OnlCgformField> edit(@RequestBody OnlCgformField onlCgformField) {
-        Result<OnlCgformField> result = new Result<>();
+    public CommonResult<OnlCgformField> edit(@RequestBody OnlCgformField onlCgformField) {
+        CommonResult<OnlCgformField> result = new CommonResult<>();
         if (this.onlCgformFieldService.getById(onlCgformField.getId()) == null) {
-            result.error500("未找到对应实体");
+            return error("未找到对应实体");
         } else if (this.onlCgformFieldService.updateById(onlCgformField)) {
-            result.success("修改成功!");
+            success("修改成功!");
         }
         return result;
     }
@@ -115,12 +118,12 @@ public class OnlCgformFieldController {
     @DeleteMapping({"/delete"})
     @Operation(summary="online表单明细-删除")
     /* renamed from: c */
-    public Result<OnlCgformField> delete(@RequestParam(name = "id", required = true) String str) {
-        Result<OnlCgformField> result = new Result<>();
+    public CommonResult<OnlCgformField> delete(@RequestParam(name = "id", required = true) String str) {
+        CommonResult<OnlCgformField> result = new CommonResult<>();
         if (this.onlCgformFieldService.getById(str) == null) {
-            result.error500("未找到对应实体");
+            return error("未找到对应实体");
         } else if (this.onlCgformFieldService.removeById(str)) {
-            result.success("删除成功!");
+            success("删除成功!");
         }
         return result;
     }
@@ -128,13 +131,13 @@ public class OnlCgformFieldController {
     @DeleteMapping({"/deleteBatch"})
     @Operation(summary="online表单明细-批量删除")
     /* renamed from: d */
-    public Result<OnlCgformField> deleteBatch(@RequestParam(name = "ids", required = true) String str) {
-        Result<OnlCgformField> result = new Result<>();
+    public CommonResult<OnlCgformField> deleteBatch(@RequestParam(name = "ids", required = true) String str) {
+        CommonResult<OnlCgformField> result = new CommonResult<>();
         if (str == null || str.trim().isEmpty()) {
-            result.error500("参数不识别！");
+            return error("参数不识别！");
         } else {
             this.onlCgformFieldService.removeByIds(Arrays.asList(str.split(CgformUtil.COMMA_SEPARATOR)));
-            result.success("删除成功!");
+            success("删除成功!");
         }
         return result;
     }
@@ -142,15 +145,15 @@ public class OnlCgformFieldController {
     @GetMapping({"/queryById"})
     @Operation(summary="online表单明细-通过id查询")
     /* renamed from: e */
-    public Result<OnlCgformField> queryById(@RequestParam(name = "id", required = true) String str) {
-        Result<OnlCgformField> result = new Result<>();
+    public CommonResult<OnlCgformField> queryById(@RequestParam(name = "id", required = true) String str) {
+        CommonResult<OnlCgformField> result = new CommonResult<>();
         OnlCgformField onlCgformField = this.onlCgformFieldService.getById(str);
         if (onlCgformField == null) {
-            result.error500("未找到对应实体");
+            return error("未找到对应实体");
         } else {
-            result.setResult(onlCgformField);
-            result.setSuccess(true);
+//            result.setResult(onlCgformField);
+//            result.setSuccess(true);
+            return success(onlCgformField);
         }
-        return result;
     }
 }

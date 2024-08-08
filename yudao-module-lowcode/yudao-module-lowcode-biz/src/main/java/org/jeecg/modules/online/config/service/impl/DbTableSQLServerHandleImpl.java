@@ -1,6 +1,6 @@
 package org.jeecg.modules.online.config.service.impl;
 
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.modules.online.cgform.constant.ExtendJsonKey;
 import org.jeecg.modules.online.cgform.utils.OnlFormShowType;
 import org.jeecg.modules.online.config.template.ColumnMeta;
@@ -123,7 +123,7 @@ public class DbTableSQLServerHandleImpl implements DbTableHandleI {
     @Override // org.jeecg.modules.online.config.service.DbTableHandleI
     public String getCommentSql(ColumnMeta columnMeta) {
         StringBuilder stringBuffer = new StringBuilder("EXECUTE ");
-        if (oConvertUtils.isEmpty(columnMeta.getOldColumnName())) {
+        if (StrUtils.isEmpty(columnMeta.getOldColumnName())) {
             stringBuffer.append("sp_addextendedproperty");
         } else {
             stringBuffer.append("sp_updateextendedproperty");

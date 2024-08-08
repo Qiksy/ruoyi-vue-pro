@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
@@ -39,7 +40,7 @@ import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
 import org.jeecg.common.util.SqlInjectionUtil;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.modules.online.auth.service.IOnlAuthDataService;
 import org.jeecg.modules.online.auth.service.IOnlAuthPageService;
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
@@ -257,7 +258,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
             if (hasChildField.equals(onlCgformField.getDbFieldName()) && onlCgformField.getIsShowForm().intValue() != 1) {
                 onlCgformField.setIsShowForm(1);
                 json.put(hasChildField, f419c);
-            } else if (pidField.equals(onlCgformField.getDbFieldName()) && oConvertUtils.isEmpty(json.get(pidField))) {
+            } else if (pidField.equals(onlCgformField.getDbFieldName()) && StrUtils.isEmpty(json.get(pidField))) {
                 onlCgformField.setIsShowForm(1);
                 json.put(pidField, f419c);
             }
@@ -306,7 +307,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
         lambdaQueryWrapper.eq(OnlCgformField::getCgformHeadId, code);
         List<OnlCgformField> list = list(lambdaQueryWrapper);
         for (OnlCgformField onlCgformField : list) {
-            if (pidField.equals(onlCgformField.getDbFieldName()) && oConvertUtils.isEmpty(json.get(pidField))) {
+            if (pidField.equals(onlCgformField.getDbFieldName()) && StrUtils.isEmpty(json.get(pidField))) {
                 onlCgformField.setIsShowForm(1);
                 json.put(pidField, f419c);
             }
@@ -346,7 +347,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
             String id = head.getId();
             String tableName = head.getTableName();
             ArrayList<Map<String,String>> arrayList = new ArrayList();
-            if (oConvertUtils.isNotEmpty(head.getSubTableStr())) {
+            if (StrUtils.isNotEmpty(head.getSubTableStr())) {
                 for (String str : head.getSubTableStr().split(CgformUtil.COMMA_SEPARATOR)) {
                     OnlCgformHead onlCgformHead = this.cgformHeadMapper.selectOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, str));
                     if (onlCgformHead != null && (list = list(new LambdaQueryWrapper<OnlCgformField>().eq(OnlCgformField::getCgformHeadId, onlCgformHead.getId()).eq(OnlCgformField::getMainTable, head.getTableName()))) != null && !list.isEmpty()) {
@@ -510,12 +511,12 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
         String str = "online:" + tbname + "%";
         String id = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getId();
         List<String> arrayList = new ArrayList<>();
-        if (oConvertUtils.isEmpty(taskId)) {
+        if (StrUtils.isEmpty(taskId)) {
             List<String> queryHideCode = this.onlAuthPageService.queryHideCode(id, cgFormId, isList);
             if (queryHideCode != null && !queryHideCode.isEmpty() && queryHideCode.get(0) != null) {
                 arrayList.addAll(queryHideCode);
             }
-        } else if (oConvertUtils.isNotEmpty(taskId) && (selectFlowAuthColumns = this.baseMapper.selectFlowAuthColumns(tbname, taskId, "1")) != null && !selectFlowAuthColumns.isEmpty() && selectFlowAuthColumns.get(0) != null) {
+        } else if (StrUtils.isNotEmpty(taskId) && (selectFlowAuthColumns = this.baseMapper.selectFlowAuthColumns(tbname, taskId, "1")) != null && !selectFlowAuthColumns.isEmpty() && selectFlowAuthColumns.get(0) != null) {
             arrayList.addAll(selectFlowAuthColumns);
         }
         if (arrayList.isEmpty()) {
@@ -539,7 +540,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
 
     @Override // org.jeecg.modules.online.cgform.service.IOnlCgformFieldService
     public List<String> queryDisabledFields(String tbname, String taskId) {
-        if (oConvertUtils.isEmpty(taskId)) {
+        if (StrUtils.isEmpty(taskId)) {
             return null;
         }
         return m300a(( this.baseMapper).selectFlowAuthColumns(tbname, taskId, "2"));
@@ -552,9 +553,9 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
             return arrayList;
         }
         for (String str : list) {
-            if (!oConvertUtils.isEmpty(str)) {
+            if (!StrUtils.isEmpty(str)) {
                 String substring = str.substring(str.lastIndexOf(":") + 1);
-                if (!oConvertUtils.isEmpty(substring)) {
+                if (!StrUtils.isEmpty(substring)) {
                     arrayList.add(substring);
                 }
             }
@@ -588,7 +589,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
             } else {
                 if (var2) {
                     if (var8.getIsShowList() != 1) {
-                        if (oConvertUtils.isNotEmpty(var8.getMainTable()) && oConvertUtils.isNotEmpty(var8.getMainField())) {
+                        if (StrUtils.isNotEmpty(var8.getMainTable()) && StrUtils.isNotEmpty(var8.getMainField())) {
                             var5.add(var8);
                         }
                         continue;
@@ -615,9 +616,9 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
         boolean z = true;
         for (int i = 0; i < list.size(); i++) {
             String str2 = list.get(i);
-            if (!oConvertUtils.isEmpty(str2)) {
+            if (!StrUtils.isEmpty(str2)) {
                 String substring = str2.substring(str2.lastIndexOf(":") + 1);
-                if (!oConvertUtils.isEmpty(substring) && substring.equals(str)) {
+                if (!StrUtils.isEmpty(substring) && substring.equals(str)) {
                     z = false;
                 }
             }
@@ -633,7 +634,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
             if (!it.hasNext()) {
                 break;
             }
-            if (oConvertUtils.camelToUnderline(str).equals(it.next().getDbFieldName())) {
+            if (StrUtils.camelToUnderline(str).equals(it.next().getDbFieldName())) {
                 z = true;
                 break;
             }
@@ -658,14 +659,14 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
         linkDown.setTxt(SqlInjectionUtil.getSqlInjectField(linkDown.getTxt()));
         linkDown.setIdField(SqlInjectionUtil.getSqlInjectField(linkDown.getIdField()));
         linkDown.setPidField(SqlInjectionUtil.getSqlInjectField(linkDown.getPidField()));
-        if (oConvertUtils.isNotEmpty(linkDown.getLinkField())) {
+        if (StrUtils.isNotEmpty(linkDown.getLinkField())) {
             linkDown.setLinkField(SqlInjectionUtil.getSqlInjectField(new String[0]));
         }
         QueryWrapper<?> queryWrapper = new QueryWrapper<>();
         queryWrapper.select(linkDown.getKey() + " as store", linkDown.getTxt() + " as label", linkDown.getIdField() + " as id", linkDown.getPidField() + " as pid");
-        if (oConvertUtils.isNotEmpty(linkDown.getPidValue())) {
+        if (StrUtils.isNotEmpty(linkDown.getPidValue())) {
             queryWrapper.eq(linkDown.getPidField(), linkDown.getPidValue());
-        } else if (oConvertUtils.isNotEmpty(linkDown.getCondition())) {
+        } else if (StrUtils.isNotEmpty(linkDown.getCondition())) {
             SqlInjectionUtil.filterContent(linkDown.getCondition());
             queryWrapper.apply(linkDown.getCondition());
         }
@@ -733,10 +734,10 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
     @Override // org.jeecg.modules.online.cgform.service.IOnlCgformFieldService
     public List<Map<String, Object>> queryListBySql(String tableName, String fields, String pidField, String metaPid, String inIds) {
         QueryWrapper<?> queryWrapper = new QueryWrapper<>();
-        if (oConvertUtils.isNotEmpty(pidField)) {
+        if (StrUtils.isNotEmpty(pidField)) {
             queryWrapper.eq(SqlInjectionUtil.getSqlInjectField(pidField), metaPid);
         }
-        if (oConvertUtils.isNotEmpty(inIds)) {
+        if (StrUtils.isNotEmpty(inIds)) {
             queryWrapper.in("id", Arrays.asList(inIds.split(CgformUtil.COMMA_SEPARATOR)));
         }
         Collection<Map<String, Object>> collection = m315a(tableName, fields, queryWrapper, Collection.class);
@@ -813,7 +814,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
             }
             hashMap.put("dbField", onlCgformField.getDbFieldName());
             hashMap.put("mode", onlCgformField.getQueryMode());
-            if (oConvertUtils.isNotEmpty(onlCgformField.getFieldExtendJson())) {
+            if (StrUtils.isNotEmpty(onlCgformField.getFieldExtendJson())) {
                 hashMap.put("fieldExtendJson", onlCgformField.getFieldExtendJson());
             }
             if ("1".equals(onlCgformField.getQueryConfigFlag())) {
@@ -924,7 +925,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
             return;
         }
         HashSet<String> hashSet = new HashSet<>();
-        if (oConvertUtils.isNotEmpty(onlCgformHead.getSubTableStr())) {
+        if (StrUtils.isNotEmpty(onlCgformHead.getSubTableStr())) {
             hashSet.addAll(Arrays.stream(onlCgformHead.getSubTableStr().split(CgformUtil.COMMA_SEPARATOR)).collect(Collectors.toSet()));
         }
         Map<String, Object> m309a = m309a(m235f, dataId);
@@ -934,7 +935,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
                 for (String s : hashSet) {
                     String m235f2 = CgformUtil.m235f(s);
                     String m308a = m308a(m235f2, json.getJSONArray(m235f2), m235f, dataId);
-                    if (oConvertUtils.isNotEmpty(m308a)) {
+                    if (StrUtils.isNotEmpty(m308a)) {
                         sb.append(m308a).append("；");
                     }
                 }
@@ -945,8 +946,8 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
                 if (!sb.isEmpty()) {
                     sb2.append("；").append(sb);
                 }
-                String str = Arrays.stream(sb2.toString().split("；")).filter(str2 -> oConvertUtils.isNotEmpty(str2.trim())).collect(Collectors.joining("；"));
-                if (oConvertUtils.isNotEmpty(str)) {
+                String str = Arrays.stream(sb2.toString().split("；")).filter(str2 -> StrUtils.isNotEmpty(str2.trim())).collect(Collectors.joining("；"));
+                if (StrUtils.isNotEmpty(str)) {
                     dataLogDTO.setContent(str);
                     this.sysBaseAPI.saveDataLog(dataLogDTO);
                 }
@@ -964,7 +965,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
             String dbFieldName = onlCgformField.getDbFieldName();
             if (null != dbFieldName && !"id".equalsIgnoreCase(dbFieldName) && !CgformUtil.f206A.equalsIgnoreCase(dbFieldName) && !CgformUtil.f203x.equalsIgnoreCase(dbFieldName) && !CgformUtil.f205z.equalsIgnoreCase(dbFieldName) && !CgformUtil.f202w.equalsIgnoreCase(dbFieldName) && !CgformUtil.f204y.equalsIgnoreCase(dbFieldName)) {
                 String dbType = onlCgformField.getDbType();
-                if (!"blob".equalsIgnoreCase(dbType) && !ExtendJsonKey.TEXT.equalsIgnoreCase(dbType) && (!oConvertUtils.isEmpty(jSONObject.get(dbFieldName)) || !oConvertUtils.isEmpty(map.get(dbFieldName)))) {
+                if (!"blob".equalsIgnoreCase(dbType) && !ExtendJsonKey.TEXT.equalsIgnoreCase(dbType) && (!StrUtils.isEmpty(jSONObject.get(dbFieldName)) || !StrUtils.isEmpty(map.get(dbFieldName)))) {
                     String str2 = "空";
                     if (jSONObject.get(dbFieldName) == null) {
                         str = "空";
@@ -1053,7 +1054,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
         } else {
             if (CgformConstant.f337e.equals(onlCgformHead.getRelationType())) {
                 String m307a = m307a(list.stream().filter(onlCgformField3 -> onlCgformField3 != onlCgformField).collect(Collectors.toList()), jSONArray.getJSONObject(0), ((JSONObject) list2.get(0)).getInnerMap());
-                if (oConvertUtils.isEmpty(m307a)) {
+                if (StrUtils.isEmpty(m307a)) {
                     return "";
                 }
                 sb.append("子表[").append(onlCgformHead.getTableTxt()).append("]：");
@@ -1066,7 +1067,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
             HashSet<String> hashSet = new HashSet<>();
             for (int i3 = 0; i3 < jSONArray.size(); i3++) {
                 String string = jSONArray.getJSONObject(i3).getString("id");
-                if (oConvertUtils.isEmpty(string)) {
+                if (StrUtils.isEmpty(string)) {
                     atomicInteger.getAndIncrement();
                 } else {
                     hashSet.add(string);
@@ -1109,7 +1110,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
                                 if (!"id".equalsIgnoreCase(dbFieldName) && !CgformUtil.f206A.equalsIgnoreCase(dbFieldName) && !CgformUtil.f203x.equalsIgnoreCase(dbFieldName) && !CgformUtil.f205z.equalsIgnoreCase(dbFieldName) && !CgformUtil.f202w.equalsIgnoreCase(dbFieldName) && !CgformUtil.f204y.equalsIgnoreCase(dbFieldName)) {
                                     String string2 = jSONObject3.getString(dbFieldName);
                                     String string3 = jSONObject.getString(dbFieldName);
-                                    if (oConvertUtils.isNotEmpty(string2) && oConvertUtils.isNotEmpty(string3) && !string2.equals(string3)) {
+                                    if (StrUtils.isNotEmpty(string2) && StrUtils.isNotEmpty(string3) && !string2.equals(string3)) {
                                         i++;
                                         break;
                                     }
@@ -1200,10 +1201,10 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
     private List<OnlCgformField> m310a(String str, String str2, String str3) {
         OnlCgformHead onlCgformHead = this.cgformHeadMapper.selectOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, str));
         if (onlCgformHead == null) {
-            throw new JeecgBootException("实体未找到");
+            throw exception("实体未找到");
         }
-        if (oConvertUtils.isEmpty(str2) || oConvertUtils.isEmpty(str3)) {
-            throw new JeecgBootException("关联记录字典参数不正确");
+        if (StrUtils.isEmpty(str2) || StrUtils.isEmpty(str3)) {
+            throw exception("关联记录字典参数不正确");
         }
         String[] split = str2.split(CgformUtil.COMMA_SEPARATOR);
         List<String> arrayList = new ArrayList<>();
@@ -1220,9 +1221,9 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
             String dictText = onlCgformField.getDictText();
             String dictField = onlCgformField.getDictField();
             if (CgformUtil.m185c(onlCgformField.getFieldShowType())) {
-                if (oConvertUtils.isNotEmpty(dictTable) && oConvertUtils.isNotEmpty(dictText) && oConvertUtils.isNotEmpty(dictField)) {
+                if (StrUtils.isNotEmpty(dictTable) && StrUtils.isNotEmpty(dictText) && StrUtils.isNotEmpty(dictField)) {
                     hashMap.put(onlCgformField.getDbFieldName(), this.sysBaseAPI.queryTableDictItemsByCode(dictTable, dictText, dictField));
-                } else if (oConvertUtils.isNotEmpty(dictField)) {
+                } else if (StrUtils.isNotEmpty(dictField)) {
                     hashMap.put(onlCgformField.getDbFieldName(), this.sysBaseAPI.queryDictItemsByCode(dictField));
                 }
             }
@@ -1261,7 +1262,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
                     }
                 }
             }
-            if (oConvertUtils.isNotEmpty(str4)) {
+            if (StrUtils.isNotEmpty(str4)) {
                 arrayList.add(str4);
             }
         }
@@ -1283,7 +1284,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
     /* renamed from: a */
     public <T> T m315a(String str, String str2, QueryWrapper<?> queryWrapper, Class<T> cls) {
         String str3;
-        if (oConvertUtils.isNotEmpty(str2)) {
+        if (StrUtils.isNotEmpty(str2)) {
             str3 = SqlInjectionUtil.getSqlInjectField(str2);
         } else {
             str3 = "*";
@@ -1306,7 +1307,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
     private Integer m317b(String str, String str2, String str3) {
         QueryWrapper<?> queryWrapper = new QueryWrapper<>();
         queryWrapper.select(new String[]{"count(1)"});
-        if (oConvertUtils.isNotEmpty(str2)) {
+        if (StrUtils.isNotEmpty(str2)) {
             queryWrapper.eq(SqlInjectionUtil.getSqlInjectField(str2), str3);
         }
         return (Integer) m314a(str, queryWrapper, Integer.class);

@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import java.util.ArrayList;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.util.SpringContextUtils;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.modules.online.cgform.converter.common.ForeseeConvert;
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
 import org.jeecg.modules.online.cgform.constant.ExtendJsonKey;
@@ -21,11 +21,11 @@ public class DepartConverter extends ForeseeConvert {
         String str2 = CgformUtil.DEPART_NAME;
         str = "ID";
         String fieldExtendJson = onlCgformField.getFieldExtendJson();
-        if (oConvertUtils.isNotEmpty(fieldExtendJson)) {
+        if (StrUtils.isNotEmpty(fieldExtendJson)) {
             JSONObject parseObject = JSON.parseObject(fieldExtendJson);
-            str = parseObject.containsKey(ExtendJsonKey.STORE) ? oConvertUtils.camelToUnderline(parseObject.getString(ExtendJsonKey.STORE)) : "ID";
+            str = parseObject.containsKey(ExtendJsonKey.STORE) ? StrUtils.camelToUnderline(parseObject.getString(ExtendJsonKey.STORE)) : "ID";
             if (parseObject.containsKey(ExtendJsonKey.TEXT)) {
-                str2 = oConvertUtils.camelToUnderline(parseObject.getString(ExtendJsonKey.TEXT));
+                str2 = StrUtils.camelToUnderline(parseObject.getString(ExtendJsonKey.TEXT));
             }
         }
         this.dictlList = iSysBaseAPI.queryTableDictItemsByCode(CgformUtil.SYS_DEPART, str2, str);
@@ -34,7 +34,7 @@ public class DepartConverter extends ForeseeConvert {
 
     @Override // org.jeecg.modules.online.cgform.converter.p010a.C0030b, org.jeecg.modules.online.cgform.converter.FieldCommentConverter
     public String converterToVal(String txt) {
-        if (oConvertUtils.isEmpty(txt)) {
+        if (StrUtils.isEmpty(txt)) {
             return null;
         }
         ArrayList arrayList = new ArrayList();
@@ -49,7 +49,7 @@ public class DepartConverter extends ForeseeConvert {
 
     @Override // org.jeecg.modules.online.cgform.converter.p010a.C0030b, org.jeecg.modules.online.cgform.converter.FieldCommentConverter
     public String converterToTxt(String val) {
-        if (oConvertUtils.isEmpty(val)) {
+        if (StrUtils.isEmpty(val)) {
             return null;
         }
         ArrayList arrayList = new ArrayList();

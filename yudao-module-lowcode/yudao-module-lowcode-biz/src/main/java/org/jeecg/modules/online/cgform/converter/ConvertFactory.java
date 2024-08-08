@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import org.jeecg.common.util.MyClassLoader;
 import org.jeecg.common.util.SpringContextUtils;
-import org.jeecg.common.util.oConvertUtils;
+
 import org.jeecg.modules.online.cgform.converter.field.CatTreeConverter;
 import org.jeecg.modules.online.cgform.converter.field.DepartConverter;
 import org.jeecg.modules.online.cgform.converter.field.DictEasyConverter;
@@ -126,7 +126,7 @@ public class ConvertFactory {
         FieldCommentConverter m173a;
         HashMap<String,FieldCommentConverter> hashMap = new HashMap<>(5);
         for (OnlCgformField onlCgformField : list) {
-            if (oConvertUtils.isNotEmpty(onlCgformField.getConverter())) {
+            if (StrUtils.isNotEmpty(onlCgformField.getConverter())) {
                 m173a = m175a(onlCgformField.getConverter().trim());
             } else {
                 m173a = m173a(onlCgformField);
