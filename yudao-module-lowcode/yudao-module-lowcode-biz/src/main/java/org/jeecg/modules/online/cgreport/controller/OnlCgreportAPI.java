@@ -92,7 +92,7 @@ public class OnlCgreportAPI {
     /* renamed from: a */
 
     @GetMapping({"/getColumnsAndData/{code}"})
-    @PermissionData
+//    @PermissionData
     @Operation(summary = "获取报表列和数据")
     /* renamed from: a */
     public Result<?> m389a(@PathVariable("code") String str, HttpServletRequest httpServletRequest) {

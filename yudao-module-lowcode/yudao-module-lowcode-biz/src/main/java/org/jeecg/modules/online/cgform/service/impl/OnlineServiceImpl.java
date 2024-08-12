@@ -1,17 +1,17 @@
 package org.jeecg.modules.online.cgform.service.impl;
 
+import cn.iocoder.yudao.framework.security.core.LoginUser;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import org.apache.commons.lang.StringUtils;
-import org.apache.shiro.SecurityUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import org.jeecg.common.service.ISysBaseAPI;
 import org.jeecg.common.system.vo.DictModel;
-import org.jeecg.common.system.vo.LoginUser;
 
 import org.jeecg.common.util.online.ConvertUtils;
 import org.jeecg.modules.online.auth.constant.AuthConstants;
@@ -85,7 +85,7 @@ public class OnlineServiceImpl implements IOnlineService {
             String dbFieldName = onlCgformField.getDbFieldName();
             String mainTable = onlCgformField.getMainTable();
             String mainField = onlCgformField.getMainField();
-            if (StrUtils.isNotEmpty(mainField) && StrUtils.isNotEmpty(mainTable)) {
+            if (ConvertUtils.isNotEmpty(mainField) && ConvertUtils.isNotEmpty(mainTable)) {
                 arrayList3.add(new OnlForeignKey(dbFieldName, mainField));
             }
             if (onlCgformField.getIsShowList() != null && 1 == onlCgformField.getIsShowList() && !"id".equals(dbFieldName) && !queryHideCode.contains(dbFieldName) && !arrayList4.contains(dbFieldName) && (selectFieldList == null || selectFieldList.size() <= 0 || selectFieldList.indexOf(dbFieldName) >= 0)) {
@@ -141,7 +141,7 @@ public class OnlineServiceImpl implements IOnlineService {
         }
         onlComplexModel.setCgButtonList(arrayList6);
         OnlCgformEnhanceJs queryEnhanceJs = this.onlCgformHeadService.queryEnhanceJs(id, CgformUtil.LIST);
-        if (queryEnhanceJs != null && StrUtils.isNotEmpty(queryEnhanceJs.getCgJs())) {
+        if (queryEnhanceJs != null && ConvertUtils.isNotEmpty(queryEnhanceJs.getCgJs())) {
             onlComplexModel.setEnhanceJs(EnhanceJsUtil.m272b(queryEnhanceJs.getCgJs(), queryButtonList));
         }
         if ("Y".equals(head.getIsTree())) {
@@ -158,7 +158,7 @@ public class OnlineServiceImpl implements IOnlineService {
         while (it.hasNext()) {
             OnlColumn next = it.next();
             String dataIndex = next.getDataIndex();
-            if (list2 != null && list2.contains(dataIndex) && StrUtils.isEmpty(next.getCustomRender())) {
+            if (list2 != null && list2.contains(dataIndex) && ConvertUtils.isEmpty(next.getCustomRender())) {
                 it.remove();
             }
         }
@@ -170,10 +170,10 @@ public class OnlineServiceImpl implements IOnlineService {
         if (str != null && !str.isEmpty()) {
             JSONObject parseObject = JSON.parseObject(str);
             if (parseObject.containsKey(ExtendJsonKey.STORE)) {
-                strArr[0] = StrUtils.camelToUnderline(parseObject.getString(ExtendJsonKey.STORE));
+                strArr[0] = ConvertUtils.camelToUnderline(parseObject.getString(ExtendJsonKey.STORE));
             }
             if (parseObject.containsKey(ExtendJsonKey.TEXT)) {
-                strArr[1] = StrUtils.camelToUnderline(parseObject.getString(ExtendJsonKey.TEXT));
+                strArr[1] = ConvertUtils.camelToUnderline(parseObject.getString(ExtendJsonKey.TEXT));
             }
         }
         return strArr;
@@ -181,7 +181,7 @@ public class OnlineServiceImpl implements IOnlineService {
 
     /* renamed from: a */
     private void m379a(List<OnlCgformField> list, List<String> list2, List<OnlColumn> list3, String str, String str2) {
-        if (StrUtils.isNotEmpty(str2)) {
+        if (ConvertUtils.isNotEmpty(str2)) {
             for (String str3 : str2.split(CgformUtil.COMMA_SEPARATOR)) {
                 Iterator<OnlCgformField> it = list.iterator();
                 while (true) {
@@ -208,7 +208,7 @@ public class OnlineServiceImpl implements IOnlineService {
         String taskId = head.getTaskId();
         List<OnlCgformField> queryAvailableFields = this.onlCgformFieldService.queryAvailableFields(id, head.getTableName(), taskId, false);
         ArrayList<String> arrayList = new ArrayList<>();
-        if (StrUtils.isEmpty(taskId)) {
+        if (ConvertUtils.isEmpty(taskId)) {
             List<String> queryFormDisabledCode = this.onlAuthPageService.queryFormDisabledCode(head.getId());
             if (queryFormDisabledCode != null && !queryFormDisabledCode.isEmpty() && queryFormDisabledCode.get(0) != null) {
                 arrayList.addAll(queryFormDisabledCode);
@@ -240,7 +240,7 @@ public class OnlineServiceImpl implements IOnlineService {
         if (queryFormValidButton != null && !queryFormValidButton.isEmpty()) {
             jSONObject.put("cgButtonList", queryFormValidButton);
         }
-        if (onlCgformEnhanceJs != null && StrUtils.isNotEmpty(onlCgformEnhanceJs.getCgJs())) {
+        if (onlCgformEnhanceJs != null && ConvertUtils.isNotEmpty(onlCgformEnhanceJs.getCgJs())) {
             onlCgformEnhanceJs.setCgJs(EnhanceJsUtil.m273c(onlCgformEnhanceJs.getCgJs(), queryFormValidButton));
             jSONObject.put("enhanceJs", EnhanceJsUtil.m271a(onlCgformEnhanceJs.getCgJs()));
         }
@@ -258,7 +258,7 @@ public class OnlineServiceImpl implements IOnlineService {
         List<OnlCgformButton> queryButtonList = this.onlCgformHeadService.queryButtonList(headId, false);
         List<OnlCgformButton> list = null;
         if (queryButtonList != null && !queryButtonList.isEmpty()) {
-            List<String> queryFormHideButton = this.onlAuthPageService.queryFormHideButton(((LoginUser) SecurityUtils.getSubject().getPrincipal()).getId(), headId);
+            List<String> queryFormHideButton = this.onlAuthPageService.queryFormHideButton(String.valueOf(SecurityFrameworkUtils.getLoginUserId()), headId);
             list =  queryButtonList.stream().filter(onlCgformButton -> queryFormHideButton == null || !queryFormHideButton.contains(onlCgformButton.getButtonCode())).collect(Collectors.toList());
         }
         return list;
@@ -282,7 +282,7 @@ public class OnlineServiceImpl implements IOnlineService {
     public String queryEnahcneJsString(String code, String type) {
         String str = "";
         OnlCgformEnhanceJs queryEnhanceJs = this.onlCgformHeadService.queryEnhanceJs(code, type);
-        if (queryEnhanceJs != null && StrUtils.isNotEmpty(queryEnhanceJs.getCgJs())) {
+        if (queryEnhanceJs != null && ConvertUtils.isNotEmpty(queryEnhanceJs.getCgJs())) {
             str = EnhanceJsUtil.m272b(queryEnhanceJs.getCgJs(), (List<OnlCgformButton>) null);
         }
         return str;
@@ -324,9 +324,9 @@ public class OnlineServiceImpl implements IOnlineService {
                 String dictTable = onlCgformField.getDictTable();
                 String dictField = onlCgformField.getDictField();
                 String dictText = onlCgformField.getDictText();
-                if (StrUtils.isNotEmpty(dictTable) && StrUtils.isNotEmpty(dictField) && StrUtils.isNotEmpty(dictText)) {
+                if (ConvertUtils.isNotEmpty(dictTable) && ConvertUtils.isNotEmpty(dictField) && ConvertUtils.isNotEmpty(dictText)) {
                     list = this.sysBaseAPI.queryTableDictItemsByCode(dictTable, dictText, dictField);
-                } else if (StrUtils.isNotEmpty(dictField)) {
+                } else if (ConvertUtils.isNotEmpty(dictField)) {
                     list = this.sysBaseAPI.queryDictItemsByCode(dictField);
                 }
             }
@@ -405,7 +405,7 @@ public class OnlineServiceImpl implements IOnlineService {
         if (onlCgformHead.getTableType().intValue() == 2) {
             JSONObject jSONObject = queryOnlineFormObj.getJSONObject("schema");
             String subTableStr = onlCgformHead.getSubTableStr();
-            if (StrUtils.isNotEmpty(subTableStr)) {
+            if (ConvertUtils.isNotEmpty(subTableStr)) {
                 ArrayList<OnlCgformHead> arrayList = new ArrayList<>();
                 for (String str : subTableStr.split(CgformUtil.COMMA_SEPARATOR)) {
                     OnlCgformHead onlCgformHead2 = this.onlCgformHeadService.getOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, str));
@@ -433,7 +433,7 @@ public class OnlineServiceImpl implements IOnlineService {
                         EnhanceJsUtil.m275b(queryEnhanceJs, onlCgformHead3.getTableName(), queryAvailableFields);
                         JSONObject jSONObject2 = new JSONObject();
                         new ArrayList();
-                        if (StrUtils.isNotEmpty(onlCgformHead.getTaskId())) {
+                        if (ConvertUtils.isNotEmpty(onlCgformHead.getTaskId())) {
                             queryFormDisabledCode = this.onlCgformFieldService.queryDisabledFields(onlCgformHead3.getTableName(), onlCgformHead.getTaskId());
                         } else {
                             queryFormDisabledCode = this.onlAuthPageService.queryFormDisabledCode(onlCgformHead3.getId());
@@ -456,7 +456,7 @@ public class OnlineServiceImpl implements IOnlineService {
                     }
                 }
             }
-            if (queryEnhanceJs != null && StrUtils.isNotEmpty(queryEnhanceJs.getCgJs())) {
+            if (queryEnhanceJs != null && ConvertUtils.isNotEmpty(queryEnhanceJs.getCgJs())) {
                 queryOnlineFormObj.put("enhanceJs", EnhanceJsUtil.m271a(queryEnhanceJs.getCgJs()));
             }
         }
@@ -474,11 +474,11 @@ public class OnlineServiceImpl implements IOnlineService {
         if (fieldShowType == null) {
             return onlColumn;
         }
-        if (StrUtils.isNotEmpty(dictField) && !CgformUtil.f218M.equals(fieldShowType) && !CgformUtil.f238ag.equals(fieldShowType)) {
+        if (ConvertUtils.isNotEmpty(dictField) && !CgformUtil.f218M.equals(fieldShowType) && !CgformUtil.f238ag.equals(fieldShowType)) {
             List<DictModel> arrayList = new ArrayList<>();
-            if (StrUtils.isNotEmpty(onlCgformField.getDictTable())) {
+            if (ConvertUtils.isNotEmpty(onlCgformField.getDictTable())) {
                 arrayList = this.sysBaseAPI.queryTableDictItemsByCode(onlCgformField.getDictTable(), onlCgformField.getDictText(), dictField);
-            } else if (StrUtils.isNotEmpty(onlCgformField.getDictField())) {
+            } else if (ConvertUtils.isNotEmpty(onlCgformField.getDictField())) {
                 arrayList = this.sysBaseAPI.queryDictItemsByCode(dictField);
             }
             map.put(dbFieldName, arrayList);
@@ -512,7 +512,7 @@ public class OnlineServiceImpl implements IOnlineService {
         }
         if (CgformUtil.f223R.equals(fieldShowType)) {
             String dictText = onlCgformField.getDictText();
-            if (StrUtils.isEmpty(dictText)) {
+            if (ConvertUtils.isEmpty(dictText)) {
                 map.put(dbFieldName, this.sysBaseAPI.queryFilterTableDictInfo(CgformUtil.f231Z, CgformUtil.f232aa, "ID", CgformUtil.m234e(onlCgformField.getDictField())));
                 onlColumn.setCustomRender(dbFieldName);
             } else {
@@ -549,7 +549,7 @@ public class OnlineServiceImpl implements IOnlineService {
             onlColumn.setSorter(true);
         }
         String fieldExtendJson = onlCgformField.getFieldExtendJson();
-        if (StrUtils.isNotEmpty(fieldExtendJson)) {
+        if (ConvertUtils.isNotEmpty(fieldExtendJson)) {
             onlColumn.setFieldExtendJson(fieldExtendJson);
             if (fieldExtendJson.indexOf(ExtendJsonKey.SHOW_LENGTH) > 0 && (parseObject = JSON.parseObject(fieldExtendJson)) != null && parseObject.get(ExtendJsonKey.SHOW_LENGTH) != null) {
                 onlColumn.setShowLength(Objects.requireNonNull(ConvertUtils.getInt(parseObject.get(ExtendJsonKey.SHOW_LENGTH))));

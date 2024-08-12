@@ -5,7 +5,6 @@ import java.util.Map;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jeecg.modules.online.cgform.entity.OnlCgformHead;
 import org.jeecg.modules.online.cgform.model.OnlQueryModel;
-import org.jeecgframework.poi.excel.entity.params.ExcelExportEntity;
 
 /* loaded from: hibernate-re-3.6.1-beta.jar:org/jeecg/modules/online/cgform/service/IOnlineJoinQueryService.class */
 public interface IOnlineJoinQueryService {
@@ -19,5 +18,5 @@ public interface IOnlineJoinQueryService {
 
     XSSFWorkbook handleOnlineExport(OnlCgformHead onlCgformHead, Map<String, Object> map);
 
-    void addAllSubTableDate(String str, Map<String, Object> map, List<Map<String, Object>> list, List<ExcelExportEntity> list2, boolean z);
+//    void addAllSubTableDate(String str, Map<String, Object> map, List<Map<String, Object>> list, List<ExcelExportEntity> list2, boolean z);
 }

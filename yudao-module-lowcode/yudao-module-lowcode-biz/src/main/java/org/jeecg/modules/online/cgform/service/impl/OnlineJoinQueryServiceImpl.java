@@ -567,112 +567,116 @@ public class OnlineJoinQueryServiceImpl implements IOnlineJoinQueryService {
         return onlQueryModel;
     }
 
+    /**
+     * 这里是导出，暂时屏蔽，太多了
+     */
     @Override // org.jeecg.modules.online.cgform.service.IOnlineJoinQueryService
     public XSSFWorkbook handleOnlineExport(OnlCgformHead head, Map<String, Object> params) {
-        OnlQueryModel queryInfo;
-        XSSFWorkbook xSSFWorkbook = new XSSFWorkbook();
-        boolean m181a = CgformUtil.m181a(head);
-        if (m181a) {
-            queryInfo = getQueryInfo(head, params, false, true);
-        } else {
-            queryInfo = this.onlCgformFieldService.getQueryInfo(head, params, null);
-        }
-        boolean z = true;
-        int num = 50000;
-        int num2 = 1;
-        String sql = queryInfo.getSql();
-        Map<String, Object> params2 = queryInfo.getParams();
-        List<OnlCgformField> fieldList = queryInfo.getFieldList();
-        List<ExcelExportEntity> m257b = CgformUtil.m257b(fieldList, "id", this.upLoadPath);
-        boolean z2 = false;
-        while (z) {
-            Page<Map<String, Object>> page = new Page<>(num2, num);
-            page.setOptimizeCountSql(false);
-            page.setSearchCount(false);
-            Integer num3 = num2;
-            num2 = num2 + 1;
-            params.put("pageNo", num3);
-            List<Map<String, Object>> m227d = CgformUtil.m227d(this.onlineMapper.selectPageByCondition(page, sql, params2).getRecords());
-            if (m227d.isEmpty()) {
-                z = false;
-            } else {
-                List<Map<String, Object>> arrayList = new ArrayList<>();
-                String obj = params.get("selections") == null ? null : params.get("selections").toString();
-                if (ConvertUtils.isNotEmpty(obj)) {
-                    z = false;
-                    if (m181a) {
-                        Map<String, List<String>> m256f = CgformUtil.m256f(obj, new ArrayList<>(queryInfo.getTableAliasMap().values()));
-                        arrayList =  m227d.stream().filter(map -> m373a( map,  m256f)).collect(Collectors.toList());
-                    } else {
-                        List<String> m255h = CgformUtil.m255h(obj);
-                        arrayList =  m227d.stream().filter(map2 -> m255h.contains((String) map2.get("id"))).collect(Collectors.toList());
-                    }
-                } else {
-                    if (m227d == null) {
-                        m227d = new ArrayList<>();
-                    }
-                    arrayList.addAll(m227d);
-                }
-                ConvertUtil.m176a(1, arrayList, fieldList);
-                try {
-                    this.onlCgformHeadService.executeEnhanceExport(head, arrayList);
-                } catch (BusinessException e) {
-                    logger.error("导出java增强处理出错", e.getMessage());
-                }
-                if (head.getTableType().intValue() == 2 && !m181a && ConvertUtils.isEmpty(params.get(CgformUtil.f251at))) {
-                    String subTableStr = head.getSubTableStr();
-                    if (ConvertUtils.isNotEmpty(subTableStr)) {
-                        for (String str : subTableStr.split(CgformUtil.COMMA_SEPARATOR)) {
-                            addAllSubTableDate(str, params, arrayList, m257b, z2);
-                        }
-                        z2 = true;
-                    }
-                }
-                ExcelExportServer excelExportServer = new ExcelExportServer();
-                ExportParams exportParams = new ExportParams();
-                exportParams.setType(ExcelType.XSSF);
-                excelExportServer.createSheetForMap(xSSFWorkbook, exportParams, m257b, arrayList);
-            }
-        }
-        return xSSFWorkbook;
+//        OnlQueryModel queryInfo;
+//        XSSFWorkbook xSSFWorkbook = new XSSFWorkbook();
+//        boolean m181a = CgformUtil.m181a(head);
+//        if (m181a) {
+//            queryInfo = getQueryInfo(head, params, false, true);
+//        } else {
+//            queryInfo = this.onlCgformFieldService.getQueryInfo(head, params, null);
+//        }
+//        boolean z = true;
+//        int num = 50000;
+//        int num2 = 1;
+//        String sql = queryInfo.getSql();
+//        Map<String, Object> params2 = queryInfo.getParams();
+//        List<OnlCgformField> fieldList = queryInfo.getFieldList();
+//        List<ExcelExportEntity> m257b = CgformUtil.m257b(fieldList, "id", this.upLoadPath);
+//        boolean z2 = false;
+//        while (z) {
+//            Page<Map<String, Object>> page = new Page<>(num2, num);
+//            page.setOptimizeCountSql(false);
+//            page.setSearchCount(false);
+//            Integer num3 = num2;
+//            num2 = num2 + 1;
+//            params.put("pageNo", num3);
+//            List<Map<String, Object>> m227d = CgformUtil.m227d(this.onlineMapper.selectPageByCondition(page, sql, params2).getRecords());
+//            if (m227d.isEmpty()) {
+//                z = false;
+//            } else {
+//                List<Map<String, Object>> arrayList = new ArrayList<>();
+//                String obj = params.get("selections") == null ? null : params.get("selections").toString();
+//                if (ConvertUtils.isNotEmpty(obj)) {
+//                    z = false;
+//                    if (m181a) {
+//                        Map<String, List<String>> m256f = CgformUtil.m256f(obj, new ArrayList<>(queryInfo.getTableAliasMap().values()));
+//                        arrayList =  m227d.stream().filter(map -> m373a( map,  m256f)).collect(Collectors.toList());
+//                    } else {
+//                        List<String> m255h = CgformUtil.m255h(obj);
+//                        arrayList =  m227d.stream().filter(map2 -> m255h.contains((String) map2.get("id"))).collect(Collectors.toList());
+//                    }
+//                } else {
+//                    if (m227d == null) {
+//                        m227d = new ArrayList<>();
+//                    }
+//                    arrayList.addAll(m227d);
+//                }
+//                ConvertUtil.m176a(1, arrayList, fieldList);
+//                try {
+//                    this.onlCgformHeadService.executeEnhanceExport(head, arrayList);
+//                } catch (BusinessException e) {
+//                    logger.error("导出java增强处理出错", e.getMessage());
+//                }
+//                if (head.getTableType().intValue() == 2 && !m181a && ConvertUtils.isEmpty(params.get(CgformUtil.f251at))) {
+//                    String subTableStr = head.getSubTableStr();
+//                    if (ConvertUtils.isNotEmpty(subTableStr)) {
+//                        for (String str : subTableStr.split(CgformUtil.COMMA_SEPARATOR)) {
+//                            addAllSubTableDate(str, params, arrayList, m257b, z2);
+//                        }
+//                        z2 = true;
+//                    }
+//                }
+//                ExcelExportServer excelExportServer = new ExcelExportServer();
+//                ExportParams exportParams = new ExportParams();
+//                exportParams.setType(ExcelType.XSSF);
+//                excelExportServer.createSheetForMap(xSSFWorkbook, exportParams, m257b, arrayList);
+//            }
+//        }
+//        return xSSFWorkbook;
+        return null;
     }
 
-    @Override // org.jeecg.modules.online.cgform.service.IOnlineJoinQueryService
-    public void addAllSubTableDate(String subTable, Map<String, Object> params, List<Map<String, Object>> result, List<ExcelExportEntity> entityList, boolean subEntityExist) {
-        if (ConvertUtils.isEmpty(subTable)) {
-            return;
-        }
-        OnlCgformHead onlCgformHead = (OnlCgformHead) this.onlCgformHeadService.getOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, subTable));
-        LambdaQueryWrapper<OnlCgformField> lambdaQueryWrapper = new LambdaQueryWrapper<OnlCgformField>();
-        lambdaQueryWrapper.eq(OnlCgformField::getCgformHeadId, onlCgformHead.getId());
-        lambdaQueryWrapper.orderByAsc(OnlCgformField::getOrderNum);
-        List<OnlCgformField> list = this.onlCgformFieldService.list(lambdaQueryWrapper);
-        String str = "";
-        String str2 = "";
-        Iterator<OnlCgformField> it = list.iterator();
-        while (true) {
-            if (!it.hasNext()) {
-                break;
-            }
-            OnlCgformField onlCgformField = (OnlCgformField) it.next();
-            if (ConvertUtils.isNotEmpty(onlCgformField.getMainField())) {
-                str = onlCgformField.getMainField();
-                str2 = onlCgformField.getDbFieldName();
-                break;
-            }
-        }
-        if (!subEntityExist) {
-            ExcelExportEntity excelExportEntity = new ExcelExportEntity(onlCgformHead.getTableTxt(), subTable);
-            excelExportEntity.setList(CgformUtil.m257b(list, "id", this.upLoadPath));
-            entityList.add(excelExportEntity);
-        }
-        for (int i = 0; i < result.size(); i++) {
-            params.put(str2, result.get(i).get(str));
-            List<Map<String, Object>> queryListData = this.onlCgformHeadService.queryListData(CgformUtil.m205a(onlCgformHead.getTableName(), list, params));
-            ConvertUtil.m176a(1, queryListData, list);
-            result.get(i).put(subTable, CgformUtil.m227d(queryListData));
-        }
-    }
+//    @Override // org.jeecg.modules.online.cgform.service.IOnlineJoinQueryService
+//    public void addAllSubTableDate(String subTable, Map<String, Object> params, List<Map<String, Object>> result, List<ExcelExportEntity> entityList, boolean subEntityExist) {
+//        if (ConvertUtils.isEmpty(subTable)) {
+//            return;
+//        }
+//        OnlCgformHead onlCgformHead = (OnlCgformHead) this.onlCgformHeadService.getOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, subTable));
+//        LambdaQueryWrapper<OnlCgformField> lambdaQueryWrapper = new LambdaQueryWrapper<OnlCgformField>();
+//        lambdaQueryWrapper.eq(OnlCgformField::getCgformHeadId, onlCgformHead.getId());
+//        lambdaQueryWrapper.orderByAsc(OnlCgformField::getOrderNum);
+//        List<OnlCgformField> list = this.onlCgformFieldService.list(lambdaQueryWrapper);
+//        String str = "";
+//        String str2 = "";
+//        Iterator<OnlCgformField> it = list.iterator();
+//        while (true) {
+//            if (!it.hasNext()) {
+//                break;
+//            }
+//            OnlCgformField onlCgformField = (OnlCgformField) it.next();
+//            if (ConvertUtils.isNotEmpty(onlCgformField.getMainField())) {
+//                str = onlCgformField.getMainField();
+//                str2 = onlCgformField.getDbFieldName();
+//                break;
+//            }
+//        }
+//        if (!subEntityExist) {
+//            ExcelExportEntity excelExportEntity = new ExcelExportEntity(onlCgformHead.getTableTxt(), subTable);
+//            excelExportEntity.setList(CgformUtil.m257b(list, "id", this.upLoadPath));
+//            entityList.add(excelExportEntity);
+//        }
+//        for (int i = 0; i < result.size(); i++) {
+//            params.put(str2, result.get(i).get(str));
+//            List<Map<String, Object>> queryListData = this.onlCgformHeadService.queryListData(CgformUtil.m205a(onlCgformHead.getTableName(), list, params));
+//            ConvertUtil.m176a(1, queryListData, list);
+//            result.get(i).put(subTable, CgformUtil.m227d(queryListData));
+//        }
+//    }
 
     /* renamed from: a */
     private boolean m373a(Map<String, Object> map, Map<String, List<String>> map2) {
