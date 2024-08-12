@@ -13,6 +13,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.exception.JeecgBootException;
 
+import org.jeecg.common.service.ISysBaseAPI;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.modules.base.service.BaseCommonService;

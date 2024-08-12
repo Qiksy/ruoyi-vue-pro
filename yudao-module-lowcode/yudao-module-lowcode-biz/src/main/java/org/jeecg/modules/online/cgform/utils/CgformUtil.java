@@ -1,5 +1,6 @@
 package org.jeecg.modules.online.cgform.utils;
 
+import cn.hutool.extra.spring.SpringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -36,6 +37,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.exception.JeecgBootException;
 
+import org.jeecg.common.service.ISysBaseAPI;
 import org.jeecg.common.system.query.MatchTypeEnum;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.query.QueryRuleEnum;
@@ -50,10 +52,7 @@ import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.UUIDGenerator;
 
-import org.jeecg.common.util.online.CommonProperty;
-import org.jeecg.common.util.online.BaseColumn;
-import org.jeecg.common.util.online.JsonSchemaDescrip;
-import org.jeecg.common.util.online.JsonschemaUtil;
+import org.jeecg.common.util.online.*;
 import org.jeecg.common.util.online.property.DictProperty;
 import org.jeecg.common.util.online.property.HiddenProperty;
 import org.jeecg.common.util.online.property.LinkDownProperty;
@@ -423,7 +422,7 @@ public class CgformUtil {
                     if ("id".equals(onlCgformField.getDbFieldName())) {
                         z = true;
                     }
-                    if (f223R.equals(onlCgformField.getFieldShowType()) && StrUtils.isNotEmpty(onlCgformField.getDictText())) {
+                    if (f223R.equals(onlCgformField.getFieldShowType()) && ConvertUtils.isNotEmpty(onlCgformField.getDictText())) {
                         stringBuffer.append(onlCgformField.getDictText() + ",");
                     }
                     if (i == size - 1) {
@@ -468,9 +467,9 @@ public class CgformUtil {
 
     /* renamed from: a */
     public static boolean m186a(OnlCgformField onlCgformField) {
-        if (StrUtils.isNotEmpty(onlCgformField.getMainField()) && StrUtils.isNotEmpty(onlCgformField.getMainTable())) {
+        if (ConvertUtils.isNotEmpty(onlCgformField.getMainField()) && ConvertUtils.isNotEmpty(onlCgformField.getMainTable())) {
             String fieldExtendJson = onlCgformField.getFieldExtendJson();
-            if (StrUtils.isNotEmpty(fieldExtendJson) && fieldExtendJson.indexOf(ExtendJsonKey.TEXT_FIELD) > 0) {
+            if (ConvertUtils.isNotEmpty(fieldExtendJson) && fieldExtendJson.indexOf(ExtendJsonKey.TEXT_FIELD) > 0) {
                 onlCgformField.setDictTable(onlCgformField.getMainTable());
                 onlCgformField.setDictField(onlCgformField.getMainField());
                 onlCgformField.setFieldShowType("sel_search");
@@ -746,10 +745,10 @@ public class CgformUtil {
                     String dictText2 = onlCgformField.getDictText();
                     String dictField = onlCgformField.getDictField();
                     String str2 = "0";
-                    if (StrUtils.isNotEmpty(dictField) && !"0".equals(dictField)) {
+                    if (ConvertUtils.isNotEmpty(dictField) && !"0".equals(dictField)) {
                         str2 = onlCgformHeadMapper.queryCategoryIdByCode(dictField);
                     }
-                    if (StrUtils.isEmpty(dictText2)) {
+                    if (ConvertUtils.isEmpty(dictText2)) {
                         c0001a = new TreeSelectProperty(dbFieldName, dbFieldTxt, str2);
                     } else {
                         c0001a = new TreeSelectProperty(dbFieldName, dbFieldTxt, str2, dictText2);
@@ -762,7 +761,7 @@ public class CgformUtil {
                     c0001a = c0008h2;
                 } else {
                     var c0006f = new StringProperty(dbFieldName, dbFieldTxt, fieldShowType, onlCgformField.getDbLength());
-                    if (StrUtils.isNotEmpty(onlCgformField.getFieldValidType())) {
+                    if (ConvertUtils.isNotEmpty(onlCgformField.getFieldValidType())) {
                         CgformValidPatternEnum patternInfoByType = CgformValidPatternEnum.getPatternInfoByType(onlCgformField.getFieldValidType());
                         String m193a = m193a(ExtendJsonKey.VALIDATE_ERROR, onlCgformField.getFieldExtendJson());
                         if (patternInfoByType != null) {
@@ -770,7 +769,7 @@ public class CgformUtil {
                                 arrayList.add(dbFieldName);
                             } else {
                                 c0006f.setPattern(patternInfoByType.getPattern());
-                                if (StrUtils.isEmpty(m193a)) {
+                                if (ConvertUtils.isEmpty(m193a)) {
                                     c0006f.setErrorInfo(patternInfoByType.getMsg());
                                 } else {
                                     c0006f.setErrorInfo(m193a);
@@ -778,7 +777,7 @@ public class CgformUtil {
                             }
                         } else {
                             c0006f.setPattern(onlCgformField.getFieldValidType());
-                            if (StrUtils.isEmpty(m193a)) {
+                            if (ConvertUtils.isEmpty(m193a)) {
                                 c0006f.setErrorInfo("输入的值不合法");
                             } else {
                                 c0006f.setErrorInfo(m193a);
@@ -859,7 +858,7 @@ public class CgformUtil {
             }
             if (f223R.equals(onlCgformField.getFieldShowType())) {
                 String dictText2 = onlCgformField.getDictText();
-                if (StrUtils.isNotEmpty(dictText2)) {
+                if (ConvertUtils.isNotEmpty(dictText2)) {
                     hashSet.add(dictText2);
                 }
             }
@@ -909,9 +908,9 @@ public class CgformUtil {
                     } else if (m195a.contains(dbFieldName)) {
                         stringBuffer.append("," + dbFieldName);
                         stringBuffer2.append("," + OnlineDbHandler.m280a(str2, onlCgformField, jSONObject, hashMap));
-                    } else if (onlCgformField.getIsShowForm().intValue() == 1 || !StrUtils.isEmpty(onlCgformField.getMainField()) || !StrUtils.isEmpty(onlCgformField.getDbDefaultVal())) {
-                        if (StrUtils.isEmpty(jSONObject.get(dbFieldName))) {
-                            if (!StrUtils.isEmpty(onlCgformField.getDbDefaultVal())) {
+                    } else if (onlCgformField.getIsShowForm().intValue() == 1 || !ConvertUtils.isEmpty(onlCgformField.getMainField()) || !ConvertUtils.isEmpty(onlCgformField.getDbDefaultVal())) {
+                        if (ConvertUtils.isEmpty(jSONObject.get(dbFieldName))) {
+                            if (!ConvertUtils.isEmpty(onlCgformField.getDbDefaultVal())) {
                                 jSONObject.put(dbFieldName, onlCgformField.getDbDefaultVal());
                             }
                         }
@@ -927,7 +926,7 @@ public class CgformUtil {
             }
         }
         if (z) {
-            if (StrUtils.isEmpty(str3)) {
+            if (ConvertUtils.isEmpty(str3)) {
                 str3 = nextId();
             }
         } else {
@@ -972,7 +971,7 @@ public class CgformUtil {
                         if (!OnlineDbHandler.m278a(dbType) && !OnlineDbHandler.m279b(dbType)) {
                         }
                     }
-                    if (!StrUtils.isNotEmpty(onlCgformField.getMainTable()) || !StrUtils.isNotEmpty(onlCgformField.getMainField()) || !StrUtils.isEmpty(jSONObject.get(dbFieldName))) {
+                    if (!ConvertUtils.isNotEmpty(onlCgformField.getMainTable()) || !ConvertUtils.isNotEmpty(onlCgformField.getMainField()) || !ConvertUtils.isEmpty(jSONObject.get(dbFieldName))) {
                         stringBuffer.append(dbFieldName + "=" + OnlineDbHandler.m280a(str2, onlCgformField, jSONObject, hashMap) + ",");
                     }
                 }
@@ -1063,10 +1062,10 @@ public class CgformUtil {
 
     /* renamed from: a */
     public static boolean m201a(Object obj, Object obj2) {
-        if (StrUtils.isEmpty(obj) && StrUtils.isEmpty(obj2)) {
+        if (ConvertUtils.isEmpty(obj) && ConvertUtils.isEmpty(obj2)) {
             return true;
         }
-        if (StrUtils.isNotEmpty(obj) && obj.equals(obj2)) {
+        if (ConvertUtils.isNotEmpty(obj) && obj.equals(obj2)) {
             return true;
         }
         return false;
@@ -1118,7 +1117,7 @@ public class CgformUtil {
             if (onlCgformField.getIsShowList().intValue() == 1) {
                 stringBuffer2.append("," + dbFieldName);
             }
-            if (StrUtils.isNotEmpty(onlCgformField.getMainField())) {
+            if (ConvertUtils.isNotEmpty(onlCgformField.getMainField())) {
                 String singleQueryConditionSql = QueryGenerator.getSingleQueryConditionSql(dbFieldName, "", hashMap.get(dbFieldName), !OnlineDbHandler.m278a(dbType));
                 if (!"".equals(singleQueryConditionSql)) {
                     stringBuffer.append(" AND " + singleQueryConditionSql);
@@ -1191,7 +1190,7 @@ public class CgformUtil {
             if (!it.hasNext()) {
                 break;
             }
-            if (StrUtils.camelToUnderline(str).equalsIgnoreCase(it.next().getDbFieldName())) {
+            if (ConvertUtils.camelToUnderline(str).equalsIgnoreCase(it.next().getDbFieldName())) {
                 z = true;
                 break;
             }
@@ -1227,7 +1226,7 @@ public class CgformUtil {
         Class<?> cls;
         String cgJavaType = onlCgformEnhanceJava.getCgJavaType();
         String cgJavaValue = onlCgformEnhanceJava.getCgJavaValue();
-        if (StrUtils.isNotEmpty(cgJavaValue)) {
+        if (ConvertUtils.isNotEmpty(cgJavaValue)) {
             try {
                 if ("class".equals(cgJavaType) && ((cls = Class.forName(cgJavaValue)) == null || cls.newInstance() == null)) {
                     return false;
@@ -1429,7 +1428,7 @@ public class CgformUtil {
 
     /* renamed from: a */
     public static void m217a(OnlCgformEnhanceJs onlCgformEnhanceJs, String str, List<OnlCgformField> list) {
-        if (onlCgformEnhanceJs == null || StrUtils.isEmpty(onlCgformEnhanceJs.getCgJs())) {
+        if (onlCgformEnhanceJs == null || ConvertUtils.isEmpty(onlCgformEnhanceJs.getCgJs())) {
             return;
         }
         String cgJs = onlCgformEnhanceJs.getCgJs();
@@ -1448,7 +1447,7 @@ public class CgformUtil {
 
     /* renamed from: a */
     public static void m218a(OnlCgformEnhanceJs onlCgformEnhanceJs, String str, List<OnlCgformField> list, boolean z) {
-        if (onlCgformEnhanceJs == null || StrUtils.isEmpty(onlCgformEnhanceJs.getCgJs())) {
+        if (onlCgformEnhanceJs == null || ConvertUtils.isEmpty(onlCgformEnhanceJs.getCgJs())) {
             return;
         }
         String cgJs = onlCgformEnhanceJs.getCgJs();
@@ -1544,7 +1543,7 @@ public class CgformUtil {
                 if (f217L.equals(m243d)) {
                     jSONObject.put("type", "checkbox");
                     JSONArray jSONArray2 = new JSONArray();
-                    if (StrUtils.isEmpty(onlCgformField.getFieldExtendJson())) {
+                    if (ConvertUtils.isEmpty(onlCgformField.getFieldExtendJson())) {
                         jSONArray2.add("Y");
                         jSONArray2.add("N");
                     } else {
@@ -1600,7 +1599,7 @@ public class CgformUtil {
             jSONObject.put("message", onlCgformField.getDbFieldTxt() + "不能为空!");
             jSONArray.add(jSONObject);
         }
-        if (StrUtils.isNotEmpty(onlCgformField.getFieldValidType())) {
+        if (ConvertUtils.isNotEmpty(onlCgformField.getFieldValidType())) {
             JSONObject jSONObject2 = new JSONObject();
             if ("only".equals(onlCgformField.getFieldValidType())) {
                 jSONObject2.put("unique", true);
@@ -1608,7 +1607,7 @@ public class CgformUtil {
             } else {
                 jSONObject2.put("pattern", onlCgformField.getFieldValidType());
                 String m193a = m193a(ExtendJsonKey.VALIDATE_ERROR, onlCgformField.getFieldExtendJson());
-                if (StrUtils.isEmpty(m193a)) {
+                if (ConvertUtils.isEmpty(m193a)) {
                     jSONObject2.put("message", onlCgformField.getDbFieldTxt() + "格式不正确");
                 } else {
                     jSONObject2.put("message", m193a);
@@ -1711,7 +1710,7 @@ public class CgformUtil {
     /* renamed from: a */
     private static String m229a(Map<String, Object> map, Collection<String> collection) {
         String obj = map.containsKey("id") ? map.get("id").toString() : null;
-        if (StrUtils.isNotEmpty(obj) && collection != null) {
+        if (ConvertUtils.isNotEmpty(obj) && collection != null) {
             Iterator<String> it = collection.iterator();
             while (it.hasNext()) {
                 Object obj2 = map.get(it.next().toLowerCase() + "_id");
@@ -1760,7 +1759,7 @@ public class CgformUtil {
         LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         if (loginUser == null) {
             String userNameByToken = JwtUtil.getUserNameByToken(SpringContextUtils.getHttpServletRequest());
-            if (StrUtils.isNotEmpty(userNameByToken)) {
+            if (ConvertUtils.isNotEmpty(userNameByToken)) {
                 loginUser = new LoginUser();
                 loginUser.setUsername(userNameByToken);
             } else {
@@ -1789,7 +1788,7 @@ public class CgformUtil {
                 }
             }
         }
-        if (!z || StrUtils.isEmpty(str3)) {
+        if (!z || ConvertUtils.isEmpty(str3)) {
             str3 = nextId();
         }
         if (m260j) {
@@ -1818,7 +1817,7 @@ public class CgformUtil {
         LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         if (loginUser == null) {
             String userNameByToken = JwtUtil.getUserNameByToken(SpringContextUtils.getHttpServletRequest());
-            if (StrUtils.isNotEmpty(userNameByToken)) {
+            if (ConvertUtils.isNotEmpty(userNameByToken)) {
                 loginUser = new LoginUser();
                 loginUser.setUsername(userNameByToken);
             } else {
@@ -1875,7 +1874,7 @@ public class CgformUtil {
     public static void m236a(LinkDownProperty linkDownProperty, List<OnlCgformField> list, List<String> list2) {
         String string = JSONObject.parseObject(linkDownProperty.getDictTable()).getString("linkField");
         ArrayList arrayList = new ArrayList();
-        if (StrUtils.isNotEmpty(string)) {
+        if (ConvertUtils.isNotEmpty(string)) {
             String[] split = string.split(COMMA_SEPARATOR);
             for (OnlCgformField onlCgformField : list) {
                 String dbFieldName = onlCgformField.getDbFieldName();
@@ -1946,7 +1945,7 @@ public class CgformUtil {
         ArrayList arrayList = new ArrayList();
         String fieldExtendJson = onlCgformField.getFieldExtendJson();
         JSONArray parseArray = JSONArray.parseArray("[\"Y\",\"N\"]");
-        if (StrUtils.isNotEmpty(fieldExtendJson)) {
+        if (ConvertUtils.isNotEmpty(fieldExtendJson)) {
             parseArray = JSONArray.parseArray(fieldExtendJson);
         }
         DictModel dictModel = new DictModel(parseArray.getString(0), "是");
@@ -1998,7 +1997,7 @@ public class CgformUtil {
     }
 
     private static String getDatabseType() {
-        if (StrUtils.isNotEmpty(f277aU)) {
+        if (ConvertUtils.isNotEmpty(f277aU)) {
             return f277aU;
         }
         try {
@@ -2084,9 +2083,9 @@ public class CgformUtil {
                 String string3 = jSONObject3.getString("dictText");
                 String string4 = jSONObject3.getString("dictTable");
                 ArrayList arrayList = new ArrayList();
-                if (StrUtils.isNotEmpty(string4)) {
+                if (ConvertUtils.isNotEmpty(string4)) {
                     arrayList = (ArrayList) iSysBaseAPI.queryTableDictItemsByCode(string4, string3, string2);
-                } else if (StrUtils.isNotEmpty(string2)) {
+                } else if (ConvertUtils.isNotEmpty(string2)) {
                     arrayList = (ArrayList) iSysBaseAPI.queryEnableDictItemsByCode(string2);
                 }
                 if (arrayList != null && arrayList.size() > 0) {
@@ -2104,9 +2103,9 @@ public class CgformUtil {
                             String string6 = jSONObject4.getString("dictText");
                             String string7 = jSONObject4.getString("dictTable");
                             ArrayList arrayList2 = new ArrayList();
-                            if (StrUtils.isNotEmpty(string7)) {
+                            if (ConvertUtils.isNotEmpty(string7)) {
                                 arrayList2 = (ArrayList) iSysBaseAPI.queryTableDictItemsByCode(string7, string6, string5);
-                            } else if (StrUtils.isNotEmpty(string5)) {
+                            } else if (ConvertUtils.isNotEmpty(string5)) {
                                 arrayList2 = (ArrayList) iSysBaseAPI.queryEnableDictItemsByCode(string5);
                             }
                             if (arrayList2 != null && arrayList2.size() > 0) {
@@ -2189,7 +2188,7 @@ public class CgformUtil {
 
     /* renamed from: b */
     public static Object m254b(Map<String, Object> map, String str) {
-        if (map == null || StrUtils.isEmpty(str)) {
+        if (map == null || ConvertUtils.isEmpty(str)) {
             return null;
         }
         Object obj = map.get(str);
@@ -2210,7 +2209,7 @@ public class CgformUtil {
     /* renamed from: h */
     public static List<String> m255h(String str) {
         ArrayList arrayList = new ArrayList();
-        if (StrUtils.isNotEmpty(str)) {
+        if (ConvertUtils.isNotEmpty(str)) {
             for (String str2 : str.split(COMMA_SEPARATOR)) {
                 int indexOf = str2.indexOf("@");
                 if (indexOf > 0) {
@@ -2232,7 +2231,7 @@ public class CgformUtil {
                 hashMap.put(list.get(i) + "_id", new ArrayList());
             }
         }
-        if (StrUtils.isNotEmpty(str)) {
+        if (ConvertUtils.isNotEmpty(str)) {
             for (String str2 : str.split(COMMA_SEPARATOR)) {
                 String[] split = str2.split("@");
                 if (split.length > 0) {

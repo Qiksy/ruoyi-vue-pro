@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jeecg.common.service.ISysBaseAPI;
 import org.jeecg.modules.online.annotation.OnlineAuth;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
 import org.jeecg.modules.online.cgform.service.IOnlineBaseAPI;
@@ -28,7 +29,7 @@ public class OnlineInterceptor implements HandlerInterceptor {
 
     /* renamed from: c */
 //    底层共通业务API，提供其他独立模块调用
-//    private ISysBaseAPI sysBaseAPI;
+    private ISysBaseAPI sysBaseAPI;
 
     /* renamed from: d */
     private static final String PATH = "/online/cgform";

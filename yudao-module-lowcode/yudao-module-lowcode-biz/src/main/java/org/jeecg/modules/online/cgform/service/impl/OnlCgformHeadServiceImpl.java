@@ -20,11 +20,13 @@ import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.codegenerate.DbReadTableUtil;
+import org.jeecg.codegenerate.generate.impl.CodeGenerateOne;
 import org.jeecg.codegenerate.generate.pojo.ColumnVo;
 import org.jeecg.codegenerate.generate.pojo.TableVo;
 import org.jeecg.common.constant.CgformEnum;
 import org.jeecg.common.constant.CommonConstant;
 
+import org.jeecg.common.service.ISysBaseAPI;
 import org.jeecg.common.util.MyClassLoader;
 
 import org.jeecg.common.util.online.ConvertUtils;

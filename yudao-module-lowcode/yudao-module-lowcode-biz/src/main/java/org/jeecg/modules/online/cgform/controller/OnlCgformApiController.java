@@ -42,6 +42,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jeecg.common.config.LowCodeConfig;
 import org.jeecg.common.constant.ModuleType;
+import org.jeecg.common.service.ISysBaseAPI;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.util.online.BrowserUtils;
 import org.jeecg.common.util.online.SqlInjectionUtil;
@@ -77,6 +78,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.support.incrementer.OracleSequenceMaxValueIncrementer;
 import org.springframework.jdbc.support.incrementer.PostgresSequenceMaxValueIncrementer;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -127,10 +129,9 @@ public class OnlCgformApiController {
     @Resource
     private DictDataApi dictDataApi;
 
-//    @Autowired
-//    @Lazy
-//    系统底层api
-//    private ISysBaseAPI sysBaseAPI;
+    @Autowired
+    @Lazy
+    private ISysBaseAPI sysBaseAPI;
 
     @Autowired
     private IOnlineService onlineService;

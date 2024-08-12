@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.exception.JeecgBootException;
 
+import org.jeecg.common.service.ISysBaseAPI;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DynamicDataSourceModel;
@@ -27,6 +28,7 @@ import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.dynamic.db.DataSourceCachePool;
 import org.jeecg.common.util.dynamic.db.DynamicDBUtil;
 
+import org.jeecg.common.util.online.ConvertUtils;
 import org.jeecg.common.util.sqlparse.JSqlParserUtils;
 import org.jeecg.common.util.sqlparse.vo.SelectSqlInfo;
 import org.jeecg.config.JeecgBaseConfig;

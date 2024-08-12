@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import org.jeecg.common.service.ISysBaseAPI;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
 
@@ -87,7 +88,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
 
     @Autowired
     @Lazy
-    private ISysBaseAPI sysBaseAPI;
+    private ISysBaseAPI  sysBaseAPI;
 
     @Autowired
     private OnlineMapper onlineMapper;
@@ -909,7 +910,8 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
     @Override // org.jeecg.modules.online.cgform.service.IOnlCgformFieldService
     public void addOnlineInsertDataLog(String tableName, String dataId) {
         threadPoolExecutor.execute(() -> {
-            this.sysBaseAPI.saveDataLog(new DataLogDTO(tableName, dataId, " 创建了记录", "comment"));
+//            this.sysBaseAPI.saveDataLog(new DataLogDTO(tableName, dataId, " 创建了记录", "comment"));
+            // todo 记录日志
         });
     }
 
@@ -939,18 +941,19 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
                     }
                 }
             }
-            threadPoolExecutor.execute(() -> {
-                DataLogDTO dataLogDTO = new DataLogDTO(m235f, dataId, "comment");
-                StringBuilder sb2 = new StringBuilder(m307a((List<OnlCgformField>) fieldList, json, (Map<String, Object>) m309a));
-                if (!sb.isEmpty()) {
-                    sb2.append("；").append(sb);
-                }
-                String str = Arrays.stream(sb2.toString().split("；")).filter(str2 -> ConvertUtils.isNotEmpty(str2.trim())).collect(Collectors.joining("；"));
-                if (ConvertUtils.isNotEmpty(str)) {
-                    dataLogDTO.setContent(str);
-                    this.sysBaseAPI.saveDataLog(dataLogDTO);
-                }
-            });
+//            threadPoolExecutor.execute(() -> {
+//                DataLogDTO dataLogDTO = new DataLogDTO(m235f, dataId, "comment");
+//                StringBuilder sb2 = new StringBuilder(m307a((List<OnlCgformField>) fieldList, json, (Map<String, Object>) m309a));
+//                if (!sb.isEmpty()) {
+//                    sb2.append("；").append(sb);
+//                }
+//                String str = Arrays.stream(sb2.toString().split("；")).filter(str2 -> ConvertUtils.isNotEmpty(str2.trim())).collect(Collectors.joining("；"));
+//                if (ConvertUtils.isNotEmpty(str)) {
+//                    dataLogDTO.setContent(str);
+//                    // 记录日志
+////                    this.sysBaseAPI.saveDataLog(dataLogDTO);
+//                }
+//            });
         }
     }
 
