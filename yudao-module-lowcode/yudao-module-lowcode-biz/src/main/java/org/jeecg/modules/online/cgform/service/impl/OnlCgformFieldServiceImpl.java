@@ -144,9 +144,10 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
         StringBuffer stringBuffer = new StringBuffer();
         CgformUtil.m182a(tbname, queryAvailableFields, stringBuffer);
         LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
-        List<SysPermissionDataRuleModel> queryUserOnlineAuthData = this.onlAuthDataService.queryUserOnlineAuthData(loginUser.getId(), headId);
+        List<SysPermissionDataRuleModel> queryUserOnlineAuthData = this.onlAuthDataService.queryUserOnlineAuthData(String.valueOf(loginUser.getId()), headId);
         if (queryUserOnlineAuthData != null && !queryUserOnlineAuthData.isEmpty()) {
-            JeecgDataAutorUtils.installUserInfo(this.sysBaseAPI.getCacheUser(loginUser.getUsername()));
+            // todo 恢复权限控制
+//            JeecgDataAutorUtils.installUserInfo(this.sysBaseAPI.getCacheUser(loginUser.getUsername()));
         }
         ConditionHandler conditionHandler = new ConditionHandler("t.");
         conditionHandler.setTableName(tbname);
@@ -208,9 +209,10 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
         StringBuffer stringBuffer = new StringBuffer();
         CgformUtil.m182a(str2, queryAvailableFields, stringBuffer);
         LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
-        List<SysPermissionDataRuleModel> queryUserOnlineAuthData = this.onlAuthDataService.queryUserOnlineAuthData(loginUser.getId(), str3);
+        List<SysPermissionDataRuleModel> queryUserOnlineAuthData = this.onlAuthDataService.queryUserOnlineAuthData(String.valueOf(loginUser.getId()), str3);
         if (queryUserOnlineAuthData != null && !queryUserOnlineAuthData.isEmpty()) {
-            JeecgDataAutorUtils.installUserInfo(this.sysBaseAPI.getCacheUser(loginUser.getUsername()));
+            //todo 权限控制恢复
+//            JeecgDataAutorUtils.installUserInfo(this.sysBaseAPI.getCacheUser(loginUser.getUsername()));//
         }
         ConditionHandler conditionHandler = new ConditionHandler("t.");
         conditionHandler.setTableName(str2);
@@ -888,9 +890,9 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
         StringBuffer stringBuffer = new StringBuffer();
         CgformUtil.m182a(sqlInjectTableName, queryAvailableFields, stringBuffer);
         LoginUser loginUser = (LoginUser) SecurityFrameworkUtils.getLoginUser();
-        List<SysPermissionDataRuleModel> queryUserOnlineAuthData = this.onlAuthDataService.queryUserOnlineAuthData(loginUser.getId().toString(), id);
+        List<SysPermissionDataRuleModel> queryUserOnlineAuthData = this.onlAuthDataService.queryUserOnlineAuthData(String.valueOf(loginUser.getId()), id);
         if (queryUserOnlineAuthData != null && !queryUserOnlineAuthData.isEmpty()) {
-            JeecgDataAutorUtils.installUserInfo(this.sysBaseAPI.getCacheUser(loginUser.getUsername()));
+            //JeecgDataAutorUtils.installUserInfo(this.sysBaseAPI.getCacheUser(loginUser.getUsername()));
         }
         ConditionHandler conditionHandler = new ConditionHandler("t.");
         conditionHandler.setTableName(sqlInjectTableName);

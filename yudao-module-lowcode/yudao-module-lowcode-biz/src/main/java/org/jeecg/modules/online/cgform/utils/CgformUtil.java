@@ -33,24 +33,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import org.apache.commons.lang.StringUtils;
-import org.apache.shiro.SecurityUtils;
-import org.jeecg.common.exception.JeecgBootException;
 
 import org.jeecg.common.service.ISysBaseAPI;
-import org.jeecg.common.system.query.MatchTypeEnum;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.system.query.QueryRuleEnum;
-import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.DictModel;
-import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
-import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.CommonUtils;
-import org.jeecg.common.util.DateUtils;
 
-import org.jeecg.common.util.SqlInjectionUtil;
-import org.jeecg.common.util.UUIDGenerator;
 
 import org.jeecg.common.util.online.*;
 import org.jeecg.common.util.online.property.DictProperty;
@@ -61,7 +49,6 @@ import org.jeecg.common.util.online.property.PopupProperty;
 import org.jeecg.common.util.online.property.StringProperty;
 import org.jeecg.common.util.online.property.SwitchProperty;
 import org.jeecg.common.util.online.property.TreeSelectProperty;
-import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.online.cgform.entity.OnlCgformButton;
 import org.jeecg.modules.online.cgform.entity.OnlCgformEnhanceJava;
 import org.jeecg.modules.online.cgform.entity.OnlCgformEnhanceJs;
@@ -78,7 +65,8 @@ import org.jeecg.modules.online.config.exception.DBException;
 import org.jeecg.modules.online.config.database.OnlineFieldConfig;
 import org.jeecg.modules.online.config.template.DataBaseConst;
 import org.jeecg.modules.online.config.template.DbTableUtil;
-import org.jeecgframework.poi.excel.entity.params.ExcelExportEntity;
+import org.jeecg.query.MatchTypeEnum;
+import org.jeecg.query.QueryRuleEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,6 +1,7 @@
 package org.jeecg.modules.online.cgform.service.impl;
 
 import cn.hutool.extra.spring.SpringUtil;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
@@ -21,12 +22,16 @@ import java.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.codegenerate.DbReadTableUtil;
 import org.jeecg.codegenerate.generate.impl.CodeGenerateOne;
+import org.jeecg.codegenerate.generate.impl.CodeGenerateOneToMany;
 import org.jeecg.codegenerate.generate.pojo.ColumnVo;
 import org.jeecg.codegenerate.generate.pojo.TableVo;
+import org.jeecg.codegenerate.generate.pojo.onetomany.MainTableVo;
+import org.jeecg.codegenerate.generate.pojo.onetomany.SubTableVo;
 import org.jeecg.common.constant.CgformEnum;
 import org.jeecg.common.constant.CommonConstant;
 
 import org.jeecg.common.service.ISysBaseAPI;
+import org.jeecg.common.util.CommonUtils;
 import org.jeecg.common.util.MyClassLoader;
 
 import org.jeecg.common.util.online.ConvertUtils;
@@ -83,6 +88,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.error;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 /* compiled from: OnlCgformHeadServiceImpl.java */
 @Service("onlCgformHeadServiceImpl")
@@ -141,7 +150,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
 
     @Override // org.jeecg.modules.online.cgform.service.IOnlCgformHeadService
     @Transactional(rollbackFor = {Exception.class})
-    public Result<?> addAll(OnlCgformModel model) {
+    public CommonResult<?> addAll(OnlCgformModel model) {
         String replace = UUID.randomUUID().toString().replace("-", "");
         OnlCgformHead head = model.getHead();
         List<OnlCgformField> fields = model.getFields();
@@ -183,16 +192,18 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
         if (head.getTableType() == 3 && z) {
             this.onlCgformFieldService.clearCacheOnlineConfig();
         }
-        return Result.ok("添加成功");
+//        return Result.ok("添加成功");
+        return success("添加成功");
     }
 
     @Override // org.jeecg.modules.online.cgform.service.IOnlCgformHeadService
     @Transactional(rollbackFor = {Exception.class})
-    public Result<?> editAll(OnlCgformModel model) {
+    public CommonResult<?> editAll(OnlCgformModel model) {
         OnlCgformHead head = model.getHead();
         OnlCgformHead onlCgformHead = super.getById(head.getId());
         if (onlCgformHead == null) {
-            return Result.error("未找到对应实体");
+//            return Result.error("未找到对应实体");
+            return error("未找到对应实体");
         }
         String isDbSynch = onlCgformHead.getIsDbSynch();
         if (CgformUtil.m204a(onlCgformHead, head)) {
@@ -299,7 +310,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
         super.updateById(head);
         m335a(head, fields);
         m347b(head, fields);
-        return Result.ok("全部修改成功");
+        return success("全部修改成功");
     }
 
     /* renamed from: a */
@@ -1593,7 +1604,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
     public void copyOnlineTableConfig(OnlCgformHead physicTable) throws Exception {
         String id = physicTable.getId();
         OnlCgformHead onlCgformHead = new OnlCgformHead();
-        String generate = UUIDGenerator.generate();
+        String generate = DefaultIdentifierGenerator.getInstance().nextUUID(onlCgformHead);
         onlCgformHead.setId(generate);
         onlCgformHead.setPhysicId(id);
         onlCgformHead.setCopyType(1);

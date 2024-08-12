@@ -47,7 +47,7 @@ public class CgformEnhanceExportDemo implements CgformEnhanceJavaListInter {
                     map.put("fen_tree", list.get(0).getName());
                 }
                 String string2 = ConvertUtils.getString(map.get("sel_search"));
-                if (!ConvertUtils.isEmpty(string2) && (queryFormFieldByTableNameAndField = this.onlCgformFieldService.queryFormFieldByTableNameAndField(tableName, "sel_search")) != null && !StrUtils.isEmpty(queryFormFieldByTableNameAndField.getDictTable()) && (queryTableDictByKeys = this.sysBaseAPI.queryTableDictByKeys(queryFormFieldByTableNameAndField.getDictTable(), queryFormFieldByTableNameAndField.getDictText(), queryFormFieldByTableNameAndField.getDictField(), new String[]{string2})) != null && !queryTableDictByKeys.isEmpty()) {
+                if (!ConvertUtils.isEmpty(string2) && (queryFormFieldByTableNameAndField = this.onlCgformFieldService.queryFormFieldByTableNameAndField(tableName, "sel_search")) != null && !ConvertUtils.isEmpty(queryFormFieldByTableNameAndField.getDictTable()) && (queryTableDictByKeys = this.sysBaseAPI.queryTableDictByKeys(queryFormFieldByTableNameAndField.getDictTable(), queryFormFieldByTableNameAndField.getDictText(), queryFormFieldByTableNameAndField.getDictField(), new String[]{string2})) != null && !queryTableDictByKeys.isEmpty()) {
                     map.put("sel_search", queryTableDictByKeys.get(0));
                 }
             }
