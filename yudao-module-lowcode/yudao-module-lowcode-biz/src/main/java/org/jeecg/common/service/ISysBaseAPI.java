@@ -105,4 +105,6 @@ public interface ISysBaseAPI {
      * @return
      */
     boolean dictTableWhiteListCheckByDict(String tableOrDictCode, String... fields);
+
+    Object queryEnableDictItemsByCode(String string2);
 }

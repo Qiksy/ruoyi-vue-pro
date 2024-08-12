@@ -28,7 +28,7 @@ import net.sf.jsqlparser.statement.select.SelectExpressionItem;
 import net.sf.jsqlparser.statement.select.SelectItem;
 import net.sf.jsqlparser.statement.select.SelectItemVisitorAdapter;
 import net.sf.jsqlparser.statement.select.SetOperationList;
-import org.jeecg.common.util.security.AbstractQueryBlackListHandler;
+import org.jeecg.common.util.AbstractQueryBlackListHandler;
 import org.springframework.stereotype.Component;
 
 /* compiled from: OnlReportQueryBlackListHandler.java */

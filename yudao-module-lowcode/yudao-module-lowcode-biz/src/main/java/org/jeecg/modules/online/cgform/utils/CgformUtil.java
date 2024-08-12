@@ -1,74 +1,54 @@
 package org.jeecg.modules.online.cgform.utils;
 
 import cn.hutool.extra.spring.SpringUtil;
+import cn.iocoder.yudao.framework.security.core.LoginUser;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import jakarta.servlet.http.HttpServletRequest;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
+import org.apache.commons.lang3.StringUtils;
+import org.jeecg.common.service.ISysBaseAPI;
+import org.jeecg.common.system.vo.DictModel;
+import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
+import org.jeecg.common.util.CommonUtils;
+import org.jeecg.common.util.online.*;
+import org.jeecg.common.util.online.property.*;
+import org.jeecg.modules.online.cgform.constant.ExtendJsonKey;
+import org.jeecg.modules.online.cgform.constant.OnlineConst;
+import org.jeecg.modules.online.cgform.entity.*;
+import org.jeecg.modules.online.cgform.enums.CgformConstant;
+import org.jeecg.modules.online.cgform.enums.CgformValidPatternEnum;
+import org.jeecg.modules.online.cgform.mapper.OnlCgformHeadMapper;
+import org.jeecg.modules.online.cgform.model.TreeSelectColumn;
+import org.jeecg.modules.online.config.database.OnlineFieldConfig;
+import org.jeecg.modules.online.config.exception.DBException;
+import org.jeecg.modules.online.config.template.DataBaseConst;
+import org.jeecg.modules.online.config.template.DbTableUtil;
+import org.jeecg.query.MatchTypeEnum;
+import org.jeecg.query.QueryGenerator;
+import org.jeecg.query.QueryRuleEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.io.*;
 import java.net.URLDecoder;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.jeecg.common.service.ISysBaseAPI;
-import org.jeecg.common.system.vo.DictModel;
-import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
-import org.jeecg.common.util.CommonUtils;
-
-
-import org.jeecg.common.util.online.*;
-import org.jeecg.common.util.online.property.DictProperty;
-import org.jeecg.common.util.online.property.HiddenProperty;
-import org.jeecg.common.util.online.property.LinkDownProperty;
-import org.jeecg.common.util.online.property.NumberProperty;
-import org.jeecg.common.util.online.property.PopupProperty;
-import org.jeecg.common.util.online.property.StringProperty;
-import org.jeecg.common.util.online.property.SwitchProperty;
-import org.jeecg.common.util.online.property.TreeSelectProperty;
-import org.jeecg.modules.online.cgform.entity.OnlCgformButton;
-import org.jeecg.modules.online.cgform.entity.OnlCgformEnhanceJava;
-import org.jeecg.modules.online.cgform.entity.OnlCgformEnhanceJs;
-import org.jeecg.modules.online.cgform.entity.OnlCgformField;
-import org.jeecg.modules.online.cgform.entity.OnlCgformHead;
-import org.jeecg.modules.online.cgform.entity.OnlCgformIndex;
-import org.jeecg.modules.online.cgform.enums.CgformValidPatternEnum;
-import org.jeecg.modules.online.cgform.enums.CgformConstant;
-import org.jeecg.modules.online.cgform.mapper.OnlCgformHeadMapper;
-import org.jeecg.modules.online.cgform.model.TreeSelectColumn;
-import org.jeecg.modules.online.cgform.constant.ExtendJsonKey;
-import org.jeecg.modules.online.cgform.constant.OnlineConst;
-import org.jeecg.modules.online.config.exception.DBException;
-import org.jeecg.modules.online.config.database.OnlineFieldConfig;
-import org.jeecg.modules.online.config.template.DataBaseConst;
-import org.jeecg.modules.online.config.template.DbTableUtil;
-import org.jeecg.query.MatchTypeEnum;
-import org.jeecg.query.QueryRuleEnum;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 
 /* compiled from: CgformUtil.java */
 /* renamed from: org.jeecg.modules.online.cgform.d.b */
@@ -365,18 +345,14 @@ public class CgformUtil {
 
     /* renamed from: aR */
     public static final String SEARCH_FIELD_LIST = "searchFieldList";
-
-    /* renamed from: aT */
-    private static final String f276aT = "beforeAdd,beforeEdit,afterAdd,afterEdit,beforeDelete,afterDelete,mounted,created";
-
-    /* renamed from: aU */
-    private static String f277aU;
-
-    /* renamed from: aS */
-    private static final Logger f179aS = LoggerFactory.getLogger(CgformUtil.class);
-
     /* renamed from: aE */
     public static final Integer f262aE = 2;
+    /* renamed from: aT */
+    private static final String f276aT = "beforeAdd,beforeEdit,afterAdd,afterEdit,beforeDelete,afterDelete,mounted,created";
+    /* renamed from: aS */
+    private static final Logger f179aS = LoggerFactory.getLogger(CgformUtil.class);
+    /* renamed from: aU */
+    private static String f277aU;
 
     /* renamed from: a */
     public static boolean m181a(OnlCgformHead onlCgformHead) {
@@ -442,6 +418,7 @@ public class CgformUtil {
 
     /**
      * 如果是列表，或者是选择框之类的，返回true
+     *
      * @param str
      * @return
      */
@@ -556,59 +533,6 @@ public class CgformUtil {
             default:
                 sb.append(f192m).append(str2);
                 return;
-        }
-    }
-
-    /* JADX INFO: Access modifiers changed from: package-private */
-    /* compiled from: CgformUtil.java */
-    /* renamed from: org.jeecg.modules.online.cgform.d.b$3, reason: invalid class name */
-    /* loaded from: hibernate-re-3.6.1-beta.jar:org/jeecg/modules/online/cgform/d/b$3.class */
-    public static /* synthetic */ class AnonymousClass3 {
-
-        /* renamed from: a */
-        static final /* synthetic */ int[] f278a = new int[QueryRuleEnum.values().length];
-
-        static {
-            try {
-                f278a[QueryRuleEnum.GT.ordinal()] = 1;
-            } catch (NoSuchFieldError e) {
-            }
-            try {
-                f278a[QueryRuleEnum.GE.ordinal()] = 2;
-            } catch (NoSuchFieldError e2) {
-            }
-            try {
-                f278a[QueryRuleEnum.LT.ordinal()] = 3;
-            } catch (NoSuchFieldError e3) {
-            }
-            try {
-                f278a[QueryRuleEnum.LE.ordinal()] = 4;
-            } catch (NoSuchFieldError e4) {
-            }
-            try {
-                f278a[QueryRuleEnum.NE.ordinal()] = 5;
-            } catch (NoSuchFieldError e5) {
-            }
-            try {
-                f278a[QueryRuleEnum.IN.ordinal()] = 6;
-            } catch (NoSuchFieldError e6) {
-            }
-            try {
-                f278a[QueryRuleEnum.LIKE.ordinal()] = 7;
-            } catch (NoSuchFieldError e7) {
-            }
-            try {
-                f278a[QueryRuleEnum.LEFT_LIKE.ordinal()] = 8;
-            } catch (NoSuchFieldError e8) {
-            }
-            try {
-                f278a[QueryRuleEnum.RIGHT_LIKE.ordinal()] = 9;
-            } catch (NoSuchFieldError e9) {
-            }
-            try {
-                f278a[QueryRuleEnum.EQ.ordinal()] = 10;
-            } catch (NoSuchFieldError e10) {
-            }
         }
     }
 
@@ -876,7 +800,7 @@ public class CgformUtil {
         HashMap hashMap = new HashMap(5);
         boolean z = false;
         String str3 = null;
-        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
         if (loginUser == null) {
             throw exception("online保存表单数据异常:系统未找到当前登陆用户信息");
         }
@@ -923,7 +847,7 @@ public class CgformUtil {
         if (m260j) {
             stringBuffer.append("," + "tenant_id");
             stringBuffer2.append(",#{" + "tenant_id" + "}");
-            hashMap.put("tenant_id", SpringContextUtils.getHttpServletRequest().getHeader("X-Tenant-Id"));
+            hashMap.put("tenant_id", ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("X-Tenant-Id"));
         }
         hashMap.put("execute_sql_string", "insert into " + m235f + "(id" + stringBuffer.toString() + ") values(#{id,jdbcType=VARCHAR}" + stringBuffer2.toString() + ")");
         hashMap.put("id", str3);
@@ -943,7 +867,7 @@ public class CgformUtil {
         } catch (DBException e2) {
             e2.printStackTrace();
         }
-        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
         if (loginUser == null) {
             throw exception("online修改表单数据异常:系统未找到当前登陆用户信息");
         }
@@ -1011,7 +935,7 @@ public class CgformUtil {
         String[] var6 = var3;
         int var7 = var3.length;
 
-        for(int var8 = 0; var8 < var7; ++var8) {
+        for (int var8 = 0; var8 < var7; ++var8) {
             String var9 = var6[var8];
             if (var4.toUpperCase().equals(var9)) {
                 if (var0.getIsShowForm() == 1) {
@@ -1026,21 +950,21 @@ public class CgformUtil {
                 if (var5) {
                     switch (var9) {
                         case "CREATE_BY":
-                            var2.put(var4, var1.getUsername());
+                            var2.put(var4, SecurityFrameworkUtils.getUserName());
                             return;
                         case "CREATE_TIME":
                             var0.setFieldShowType("datetime");
                             var2.put(var4, DateUtils.formatDateTime());
                             return;
                         case "UPDATE_BY":
-                            var2.put(var4, var1.getUsername());
+                            var2.put(var4, SecurityFrameworkUtils.getUserName());
                             return;
                         case "UPDATE_TIME":
                             var0.setFieldShowType("datetime");
                             var2.put(var4, DateUtils.formatDateTime());
                             return;
                         case "SYS_ORG_CODE":
-                            var2.put(var4, var1.getOrgCode());
+                            var2.put(var4, "0");
                     }
                 }
                 break;
@@ -1188,26 +1112,26 @@ public class CgformUtil {
 
     @Deprecated
     /* renamed from: b */
-    public static List<ExcelExportEntity> m208b(List<OnlCgformField> list, String str) {
-        ArrayList arrayList = new ArrayList();
-        for (int i = 0; i < list.size(); i++) {
-            if ((null == str || !str.equals(list.get(i).getDbFieldName())) && list.get(i).getIsShowList().intValue() == 1) {
-                ExcelExportEntity excelExportEntity = new ExcelExportEntity(list.get(i).getDbFieldTxt(), list.get(i).getDbFieldName());
-                int intValue = list.get(i).getDbLength().intValue() == 0 ? 12 : list.get(i).getDbLength().intValue() > 30 ? 30 : list.get(i).getDbLength().intValue();
-                if (OnlFormShowType.DATE.equals(list.get(i).getFieldShowType())) {
-                    excelExportEntity.setFormat("yyyy-MM-dd");
-                } else if ("datetime".equals(list.get(i).getFieldShowType())) {
-                    excelExportEntity.setFormat("yyyy-MM-dd HH:mm:ss");
-                }
-                if (intValue < 10) {
-                    intValue = 10;
-                }
-                excelExportEntity.setWidth(intValue);
-                arrayList.add(excelExportEntity);
-            }
-        }
-        return arrayList;
-    }
+//    public static List<ExcelExportEntity> m208b(List<OnlCgformField> list, String str) {
+//        ArrayList arrayList = new ArrayList();
+//        for (int i = 0; i < list.size(); i++) {
+//            if ((null == str || !str.equals(list.get(i).getDbFieldName())) && list.get(i).getIsShowList().intValue() == 1) {
+//                ExcelExportEntity excelExportEntity = new ExcelExportEntity(list.get(i).getDbFieldTxt(), list.get(i).getDbFieldName());
+//                int intValue = list.get(i).getDbLength().intValue() == 0 ? 12 : list.get(i).getDbLength().intValue() > 30 ? 30 : list.get(i).getDbLength().intValue();
+//                if (OnlFormShowType.DATE.equals(list.get(i).getFieldShowType())) {
+//                    excelExportEntity.setFormat("yyyy-MM-dd");
+//                } else if ("datetime".equals(list.get(i).getFieldShowType())) {
+//                    excelExportEntity.setFormat("yyyy-MM-dd HH:mm:ss");
+//                }
+//                if (intValue < 10) {
+//                    intValue = 10;
+//                }
+//                excelExportEntity.setWidth(intValue);
+//                arrayList.add(excelExportEntity);
+//            }
+//        }
+//        return arrayList;
+//    }
 
     /* renamed from: a */
     public static boolean m209a(OnlCgformEnhanceJava onlCgformEnhanceJava) {
@@ -1368,10 +1292,11 @@ public class CgformUtil {
         if (jSONObject == null) {
             return str;
         }
-        String replace = str.replace("#{UUID}", UUIDGenerator.generate());
+        String replace = str.replace("#{UUID}", DefaultIdentifierGenerator.getInstance().nextUUID(null));
         for (String str2 : QueryGenerator.getSqlRuleParams(replace)) {
             if (jSONObject.get(str2.toUpperCase()) == null && jSONObject.get(str2.toLowerCase()) == null) {
-                String userSystemData = JwtUtil.getUserSystemData(str2, (SysUserCacheInfo) null);
+                String userSystemData = null;
+//                String userSystemData = JwtUtil.getUserSystemData(str2, (SysUserCacheInfo) null);
                 if (userSystemData == null) {
                     replace = replace.replace("'#{" + str2 + "}'", "NULL").replace("#{" + str2 + "}", "NULL");
                 } else {
@@ -1608,7 +1533,7 @@ public class CgformUtil {
 
     /* renamed from: a */
     public static Map<String, Object> m224a(Map<String, Object> map) {
-        HashMap<String,Object> hashMap = new HashMap<>(5);
+        HashMap<String, Object> hashMap = new HashMap<>(5);
         if (map == null || map.isEmpty()) {
             return hashMap;
         }
@@ -1650,7 +1575,7 @@ public class CgformUtil {
 
     /* renamed from: a */
     public static List<Map<String, Object>> m226a(JSONArray jSONArray) {
-        return m228a( jSONArray.stream().map(obj -> {
+        return m228a(jSONArray.stream().map(obj -> {
             return (JSONObject) obj;
         }).collect(Collectors.toList()), (Collection<String>) null);
     }
@@ -1744,12 +1669,12 @@ public class CgformUtil {
         HashMap hashMap = new HashMap(5);
         boolean z = false;
         String str3 = null;
-        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
         if (loginUser == null) {
-            String userNameByToken = JwtUtil.getUserNameByToken(SpringContextUtils.getHttpServletRequest());
+            String userNameByToken = SecurityFrameworkUtils.getUserName();
             if (ConvertUtils.isNotEmpty(userNameByToken)) {
                 loginUser = new LoginUser();
-                loginUser.setUsername(userNameByToken);
+//                loginUser.setUsername(userNameByToken);
             } else {
                 throw exception("online保存表单数据异常:系统未找到当前登陆用户信息");
             }
@@ -1782,7 +1707,7 @@ public class CgformUtil {
         if (m260j) {
             stringBuffer.append("," + "tenant_id");
             stringBuffer2.append(",#{" + "tenant_id" + "}");
-            hashMap.put("tenant_id", SpringContextUtils.getHttpServletRequest().getHeader("X-Tenant-Id"));
+            hashMap.put("tenant_id", ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("X-Tenant-Id"));
         }
         hashMap.put("execute_sql_string", "insert into " + sqlInjectTableName + "(id" + stringBuffer.toString() + ") values('" + str3 + "'" + stringBuffer2.toString() + ")");
         hashMap.put("id", str3);
@@ -1802,12 +1727,12 @@ public class CgformUtil {
         } catch (DBException e2) {
             e2.printStackTrace();
         }
-        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
         if (loginUser == null) {
-            String userNameByToken = JwtUtil.getUserNameByToken(SpringContextUtils.getHttpServletRequest());
+            String userNameByToken = SecurityFrameworkUtils.getUserName();
             if (ConvertUtils.isNotEmpty(userNameByToken)) {
                 loginUser = new LoginUser();
-                loginUser.setUsername(userNameByToken);
+//                loginUser.setUsername(userNameByToken);
             } else {
                 throw exception("online保存表单数据异常:系统未找到当前登陆用户信息");
             }
@@ -2051,6 +1976,7 @@ public class CgformUtil {
 
     /**
      * 这里是将jsonObject 进行一个转换，转为formItem
+     *
      * @param jSONObject
      * @return
      */
@@ -2235,36 +2161,6 @@ public class CgformUtil {
         return hashMap;
     }
 
-    /* renamed from: b */
-    public static List<ExcelExportEntity> m257b(List<OnlCgformField> list, String str, String str2) {
-        ArrayList arrayList = new ArrayList();
-        for (int i = 0; i < list.size(); i++) {
-            if ((null == str || !str.equals(list.get(i).getDbFieldName())) && list.get(i).getIsShowList().intValue() == 1) {
-                ExcelExportEntity excelExportEntity = new ExcelExportEntity(list.get(i).getDbFieldTxt(), list.get(i).getDbFieldName());
-                if ("image".equals(list.get(i).getFieldShowType())) {
-                    excelExportEntity.setType(2);
-                    excelExportEntity.setExportImageType(3);
-                    excelExportEntity.setImageBasePath(str2);
-                    excelExportEntity.setHeight(50.0d);
-                    excelExportEntity.setWidth(60.0d);
-                } else {
-                    int intValue = list.get(i).getDbLength().intValue() == 0 ? 12 : list.get(i).getDbLength().intValue() > 30 ? 30 : list.get(i).getDbLength().intValue();
-                    if (OnlFormShowType.DATE.equals(list.get(i).getFieldShowType())) {
-                        excelExportEntity.setFormat("yyyy-MM-dd");
-                    } else if ("datetime".equals(list.get(i).getFieldShowType())) {
-                        excelExportEntity.setFormat("yyyy-MM-dd HH:mm:ss");
-                    }
-                    if (intValue < 10) {
-                        intValue = 10;
-                    }
-                    excelExportEntity.setWidth(intValue);
-                }
-                arrayList.add(excelExportEntity);
-            }
-        }
-        return arrayList;
-    }
-
     /**
      * @param obj 对象
      * @param cls 类
@@ -2283,24 +2179,60 @@ public class CgformUtil {
         return null;
     }
 
+    /* renamed from: b */
+//    public static List<ExcelExportEntity> m257b(List<OnlCgformField> list, String str, String str2) {
+//        ArrayList arrayList = new ArrayList();
+//        for (int i = 0; i < list.size(); i++) {
+//            if ((null == str || !str.equals(list.get(i).getDbFieldName())) && list.get(i).getIsShowList().intValue() == 1) {
+//                ExcelExportEntity excelExportEntity = new ExcelExportEntity(list.get(i).getDbFieldTxt(), list.get(i).getDbFieldName());
+//                if ("image".equals(list.get(i).getFieldShowType())) {
+//                    excelExportEntity.setType(2);
+//                    excelExportEntity.setExportImageType(3);
+//                    excelExportEntity.setImageBasePath(str2);
+//                    excelExportEntity.setHeight(50.0d);
+//                    excelExportEntity.setWidth(60.0d);
+//                } else {
+//                    int intValue = list.get(i).getDbLength().intValue() == 0 ? 12 : list.get(i).getDbLength().intValue() > 30 ? 30 : list.get(i).getDbLength().intValue();
+//                    if (OnlFormShowType.DATE.equals(list.get(i).getFieldShowType())) {
+//                        excelExportEntity.setFormat("yyyy-MM-dd");
+//                    } else if ("datetime".equals(list.get(i).getFieldShowType())) {
+//                        excelExportEntity.setFormat("yyyy-MM-dd HH:mm:ss");
+//                    }
+//                    if (intValue < 10) {
+//                        intValue = 10;
+//                    }
+//                    excelExportEntity.setWidth(intValue);
+//                }
+//                arrayList.add(excelExportEntity);
+//            }
+//        }
+//        return arrayList;
+//    }
+
     /* renamed from: i */
     public static boolean m259i(String str) {
         return f202w.equalsIgnoreCase(str) || f203x.equalsIgnoreCase(str) || f204y.equalsIgnoreCase(str) || f205z.equalsIgnoreCase(str) || f206A.equalsIgnoreCase(str) || "id".equalsIgnoreCase(str);
     }
 
+    /**
+     * 这里应该是判断是否需要进行租户判断
+     * @param str
+     * @return
+     */
     /* renamed from: j */
     public static boolean m260j(String str) {
         boolean z = false;
-        Iterator it = MybatisPlusSaasConfig.TENANT_TABLE.iterator();
-        while (true) {
-            if (!it.hasNext()) {
-                break;
-            }
-            if (((String) it.next()).equalsIgnoreCase(str)) {
-                z = true;
-                break;
-            }
-        }
+        //默认都不需要多租户就可以了
+//        Iterator it = MybatisPlusSaasConfig.TENANT_TABLE.iterator();
+//        while (true) {
+//            if (!it.hasNext()) {
+//                break;
+//            }
+//            if (((String) it.next()).equalsIgnoreCase(str)) {
+//                z = true;
+//                break;
+//            }
+//        }
         return z;
     }
 
@@ -2310,5 +2242,58 @@ public class CgformUtil {
             str = str.substring(0, str.indexOf("@"));
         }
         return str;
+    }
+
+    /* JADX INFO: Access modifiers changed from: package-private */
+    /* compiled from: CgformUtil.java */
+    /* renamed from: org.jeecg.modules.online.cgform.d.b$3, reason: invalid class name */
+    /* loaded from: hibernate-re-3.6.1-beta.jar:org/jeecg/modules/online/cgform/d/b$3.class */
+    public static /* synthetic */ class AnonymousClass3 {
+
+        /* renamed from: a */
+        static final /* synthetic */ int[] f278a = new int[QueryRuleEnum.values().length];
+
+        static {
+            try {
+                f278a[QueryRuleEnum.GT.ordinal()] = 1;
+            } catch (NoSuchFieldError e) {
+            }
+            try {
+                f278a[QueryRuleEnum.GE.ordinal()] = 2;
+            } catch (NoSuchFieldError e2) {
+            }
+            try {
+                f278a[QueryRuleEnum.LT.ordinal()] = 3;
+            } catch (NoSuchFieldError e3) {
+            }
+            try {
+                f278a[QueryRuleEnum.LE.ordinal()] = 4;
+            } catch (NoSuchFieldError e4) {
+            }
+            try {
+                f278a[QueryRuleEnum.NE.ordinal()] = 5;
+            } catch (NoSuchFieldError e5) {
+            }
+            try {
+                f278a[QueryRuleEnum.IN.ordinal()] = 6;
+            } catch (NoSuchFieldError e6) {
+            }
+            try {
+                f278a[QueryRuleEnum.LIKE.ordinal()] = 7;
+            } catch (NoSuchFieldError e7) {
+            }
+            try {
+                f278a[QueryRuleEnum.LEFT_LIKE.ordinal()] = 8;
+            } catch (NoSuchFieldError e8) {
+            }
+            try {
+                f278a[QueryRuleEnum.RIGHT_LIKE.ordinal()] = 9;
+            } catch (NoSuchFieldError e9) {
+            }
+            try {
+                f278a[QueryRuleEnum.EQ.ordinal()] = 10;
+            } catch (NoSuchFieldError e10) {
+            }
+        }
     }
 }
