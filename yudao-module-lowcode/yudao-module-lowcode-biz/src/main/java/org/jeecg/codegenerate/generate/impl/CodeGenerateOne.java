@@ -13,57 +13,61 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.codegenerate.DbReadTableUtil;
 import org.jeecg.codegenerate.generate.IGenerate;
+import org.jeecg.codegenerate.generate.a.TemplateReaderUtil;
+import org.jeecg.codegenerate.generate.impl.defaultGenerate.DefaultGenerate;
 import org.jeecg.codegenerate.generate.pojo.ColumnVo;
 import org.jeecg.codegenerate.generate.pojo.TableVo;
 import org.jeecg.codegenerate.generate.util.NonceUtils;
+import org.jeecg.codegenerate.generate.util.g;
+import org.jeecg.common.config.LowCodeProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CodeGenerateOne extends a implements IGenerate {
+public class CodeGenerateOne extends DefaultGenerate implements IGenerate {
     private static final Logger a = LoggerFactory.getLogger(CodeGenerateOne.class);
-    private TableVo b;
+    private TableVo tableVo;
     private List<ColumnVo> e;
     private List<ColumnVo> f;
 
     public CodeGenerateOne(TableVo tableVo) {
-        this.b = tableVo;
+        this.tableVo = tableVo;
     }
 
     public CodeGenerateOne(TableVo tableVo, List<ColumnVo> columns, List<ColumnVo> originalColumns) {
-        this.b = tableVo;
+        this.tableVo = tableVo;
         this.e = columns;
         this.f = originalColumns;
     }
 
     public Map<String, Object> a() throws Exception {
         HashMap var1 = new HashMap();
-        var1.put("bussiPackage", org.jeecgframework.codegenerate.a.a.g);
-        var1.put("entityPackage", this.b.getEntityPackage());
-        var1.put("entityName", this.b.getEntityName());
-        var1.put("tableName", this.b.getTableName());
-        var1.put("primaryKeyField", org.jeecgframework.codegenerate.a.a.l);
-        if (this.b.getFieldRequiredNum() == null) {
-            this.b.setFieldRequiredNum(StringUtils.isNotEmpty(org.jeecgframework.codegenerate.a.a.m) ? Integer.parseInt(org.jeecgframework.codegenerate.a.a.m) : -1);
+        var1.put("bussiPackage", LowCodeProperties.bussiPackageName);
+        var1.put("entityPackage", this.tableVo.getEntityPackage());
+        var1.put("entityName", this.tableVo.getEntityName());
+        var1.put("tableName", this.tableVo.getTableName());
+        var1.put("primaryKeyField", LowCodeProperties.tableId);
+        if (this.tableVo.getFieldRequiredNum() == null) {
+            this.tableVo.setFieldRequiredNum(StringUtils.isNotEmpty(LowCodeProperties.fieldRequiredNum) ? Integer.parseInt(LowCodeProperties.fieldRequiredNum) : -1);
         }
 
-        if (this.b.getSearchFieldNum() == null) {
-            this.b.setSearchFieldNum(StringUtils.isNotEmpty(org.jeecgframework.codegenerate.a.a.n) ? Integer.parseInt(org.jeecgframework.codegenerate.a.a.n) : -1);
+        if (this.tableVo.getSearchFieldNum() == null) {
+            this.tableVo.setSearchFieldNum(StringUtils.isNotEmpty(LowCodeProperties.pageSearchFiledNum) ? Integer.parseInt(LowCodeProperties.pageSearchFiledNum) : -1);
         }
 
-        if (this.b.getFieldRowNum() == null) {
-            this.b.setFieldRowNum(Integer.parseInt(org.jeecgframework.codegenerate.a.a.p));
+        if (this.tableVo.getFieldRowNum() == null) {
+            this.tableVo.setFieldRowNum(Integer.parseInt(LowCodeProperties.fieldRowNum));
         }
 
-        var1.put("tableVo", this.b);
+        var1.put("tableVo", this.tableVo);
 
         try {
             if (this.e == null || this.e.size() == 0) {
-                this.e = DbReadTableUtil.a(this.b.getTableName());
+                this.e = DbReadTableUtil.readColumnByTableName(this.tableVo.getTableName());
             }
 
             var1.put("columns", this.e);
             if (this.f == null || this.f.size() == 0) {
-                this.f = DbReadTableUtil.readOriginalTableColumn(this.b.getTableName());
+                this.f = DbReadTableUtil.readOriginalTableColumn(this.tableVo.getTableName());
             }
 
             var1.put("originalColumns", this.f);
@@ -71,7 +75,7 @@ public class CodeGenerateOne extends a implements IGenerate {
 
             while(var2.hasNext()) {
                 ColumnVo var3 = (ColumnVo)var2.next();
-                if (var3.getFieldName().toLowerCase().equals(org.jeecgframework.codegenerate.a.a.l.toLowerCase())) {
+                if (var3.getFieldName().toLowerCase().equals(LowCodeProperties.tableId.toLowerCase())) {
                     var1.put("primaryKeyPolicy", var3.getFieldType());
                 }
             }
@@ -86,32 +90,32 @@ public class CodeGenerateOne extends a implements IGenerate {
     }
 
     public List<String> generateCodeFile(String stylePath) throws Exception {
-        String var2 = org.jeecgframework.codegenerate.a.a.f;
+        String var2 = LowCodeProperties.projectPath;
         Map var3 = this.a();
-        String var4 = org.jeecgframework.codegenerate.a.a.j;
+        String var4 = LowCodeProperties.templatePath;
         if (a(var4, "/").equals("jeecg/code-template")) {
             var4 = "/" + a(var4, "/") + "/one";
-            org.jeecgframework.codegenerate.a.a.b(var4);
+            LowCodeProperties.setTemplatePath(var4);
         }
 
-        org.jeecgframework.codegenerate.generate.a.a var5 = new org.jeecgframework.codegenerate.generate.a.a(var4);
-        var5.b(stylePath);
-        if (this.b != null && this.b.getExtendParams() != null) {
-            var5.a(g.a(this.b.getExtendParams().get("vueStyle"), "vue"));
+        TemplateReaderUtil var5 = new TemplateReaderUtil(var4);
+        var5.setStylePath(stylePath);
+        if (this.tableVo != null && this.tableVo.getExtendParams() != null) {
+            var5.setVueStyle(g.trimWithDefault(this.tableVo.getExtendParams().get("vueStyle"), "vue"));
         }
 
         this.a(var5, var2, var3);
-        a.info(" ----- jeecg-boot ---- generate  code  success =======> 表名：" + this.b.getTableName() + " ");
+        a.info(" ----- jeecg-boot ---- generate  code  success =======> 表名：" + this.tableVo.getTableName() + " ");
         return this.d;
     }
 
     public List<String> generateCodeFile(String projectPath, String templatePath, String stylePath) throws Exception {
         if (projectPath != null && !"".equals(projectPath)) {
-            org.jeecgframework.codegenerate.a.a.a(projectPath);
+            LowCodeProperties.setProjectPath(projectPath);
         }
 
         if (templatePath != null && !"".equals(templatePath)) {
-            org.jeecgframework.codegenerate.a.a.b(templatePath);
+            LowCodeProperties.setTemplatePath(templatePath);
         }
 
         this.generateCodeFile(stylePath);

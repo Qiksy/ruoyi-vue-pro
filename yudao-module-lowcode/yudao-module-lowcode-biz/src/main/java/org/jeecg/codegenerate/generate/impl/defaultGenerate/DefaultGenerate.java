@@ -24,6 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.codegenerate.generate.a.TemplateReaderUtil;
 import org.jeecg.codegenerate.generate.util.FileUtils;
 import org.jeecg.codegenerate.generate.util.NonceUtils;
+import org.jeecg.codegenerate.generate.util.b;
+import org.jeecg.codegenerate.generate.util.g;
 import org.jeecg.common.config.LowCodeProperties;
 
 @Slf4j
@@ -99,12 +101,12 @@ public class DefaultGenerate {
             var6 = fileName.substring(0, fileName.length() - 4);
         }
 
-        if (!var6.contains("vue") || var4 == null || !g.c(var4.a()) || fileName.contains(var4.a() + File.separator)) {
+        if (!var6.contains("vue") || var4 == null || !g.tempC(var4.getVueStyle()) || fileName.contains(var4.getVueStyle() + File.separator)) {
             Template var7 = this.a(var1, var4);
             var7.setOutputEncoding(c);
             File var8 = FileUtils.c(fileName);
             log.info("[generate]\t template:" + var1 + " ==> " + fileName);
-            org.jeecgframework.codegenerate.generate.util.b.a(var7, var3, var8, c);
+            b.a(var7, var3, var8, c);
             if (!this.a(var8)) {
                 this.d.add("生成成功：" + fileName);
             }
@@ -117,7 +119,7 @@ public class DefaultGenerate {
     }
 
     protected Template a(String var1, TemplateReaderUtil var2) throws IOException {
-        return org.jeecgframework.codegenerate.generate.util.b.a(var2.c(), c, var1).getTemplate(var1);
+        return b.a(var2.loadTemplate(), c, var1).getTemplate(var1);
     }
 
     protected boolean a(File var1) {
@@ -286,9 +288,9 @@ public class DefaultGenerate {
             }
         }
 
-        Configuration var10 = org.jeecgframework.codegenerate.generate.util.b.a(readerUtil.c(), c, "/");
-        var3 = org.jeecgframework.codegenerate.generate.util.b.a(var3, var0, var10);
-        String var11 = readerUtil.b();
+        Configuration var10 = b.a(readerUtil.loadTemplate(), c, "/");
+        var3 = b.a(var3, var0, var10);
+        String var11 = readerUtil.getStylePath();
         if (var11 != null && var11 != "") {
             var3 = var3.substring(var11.length() + 1);
         }

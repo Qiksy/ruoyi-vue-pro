@@ -29,10 +29,10 @@ public class LowCodeProperties {
     public static String templatePath;
     public static boolean dbFiledConvert;
     public static String tableId;
-    public static String m;
+    public static String fieldRequiredNum;
     public static String pageSearchFiledNum;
     public static String pageFilterFields;
-    public static String p;
+    public static String fieldRowNum;
     private static int classCount;
     private static boolean isIndexJspPresent;
     private static boolean x;
@@ -170,9 +170,9 @@ public class LowCodeProperties {
         webRootPackage = "WebRoot";
         templatePath = "/jeecg/code-template/";
         dbFiledConvert = true;
-        m = "4";
+        fieldRequiredNum = "4";
         pageSearchFiledNum = "3";
-        p = "1";
+        fieldRowNum = "1";
         driverName = getDriverName();
         url = getUrl();
         String schemaName = getSchemaName();
