@@ -1,9 +1,13 @@
 package org.jeecg.common.util.online.property;
 
 import com.alibaba.fastjson.JSONObject;
+
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import lombok.Data;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.util.online.CommonProperty;
 import org.jeecg.modules.online.config.template.DataBaseConst;
@@ -11,10 +15,12 @@ import org.jeecg.modules.online.config.template.DataBaseConst;
 /* compiled from: NumberProperty.java */
 /* renamed from: org.jeecg.common.util.a.a.d */
 /* loaded from: hibernate-re-3.6.1-beta.jar:org/jeecg/common/util/a/a/d.class */
+@Data
 public class NumberProperty extends CommonProperty {
 
     /* renamed from: m */
-    private static final long f10m = -558615331436437200L;
+    @Serial
+    private static final long serialVersionUID = -558615331436437200L;
 
     /* renamed from: n */
     private Integer multipleOf;
@@ -34,57 +40,6 @@ public class NumberProperty extends CommonProperty {
     /* renamed from: s */
     private String pattern;
 
-    public Integer getMultipleOf() {
-        return this.multipleOf;
-    }
-
-    public void setMultipleOf(Integer multipleOf) {
-        this.multipleOf = multipleOf;
-    }
-
-    public Integer getMaxinum() {
-        return this.maxinum;
-    }
-
-    public void setMaxinum(Integer maxinum) {
-        this.maxinum = maxinum;
-    }
-
-    public Integer getExclusiveMaximum() {
-        return this.exclusiveMaximum;
-    }
-
-    public void setExclusiveMaximum(Integer exclusiveMaximum) {
-        this.exclusiveMaximum = exclusiveMaximum;
-    }
-
-    public Integer getMinimum() {
-        return this.minimum;
-    }
-
-    public void setMinimum(Integer minimum) {
-        this.minimum = minimum;
-    }
-
-    public Integer getExclusiveMinimum() {
-        return this.exclusiveMinimum;
-    }
-
-    public void setExclusiveMinimum(Integer exclusiveMinimum) {
-        this.exclusiveMinimum = exclusiveMinimum;
-    }
-
-    public String getPattern() {
-        return this.pattern;
-    }
-
-    public void setPattern(String pattern) {
-        this.pattern = pattern;
-    }
-
-    public NumberProperty() {
-    }
-
     public NumberProperty(String str, String str2, String str3) {
         this.key = str;
         this.type = str3;
@@ -102,7 +57,7 @@ public class NumberProperty extends CommonProperty {
 
     @Override // org.jeecg.common.util.p000a.AbstractC0009b
     public Map<String, Object> getPropertyJson() {
-        HashMap hashMap = new HashMap(5);
+        HashMap<String, Object> hashMap = new HashMap<>(5);
         hashMap.put("key", getKey());
         JSONObject commonJson = getCommonJson();
         if (this.multipleOf != null) {

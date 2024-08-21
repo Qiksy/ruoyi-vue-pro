@@ -16,20 +16,18 @@ public class SwitchProperty extends CommonProperty {
     /* renamed from: m */
     private String fieldExtendJson2;
 
-    public SwitchProperty() {
-    }
 
-    public SwitchProperty(String str, String str2, String str3) {
+    public SwitchProperty(String key, String title, String fieldExtendJson2) {
         this.type = DataBaseConst.STRING;
         this.view = CgformUtil.f217L;
-        this.key = str;
-        this.title = str2;
-        this.fieldExtendJson2 = str3;
+        this.key = key;
+        this.title = title;
+        this.fieldExtendJson2 = fieldExtendJson2;
     }
 
     @Override // org.jeecg.common.util.p000a.AbstractC0009b
     public Map<String, Object> getPropertyJson() {
-        HashMap hashMap = new HashMap(5);
+        HashMap<String, Object> hashMap = new HashMap<>(5);
         hashMap.put("key", getKey());
         JSONObject commonJson = getCommonJson();
         new JSONArray();

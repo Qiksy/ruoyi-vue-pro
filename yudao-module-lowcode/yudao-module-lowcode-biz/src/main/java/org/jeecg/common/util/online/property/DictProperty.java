@@ -1,18 +1,24 @@
 package org.jeecg.common.util.online.property;
 
 import com.alibaba.fastjson.JSONObject;
+
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
+
+import lombok.Data;
 import org.jeecg.common.util.online.CommonProperty;
 import org.jeecg.modules.online.config.template.DataBaseConst;
 
 /* compiled from: DictProperty.java */
 /* renamed from: org.jeecg.common.util.a.a.a */
 /* loaded from: hibernate-re-3.6.1-beta.jar:org/jeecg/common/util/a/a/a.class */
+@Data
 public class DictProperty extends CommonProperty {
 
     /* renamed from: m */
-    private static final long f3m = 3786503639885610767L;
+    @Serial
+    private static final long serialVersionUID = 3786503639885610767L;
 
     /* renamed from: n */
     private String dictCode;
@@ -23,32 +29,6 @@ public class DictProperty extends CommonProperty {
     /* renamed from: p */
     private String dictText;
 
-    public String getDictCode() {
-        return this.dictCode;
-    }
-
-    public void setDictCode(String dictCode) {
-        this.dictCode = dictCode;
-    }
-
-    public String getDictTable() {
-        return this.dictTable;
-    }
-
-    public void setDictTable(String dictTable) {
-        this.dictTable = dictTable;
-    }
-
-    public String getDictText() {
-        return this.dictText;
-    }
-
-    public void setDictText(String dictText) {
-        this.dictText = dictText;
-    }
-
-    public DictProperty() {
-    }
 
     public DictProperty(String str, String str2, String str3, String str4, String str5) {
         this.type = DataBaseConst.STRING;
@@ -72,7 +52,7 @@ public class DictProperty extends CommonProperty {
 
     @Override // org.jeecg.common.util.p000a.AbstractC0009b
     public Map<String, Object> getPropertyJson() {
-        HashMap hashMap = new HashMap(5);
+        HashMap<String,Object> hashMap = new HashMap<>(5);
         hashMap.put("key", getKey());
         JSONObject commonJson = getCommonJson();
         if (this.dictCode != null) {

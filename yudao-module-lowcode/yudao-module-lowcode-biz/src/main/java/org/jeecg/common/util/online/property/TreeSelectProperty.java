@@ -1,8 +1,12 @@
 package org.jeecg.common.util.online.property;
 
 import com.alibaba.fastjson.JSONObject;
+
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
+
+import lombok.Data;
 import org.jeecg.common.util.online.CommonProperty;
 import org.jeecg.modules.online.cgform.constant.ExtendJsonKey;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
@@ -11,10 +15,12 @@ import org.jeecg.modules.online.config.template.DataBaseConst;
 /* compiled from: TreeSelectProperty.java */
 /* renamed from: org.jeecg.common.util.a.a.h */
 /* loaded from: hibernate-re-3.6.1-beta.jar:org/jeecg/common/util/a/a/h.class */
+@Data
 public class TreeSelectProperty extends CommonProperty {
 
     /* renamed from: m */
-    private static final long f28m = 3786503639885610767L;
+    @Serial
+    private static final long serialVersionUID = 3786503639885610767L;
 
     /* renamed from: n */
     private String dict;
@@ -33,58 +39,6 @@ public class TreeSelectProperty extends CommonProperty {
 
     /* renamed from: s */
     private Integer pidComponent;
-
-    public String getDict() {
-        return this.dict;
-    }
-
-    public void setDict(String dict) {
-        this.dict = dict;
-    }
-
-    public String getPidField() {
-        return this.pidField;
-    }
-
-    public void setPidField(String pidField) {
-        this.pidField = pidField;
-    }
-
-    public String getPidValue() {
-        return this.pidValue;
-    }
-
-    public void setPidValue(String pidValue) {
-        this.pidValue = pidValue;
-    }
-
-    public String getHasChildField() {
-        return this.hasChildField;
-    }
-
-    public void setHasChildField(String hasChildField) {
-        this.hasChildField = hasChildField;
-    }
-
-    public TreeSelectProperty() {
-        this.pidComponent = 0;
-    }
-
-    public String getTextField() {
-        return this.textField;
-    }
-
-    public void setTextField(String textField) {
-        this.textField = textField;
-    }
-
-    public Integer getPidComponent() {
-        return this.pidComponent;
-    }
-
-    public void setPidComponent(Integer pidComponent) {
-        this.pidComponent = pidComponent;
-    }
 
     public TreeSelectProperty(String str, String str2, String str3, String str4, String str5) {
         this.pidComponent = 0;

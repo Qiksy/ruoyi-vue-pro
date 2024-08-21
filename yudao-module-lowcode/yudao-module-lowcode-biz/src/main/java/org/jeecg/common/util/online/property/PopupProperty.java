@@ -3,6 +3,8 @@ package org.jeecg.common.util.online.property;
 import com.alibaba.fastjson.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
+
+import lombok.Data;
 import org.jeecg.common.util.online.CommonProperty;
 import org.jeecg.modules.online.cgform.constant.ExtendJsonKey;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
@@ -11,6 +13,7 @@ import org.jeecg.modules.online.config.template.DataBaseConst;
 /* compiled from: PopupProperty.java */
 /* renamed from: org.jeecg.common.util.a.a.e */
 /* loaded from: hibernate-re-3.6.1-beta.jar:org/jeecg/common/util/a/a/e.class */
+@Data
 public class PopupProperty extends CommonProperty {
 
     /* renamed from: m */
@@ -28,40 +31,6 @@ public class PopupProperty extends CommonProperty {
     /* renamed from: q */
     private Boolean popupMulti;
 
-    public String getCode() {
-        return this.code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getDestFields() {
-        return this.destFields;
-    }
-
-    public void setDestFields(String destFields) {
-        this.destFields = destFields;
-    }
-
-    public String getOrgFields() {
-        return this.orgFields;
-    }
-
-    public void setOrgFields(String orgFields) {
-        this.orgFields = orgFields;
-    }
-
-    public Boolean getPopupMulti() {
-        return this.popupMulti;
-    }
-
-    public void setPopupMulti(Boolean popupMulti) {
-        this.popupMulti = popupMulti;
-    }
-
-    public PopupProperty() {
-    }
 
     public PopupProperty(String str, String str2, String str3, String str4, String str5) {
         this.view = CgformUtil.f218M;
@@ -76,7 +45,7 @@ public class PopupProperty extends CommonProperty {
 
     @Override // org.jeecg.common.util.p000a.AbstractC0009b
     public Map<String, Object> getPropertyJson() {
-        HashMap hashMap = new HashMap(5);
+        HashMap<String, Object> hashMap = new HashMap<>(5);
         hashMap.put("key", getKey());
         JSONObject commonJson = getCommonJson();
         if (this.code != null) {

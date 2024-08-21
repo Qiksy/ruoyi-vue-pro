@@ -20,7 +20,6 @@ public class DbTypeUtils {
         dialectMap.put("mariadb", "org.hibernate.dialect.MariaDBDialect");
         //oracle数据库 1
         dialectMap.put("oracle", "org.hibernate.dialect.OracleDialect");
-        // TODO 没找到不确定
         dialectMap.put("oracle12c", "org.hibernate.dialect.OracleDialect");
         // db2数据库 1xx
         dialectMap.put("db2", "org.hibernate.dialect.DB2390Dialect");
@@ -47,9 +46,9 @@ public class DbTypeUtils {
         dialectMap.put("zenith", "org.hibernate.dialect.PostgreSQLDialect");
         //阿里云PolarDB
         dialectMap.put("clickhouse", "org.hibernate.dialect.MySQLDialect");
-        // 南大通用数据库 TODO 没找到不确定
+        // 南大通用数据库
         dialectMap.put("gbase", "org.hibernate.dialect.PostgreSQLDialect");
-        //神通数据库 [国产] TODO 没找到不确定
+        //神通数据库 [国产]
         dialectMap.put("oscar", "org.hibernate.dialect.PostgreSQLDialect");
         //Sybase ASE 数据库
         dialectMap.put("sybase", "org.hibernate.dialect.SybaseDialect");

@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import lombok.Data;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.util.online.CommonProperty;
 import org.jeecg.modules.online.config.template.DataBaseConst;
@@ -11,6 +13,7 @@ import org.jeecg.modules.online.config.template.DataBaseConst;
 /* compiled from: StringProperty.java */
 /* renamed from: org.jeecg.common.util.a.a.f */
 /* loaded from: hibernate-re-3.6.1-beta.jar:org/jeecg/common/util/a/a/f.class */
+@Data
 public class StringProperty extends CommonProperty {
 
     /* renamed from: m */
@@ -28,40 +31,6 @@ public class StringProperty extends CommonProperty {
     /* renamed from: q */
     private String errorInfo;
 
-    public Integer getMaxLength() {
-        return this.maxLength;
-    }
-
-    public void setMaxLength(Integer maxLength) {
-        this.maxLength = maxLength;
-    }
-
-    public Integer getMinLength() {
-        return this.minLength;
-    }
-
-    public void setMinLength(Integer minLength) {
-        this.minLength = minLength;
-    }
-
-    public String getPattern() {
-        return this.pattern;
-    }
-
-    public void setPattern(String pattern) {
-        this.pattern = pattern;
-    }
-
-    public String getErrorInfo() {
-        return this.errorInfo;
-    }
-
-    public void setErrorInfo(String errorInfo) {
-        this.errorInfo = errorInfo;
-    }
-
-    public StringProperty() {
-    }
 
     public StringProperty(String str, String str2, String str3, Integer num) {
         this.maxLength = num;

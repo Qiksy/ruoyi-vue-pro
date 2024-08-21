@@ -1,6 +1,8 @@
 package org.jeecg.common.util.online.property;
 
 import com.alibaba.fastjson.JSONObject;
+
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
 import org.jeecg.common.util.online.CommonProperty;
@@ -12,7 +14,8 @@ import org.jeecg.modules.online.config.template.DataBaseConst;
 public class HiddenProperty extends CommonProperty {
 
     /* renamed from: m */
-    private static final long f7m = -8939298551502162479L;
+    @Serial
+    private static final long serialVersionUID = -8939298551502162479L;
 
     public HiddenProperty() {
     }
@@ -26,7 +29,7 @@ public class HiddenProperty extends CommonProperty {
 
     @Override // org.jeecg.common.util.p000a.AbstractC0009b
     public Map<String, Object> getPropertyJson() {
-        HashMap hashMap = new HashMap(5);
+        HashMap<String, Object> hashMap = new HashMap<>(5);
         hashMap.put("key", getKey());
         JSONObject commonJson = getCommonJson();
         commonJson.put("hidden", true);

@@ -12,7 +12,6 @@ import java.util.Map;
 
 /**
  * 数据源缓存池
- * @author: jeecg-boot
  */
 public class DataSourceCachePool {
     /** 数据源连接池缓存【本地 class缓存 - 不支持分布式】 */
@@ -34,7 +33,7 @@ public class DataSourceCachePool {
      */
     public static DataSourceConfigDO getCacheDynamicDataSourceModel(String dbKey) {
         String redisCacheKey = CacheConstant.SYS_DYNAMICDB_CACHE + dbKey;
-        if (getRedisTemplate().hasKey(redisCacheKey)) {
+        if (Boolean.TRUE.equals(getRedisTemplate().hasKey(redisCacheKey))) {
             return (DataSourceConfigDO) getRedisTemplate().opsForValue().get(redisCacheKey);
         }
         DataSourceConfigService commonApi = SpringUtil.getBean(DataSourceConfigService.class);
