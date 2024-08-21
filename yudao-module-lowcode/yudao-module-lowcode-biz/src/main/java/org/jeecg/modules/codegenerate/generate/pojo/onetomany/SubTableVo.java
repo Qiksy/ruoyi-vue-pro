@@ -3,9 +3,9 @@
 // (powered by FernFlower decompiler)
 //
 
-package org.jeecg.codegenerate.generate.pojo.onetomany;
+package org.jeecg.modules.codegenerate.generate.pojo.onetomany;
 
-import org.jeecg.codegenerate.generate.pojo.ColumnVo;
+import org.jeecg.modules.codegenerate.generate.pojo.ColumnVo;
 
 import java.util.Arrays;
 import java.util.List;

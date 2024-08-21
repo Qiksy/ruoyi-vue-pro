@@ -3,7 +3,7 @@
 // (powered by FernFlower decompiler)
 //
 
-package org.jeecg.codegenerate.generate.util;
+package org.jeecg.modules.codegenerate.generate.util;
 
 import java.io.IOException;
 import java.security.SecureRandom;

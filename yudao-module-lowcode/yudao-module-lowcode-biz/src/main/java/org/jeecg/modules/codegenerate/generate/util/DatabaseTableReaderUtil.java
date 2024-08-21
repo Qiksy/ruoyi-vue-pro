@@ -1,10 +1,10 @@
 
 //
 
-package org.jeecg.codegenerate.generate.util;
+package org.jeecg.modules.codegenerate.generate.util;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jeecg.codegenerate.generate.pojo.ColumnVo;
+import org.jeecg.modules.codegenerate.generate.pojo.ColumnVo;
 
 public class DatabaseTableReaderUtil {
 

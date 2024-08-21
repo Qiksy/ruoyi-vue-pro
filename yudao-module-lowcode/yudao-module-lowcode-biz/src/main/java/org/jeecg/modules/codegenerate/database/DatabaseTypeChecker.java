@@ -1,4 +1,4 @@
-package org.jeecg.codegenerate.database;
+package org.jeecg.modules.codegenerate.database;
 
 
 import lombok.extern.slf4j.Slf4j;

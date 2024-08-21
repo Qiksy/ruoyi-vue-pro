@@ -3,7 +3,7 @@
 // (powered by FernFlower decompiler)
 //
 
-package org.jeecg.codegenerate.generate.impl.defaultGenerate;
+package org.jeecg.modules.codegenerate.generate.impl.defaultGenerate;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -21,11 +21,11 @@ import java.util.List;
 import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jeecg.codegenerate.generate.a.TemplateReaderUtil;
-import org.jeecg.codegenerate.generate.util.FileUtils;
-import org.jeecg.codegenerate.generate.util.NonceUtils;
-import org.jeecg.codegenerate.generate.util.b;
-import org.jeecg.codegenerate.generate.util.g;
+import org.jeecg.modules.codegenerate.generate.a.TemplateReaderUtil;
+import org.jeecg.modules.codegenerate.generate.util.FileUtils;
+import org.jeecg.modules.codegenerate.generate.util.NonceUtils;
+import org.jeecg.modules.codegenerate.generate.util.b;
+import org.jeecg.modules.codegenerate.generate.util.g;
 import org.jeecg.common.config.LowCodeProperties;
 
 @Slf4j

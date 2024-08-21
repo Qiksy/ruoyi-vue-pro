@@ -3,7 +3,7 @@
 // (powered by FernFlower decompiler)
 //
 
-package org.jeecg.codegenerate.generate.pojo.onetomany;
+package org.jeecg.modules.codegenerate.generate.pojo.onetomany;
 
 import java.util.List;
 import java.util.Map;

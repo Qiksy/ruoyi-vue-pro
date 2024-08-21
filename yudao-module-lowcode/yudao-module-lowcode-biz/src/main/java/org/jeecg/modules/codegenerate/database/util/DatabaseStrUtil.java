@@ -3,7 +3,7 @@
 // (powered by FernFlower decompiler)
 //
 
-package org.jeecg.codegenerate.database.util;
+package org.jeecg.modules.codegenerate.database.util;
 
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;

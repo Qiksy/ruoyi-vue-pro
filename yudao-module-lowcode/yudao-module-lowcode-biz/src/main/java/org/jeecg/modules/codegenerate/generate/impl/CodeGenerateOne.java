@@ -3,7 +3,7 @@
 // (powered by FernFlower decompiler)
 //
 
-package org.jeecg.codegenerate.generate.impl;
+package org.jeecg.modules.codegenerate.generate.impl;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,14 +11,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jeecg.codegenerate.DbReadTableUtil;
-import org.jeecg.codegenerate.generate.IGenerate;
-import org.jeecg.codegenerate.generate.a.TemplateReaderUtil;
-import org.jeecg.codegenerate.generate.impl.defaultGenerate.DefaultGenerate;
-import org.jeecg.codegenerate.generate.pojo.ColumnVo;
-import org.jeecg.codegenerate.generate.pojo.TableVo;
-import org.jeecg.codegenerate.generate.util.NonceUtils;
-import org.jeecg.codegenerate.generate.util.g;
+import org.jeecg.modules.codegenerate.DbReadTableUtil;
+import org.jeecg.modules.codegenerate.generate.IGenerate;
+import org.jeecg.modules.codegenerate.generate.a.TemplateReaderUtil;
+import org.jeecg.modules.codegenerate.generate.impl.defaultGenerate.DefaultGenerate;
+import org.jeecg.modules.codegenerate.generate.pojo.ColumnVo;
+import org.jeecg.modules.codegenerate.generate.pojo.TableVo;
+import org.jeecg.modules.codegenerate.generate.util.NonceUtils;
+import org.jeecg.modules.codegenerate.generate.util.g;
 import org.jeecg.common.config.LowCodeProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

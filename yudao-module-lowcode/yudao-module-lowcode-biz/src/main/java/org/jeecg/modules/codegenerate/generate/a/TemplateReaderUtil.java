@@ -3,7 +3,7 @@
 // (powered by FernFlower decompiler)
 //
 
-package org.jeecg.codegenerate.generate.a;
+package org.jeecg.modules.codegenerate.generate.a;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;

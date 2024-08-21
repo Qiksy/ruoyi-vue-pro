@@ -1,4 +1,4 @@
-package org.jeecg.codegenerate.generate;
+package org.jeecg.modules.codegenerate.generate;
 
 import java.util.List;
 import java.util.Map;

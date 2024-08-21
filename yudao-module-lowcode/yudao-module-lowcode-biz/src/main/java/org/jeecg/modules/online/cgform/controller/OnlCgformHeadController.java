@@ -18,7 +18,7 @@ import java.util.*;
 
 
 import org.jeecg.common.constant.CgformEnum;
-import org.jeecg.codegenerate.DbReadTableUtil;
+import org.jeecg.modules.codegenerate.DbReadTableUtil;
 import org.jeecg.common.util.online.ConvertUtils;
 import org.jeecg.modules.online.annotation.PermissionData;
 import org.jeecg.modules.online.cgform.entity.OnlCgformButton;

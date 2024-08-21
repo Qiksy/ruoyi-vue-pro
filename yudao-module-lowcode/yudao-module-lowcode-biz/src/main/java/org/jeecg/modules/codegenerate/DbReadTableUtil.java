@@ -1,4 +1,4 @@
-package org.jeecg.codegenerate;
+package org.jeecg.modules.codegenerate;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jeecg.codegenerate.database.DatabaseTypeChecker;
-import org.jeecg.codegenerate.database.util.DatabaseStrUtil;
-import org.jeecg.codegenerate.generate.pojo.ColumnVo;
-import org.jeecg.codegenerate.generate.util.DatabaseTableReaderUtil;
+import org.jeecg.modules.codegenerate.database.DatabaseTypeChecker;
+import org.jeecg.modules.codegenerate.database.util.DatabaseStrUtil;
+import org.jeecg.modules.codegenerate.generate.pojo.ColumnVo;
+import org.jeecg.modules.codegenerate.generate.util.DatabaseTableReaderUtil;
 import org.jeecg.common.config.LowCodeProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

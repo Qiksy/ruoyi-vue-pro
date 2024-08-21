@@ -20,13 +20,13 @@ import java.sql.SQLException;
 import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jeecg.codegenerate.DbReadTableUtil;
-import org.jeecg.codegenerate.generate.impl.CodeGenerateOne;
-import org.jeecg.codegenerate.generate.impl.CodeGenerateOneToMany;
-import org.jeecg.codegenerate.generate.pojo.ColumnVo;
-import org.jeecg.codegenerate.generate.pojo.TableVo;
-import org.jeecg.codegenerate.generate.pojo.onetomany.MainTableVo;
-import org.jeecg.codegenerate.generate.pojo.onetomany.SubTableVo;
+import org.jeecg.modules.codegenerate.DbReadTableUtil;
+import org.jeecg.modules.codegenerate.generate.impl.CodeGenerateOne;
+import org.jeecg.modules.codegenerate.generate.impl.CodeGenerateOneToMany;
+import org.jeecg.modules.codegenerate.generate.pojo.ColumnVo;
+import org.jeecg.modules.codegenerate.generate.pojo.TableVo;
+import org.jeecg.modules.codegenerate.generate.pojo.onetomany.MainTableVo;
+import org.jeecg.modules.codegenerate.generate.pojo.onetomany.SubTableVo;
 import org.jeecg.common.constant.CgformEnum;
 import org.jeecg.common.constant.CommonConstant;
 
