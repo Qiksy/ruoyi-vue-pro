@@ -20,9 +20,8 @@ public class BrowserUtils {
      * @return
      */
 	public static boolean isIe(HttpServletRequest request) {
-		return (request.getHeader("USER-AGENT").toLowerCase().indexOf("msie") > 0 || request
-				.getHeader("USER-AGENT").toLowerCase().indexOf("rv:11.0") > 0) ? true
-				: false;
+		return request.getHeader("USER-AGENT").toLowerCase().indexOf("msie") > 0 || request
+                .getHeader("USER-AGENT").toLowerCase().indexOf("rv:11.0") > 0;
 	}
 
 	/**

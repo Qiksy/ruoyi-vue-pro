@@ -710,9 +710,9 @@ public class CgformUtil {
             }
         }
         if (arrayList.size() > 0) {
-            m2a = JsonschemaUtil.m2a(new JsonSchemaDescrip(arrayList), arrayList2);
+            m2a = JsonschemaUtil.createJsonschema(new JsonSchemaDescrip(arrayList), arrayList2);
         } else {
-            m2a = JsonschemaUtil.m2a(new JsonSchemaDescrip(), arrayList2);
+            m2a = JsonschemaUtil.createJsonschema(new JsonSchemaDescrip(), arrayList2);
         }
         return m2a;
     }

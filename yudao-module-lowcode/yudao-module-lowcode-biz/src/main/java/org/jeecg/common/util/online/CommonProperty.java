@@ -1,19 +1,25 @@
 package org.jeecg.common.util.online;
 
 import com.alibaba.fastjson.JSONObject;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+
+import lombok.Data;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
 
 /* compiled from: CommonProperty.java */
 /* renamed from: org.jeecg.common.util.a.b */
 /* loaded from: hibernate-re-3.6.1-beta.jar:org/jeecg/common/util/a/b.class */
+@Data
 public abstract class CommonProperty implements Serializable {
 
     /* renamed from: m */
-    private static final long f35m = -426159949502493187L;
+    @Serial
+    private static final long serialVersionUID = -426159949502493187L;
 
     /* renamed from: a */
     protected String key;
@@ -53,107 +59,11 @@ public abstract class CommonProperty implements Serializable {
 
     public abstract Map<String, Object> getPropertyJson();
 
-    public String getDefVal() {
-        return this.defVal;
-    }
-
-    public void setDefVal(String defVal) {
-        this.defVal = defVal;
-    }
-
-    /* renamed from: a */
-    public boolean m1a() {
-        return this.disabled;
-    }
-
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
-    }
-
-    public String getView() {
-        return this.view;
-    }
-
-    public void setView(String view) {
-        this.view = view;
-    }
-
-    public String getKey() {
-        return this.key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getType() {
-        return this.type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public List<DictModel> getInclude() {
-        return this.include;
-    }
-
-    public void setInclude(List<DictModel> include) {
-        this.include = include;
-    }
-
-    public Object getConstant() {
-        return this.constant;
-    }
-
-    public void setConstant(Object constant) {
-        this.constant = constant;
-    }
-
-    public String getTitle() {
-        return this.title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public Integer getOrder() {
-        return this.order;
-    }
-
-    public void setOrder(Integer order) {
-        this.order = order;
-    }
-
-    public String getFieldExtendJson() {
-        return this.fieldExtendJson;
-    }
-
-    public void setFieldExtendJson(String fieldExtendJson) {
-        this.fieldExtendJson = fieldExtendJson;
-    }
-
-    public Integer getDbPointLength() {
-        return this.dbPointLength;
-    }
-
-    public void setDbPointLength(Integer dbPointLength) {
-        this.dbPointLength = dbPointLength;
-    }
-
-    public String getMode() {
-        return this.mode;
-    }
-
-    public void setMode(String mode) {
-        this.mode = mode;
-    }
 
     public JSONObject getCommonJson() {
         JSONObject jSONObject = new JSONObject();
         jSONObject.put("type", this.type);
-        if (this.include != null && this.include.size() > 0) {
+        if (this.include != null && !this.include.isEmpty()) {
             jSONObject.put("enum", this.include);
         }
         if (this.constant != null) {
@@ -173,7 +83,7 @@ public abstract class CommonProperty implements Serializable {
         if (this.disabled) {
             jSONObject.put("ui", JSONObject.parseObject("{\"widgetattrs\":{\"disabled\":true}}"));
         }
-        if (this.defVal != null && this.defVal.length() > 0) {
+        if (this.defVal != null && !this.defVal.isEmpty()) {
             jSONObject.put("defVal", this.defVal);
         }
         if (this.fieldExtendJson != null) {

@@ -5,52 +5,48 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /* compiled from: JsonschemaUtil.java */
 /* renamed from: org.jeecg.common.util.a.d */
 /* loaded from: hibernate-re-3.6.1-beta.jar:org/jeecg/common/util/a/d.class */
+@Slf4j
 public class JsonschemaUtil {
 
-    /* renamed from: a */
-    private static final Logger f54a = LoggerFactory.getLogger(JsonschemaUtil.class);
 
-    /* renamed from: a */
-    public static JSONObject m2a(JsonSchemaDescrip jsonSchemaDescrip, List<CommonProperty> list) {
+    public static JSONObject createJsonschema(JsonSchemaDescrip jsonSchemaDescrip, List<CommonProperty> list) {
         JSONObject jSONObject = new JSONObject();
-        jSONObject.put("$schema", jsonSchemaDescrip.get$schema());
+        jSONObject.put("$schema", jsonSchemaDescrip.getSchema());
         jSONObject.put("type", jsonSchemaDescrip.getType());
         jSONObject.put(CgformUtil.TITLE, jsonSchemaDescrip.getTitle());
         jSONObject.put("required", jsonSchemaDescrip.getRequired());
-        JSONObject jSONObject2 = new JSONObject();
-        Iterator<CommonProperty> it = list.iterator();
-        while (it.hasNext()) {
-            Map<String, Object> propertyJson = it.next().getPropertyJson();
-            jSONObject2.put(propertyJson.get("key").toString(), propertyJson.get("prop"));
+        JSONObject properties = new JSONObject();
+        for (CommonProperty commonProperty : list) {
+            Map<String, Object> propertyJson = commonProperty.getPropertyJson();
+            properties.put(propertyJson.get("key").toString(), propertyJson.get("prop"));
         }
-        jSONObject.put(CgformUtil.PROPERTIES, jSONObject2);
+        jSONObject.put(CgformUtil.PROPERTIES, properties);
         return jSONObject;
     }
 
     /* renamed from: a */
-    public static JSONObject m3a(String str, List<String> list, List<CommonProperty> list2) {
+    public static JSONObject m3a(String str, List<String> required, List<CommonProperty> list2) {
         JSONObject jSONObject = new JSONObject();
         jSONObject.put("type", "object");
         jSONObject.put(CgformUtil.VIEW, "tab");
         jSONObject.put(CgformUtil.TITLE, str);
-        if (list == null) {
-            list = new ArrayList();
+        if (required == null) {
+            required = new ArrayList<>();
         }
-        jSONObject.put("required", list);
-        JSONObject jSONObject2 = new JSONObject();
-        Iterator<CommonProperty> it = list2.iterator();
-        while (it.hasNext()) {
-            Map<String, Object> propertyJson = it.next().getPropertyJson();
-            jSONObject2.put(propertyJson.get("key").toString(), propertyJson.get("prop"));
+        jSONObject.put("required", required);
+        JSONObject properties = new JSONObject();
+        for (CommonProperty commonProperty : list2) {
+            Map<String, Object> propertyJson = commonProperty.getPropertyJson();
+            properties.put(propertyJson.get("key").toString(), propertyJson.get("prop"));
         }
-        jSONObject.put(CgformUtil.PROPERTIES, jSONObject2);
+        jSONObject.put(CgformUtil.PROPERTIES, properties);
         return jSONObject;
     }
 }

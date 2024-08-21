@@ -193,10 +193,7 @@ public class ConvertUtils extends StrUtil {
     }
 
     public static boolean isNotEmpty(Object object) {
-        if (object != null && !"".equals(object) && !object.equals(CommonConstant.STRING_NULL)) {
-            return (true);
-        }
-        return (false);
+        return object != null && !"".equals(object) && !object.equals(CommonConstant.STRING_NULL);
     }
 
     public static <T> boolean listIsEmpty(List<T> list) {

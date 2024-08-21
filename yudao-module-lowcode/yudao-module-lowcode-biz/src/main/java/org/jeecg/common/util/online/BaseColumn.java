@@ -1,40 +1,32 @@
 package org.jeecg.common.util.online;
 
+import lombok.Data;
+
 /* compiled from: BaseColumn.java */
 /* renamed from: org.jeecg.common.util.a.a */
 /* loaded from: hibernate-re-3.6.1-beta.jar:org/jeecg/common/util/a/a.class */
+@Data
 public class BaseColumn {
 
     /* renamed from: a */
-    private String f0a;
+    private String title;
 
     /* renamed from: b */
-    private String f1b;
+    private String field;
 
     /* renamed from: c */
-    private Integer f2c;
+    private Integer order;
 
-    public void setTitle(String title) {
-        this.f0a = title;
-    }
 
-    public void setField(String field) {
-        this.f1b = field;
-    }
-
-    public void setOrder(Integer order) {
-        this.f2c = order;
-    }
-
+    @Override
     public boolean equals(Object o) {
         if (o == this) {
             return true;
         }
-        if (!(o instanceof BaseColumn)) {
+        if (!(o instanceof BaseColumn baseColumn)) {
             return false;
         }
-        BaseColumn baseColumn = (BaseColumn) o;
-        if (!baseColumn.m0a(this)) {
+        if (!baseColumn.isBaseColum(this)) {
             return false;
         }
         Integer order = getOrder();
@@ -61,7 +53,7 @@ public class BaseColumn {
     }
 
     /* renamed from: a */
-    protected boolean m0a(Object obj) {
+    protected boolean isBaseColum(Object obj) {
         return obj instanceof BaseColumn;
     }
 
@@ -78,24 +70,13 @@ public class BaseColumn {
         return "BaseColumn(title=" + getTitle() + ", field=" + getField() + ", order=" + getOrder() + ")";
     }
 
-    public String getTitle() {
-        return this.f0a;
-    }
-
-    public String getField() {
-        return this.f1b;
-    }
-
-    public Integer getOrder() {
-        return this.f2c;
-    }
 
     public BaseColumn() {
     }
 
-    public BaseColumn(String str, String str2, Integer num) {
-        this.f0a = str;
-        this.f1b = str2;
-        this.f2c = num;
+    public BaseColumn(String title, String field, Integer num) {
+        this.title = title;
+        this.field = field;
+        this.order = num;
     }
 }
