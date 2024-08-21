@@ -50,7 +50,7 @@ import org.jeecg.modules.online.config.database.OnlineFieldConfig;
 import org.jeecg.modules.online.config.template.DbTableUtil;
 import org.jeecg.modules.online.handler.ConditionHandler;
 import org.jeecg.modules.online.handler.SqlParamsHandler;
-import org.jeecg.query.QueryGenerator;
+import org.jeecg.common.query.QueryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

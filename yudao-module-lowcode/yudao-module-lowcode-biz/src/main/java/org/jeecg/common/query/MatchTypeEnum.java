@@ -1,4 +1,4 @@
-package org.jeecg.query;
+package org.jeecg.common.query;
 
 
 import org.jeecg.common.util.online.ConvertUtils;

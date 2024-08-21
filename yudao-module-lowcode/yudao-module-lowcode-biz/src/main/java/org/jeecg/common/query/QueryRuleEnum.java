@@ -1,4 +1,4 @@
-package org.jeecg.query;
+package org.jeecg.common.query;
 
 
 import org.apache.commons.lang3.StringUtils;

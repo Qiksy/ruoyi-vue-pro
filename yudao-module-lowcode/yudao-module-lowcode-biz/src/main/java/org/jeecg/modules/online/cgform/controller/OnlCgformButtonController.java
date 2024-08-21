@@ -12,7 +12,7 @@ import java.util.Arrays;
 import org.jeecg.modules.online.cgform.entity.OnlCgformButton;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
 import org.jeecg.modules.online.cgform.service.IOnlCgformButtonService;
-import org.jeecg.query.QueryGenerator;
+import org.jeecg.common.query.QueryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

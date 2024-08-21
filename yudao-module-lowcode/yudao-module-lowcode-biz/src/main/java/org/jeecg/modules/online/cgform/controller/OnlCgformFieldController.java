@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.tags.Tags;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Arrays;
@@ -17,7 +16,7 @@ import org.jeecg.modules.online.cgform.entity.OnlCgformHead;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
 import org.jeecg.modules.online.cgform.service.IOnlCgformFieldService;
 import org.jeecg.modules.online.cgform.service.IOnlCgformHeadService;
-import org.jeecg.query.QueryGenerator;
+import org.jeecg.common.query.QueryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

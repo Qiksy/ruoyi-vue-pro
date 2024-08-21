@@ -32,7 +32,7 @@ import org.jeecg.modules.online.cgform.service.IOnlCgformFieldService;
 import org.jeecg.modules.online.cgform.service.IOnlCgformHeadService;
 import org.jeecg.modules.online.cgreport.constant.CgReportConstant;
 import org.jeecg.modules.online.config.exception.DBException;
-import org.jeecg.query.QueryGenerator;
+import org.jeecg.common.query.QueryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

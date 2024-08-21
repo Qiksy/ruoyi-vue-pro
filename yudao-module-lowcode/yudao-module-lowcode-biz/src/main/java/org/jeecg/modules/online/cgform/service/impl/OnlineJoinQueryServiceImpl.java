@@ -39,7 +39,7 @@ import org.jeecg.modules.online.config.database.DataBaseConfig;
 import org.jeecg.modules.online.config.database.OnlineFieldConfig;
 import org.jeecg.modules.online.config.template.DbTableUtil;
 import org.jeecg.modules.online.handler.ConditionHandler;
-import org.jeecg.query.MatchTypeEnum;
+import org.jeecg.common.query.MatchTypeEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

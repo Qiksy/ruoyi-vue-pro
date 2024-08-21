@@ -16,7 +16,7 @@ import org.jeecg.modules.online.cgreport.entity.OnlCgreportHead;
 import org.jeecg.modules.online.cgreport.entity.OnlCgreportItem;
 import org.jeecg.modules.online.cgreport.service.IOnlCgreportHeadService;
 import org.jeecg.modules.online.cgreport.service.IOnlCgreportItemService;
-import org.jeecg.query.QueryGenerator;
+import org.jeecg.common.query.QueryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

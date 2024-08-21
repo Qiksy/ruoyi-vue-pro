@@ -4,8 +4,8 @@ import cn.hutool.extra.spring.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.constant.DataBaseConstant;
 import org.jeecg.common.constant.SymbolConstant;
-import org.jeecg.query.QueryGenerator;
-import org.jeecg.query.QueryRuleEnum;
+import org.jeecg.common.query.QueryGenerator;
+import org.jeecg.common.query.QueryRuleEnum;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

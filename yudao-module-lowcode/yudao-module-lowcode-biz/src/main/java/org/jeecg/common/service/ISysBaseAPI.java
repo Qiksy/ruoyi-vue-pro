@@ -3,6 +3,7 @@ package org.jeecg.common.service;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.module.infra.dal.dataobject.db.DataSourceConfigDO;
 import com.alibaba.fastjson.JSONObject;
+import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.SysCategoryModel;
 import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
@@ -103,4 +104,6 @@ public interface ISysBaseAPI {
     boolean dictTableWhiteListCheckByDict(String tableOrDictCode, String... fields);
 
     Object queryEnableDictItemsByCode(String string2);
+
+    boolean hasOnlineAuth(OnlineAuthDTO onlineAuthDTO);
 }
