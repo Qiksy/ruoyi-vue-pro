@@ -1,6 +1,9 @@
 package org.jeecg.modules.online.cgreport.service.impl;
 
 import cn.hutool.core.util.ReUtil;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.module.infra.dal.dataobject.db.DataSourceConfigDO;
+import cn.iocoder.yudao.module.infra.service.db.DataSourceConfigService;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -15,23 +18,19 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import net.sf.jsqlparser.JSQLParserException;
-import org.apache.commons.lang.StringUtils;
-import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.exception.JeecgBootException;
+
+import jakarta.annotation.Resource;
+import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 
 import org.jeecg.common.service.ISysBaseAPI;
-import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
-import org.jeecg.common.system.vo.DynamicDataSourceModel;
-import org.jeecg.common.util.SqlInjectionUtil;
-import org.jeecg.common.util.dynamic.db.DataSourceCachePool;
-import org.jeecg.common.util.dynamic.db.DynamicDBUtil;
 
+import org.jeecg.common.util.dynamic.db.DynamicDBUtil;
 import org.jeecg.common.util.online.ConvertUtils;
+import org.jeecg.common.util.online.SqlInjectionUtil;
 import org.jeecg.common.util.sqlparse.JSqlParserUtils;
 import org.jeecg.common.util.sqlparse.vo.SelectSqlInfo;
-import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.modules.online.cgform.enums.DataBaseEnum;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
 import org.jeecg.modules.online.cgreport.entity.OnlCgreportHead;
@@ -50,6 +49,7 @@ import org.jeecg.modules.online.config.database.OnlineFieldConfig;
 import org.jeecg.modules.online.config.template.DbTableUtil;
 import org.jeecg.modules.online.handler.ConditionHandler;
 import org.jeecg.modules.online.handler.SqlParamsHandler;
+import org.jeecg.query.QueryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +59,10 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.error;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
+
 /* compiled from: OnlCgreportHeadServiceImpl.java */
 @Service("onlCgreportHeadServiceImpl")
 /* renamed from: org.jeecg.modules.online.cgreport.service.a.c */
@@ -66,7 +70,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMapper, OnlCgreportHead> implements IOnlCgreportHeadService {
 
     /* renamed from: b */
-    private static final Logger f477b;
+    private static final Logger logger;
 
     @Autowired
     private IOnlCgreportParamService onlCgreportParamService;
@@ -81,17 +85,20 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
     @Lazy
     private ISysBaseAPI sysBaseAPI;
 
-    @Autowired
-    private JeecgBaseConfig jeecgBaseConfig;
+//    @Autowired
+//    private JeecgBaseConfig jeecgBaseConfig;
+
+    @Resource
+    private DataSourceConfigService dataSourceConfigService;
 
     /* renamed from: a */
-    static final /* synthetic */ boolean f478a;
+    static final /* synthetic */ boolean isHasService;
 
     /* renamed from: a */
 
     static {
-        f478a = !OnlCgreportHeadServiceImpl.class.desiredAssertionStatus();
-        f477b = LoggerFactory.getLogger(OnlCgreportHeadServiceImpl.class);
+        isHasService = !OnlCgreportHeadServiceImpl.class.desiredAssertionStatus();
+        logger = LoggerFactory.getLogger(OnlCgreportHeadServiceImpl.class);
     }
 
     @Override // org.jeecg.modules.online.cgreport.service.IOnlCgreportHeadService
@@ -188,11 +195,12 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
         return hashMap;
     }
 
+    @SneakyThrows
     @Override // org.jeecg.modules.online.cgreport.service.IOnlCgreportHeadService
     public Map<String, Object> executeSelectSqlDynamic(String dbKey, String sql, Map<String, Object> params, String onlCgreportHeadId) {
         int i = ConvertUtils.getInt(params.get("pageNo"), 1);
         int i2 = ConvertUtils.getInt(params.get("pageSize"), 10);
-        DynamicDataSourceModel cacheDynamicDataSourceModel = DataSourceCachePool.getCacheDynamicDataSourceModel(dbKey);
+        DataSourceConfigDO cacheDynamicDataSourceModel = dataSourceConfigService.getDataSourceConfig(Long.valueOf(dbKey)); //获取数据库配置
         if (ReUtil.contains(" order\\s+by ", sql.toLowerCase()) && "3".equalsIgnoreCase(cacheDynamicDataSourceModel.getDbType())) {
             throw exception("SqlServer不支持SQL内排序!");
         }
@@ -227,7 +235,7 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
             sqlParams.putAll(selfSqlParams);
         }
         HashMap<String,Object> hashMap = new HashMap<>(5);
-        f477b.info("多数据源 报表查询sqlParam=>\r\n" + sqlParams.toString());
+        logger.info("多数据源 报表查询sqlParam=>\r\n" + sqlParams.toString());
         hashMap.put("total", DynamicDBUtil.queryCount(dbKey, m432c, sqlParams).get("total"));
         hashMap.put("records", CgformUtil.m227d(CgReportSqlUtil.m434a(String.valueOf(params.get("getAll")), dbKey, str, i, i2, sqlParams)));
         return hashMap;
@@ -236,10 +244,10 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
     @Override // org.jeecg.modules.online.cgreport.service.IOnlCgreportHeadService
     @Transactional(rollbackFor = {Exception.class})
     @CacheEvict(value = {"sys:cache:online:rp"}, allEntries = true, beforeInvocation = true)
-    public Result<?> editAll(OnlCgreportModel values) {
+    public CommonResult<?> editAll(OnlCgreportModel values) {
         OnlCgreportHead head = values.getHead();
         if (((OnlCgreportHead) super.getById(head.getId())) == null) {
-            return Result.error("未找到对应实体");
+            return error("未找到对应实体");
         }
         super.updateById(head);
         LambdaQueryWrapper<OnlCgreportItem> lambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -257,12 +265,12 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
         }
         this.onlCgreportItemService.saveBatch(values.getItems());
         this.onlCgreportParamService.saveBatch(values.getParams());
-        return Result.ok("全部修改成功");
+        return  success("全部修改成功");
     }
 
     @Override // org.jeecg.modules.online.cgreport.service.IOnlCgreportHeadService
     @Transactional(rollbackFor = {Exception.class})
-    public Result<?> delete(String id) {
+    public CommonResult<?> delete(String id) {
         if (super.removeById(id)) {
             LambdaQueryWrapper<OnlCgreportItem> lambdaQueryWrapper = new LambdaQueryWrapper<>();
             lambdaQueryWrapper.eq(OnlCgreportItem::getCgrheadId, id);
@@ -271,12 +279,12 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
             lambdaQueryWrapper2.eq(OnlCgreportParam::getCgrheadId, id);
             this.onlCgreportParamService.remove(lambdaQueryWrapper2);
         }
-        return Result.ok("删除成功");
+        return success("删除成功");
     }
 
     @Override // org.jeecg.modules.online.cgreport.service.IOnlCgreportHeadService
     @Transactional(rollbackFor = {Exception.class})
-    public Result<?> bathDelete(String[] ids) {
+    public CommonResult<?> bathDelete(String[] ids) {
         for (String str : ids) {
             if (super.removeById(str)) {
                 LambdaQueryWrapper<OnlCgreportItem> lambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -287,11 +295,11 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
                 this.onlCgreportParamService.remove(lambdaQueryWrapper2);
             }
         }
-        return Result.ok("删除成功");
+        return success("删除成功");
     }
 
     @Override // org.jeecg.modules.online.cgreport.service.IOnlCgreportHeadService
-    public List<String> getSqlFields(String sql, String dbKey) throws SQLException, DBException, JSQLParserException {
+    public List<String> getSqlFields(String sql, String dbKey) throws Exception {
         List<String> m441a;
         if (StringUtils.isNotBlank(dbKey)) {
             m441a = m441a(sql, dbKey);
@@ -303,7 +311,7 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
 
     @Override // org.jeecg.modules.online.cgreport.service.IOnlCgreportHeadService
     public List<String> getSqlParams(String sql) {
-        if (StrUtils.isEmpty(sql)) {
+        if (ConvertUtils.isEmpty(sql)) {
             return null;
         }
         ArrayList<String> arrayList = new ArrayList<>();
@@ -316,8 +324,8 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
     }
 
     /* renamed from: a */
-    private List<String> m441a(String str, String str2) throws SQLException, DBException, JSQLParserException {
-        if (StrUtils.isEmpty(str)) {
+    private List<String> m441a(String str, String dbKey) throws Exception {
+        if (ConvertUtils.isEmpty(str)) {
             return null;
         }
         String trim = str.replace("[^><]=", CgReportConstant.EQUAL).trim();
@@ -326,19 +334,20 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
         }
         String m429a = CgReportSqlUtil.m429a(QueryGenerator.convertSystemVariables(trim));
         SelectSqlInfo parseSelectSqlInfo = JSqlParserUtils.parseSelectSqlInfo(m429a);
-        if (!f478a && parseSelectSqlInfo == null) {
+        if (!isHasService && parseSelectSqlInfo == null) {
             throw new AssertionError();
         }
-        if (parseSelectSqlInfo != null && this.jeecgBaseConfig.getFirewall() != null && this.jeecgBaseConfig.getFirewall().getDataSourceSafe() && parseSelectSqlInfo.isSelectAll()) {
-            throw exception("不允许使用 *");
-        }
+        //todo 准备恢复
+//        if (parseSelectSqlInfo != null && this.jeecgBaseConfig.getFirewall() != null && this.jeecgBaseConfig.getFirewall().getDataSourceSafe() && parseSelectSqlInfo.isSelectAll()) {
+//            throw exception("不允许使用 *");
+//        }
         Set<String> set = null;
-        if (StringUtils.isNotBlank(str2)) {
-            DynamicDataSourceModel cacheDynamicDataSourceModel = DataSourceCachePool.getCacheDynamicDataSourceModel(str2);
+        if (StringUtils.isNotBlank(dbKey)) {
+            DataSourceConfigDO cacheDynamicDataSourceModel = dataSourceConfigService.getDataSourceConfig(Long.valueOf(dbKey));
             if (ReUtil.contains(" order\\s+by ", m429a.toLowerCase()) && "3".equalsIgnoreCase(cacheDynamicDataSourceModel.getDbType())) {
                 throw exception("SqlServer不支持SQL内排序!");
             }
-            Map<String, Object> m433a = CgReportSqlUtil.m433a(str2, m429a);
+            Map<String, Object> m433a = CgReportSqlUtil.m433a(dbKey, m429a);
             if (m433a == null) {
                 if (!m429a.contains("*")) {
                     try {
@@ -444,7 +453,7 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
             jSONObject.put("sorter", "true");
             jSONObject.put("isTotal", onlCgreportItem.getIsTotal());
             jSONObject.put("groupTitle", onlCgreportItem.getGroupTitle());
-            if (StrUtils.isNotEmpty(onlCgreportItem.getGroupTitle())) {
+            if (ConvertUtils.isNotEmpty(onlCgreportItem.getGroupTitle())) {
                 z = true;
             }
             String fieldType = onlCgreportItem.getFieldType();
@@ -484,7 +493,7 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
     @Override // org.jeecg.modules.online.cgreport.service.IOnlCgreportHeadService
     public List<DictModel> queryColumnDict(String dictCode, JSONArray records, String fieldName) {
         List<DictModel> list = null;
-        if (StrUtils.isNotEmpty(dictCode)) {
+        if (ConvertUtils.isNotEmpty(dictCode)) {
             if (dictCode.trim().toLowerCase().indexOf("select ") == 0 && (fieldName == null || !records.isEmpty())) {
                 String dictCode2 = dictCode.trim();
                 int lastIndexOf = dictCode2.lastIndexOf(";");
@@ -518,7 +527,7 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
     public List<DictModel> queryColumnDictList(String dictCode, List<Map<String, Object>> records, String fieldName) {
         String m253a;
         List<DictModel> list = null;
-        if (StrUtils.isNotEmpty(dictCode)) {
+        if (ConvertUtils.isNotEmpty(dictCode)) {
             String dictCode2 = dictCode.trim();
             if (dictCode2.toLowerCase().indexOf("select ") == 0 && (fieldName == null || !records.isEmpty())) {
                 if (dictCode2.endsWith(";")) {

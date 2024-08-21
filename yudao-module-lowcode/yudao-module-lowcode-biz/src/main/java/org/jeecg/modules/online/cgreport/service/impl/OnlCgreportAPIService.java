@@ -8,10 +8,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.jeecg.common.exception.JeecgBootException;
 
 import org.jeecg.common.service.ISysBaseAPI;
 import org.jeecg.common.system.vo.DictModel;
@@ -33,6 +32,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 
 /* compiled from: OnlCgreportAPIService.java */
 @Service("onlCgreportAPIService")
@@ -74,9 +75,9 @@ public class OnlCgreportAPIService implements IOnlCgreportAPIService {
     @Override // org.jeecg.modules.online.cgreport.service.IOnlCgreportAPIService
     public Map<String, Object> getData(String id, String code, Map<String, Object> params) {
         OnlCgreportHead onlCgreportHead = null;
-        if (StrUtils.isNotEmpty(id)) {
+        if (ConvertUtils.isNotEmpty(id)) {
             onlCgreportHead = this.onlCgreportHeadService.getById(id);
-        } else if (StrUtils.isNotEmpty(code)) {
+        } else if (ConvertUtils.isNotEmpty(code)) {
             LambdaQueryWrapper<OnlCgreportHead> lambdaQueryWrapper = new LambdaQueryWrapper<>();
             lambdaQueryWrapper.eq(OnlCgreportHead::getCode, code);
             onlCgreportHead = this.onlCgreportHeadService.getOne(lambdaQueryWrapper);
@@ -103,8 +104,6 @@ public class OnlCgreportAPIService implements IOnlCgreportAPIService {
         return this.onlCgreportHeadService.executeSelectSql(sql, headId, params);
     }
 
-    /* JADX WARN: Multi-variable type inference failed */
-    /* JADX WARN: Type inference failed for: r0v143, types: [java.util.List] */
     @Override // org.jeecg.modules.online.cgreport.service.IOnlCgreportAPIService
     public Workbook getReportWorkbook(String reportId, Map<String, Object> params) {
         LambdaQueryWrapper<OnlCgreportItem> wrapper =  new LambdaQueryWrapper<OnlCgreportItem>().eq(OnlCgreportItem::getCgrheadId, reportId);
@@ -126,7 +125,7 @@ public class OnlCgreportAPIService implements IOnlCgreportAPIService {
                     excelExportEntity.setFormat("yyyy-MM-dd HH:mm:ss");
                 }
                 String groupTitle = onlCgreportItem.getGroupTitle();
-                if (StrUtils.isNotEmpty(groupTitle)) {
+                if (ConvertUtils.isNotEmpty(groupTitle)) {
                     ArrayList<String> arrayList3 = new ArrayList();
                     if (hashMap.containsKey(groupTitle)) {
                         arrayList3 = (ArrayList<String>) hashMap.get(groupTitle);
@@ -138,7 +137,7 @@ public class OnlCgreportAPIService implements IOnlCgreportAPIService {
                     hashMap.put(groupTitle, arrayList3);
                     excelExportEntity.setColspan(true);
                 }
-                if (StrUtils.isNotEmpty(fieldType) && StrUtils.isEmpty(onlCgreportItem.getDictCode()) && ("Integer".equals(fieldType) || "Long".equals(fieldType))) {
+                if (ConvertUtils.isNotEmpty(fieldType) && ConvertUtils.isEmpty(onlCgreportItem.getDictCode()) && ("Integer".equals(fieldType) || "Long".equals(fieldType))) {
                     excelExportEntity.setType(4);
                 }
                 arrayList.add(excelExportEntity);
@@ -204,7 +203,7 @@ public class OnlCgreportAPIService implements IOnlCgreportAPIService {
             excelExportEntity.setReplace(arrayList.toArray(new String[arrayList.size()]));
         }
         String replaceVal = onlCgreportItem.getReplaceVal();
-        if (StrUtils.isNotEmpty(replaceVal)) {
+        if (ConvertUtils.isNotEmpty(replaceVal)) {
             excelExportEntity.setReplace(replaceVal.split(CgformUtil.COMMA_SEPARATOR));
         }
     }

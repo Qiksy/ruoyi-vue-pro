@@ -45,4 +45,7 @@ public class DataSourceConfigDO extends BaseDO {
     @TableField(typeHandler = EncryptTypeHandler.class)
     private String password;
 
+    private String driverClassName;
+
+    private String dbType;
 }

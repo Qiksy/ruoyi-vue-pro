@@ -1,7 +1,8 @@
 package org.jeecg.modules.online.config.service.impl;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import org.jeecg.common.util.online.ConvertUtils;
 import org.jeecg.modules.online.cgform.constant.ExtendJsonKey;
 import org.jeecg.modules.online.cgform.utils.OnlFormShowType;
 import org.jeecg.modules.online.config.template.ColumnMeta;
@@ -97,7 +98,7 @@ public class DbTableOracleHandleImpl implements DbTableHandleI {
             str2 = "Y".equals(c0100a.getIsNullable()) ? "NULL" : "NOT NULL";
         }
         if (DataBaseConst.STRING.equalsIgnoreCase(c0100a.getColumnType())) {
-            if (StrUtils.isEmpty(realDbType) || !realDbType.toLowerCase().contains(DataBaseConst.VARCHAR)) {
+            if (ConvertUtils.isEmpty(realDbType) || !realDbType.toLowerCase().contains(DataBaseConst.VARCHAR)) {
                 realDbType = "varchar2";
             }
             str = c0100a.getColumnName() + " " + realDbType + "(" + c0100a.getColumnSize() + ") ";

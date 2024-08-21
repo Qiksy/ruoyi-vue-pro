@@ -9,6 +9,8 @@ import org.jeecg.common.constant.SymbolConstant;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 
 @Slf4j
@@ -197,4 +199,11 @@ public class ConvertUtils extends StrUtil {
         return (false);
     }
 
+    public static <T> boolean listIsEmpty(List<T> list) {
+
+        if (list == null || list.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
 }

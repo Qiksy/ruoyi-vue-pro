@@ -5,6 +5,7 @@ import java.util.List;
 
 import cn.hutool.extra.spring.SpringUtil;
 
+import org.jeecg.common.service.ISysBaseAPI;
 import org.jeecg.common.system.vo.DictModel;
 
 

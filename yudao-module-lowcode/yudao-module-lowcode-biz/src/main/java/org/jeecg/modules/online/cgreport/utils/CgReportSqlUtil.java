@@ -1,5 +1,6 @@
 package org.jeecg.modules.online.cgreport.utils;
 
+import cn.iocoder.yudao.module.infra.dal.dataobject.db.DataSourceConfigDO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.DialectFactory;
 import com.baomidou.mybatisplus.extension.plugins.pagination.DialectModel;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -12,10 +13,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.jeecg.common.system.vo.DynamicDataSourceModel;
-import org.jeecg.common.util.ReflectHelper;
-import org.jeecg.common.util.dynamic.db.DataSourceCachePool;
+
+import lombok.SneakyThrows;
 import org.jeecg.common.util.dynamic.db.DynamicDBUtil;
+import org.jeecg.common.util.dynamic.db.DataSourceCachePool;
+import org.jeecg.common.util.online.ReflectHelper;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
 import org.jeecg.modules.online.handler.ConditionHandler;
 import org.slf4j.Logger;
@@ -105,9 +107,10 @@ public class CgReportSqlUtil {
     }
 
     /* renamed from: a */
+    @SneakyThrows
     public static Map<String, Object> m433a(String str, String str2) {
         Map<String, Object> map = null;
-        IDialect dialect = DialectFactory.getDialect(JdbcUtils.getDbType(DataSourceCachePool.getCacheDynamicDataSourceModel(str).getDbUrl()));
+        IDialect dialect = DialectFactory.getDialect(JdbcUtils.getDbType(DataSourceCachePool.getCacheDynamicDataSourceModel(str).getUrl()));
         if (str2.toUpperCase().contains("LIMIT") || str2.toUpperCase().contains("OFFSET")) {
             List<Map<String, Object>> findList = DynamicDBUtil.findList(str, str2, new Object[0]);
             if (!findList.isEmpty()) {
@@ -130,12 +133,13 @@ public class CgReportSqlUtil {
     }
 
     /* renamed from: a */
+    @SneakyThrows
     public static List<Map<String, Object>> m434a(String str, String str2, String str3, int i, int i2, Map<String, Object> map) {
-        DynamicDataSourceModel cacheDynamicDataSourceModel = DataSourceCachePool.getCacheDynamicDataSourceModel(str2);
+        DataSourceConfigDO cacheDynamicDataSourceModel = DataSourceCachePool.getCacheDynamicDataSourceModel(str2);
         String str4 = str3;
         DialectModel dialectModel = null;
         if (!Boolean.parseBoolean(str)) {
-            IDialect dialect = DialectFactory.getDialect(JdbcUtils.getDbType(cacheDynamicDataSourceModel.getDbUrl()));
+            IDialect dialect = DialectFactory.getDialect(JdbcUtils.getDbType(cacheDynamicDataSourceModel.getUrl()));
             Page page = new Page(i, i2);
             dialectModel = dialect.buildPaginationSql(str3, page.offset(), page.getSize());
             str4 = dialectModel.getDialectSql();

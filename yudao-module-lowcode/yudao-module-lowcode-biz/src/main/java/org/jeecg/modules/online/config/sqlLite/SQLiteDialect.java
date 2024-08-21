@@ -1,6 +1,6 @@
 package org.jeecg.modules.online.config.sqlLite;
-
 import org.hibernate.dialect.Dialect;
+
 import org.hibernate.dialect.function.SQLFunctionTemplate;
 import org.hibernate.dialect.function.StandardSQLFunction;
 import org.hibernate.dialect.function.VarArgsSQLFunction;

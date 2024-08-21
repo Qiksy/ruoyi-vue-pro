@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jeecg.common.util.online.ConvertUtils;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
 import org.jeecg.modules.online.cgreport.entity.OnlCgreportItem;
 import org.jeecg.modules.online.cgreport.mapper.OnlCgreportItemMapper;
@@ -36,7 +37,7 @@ public class OnlCgreportItemServiceImpl extends ServiceImpl<OnlCgreportItemMappe
             HashMap<String,String> hashMap = new HashMap<>(5);
             hashMap.put("label", onlCgreportItem.getFieldTxt());
             String dictCode = onlCgreportItem.getDictCode();
-            if (StrUtils.isNotEmpty(dictCode)) {
+            if (ConvertUtils.isNotEmpty(dictCode)) {
                 if (CgReportSqlUtil.m431b(dictCode)) {
                     hashMap.put(CgformUtil.VIEW, "search");
                     hashMap.put("fieldId", onlCgreportItem.getId());
@@ -46,7 +47,7 @@ public class OnlCgreportItemServiceImpl extends ServiceImpl<OnlCgreportItemMappe
             } else {
                 hashMap.put(CgformUtil.VIEW, onlCgreportItem.getFieldType().toLowerCase());
             }
-            hashMap.put("mode", StrUtils.isEmpty(onlCgreportItem.getSearchMode()) ? "single" : onlCgreportItem.getSearchMode());
+            hashMap.put("mode", ConvertUtils.isEmpty(onlCgreportItem.getSearchMode()) ? "single" : onlCgreportItem.getSearchMode());
             hashMap.put("field", onlCgreportItem.getFieldName());
             i++;
             if (i > 2) {

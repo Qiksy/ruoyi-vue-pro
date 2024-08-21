@@ -1,23 +1,19 @@
 package org.jeecg.modules.online.handler;
 
+import cn.hutool.extra.spring.SpringUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.lang.StringUtils;
-import org.jeecg.common.system.query.MatchTypeEnum;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.system.query.QueryRuleEnum;
-import org.jeecg.common.system.util.JeecgDataAutorUtils;
+import java.util.*;
+
+import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.system.vo.SysPermissionDataRuleModel;
-import org.jeecg.common.util.DateUtils;
 
 
+import org.jeecg.common.util.online.ConvertUtils;
+import org.jeecg.common.util.online.DateUtils;
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
 import org.jeecg.modules.online.cgform.utils.OnlFormShowType;
@@ -25,8 +21,13 @@ import org.jeecg.modules.online.cgform.service.IOnlCgformFieldService;
 import org.jeecg.modules.online.cgreport.constant.CgReportConstant;
 import org.jeecg.modules.online.config.database.OnlineFieldConfig;
 import org.jeecg.modules.online.config.template.DataBaseConst;
+import org.jeecg.query.MatchTypeEnum;
+import org.jeecg.query.QueryGenerator;
+import org.jeecg.query.QueryRuleEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /* compiled from: ConditionHandler.java */
 /* renamed from: org.jeecg.modules.online.a.a */
@@ -572,7 +573,7 @@ public class ConditionHandler {
                 onlineFieldConfig.setIsSearch(1);
                 onlineFieldConfig.setMode("single");
             }
-            if (StrUtils.isNotEmpty(onlineFieldConfig.getMainField()) && StrUtils.isNotEmpty(onlineFieldConfig.getMainTable())) {
+            if (ConvertUtils.isNotEmpty(onlineFieldConfig.getMainField()) && ConvertUtils.isNotEmpty(onlineFieldConfig.getMainTable())) {
                 onlineFieldConfig.setIsSearch(1);
                 onlineFieldConfig.setMode("single");
             }
@@ -622,11 +623,12 @@ public class ConditionHandler {
     /* renamed from: d */
     private void m12d() {
         SysPermissionDataRuleModel sysPermissionDataRuleModel;
-        List loadDataSearchConditon = JeecgDataAutorUtils.loadDataSearchConditon();
+//        List<SysPermissionDataRuleModel> loadDataSearchConditon = JeecgDataAutorUtils.loadDataSearchConditon();
+        List<SysPermissionDataRuleModel> loadDataSearchConditon = Collections.emptyList();
         if (loadDataSearchConditon != null && loadDataSearchConditon.size() > 0) {
             for (int i = 0; i < loadDataSearchConditon.size() && (sysPermissionDataRuleModel = (SysPermissionDataRuleModel) loadDataSearchConditon.get(i)) != null; i++) {
                 String ruleValue = sysPermissionDataRuleModel.getRuleValue();
-                if (!StrUtils.isEmpty(ruleValue)) {
+                if (!ConvertUtils.isEmpty(ruleValue)) {
                     if (QueryRuleEnum.SQL_RULES.getValue().equals(sysPermissionDataRuleModel.getRuleConditions())) {
                         m23b("", QueryGenerator.getSqlRuleValue(ruleValue));
                     } else {
@@ -649,7 +651,7 @@ public class ConditionHandler {
     /* renamed from: a */
     private OnlineFieldConfig m13a(String str, List<OnlineFieldConfig> list) {
         if (list != null && str != null) {
-            String camelToUnderline = StrUtils.camelToUnderline(str);
+            String camelToUnderline = ConvertUtils.camelToUnderline(str);
             for (int i = 0; i < list.size(); i++) {
                 OnlineFieldConfig onlineFieldConfig = list.get(i);
                 String name = onlineFieldConfig.getName();
@@ -667,12 +669,13 @@ public class ConditionHandler {
         SysPermissionDataRuleModel sysPermissionDataRuleModel;
         List<SysPermissionDataRuleModel> list2 = this.authDatalist;
         if (list2 == null) {
-            list2 = JeecgDataAutorUtils.loadDataSearchConditon();
+            //todo 这里会报错噢
+//            list2 = JeecgDataAutorUtils.loadDataSearchConditon();
         }
         if (list2 != null && list2.size() > 0) {
             for (int i = 0; i < list2.size() && (sysPermissionDataRuleModel = list2.get(i)) != null; i++) {
                 String ruleValue = sysPermissionDataRuleModel.getRuleValue();
-                if (!StrUtils.isEmpty(ruleValue)) {
+                if (!ConvertUtils.isEmpty(ruleValue)) {
                     if (QueryRuleEnum.SQL_RULES.getValue().equals(sysPermissionDataRuleModel.getRuleConditions())) {
                         m23b("", QueryGenerator.getSqlRuleValue(ruleValue));
                     } else {
@@ -689,7 +692,7 @@ public class ConditionHandler {
     /* renamed from: e */
     private void m15e() {
         if (CgformUtil.m260j(CgformUtil.m235f(this.tableName))) {
-            m17a("tenant_id", "int", SpringContextUtils.getHttpServletRequest().getHeader("X-Tenant-Id"), QueryRuleEnum.EQ);
+            m17a("tenant_id", "int", ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("X-Tenant-Id"), QueryRuleEnum.EQ);
         }
     }
 
@@ -1107,7 +1110,7 @@ public class ConditionHandler {
                 for (int i2 = 0; i2 < parseArray.size(); i2++) {
                     JSONObject jSONObject = parseArray.getJSONObject(i2);
                     String string = jSONObject.getString("field");
-                    if (!StrUtils.isEmpty(string)) {
+                    if (!ConvertUtils.isEmpty(string)) {
                         String[] split = string.split(CgformUtil.COMMA_SEPARATOR);
                         OnlineFieldConfig onlineFieldConfig = new OnlineFieldConfig(jSONObject);
                         if ("JEECG_SUPER_QUERY_MAIN_TABLE".equals(str2) && split.length == 1) {

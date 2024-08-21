@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import java.util.Iterator;
 import java.util.List;
 
+import org.jeecg.common.util.online.ConvertUtils;
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
 import org.jeecg.modules.online.cgform.entity.OnlCgformHead;
 import org.jeecg.modules.online.cgform.mapper.OnlCgformFieldMapper;
@@ -44,7 +45,7 @@ public class OnlineBaseAPIServiceImpl implements IOnlineBaseAPI {
                             break;
                         }
                         OnlCgformField onlCgformField = (OnlCgformField) it.next();
-                        if (StrUtils.isNotEmpty(onlCgformField.getMainTable())) {
+                        if (ConvertUtils.isNotEmpty(onlCgformField.getMainTable())) {
                             str = onlCgformField.getMainTable();
                             break;
                         }

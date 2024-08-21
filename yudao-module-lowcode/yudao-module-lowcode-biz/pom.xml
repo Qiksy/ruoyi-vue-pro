@@ -88,7 +88,22 @@
             <scope>compile</scope>
         </dependency>
 
+    <!--    引入autopoi类-->
+        <dependency>
+            <groupId>org.jeecgframework</groupId>
+            <artifactId>autopoi-web</artifactId>
+            <version>1.4.8</version>
+        </dependency>
 
+        <!--    hibernate-->
+        <!-- 这里主要是为了 -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>5.6.7.Final</version>
+        </dependency>
     </dependencies>
+
+
 
 </project>

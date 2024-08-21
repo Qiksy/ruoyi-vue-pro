@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
-import org.jeecg.common.aspect.annotation.Dict;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @TableName("onl_cgreport_head")
@@ -29,7 +28,7 @@ public class OnlCgreportHead implements Serializable {
     private String returnTxtField;
     private String returnType;
 
-    @Dict(dicCode = "code", dicText = "name", dictTable = "sys_data_source")
+//    @Dict(dicCode = "code", dicText = "name", dictTable = "sys_data_source")
     @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String dbSource;
     private String content;

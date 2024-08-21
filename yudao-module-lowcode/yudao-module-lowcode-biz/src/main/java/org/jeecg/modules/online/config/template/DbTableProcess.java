@@ -15,7 +15,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.boot.Metadata;
@@ -24,9 +24,10 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.schema.TargetType;
-import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.dynamic.db.DbTypeUtils;
 
+import org.jeecg.common.util.online.ConvertUtils;
+import org.jeecg.common.util.online.SqlInjectionUtil;
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
 import org.jeecg.modules.online.config.exception.DBException;
@@ -94,7 +95,7 @@ public class DbTableProcess {
             hashMap.put("hibernate.connection.username", dbConfig.getUsername());
             String password = dbConfig.getPassword();
             if (password != null) {
-                if (dbConfig.getDruid() != null && StrUtils.isNotEmpty(dbConfig.getDruid().getPublicKey())) {
+                if (dbConfig.getDruid() != null && ConvertUtils.isNotEmpty(dbConfig.getDruid().getPublicKey())) {
                     try {
                         hashMap.put("hibernate.connection.password", ConfigTools.decrypt(dbConfig.getDruid().getPublicKey(), password));
                     } catch (Exception e) {
@@ -455,10 +456,10 @@ public class DbTableProcess {
                 indexInfo.getMetaData();
                 while (indexInfo.next()) {
                     String string = indexInfo.getString("INDEX_NAME");
-                    if (StrUtils.isEmpty(string)) {
+                    if (ConvertUtils.isEmpty(string)) {
                         string = indexInfo.getString("index_name");
                     }
-                    if (StrUtils.isNotEmpty(string)) {
+                    if (ConvertUtils.isNotEmpty(string)) {
                         arrayList.add(string);
                     }
                 }

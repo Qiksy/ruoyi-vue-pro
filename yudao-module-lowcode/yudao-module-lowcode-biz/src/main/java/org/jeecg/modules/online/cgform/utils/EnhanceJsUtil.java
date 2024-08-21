@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jeecg.common.util.online.ConvertUtils;
 import org.jeecg.modules.online.cgform.entity.OnlCgformButton;
 import org.jeecg.modules.online.cgform.entity.OnlCgformEnhanceJs;
 import org.jeecg.modules.online.cgform.entity.OnlCgformField;
@@ -143,7 +144,7 @@ public class EnhanceJsUtil {
 
     /* renamed from: a */
     public static void m274a(OnlCgformEnhanceJs onlCgformEnhanceJs, String str, List<OnlCgformField> list) {
-        if (onlCgformEnhanceJs == null || StrUtils.isEmpty(onlCgformEnhanceJs.getCgJs())) {
+        if (onlCgformEnhanceJs == null || ConvertUtils.isEmpty(onlCgformEnhanceJs.getCgJs())) {
             return;
         }
         String str2 = " " + onlCgformEnhanceJs.getCgJs();
@@ -159,7 +160,7 @@ public class EnhanceJsUtil {
 
     /* renamed from: b */
     public static void m275b(OnlCgformEnhanceJs onlCgformEnhanceJs, String str, List<OnlCgformField> list) {
-        if (onlCgformEnhanceJs == null || StrUtils.isEmpty(onlCgformEnhanceJs.getCgJs())) {
+        if (onlCgformEnhanceJs == null || ConvertUtils.isEmpty(onlCgformEnhanceJs.getCgJs())) {
             return;
         }
         String cgJs = onlCgformEnhanceJs.getCgJs();

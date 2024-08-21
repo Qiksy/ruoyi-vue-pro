@@ -1,5 +1,6 @@
 package org.jeecg.modules.online.config.template;
 
+import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.toolkit.JdbcUtils;
 import java.sql.Connection;
@@ -14,6 +15,7 @@ import org.jeecg.common.util.CommonUtils;
 
 import org.jeecg.common.util.dynamic.db.DbTypeUtils;
 
+import org.jeecg.common.util.online.ConvertUtils;
 import org.jeecg.modules.online.config.exception.DBException;
 import org.jeecg.modules.online.config.database.DataBaseConfig;
 import org.jeecg.modules.online.config.service.DbTableHandleI;
@@ -21,6 +23,7 @@ import org.jeecg.modules.online.config.service.impl.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.thymeleaf.spring6.context.SpringContextUtils;
 
 /* compiled from: DbTableUtil.java */
 /* renamed from: org.jeecg.modules.online.config.d.d */
@@ -87,14 +90,14 @@ public class DbTableUtil {
     }
 
     public static Connection getConnection() throws SQLException {
-        return ((DataSource) SpringContextUtils.getApplicationContext().getBean(DataSource.class)).getConnection();
+        return ((DataSource) SpringUtil.getBean(DataSource.class)).getConnection();
     }
 
     public static String getDatabaseType() throws SQLException, DBException {
-        if (StrUtils.isNotEmpty(f555a)) {
+        if (ConvertUtils.isNotEmpty(f555a)) {
             return f555a;
         }
-        return m490a((DataSource) SpringContextUtils.getApplicationContext().getBean(DataSource.class));
+        return m490a((DataSource) SpringUtil.getBean(DataSource.class));
     }
 
     /* renamed from: a */

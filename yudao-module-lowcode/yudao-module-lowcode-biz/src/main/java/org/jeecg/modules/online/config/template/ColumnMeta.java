@@ -1,7 +1,7 @@
 package org.jeecg.modules.online.config.template;
 
 import com.baomidou.mybatisplus.annotation.DbType;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.util.dynamic.db.DbTypeUtils;
 import org.jeecg.modules.online.cgform.constant.ExtendJsonKey;
 import org.jeecg.modules.online.cgform.utils.OnlFormShowType;

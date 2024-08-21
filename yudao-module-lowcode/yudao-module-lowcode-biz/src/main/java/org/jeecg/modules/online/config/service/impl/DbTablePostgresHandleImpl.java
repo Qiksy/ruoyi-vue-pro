@@ -1,6 +1,6 @@
 package org.jeecg.modules.online.config.service.impl;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jeecg.modules.online.cgform.constant.ExtendJsonKey;
 import org.jeecg.modules.online.cgform.utils.OnlFormShowType;
 import org.jeecg.modules.online.config.exception.DBException;

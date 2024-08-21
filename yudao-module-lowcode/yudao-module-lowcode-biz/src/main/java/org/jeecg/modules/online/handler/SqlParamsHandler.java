@@ -6,10 +6,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.jeecg.common.exception.JeecgBootException;
 
+import org.jeecg.common.util.online.ConvertUtils;
 import org.jeecg.modules.online.cgform.utils.CgformUtil;
 import org.jeecg.modules.online.cgreport.entity.OnlCgreportParam;
+
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 
 /* compiled from: SqlParamsHandler.java */
 /* renamed from: org.jeecg.modules.online.a.b */
@@ -65,11 +67,11 @@ public class SqlParamsHandler<T> {
             Object obj = this.map.get("self_" + m51a);
             Object obj2 = this.map.get(m51a);
             String str4 = "";
-            if (StrUtils.isNotEmpty(obj)) {
+            if (ConvertUtils.isNotEmpty(obj)) {
                 str4 = obj.toString();
-            } else if (StrUtils.isNotEmpty(obj2)) {
+            } else if (ConvertUtils.isNotEmpty(obj2)) {
                 str4 = obj2.toString();
-            } else if (StrUtils.isNotEmpty(m52b)) {
+            } else if (ConvertUtils.isNotEmpty(m52b)) {
                 str4 = m52b;
             }
             String str5 = "${" + m51a + "}";
@@ -97,7 +99,7 @@ public class SqlParamsHandler<T> {
                     str = replaceAll;
                     this.selfSqlParams.put(str6, str4);
                 }
-            } else if (StrUtils.isNotEmpty(str4) && (t instanceof OnlCgreportParam)) {
+            } else if (ConvertUtils.isNotEmpty(str4) && (t instanceof OnlCgreportParam)) {
                 this.selfSqlParams.put(m51a, obj);
                 this.map.put("popup_param_pre__" + m51a, str4);
             }

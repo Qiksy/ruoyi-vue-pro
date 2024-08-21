@@ -1,6 +1,7 @@
 package org.jeecg.modules.online.config.service.impl;
 
-import org.apache.commons.lang.StringUtils;
+
+import org.jeecg.common.util.online.ConvertUtils;
 import org.jeecg.modules.online.cgform.constant.ExtendJsonKey;
 import org.jeecg.modules.online.cgform.utils.OnlFormShowType;
 import org.jeecg.modules.online.config.template.ColumnMeta;
@@ -87,7 +88,7 @@ public class DbTableDmHandleImpl implements DbTableHandleI {
         } else if ("blob".equalsIgnoreCase(c0100a.getColumnType())) {
             str = str + " BLOB ";
         }
-        return ((str + (StringUtils.isNotEmpty(c0100a.getFieldDefault()) ? " DEFAULT " + c0100a.getFieldDefault() : " ")) + ("Y".equals(c0100a.getIsNullable()) ? " NULL" : " NOT NULL")) + ")";
+        return ((str + (ConvertUtils.isNotEmpty(c0100a.getFieldDefault()) ? " DEFAULT " + c0100a.getFieldDefault() : " ")) + ("Y".equals(c0100a.getIsNullable()) ? " NULL" : " NOT NULL")) + ")";
     }
 
     /* renamed from: a */
@@ -114,7 +115,7 @@ public class DbTableDmHandleImpl implements DbTableHandleI {
         } else if (ExtendJsonKey.TEXT.equalsIgnoreCase(c0100a.getColumnType())) {
             str = c0100a.getColumnName() + " CLOB ";
         }
-        return (str + (StringUtils.isNotEmpty(c0100a.getFieldDefault()) ? " DEFAULT " + c0100a.getFieldDefault() : " ")) + str2;
+        return (str + (ConvertUtils.isNotEmpty(c0100a.getFieldDefault()) ? " DEFAULT " + c0100a.getFieldDefault() : " ")) + str2;
     }
 
     @Override // org.jeecg.modules.online.config.service.DbTableHandleI

@@ -1,6 +1,7 @@
 package org.jeecg.common.service;
 
 import cn.iocoder.yudao.framework.security.core.LoginUser;
+import cn.iocoder.yudao.module.infra.dal.dataobject.db.DataSourceConfigDO;
 import com.alibaba.fastjson.JSONObject;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.SysCategoryModel;
@@ -19,7 +20,7 @@ public interface ISysBaseAPI {
      * @param dbSourceCode
      * @return
      */
-    DynamicDataSourceModel getDynamicDbSourceByCode(String dbSourceCode);
+    DataSourceConfigDO getDynamicDbSourceByCode(String dbSourceCode);
 
 
 
@@ -33,12 +34,7 @@ public interface ISysBaseAPI {
     List<SysPermissionDataRuleModel> queryPermissionDataRule(String component, String requestPath, String username);
 
 
-    /**
-     * 9查询用户信息
-     * @param username
-     * @return
-     */
-    SysUserCacheInfo getCacheUser(String username);
+
 
     /**
      * 10获取数据字典

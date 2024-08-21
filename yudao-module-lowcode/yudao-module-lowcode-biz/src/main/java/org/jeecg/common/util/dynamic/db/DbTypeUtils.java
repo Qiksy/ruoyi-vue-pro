@@ -1,4 +1,4 @@
-package org.jeecg.common.util;
+package org.jeecg.common.util.dynamic.db;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import org.jeecg.common.constant.DataBaseConstant;
