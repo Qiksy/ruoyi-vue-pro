@@ -46,6 +46,7 @@ import org.jeecg.common.service.ISysBaseAPI;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.util.online.BrowserUtils;
 import org.jeecg.common.util.online.SqlInjectionUtil;
+import org.jeecg.modules.codegenerate.DbReadTableUtil;
 import org.jeecg.modules.online.annotation.AutoLog;
 import org.jeecg.modules.online.annotation.OnlineAuth;
 import org.jeecg.modules.online.annotation.PermissionData;
@@ -968,11 +969,11 @@ public class OnlCgformApiController {
     public CommonResult<?> codeGenerate(@RequestBody JSONObject jSONObject) {
         List<String> generateOneToMany;
         OnlGenerateModel onlGenerateModel = (OnlGenerateModel) JSONObject.parseObject(jSONObject.toJSONString(), OnlGenerateModel.class);
-//        if ((this.lowCodeConfig.getFirewall() != null ? this.lowCodeConfig.getFirewall().getDataSourceSafe() : false)
-//                && !DbReadTableUtil.getProjectPath().equals(onlGenerateModel.getProjectPath())) {
-//            onlGenerateModel.setProjectPath(DbReadTableUtil.getProjectPath());
-//            logger.warn("数据源安全模式下，自定义代码生成路径无效，使用全局配置的路径 ::{}", DbReadTableUtil.getProjectPath());
-//        }
+        if ((this.lowCodeConfig.getFirewall() != null ? this.lowCodeConfig.getFirewall().getDataSourceSafe() : false)
+                && !DbReadTableUtil.getProjectPath().equals(onlGenerateModel.getProjectPath())) {
+            onlGenerateModel.setProjectPath(DbReadTableUtil.getProjectPath());
+            logger.warn("数据源安全模式下，自定义代码生成路径无效，使用全局配置的路径 ::{}", DbReadTableUtil.getProjectPath());
+        }
         //todo 数据源安全模式下，自定义代码生成路径无效，使用全局配置的路径
         try {
             if ("1".equals(onlGenerateModel.getJformType())) {

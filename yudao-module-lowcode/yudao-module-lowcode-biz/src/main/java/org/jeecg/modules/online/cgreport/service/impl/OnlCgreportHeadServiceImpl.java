@@ -23,6 +23,7 @@ import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 
+import org.jeecg.common.config.LowCodeConfig;
 import org.jeecg.common.service.ISysBaseAPI;
 import org.jeecg.common.system.vo.DictModel;
 
@@ -85,8 +86,9 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
     @Lazy
     private ISysBaseAPI sysBaseAPI;
 
-//    @Autowired
-//    private JeecgBaseConfig jeecgBaseConfig;
+    @Resource
+    private LowCodeConfig lowCodeConfig;
+
 
     @Resource
     private DataSourceConfigService dataSourceConfigService;
@@ -338,9 +340,9 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
             throw new AssertionError();
         }
         //todo 准备恢复
-//        if (parseSelectSqlInfo != null && this.jeecgBaseConfig.getFirewall() != null && this.jeecgBaseConfig.getFirewall().getDataSourceSafe() && parseSelectSqlInfo.isSelectAll()) {
-//            throw exception("不允许使用 *");
-//        }
+        if (parseSelectSqlInfo != null && this.lowCodeConfig.getFirewall() != null && this.lowCodeConfig.getFirewall().getDataSourceSafe() && parseSelectSqlInfo.isSelectAll()) {
+            throw exception("不允许使用 *");
+        }
         Set<String> set = null;
         if (StringUtils.isNotBlank(dbKey)) {
             DataSourceConfigDO cacheDynamicDataSourceModel = dataSourceConfigService.getDataSourceConfig(Long.valueOf(dbKey));
