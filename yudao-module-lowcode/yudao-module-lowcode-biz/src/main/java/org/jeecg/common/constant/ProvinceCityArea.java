@@ -10,8 +10,7 @@ import java.util.Scanner;
 import java.util.List;
 
 /**
- * @Description: 省市区
- * @author: jeecg-boot
+ * @Description: 从 classpath:static/pca.json 导入数据，转为一个对象，用于获取省市区的文本和code
  */
 @Component("pca")
 public class ProvinceCityArea {
@@ -43,7 +42,6 @@ public class ProvinceCityArea {
         return null;
     }
 
-    // update-begin-author:sunjianlei date:20220121 for:【JTC-704】数据导入错误 省市区组件，文件中为北京市，导入后，导为了山西省
     /**
      * 获取省市区code，精准匹配
      * @param texts 文本数组，省，市，区
@@ -108,7 +106,6 @@ public class ProvinceCityArea {
         }
         return null;
     }
-    // update-end-author:sunjianlei date:20220121 for:【JTC-704】数据导入错误 省市区组件，文件中为北京市，导入后，导为了山西省
 
     public void getAreaByCode(String code,List<String> ls){
         for(Area area: areaList){

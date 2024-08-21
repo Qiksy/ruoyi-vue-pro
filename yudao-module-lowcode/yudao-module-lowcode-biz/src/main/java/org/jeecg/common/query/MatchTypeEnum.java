@@ -6,7 +6,6 @@ import org.jeecg.common.util.online.ConvertUtils;
 /**
  * 查询链接规则
  *
- * @Author Sunjianlei
  */
 public enum MatchTypeEnum {
 
@@ -37,7 +36,7 @@ public enum MatchTypeEnum {
             return null;
         }
         for (MatchTypeEnum val : values()) {
-            if (val.getValue().toLowerCase().equals(value.toLowerCase())) {
+            if (val.getValue().equalsIgnoreCase(value)) {
                 return val;
             }
         }

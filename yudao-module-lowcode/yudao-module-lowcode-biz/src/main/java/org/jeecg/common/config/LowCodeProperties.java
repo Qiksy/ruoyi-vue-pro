@@ -33,13 +33,6 @@ public class LowCodeProperties {
     public static String pageSearchFiledNum;
     public static String pageFilterFields;
     public static String fieldRowNum;
-    private static int classCount;
-    private static boolean isIndexJspPresent;
-    private static boolean x;
-    private static boolean y;
-    private static boolean z;
-    private static boolean A;
-    private static boolean B;
 
 
     private static ResourceBundle getPropertiesBundle(String path) {

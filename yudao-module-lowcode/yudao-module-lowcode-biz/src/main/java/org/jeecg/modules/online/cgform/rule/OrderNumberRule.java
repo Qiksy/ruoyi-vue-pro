@@ -8,6 +8,11 @@ import org.jeecg.common.handler.IFillRuleHandler;
 import org.jeecg.common.util.online.ConvertUtils;
 import org.json.JSONObject;
 
+/**
+ * 单据规则生成器
+ * @author opv2
+ * @since 2024/8/21 下午1:00
+ */
 /* loaded from: hibernate-re-3.6.1-beta.jar:org/jeecg/modules/online/cgform/rule/OrderNumberRule.class */
 public class OrderNumberRule implements IFillRuleHandler {
     public Object execute(JSONObject params, JSONObject formData) {

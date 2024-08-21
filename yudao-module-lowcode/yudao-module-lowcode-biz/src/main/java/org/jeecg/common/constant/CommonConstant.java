@@ -2,7 +2,6 @@ package org.jeecg.common.constant;
 
 /**
  * @Description: 通用常量
- * @author: jeecg-boot
  */
 public interface CommonConstant {
 

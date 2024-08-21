@@ -1,11 +1,13 @@
 package org.jeecg.common.system.vo;
 
+import lombok.Data;
+
 /**
- * @Author qinfeng
- * @Date 2020/2/19 12:01
- * @Description:
- * @Version 1.0
+ * 系统类别
+ * @author opv2
+ * @since 2024/8/21 下午1:02
  */
+@Data
 public class SysCategoryModel {
     /**主键*/
     private java.lang.String id;
@@ -16,35 +18,4 @@ public class SysCategoryModel {
     /**类型编码*/
     private java.lang.String code;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getPid() {
-        return pid;
-    }
-
-    public void setPid(String pid) {
-        this.pid = pid;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
 }

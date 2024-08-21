@@ -1,5 +1,6 @@
 package org.jeecg.common.system.vo;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import com.alibaba.fastjson.JSONObject;
@@ -11,13 +12,13 @@ import lombok.experimental.Accessors;
 
 /**
  * @Description: 字典类
- * @author: jeecg-boot
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DictModel implements Serializable{
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	public DictModel() {

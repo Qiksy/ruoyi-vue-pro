@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.error;
+import static org.jeecg.common.constant.SymbolConstant.*;
 
 /**
  * online 模块的拦截器
@@ -90,8 +91,8 @@ public class OnlineInterceptor implements HandlerInterceptor {
     private String removeSlashes(String str) {
         String str2 = "";
         if (StringUtils.isNotEmpty(str)) {
-            str2 = str.replace("\\", "/").replace("//", "/");
-            if (str2.contains("//")) {
+            str2 = str.replace(DOUBLE_BACKSLASH, SINGLE_SLASH).replace(DOUBLE_SLASH, SINGLE_SLASH);
+            if (str2.contains(DOUBLE_SLASH)) {
                 str2 = removeSlashes(str2);
             }
         }

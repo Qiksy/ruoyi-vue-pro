@@ -3,8 +3,7 @@ package org.jeecg.common.query;
 import java.io.Serializable;
 
 /**
- * @Description: QueryCondition
- * @author: jeecg-boot
+ * @Description: 查询条件
  */
 public class QueryCondition implements Serializable {
 

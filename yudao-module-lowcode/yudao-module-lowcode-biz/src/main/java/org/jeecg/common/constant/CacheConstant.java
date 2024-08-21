@@ -1,5 +1,10 @@
 package org.jeecg.common.constant;
 
+/**
+ * 缓存常量
+ * @author opv2
+ * @since 2024/8/21 下午12:55
+ */
 public interface CacheConstant {
     String SYS_DICT_CACHE = "sys:cache:dict";
     String SYS_ENABLE_DICT_CACHE = "sys:cache:dictEnable";
