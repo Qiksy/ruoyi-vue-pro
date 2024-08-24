@@ -45,6 +45,7 @@ public class OnlineInterceptor implements HandlerInterceptor {
 //    底层共通业务API，提供其他独立模块调用
     private ISysBaseAPI sysBaseAPI;
 
+    @Override
     public boolean preHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, Object handler) throws Exception {
         OnlineAuth methodAnnotation;
         if (handler.getClass().isAssignableFrom(HandlerMethod.class) && (methodAnnotation = ((HandlerMethod) handler).getMethodAnnotation(OnlineAuth.class)) != null) {

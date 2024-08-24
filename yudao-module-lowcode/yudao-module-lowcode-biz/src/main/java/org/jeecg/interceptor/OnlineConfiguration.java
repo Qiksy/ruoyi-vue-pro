@@ -23,6 +23,7 @@ public class OnlineConfiguration implements WebMvcConfigurer {
         return new OnlineInterceptor();
     }
 
+    @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(onlineInterceptor()).excludePathPatterns("/*.html", "/html/**", "/js/**", "/css/**", "/images/**").addPathPatterns("/online/cgform/api/**");
     }
