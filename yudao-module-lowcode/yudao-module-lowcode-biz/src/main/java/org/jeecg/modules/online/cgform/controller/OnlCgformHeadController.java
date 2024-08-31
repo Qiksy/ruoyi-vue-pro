@@ -103,14 +103,10 @@ public class OnlCgformHeadController {
                                                       @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                                       HttpServletRequest httpServletRequest) {
-        CommonResult<IPage<OnlCgformHead>> result = new CommonResult<>();
         IPage<OnlCgformHead> page = this.onlCgformHeadService.page(new Page<>(pageNo, pageSize), QueryGenerator.initQueryWrapper(onlCgformHead, httpServletRequest.getParameterMap()));
         if (onlCgformHead.getCopyType() != null && onlCgformHead.getCopyType() == 0) {
             this.onlCgformHeadService.initCopyState(page.getRecords());
         }
-//        result.setSuccess(true);
-//        result.setResult(page);
-        
         return success(page);
     }
 

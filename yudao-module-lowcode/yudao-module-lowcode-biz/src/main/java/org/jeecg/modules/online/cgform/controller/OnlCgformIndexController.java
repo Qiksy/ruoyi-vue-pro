@@ -45,7 +45,7 @@ public class OnlCgformIndexController {
     @GetMapping({"/listByHeadId"})
     @Operation(summary = "通过表头ID查询索引列表")
     /* renamed from: a */
-    public CommonResult<?> m166a(@RequestParam("headId") String str) {
+    public CommonResult<?> listByHeadId(@RequestParam("headId") String str) {
         QueryWrapper<OnlCgformIndex> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("cgform_head_id", str);
         queryWrapper.eq("del_flag", CommonConstant.DEL_FLAG_0);
@@ -56,7 +56,7 @@ public class OnlCgformIndexController {
     @GetMapping({"/list"})
     @Operation(summary = "获取索引列表")
     /* renamed from: a */
-    public CommonResult<IPage<OnlCgformIndex>> m167a(OnlCgformIndex onlCgformIndex, @RequestParam(name = "pageNo", defaultValue = "1") Integer num, @RequestParam(name = "pageSize", defaultValue = "10") Integer num2, HttpServletRequest httpServletRequest) {
+    public CommonResult<IPage<OnlCgformIndex>> list(OnlCgformIndex onlCgformIndex, @RequestParam(name = "pageNo", defaultValue = "1") Integer num, @RequestParam(name = "pageSize", defaultValue = "10") Integer num2, HttpServletRequest httpServletRequest) {
         CommonResult<IPage<OnlCgformIndex>> result = new CommonResult<>();
         IPage<OnlCgformIndex> page = this.onlCgformIndexService.page(new Page<>(num, num2), QueryGenerator.initQueryWrapper(onlCgformIndex, httpServletRequest.getParameterMap()));
 //        result.setSuccess(true);
