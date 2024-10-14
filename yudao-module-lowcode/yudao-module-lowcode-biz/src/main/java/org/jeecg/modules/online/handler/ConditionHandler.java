@@ -691,7 +691,7 @@ public class ConditionHandler {
 
     /* renamed from: e */
     private void m15e() {
-        if (CgformUtil.m260j(CgformUtil.m235f(this.tableName))) {
+        if (CgformUtil.m260j(CgformUtil.sanitizeTableName(this.tableName))) {
             m17a("tenant_id", "int", ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("X-Tenant-Id"), QueryRuleEnum.EQ);
         }
     }

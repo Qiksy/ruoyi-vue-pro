@@ -119,7 +119,7 @@ public class CgformUtil {
     public static final String f200u = "Y";
 
     /* renamed from: v */
-    public static final String f201v = "$";
+    public static final String DOLLAR_SIGN = "$"; // 美元符号
 
     /* renamed from: w */
     public static final String f202w = "CREATE_TIME";
@@ -152,7 +152,7 @@ public class CgformUtil {
     public static final String f211F = "single";
 
     /* renamed from: G */
-    public static final String f212G = "id";
+    public static final String DEFAULT_MAIN_FIELD = "id";
 
     /* renamed from: H */
     public static final String f213H = "bpm_status";
@@ -272,7 +272,7 @@ public class CgformUtil {
     public static final String ERP = "erp";
 
     /* renamed from: as */
-    public static final String f250as = "innerTable";
+    public static final String INNER_TABLE = "innerTable";
 
     /* renamed from: at */
     public static final String f251at = "exportSingleOnly";
@@ -345,23 +345,37 @@ public class CgformUtil {
 
     /* renamed from: aR */
     public static final String SEARCH_FIELD_LIST = "searchFieldList";
+    /**
+     * 表类型中的一种
+     * 0单表、1主表、2附表
+     */
     /* renamed from: aE */
-    public static final Integer f262aE = 2;
+    public static final Integer SUB_TABLE_TYPE = 2;
+    /**
+     * 动作时间点
+     */
     /* renamed from: aT */
-    private static final String f276aT = "beforeAdd,beforeEdit,afterAdd,afterEdit,beforeDelete,afterDelete,mounted,created";
+    private static final String ACTION_TIMING = "beforeAdd,beforeEdit,afterAdd,afterEdit,beforeDelete,afterDelete,mounted,created";
     /* renamed from: aS */
-    private static final Logger f179aS = LoggerFactory.getLogger(CgformUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CgformUtil.class);
     /* renamed from: aU */
-    private static String f277aU;
+    private static String DATA_BASE_TYPE;
 
+    /**
+     * 检查联合查询是否启用
+     * @param onlCgformHead
+     * @return
+     */
     /* renamed from: a */
-    public static boolean m181a(OnlCgformHead onlCgformHead) {
+    public static boolean isJoinQueryEnabled(OnlCgformHead onlCgformHead) {
+        // 扩展json
         String extConfigJson;
-        if (onlCgformHead != null && f262aE.equals(onlCgformHead.getTableType())) {
+        if (onlCgformHead != null && SUB_TABLE_TYPE.equals(onlCgformHead.getTableType())) {
+            // 如果这个表是子表
             String themeTemplate = onlCgformHead.getThemeTemplate();
-            if (!ERP.equals(themeTemplate) && !f250as.equals(themeTemplate) && !"Y".equals(onlCgformHead.getIsTree()) && (extConfigJson = onlCgformHead.getExtConfigJson()) != null && !"".equals(extConfigJson)) {
+            if (!ERP.equals(themeTemplate) && !INNER_TABLE.equals(themeTemplate) && !"Y".equals(onlCgformHead.getIsTree()) && (extConfigJson = onlCgformHead.getExtConfigJson()) != null && !"".equals(extConfigJson)) {
                 JSONObject parseObject = JSON.parseObject(extConfigJson);
-                if (parseObject.containsKey(JOIN_QUERY) && 1 == parseObject.getInteger(JOIN_QUERY).intValue()) {
+                if (parseObject.containsKey(JOIN_QUERY) && 1 == parseObject.getInteger(JOIN_QUERY)) {
                     return true;
                 }
                 return false;
@@ -403,7 +417,7 @@ public class CgformUtil {
                 stringBuffer.append(",id");
             }
         }
-        stringBuffer.append(" FROM " + m235f(str));
+        stringBuffer.append(" FROM " + sanitizeTableName(str));
     }
 
     /* renamed from: a */
@@ -550,8 +564,13 @@ public class CgformUtil {
         return "'" + str2 + "'";
     }
 
+    /**
+     * 构造参数
+     * @param httpServletRequest
+     * @return
+     */
     /* renamed from: a */
-    public static Map<String, Object> m190a(HttpServletRequest httpServletRequest) {
+    public static Map<String, Object> constructingParameter(HttpServletRequest httpServletRequest) {
         String str;
         Map<String, String[]> parameterMap = httpServletRequest.getParameterMap();
         HashMap hashMap = new HashMap(5);
@@ -805,7 +824,7 @@ public class CgformUtil {
             throw exception("online保存表单数据异常:系统未找到当前登陆用户信息");
         }
         Set<String> m195a = m195a(list);
-        String m235f = m235f(str);
+        String m235f = sanitizeTableName(str);
         boolean m260j = m260j(m235f);
         for (OnlCgformField onlCgformField : list) {
             if (OnlineConst.isPersist.equals(onlCgformField.getDbIsPersist()) && null != (dbFieldName = onlCgformField.getDbFieldName())) {
@@ -893,7 +912,7 @@ public class CgformUtil {
         if (stringBuffer2.endsWith(COMMA_SEPARATOR)) {
             stringBuffer2 = stringBuffer2.substring(0, stringBuffer2.length() - 1);
         }
-        hashMap.put("execute_sql_string", "update " + m235f(str) + " set " + stringBuffer2 + " where  id='" + jSONObject.getString("id") + "'");
+        hashMap.put("execute_sql_string", "update " + sanitizeTableName(str) + " set " + stringBuffer2 + " where  id='" + jSONObject.getString("id") + "'");
         hashMap.put("id", jSONObject.getString("id"));
         return hashMap;
     }
@@ -1065,7 +1084,7 @@ public class CgformUtil {
                 }
             }
         }
-        return "SELECT id" + stringBuffer2.toString() + " FROM " + m235f(str) + " where 1=1  " + stringBuffer.toString() + m206b(str, list, hashMap);
+        return "SELECT id" + stringBuffer2.toString() + " FROM " + sanitizeTableName(str) + " where 1=1  " + stringBuffer.toString() + m206b(str, list, hashMap);
     }
 
     /* renamed from: b */
@@ -1151,7 +1170,7 @@ public class CgformUtil {
                 }
                 return true;
             } catch (Exception e) {
-                f179aS.error(e.getMessage(), e);
+                LOGGER.error(e.getMessage(), e);
                 return false;
             }
         }
@@ -1318,7 +1337,7 @@ public class CgformUtil {
     /* renamed from: d */
     public static String m216d(String str, List<OnlCgformButton> list) {
         String m221e = m221e(str, list);
-        for (String str2 : f276aT.split(COMMA_SEPARATOR)) {
+        for (String str2 : ACTION_TIMING.split(COMMA_SEPARATOR)) {
             if ("beforeAdd,afterAdd,mounted,created".indexOf(str2) >= 0) {
                 Matcher matcher = Pattern.compile("(" + str2 + "\\s*\\(\\)\\s*\\{)").matcher(m221e);
                 if (matcher.find()) {
@@ -1531,19 +1550,27 @@ public class CgformUtil {
         return jSONArray;
     }
 
+    /**
+     * 传入一个map，将其中的Clob、blob、byte[]类型转换为String类型
+     * @param dataMap 数据
+     * @return 转换后的数据
+     */
     /* renamed from: a */
-    public static Map<String, Object> m224a(Map<String, Object> map) {
+    public static Map<String, Object> convertData(Map<String, Object> dataMap) {
         HashMap<String, Object> hashMap = new HashMap<>(5);
-        if (map == null || map.isEmpty()) {
+        if (dataMap == null || dataMap.isEmpty()) {
             return hashMap;
         }
-        for (String key : map.keySet()) {
-            Object obj = map.get(key);
+        for (String key : dataMap.keySet()) {
+            Object obj = dataMap.get(key);
             if (obj instanceof Clob) {
-                obj = m230a((Clob) obj);
+                // 如果类型是CLOB
+                obj = tranClobToString((Clob) obj);
             } else if (obj instanceof byte[]) {
+                // 如果是字节数组
                 obj = new String((byte[]) obj);
             } else if (obj instanceof Blob) {
+                //如果是Blob
                 if (obj != null) {
                     try {
                         Blob blob = (Blob) obj;
@@ -1594,7 +1621,7 @@ public class CgformUtil {
                 for (String str : map.keySet()) {
                     Object obj = map.get(str);
                     if (obj instanceof Clob) {
-                        obj = m230a((Clob) obj);
+                        obj = tranClobToString((Clob) obj);
                     } else if (obj instanceof byte[]) {
                         obj = new String((byte[]) obj);
                     } else if (obj instanceof Long) {
@@ -1637,13 +1664,18 @@ public class CgformUtil {
         return obj;
     }
 
+    /**
+     * 转换CLOB对象
+     * @param clob
+     * @return
+     */
     /* renamed from: a */
-    public static String m230a(Clob clob) {
+    public static String tranClobToString(Clob clob) {
         String str = "";
         try {
             Reader characterStream = clob.getCharacterStream();
             char[] cArr = new char[(int) clob.length()];
-            characterStream.read(cArr);
+            int read = characterStream.read(cArr);
             str = new String(cArr);
             characterStream.close();
         } catch (IOException e) {
@@ -1679,7 +1711,7 @@ public class CgformUtil {
                 throw exception("online保存表单数据异常:系统未找到当前登陆用户信息");
             }
         }
-        String sqlInjectTableName = SqlInjectionUtil.getSqlInjectTableName(m235f(str));
+        String sqlInjectTableName = SqlInjectionUtil.getSqlInjectTableName(sanitizeTableName(str));
         boolean m260j = m260j(sqlInjectTableName);
         for (OnlCgformField onlCgformField : list) {
             String sqlInjectField = SqlInjectionUtil.getSqlInjectField(onlCgformField.getDbFieldName());
@@ -1752,7 +1784,7 @@ public class CgformUtil {
         if (stringBuffer2.endsWith(COMMA_SEPARATOR)) {
             stringBuffer2 = stringBuffer2.substring(0, stringBuffer2.length() - 1);
         }
-        hashMap.put("execute_sql_string", "update " + m235f(str) + " set " + stringBuffer2 + " where  id='" + jSONObject.getString("id") + "'");
+        hashMap.put("execute_sql_string", "update " + sanitizeTableName(str) + " set " + stringBuffer2 + " where  id='" + jSONObject.getString("id") + "'");
         hashMap.put("id", jSONObject.getString("id"));
         return hashMap;
     }
@@ -1760,7 +1792,7 @@ public class CgformUtil {
     /* renamed from: a */
     public static Map<String, Object> m233a(String str, String str2, String str3) {
         HashMap hashMap = new HashMap(5);
-        hashMap.put("execute_sql_string", "update " + m235f(str) + " set " + str2 + "='0' where  id='" + str3 + "'");
+        hashMap.put("execute_sql_string", "update " + sanitizeTableName(str) + " set " + str2 + "='0' where  id='" + str3 + "'");
         return hashMap;
     }
 
@@ -1772,15 +1804,21 @@ public class CgformUtil {
         return "CODE like '" + str + "%'";
     }
 
+    /**
+     * 规范化表名
+     * 如果以字母开头，并以 $ 和数字结尾，则返回$ 之前的字符串部分。
+     * @param tableName
+     * @return
+     */
     /* renamed from: f */
-    public static String m235f(String str) {
+    public static String sanitizeTableName(String tableName) {
         String str2;
-        if (Pattern.matches("^[a-zA-z].*\\$\\d+$", str)) {
-            str2 = str.substring(0, str.lastIndexOf(f201v));
+        if (Pattern.matches("^[a-zA-z].*\\$\\d+$", tableName)) {
+            str2 = tableName.substring(0, tableName.lastIndexOf(DOLLAR_SIGN));
         } else {
-            str2 = str;
+            str2 = tableName;
         }
-        return SqlInjectionUtil.getSqlInjectTableName(str2);
+        return SqlInjectionUtil.getSqlInjectTableName(str2); //检查SQL注入
     }
 
     /* renamed from: a */
@@ -1910,15 +1948,15 @@ public class CgformUtil {
     }
 
     private static String getDatabseType() {
-        if (ConvertUtils.isNotEmpty(f277aU)) {
-            return f277aU;
+        if (ConvertUtils.isNotEmpty(DATA_BASE_TYPE)) {
+            return DATA_BASE_TYPE;
         }
         try {
-            f277aU = DbTableUtil.getDatabaseType();
-            return f277aU;
+            DATA_BASE_TYPE = DbTableUtil.getDatabaseType();
+            return DATA_BASE_TYPE;
         } catch (Exception e) {
             e.printStackTrace();
-            return f277aU;
+            return DATA_BASE_TYPE;
         }
     }
 
@@ -2053,7 +2091,7 @@ public class CgformUtil {
             try {
                 return JSONArray.parseArray(URLDecoder.decode(obj.toString(), "UTF-8"));
             } catch (UnsupportedEncodingException e) {
-                f179aS.error("高级查询json参数转换失败" + e.getMessage());
+                LOGGER.error("高级查询json参数转换失败" + e.getMessage());
                 return null;
             }
         }

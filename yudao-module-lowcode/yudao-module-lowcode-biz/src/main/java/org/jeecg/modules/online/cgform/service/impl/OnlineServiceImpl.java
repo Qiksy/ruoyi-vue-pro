@@ -1,6 +1,5 @@
 package org.jeecg.modules.online.cgform.service.impl;
 
-import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -71,7 +70,7 @@ public class OnlineServiceImpl implements IOnlineService {
     @Override // org.jeecg.modules.online.cgform.service.IOnlineService
     public OnlComplexModel queryOnlineConfig(OnlCgformHead head, String username) {
         String id = head.getId();
-        boolean m181a = CgformUtil.m181a(head);
+        boolean m181a = CgformUtil.isJoinQueryEnabled(head);
         List<OnlCgformField> m381b = m381b(id);
         List<String> queryHideCode = this.onlAuthPageService.queryHideCode(id, true);
         List<OnlColumn> arrayList = new ArrayList<>();
@@ -228,7 +227,7 @@ public class OnlineServiceImpl implements IOnlineService {
             treeSelectColumn.setPidField(head.getTreeParentIdField());
             treeSelectColumn.setPidValue("0");
             treeSelectColumn.setHsaChildField(head.getTreeIdField());
-            treeSelectColumn.setTableName(CgformUtil.m235f(head.getTableName()));
+            treeSelectColumn.setTableName(CgformUtil.sanitizeTableName(head.getTableName()));
             treeSelectColumn.setTextField(head.getTreeFieldname());
         }
         JSONObject m192a = CgformUtil.m192a(queryAvailableFields, arrayList, treeSelectColumn);
@@ -292,7 +291,7 @@ public class OnlineServiceImpl implements IOnlineService {
     public JSONObject getOnlineVue3QueryInfo(String headId) {
         String subTableStr;
         OnlCgformHead onlCgformHead = this.onlCgformHeadService.getById(headId);
-        boolean isJoinQuery = CgformUtil.m181a(onlCgformHead);
+        boolean isJoinQuery = CgformUtil.isJoinQueryEnabled(onlCgformHead);
         List<String> searchFieldList = new ArrayList<>();
         JSONObject m380a = m380a(headId, searchFieldList, true, null);
         JSONObject jSONObject = m380a.getJSONObject(CgformUtil.PROPERTIES);
@@ -300,7 +299,7 @@ public class OnlineServiceImpl implements IOnlineService {
         m380a.put(CgformUtil.TABLE, onlCgformHead.getTableName());
         m380a.put(CgformUtil.JOIN_QUERY, isJoinQuery);
         m380a.put(CgformUtil.SEARCH_FIELD_LIST, searchFieldList);
-        if (CgformUtil.f262aE.equals(onlCgformHead.getTableType()) && (subTableStr = onlCgformHead.getSubTableStr()) != null && !"".equals(subTableStr)) {
+        if (CgformUtil.SUB_TABLE_TYPE.equals(onlCgformHead.getTableType()) && (subTableStr = onlCgformHead.getSubTableStr()) != null && !"".equals(subTableStr)) {
             for (String str : subTableStr.split(CgformUtil.COMMA_SEPARATOR)) {
                 OnlCgformHead onlCgformHead2 = this.onlCgformHeadService.getOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, str));
                 if (onlCgformHead2 != null) {

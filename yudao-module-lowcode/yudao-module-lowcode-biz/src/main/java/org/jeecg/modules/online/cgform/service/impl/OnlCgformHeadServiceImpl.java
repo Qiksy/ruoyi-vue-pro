@@ -818,7 +818,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
         OnlCgformHead onlCgformHead;
         OnlCgformHead table = getTable(code);
         executeEnhanceJava(CgformConstant.ADD, CgformUtil.f248aq, table, json);
-        String m235f = CgformUtil.m235f(table.getTableName());
+        String m235f = CgformUtil.sanitizeTableName(table.getTableName());
         if (table.getTableType() == 2) {
             String subTableStr = table.getSubTableStr();
             if (StringUtils.isNotEmpty(subTableStr)) {
@@ -935,7 +935,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
         }
         ArrayList<Map<String, Object>> arrayList2 = new ArrayList<>(querySubFormData.size());
         for (Map<String, Object> querySubFormDatum : querySubFormData) {
-            arrayList2.add(CgformUtil.m224a(querySubFormDatum));
+            arrayList2.add(CgformUtil.convertData(querySubFormDatum));
         }
         return arrayList2;
     }
@@ -1079,17 +1079,21 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
 
     @Override // org.jeecg.modules.online.cgform.service.IOnlCgformHeadService
     public void executeEnhanceList(OnlCgformHead head, String buttonCode, List<Map<String, Object>> dataList) throws BusinessException {
+        // 查询增强Java列表
         LambdaQueryWrapper<OnlCgformEnhanceJava> lambdaQueryWrapper = new LambdaQueryWrapper<OnlCgformEnhanceJava>();
         lambdaQueryWrapper.eq(OnlCgformEnhanceJava::getActiveStatus, "1");
         lambdaQueryWrapper.eq(OnlCgformEnhanceJava::getButtonCode, buttonCode);
         lambdaQueryWrapper.eq(OnlCgformEnhanceJava::getCgformHeadId, head.getId());
-        List selectList = this.onlCgformEnhanceJavaMapper.selectList(lambdaQueryWrapper);
-        if (selectList != null && !selectList.isEmpty()) {
-            Object m339a = m339a((OnlCgformEnhanceJava) selectList.get(0));
-            if ((m339a instanceof CgformEnhanceJavaListInter)) {
-                ((CgformEnhanceJavaListInter) m339a).execute(head.getTableName(), dataList);
-            } else if ((m339a instanceof CgformEnhanceHttpListImpl)) {
-                ((CgformEnhanceHttpListImpl) m339a).execute(head.getTableName(), dataList, (OnlCgformEnhanceJava) selectList.get(0));
+        List<OnlCgformEnhanceJava> enhanceJavas = this.onlCgformEnhanceJavaMapper.selectList(lambdaQueryWrapper);
+
+        if (enhanceJavas != null && !enhanceJavas.isEmpty()) {
+            Object enhanceObject = m339a(enhanceJavas.getFirst());
+            if ((enhanceObject instanceof CgformEnhanceJavaListInter)) {
+                // 如果这个扩展是CgformEnhanceJavaListInter类型，则执行
+                ((CgformEnhanceJavaListInter) enhanceObject).execute(head.getTableName(), dataList);
+            } else if ((enhanceObject instanceof CgformEnhanceHttpListImpl)) {
+                //如果是CgformEnhanceHttpListImpl类型，则失踪
+                ((CgformEnhanceHttpListImpl) enhanceObject).execute(head.getTableName(), dataList, enhanceJavas.getFirst());
             }
         }
     }
@@ -1179,7 +1183,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
         lambdaQueryWrapper.eq(OnlCgformField::getCgformHeadId, formId);
         List<OnlCgformField> list = this.onlCgformFieldService.list(lambdaQueryWrapper);
         for (String str : split) {
-            JSONObject parseObject = JSONObject.parseObject(JSON.toJSONString(m344a(list, m343d(CgformUtil.m235f(onlCgformHead.getTableName()), CgformUtil.m261k(str)))));
+            JSONObject parseObject = JSONObject.parseObject(JSON.toJSONString(m344a(list, m343d(CgformUtil.sanitizeTableName(onlCgformHead.getTableName()), CgformUtil.m261k(str)))));
             m338a(parseObject, m339a, tableName, m336a);
             m342a(parseObject, m341c);
             m338a(parseObject, m339a2, tableName, m336a2);
@@ -1228,12 +1232,12 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
         if (onlCgformHead == null) {
             throw new BusinessException("未找到表配置信息");
         }
-        String m235f = CgformUtil.m235f(onlCgformHead.getTableName());
+        String m235f = CgformUtil.sanitizeTableName(onlCgformHead.getTableName());
         Map<String, Object> m343d = m343d(m235f, dataId);
         if (m343d == null) {
             return;
         }
-        JSONObject parseObject = JSONObject.parseObject(JSON.toJSONString(CgformUtil.m224a(m343d)));
+        JSONObject parseObject = JSONObject.parseObject(JSON.toJSONString(CgformUtil.convertData(m343d)));
         executeEnhanceJava(CgformConstant.DELETE, CgformUtil.f248aq, onlCgformHead, parseObject);
         updateParentNode(onlCgformHead, dataId);
         if (onlCgformHead.getTableType() == 2) {
@@ -1676,7 +1680,7 @@ public class OnlCgformHeadServiceImpl extends ServiceImpl<OnlCgformHeadMapper, O
     @Override // org.jeecg.modules.online.cgform.service.IOnlCgformHeadService
     public void updateParentNode(OnlCgformHead head, String dataId) {
         if ("Y".equals(head.getIsTree())) {
-            String m235f = CgformUtil.m235f(head.getTableName());
+            String m235f = CgformUtil.sanitizeTableName(head.getTableName());
             String treeParentIdField = head.getTreeParentIdField();
             Map<String, Object> m343d = m343d(m235f, dataId);
             String str = null;

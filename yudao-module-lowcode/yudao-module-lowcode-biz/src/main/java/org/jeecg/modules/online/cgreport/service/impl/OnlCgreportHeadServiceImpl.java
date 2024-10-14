@@ -395,7 +395,7 @@ public class OnlCgreportHeadServiceImpl extends ServiceImpl<OnlCgreportHeadMappe
         List<Map<String, Object>> queryCgReportItems = this.mapper.queryCgReportItems(reportId);
         List<OnlCgreportParam> queryCgReportParams = this.mapper.queryCgReportParams(reportId);
         if (DbTableUtil.m489a()) {
-            hashMap.put(CgReportConstant.MAIN, CgformUtil.m224a(queryCgReportMainConfig));
+            hashMap.put(CgReportConstant.MAIN, CgformUtil.convertData(queryCgReportMainConfig));
             hashMap.put(CgReportConstant.ITEMS, CgformUtil.m227d(queryCgReportItems));
         } else {
             hashMap.put(CgReportConstant.MAIN, queryCgReportMainConfig);

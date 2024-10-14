@@ -118,7 +118,7 @@ public class OnlineJoinQueryServiceImpl implements IOnlineJoinQueryService {
     /* renamed from: a */
     private String m358a(OnlTable onlTable, String str, String str2, String str3) {
         String alias = onlTable.getAlias();
-        String m235f = CgformUtil.m235f(onlTable.getTableName());
+        String m235f = CgformUtil.sanitizeTableName(onlTable.getTableName());
         String str4 = alias + ".";
         StringBuilder stringBuffer = new StringBuilder();
         stringBuffer.append(" AND EXISTS (");
@@ -506,7 +506,7 @@ public class OnlineJoinQueryServiceImpl implements IOnlineJoinQueryService {
                     }
                 }
                 if (onlTable.m292a()) {
-                    stringBuffer.append(" FROM ").append(CgformUtil.m235f(tableName)).append(str3);
+                    stringBuffer.append(" FROM ").append(CgformUtil.sanitizeTableName(tableName)).append(str3);
                     str = str2;
                 } else {
                     hashMap2.put(alias, tableName);
@@ -514,7 +514,7 @@ public class OnlineJoinQueryServiceImpl implements IOnlineJoinQueryService {
                         stringBuffer2.append(m358a(onlTable, str, m8a, str4));
                     } else {
                         stringBuffer.append(" LEFT JOIN ");
-                        stringBuffer.append(CgformUtil.m235f(tableName));
+                        stringBuffer.append(CgformUtil.sanitizeTableName(tableName));
                         stringBuffer.append(str3);
                         stringBuffer.append(CgformUtil.f183d);
                         stringBuffer.append(str2);

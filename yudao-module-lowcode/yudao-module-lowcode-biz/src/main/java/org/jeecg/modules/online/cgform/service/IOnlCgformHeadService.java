@@ -70,7 +70,14 @@ public interface IOnlCgformHeadService extends IService<OnlCgformHead> {
 
     EnhanceDataEnum executeEnhanceImport(OnlCgformHead onlCgformHead, JSONObject jSONObject) throws BusinessException;
 
-    void executeEnhanceList(OnlCgformHead onlCgformHead, String str, List<Map<String, Object>> list) throws BusinessException;
+    /**
+     * 执行增强列表
+     * @param onlCgformHead 表定义
+     * @param buttonCode 什么时候增强
+     * @param dataList 数据列表
+     * @throws BusinessException
+     */
+    void executeEnhanceList(OnlCgformHead onlCgformHead, String buttonCode, List<Map<String, Object>> dataList) throws BusinessException;
 
     void executeEnhanceSql(String str, String str2, JSONObject jSONObject);
 

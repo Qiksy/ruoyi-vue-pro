@@ -9,7 +9,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
@@ -301,10 +300,10 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
     @Override // org.jeecg.modules.online.cgform.service.IOnlCgformFieldService
     public void editTreeFormData(String code, String tbname, JSONObject json, String hasChildField, String pidField) {
         Integer m317b;
-        String m235f = CgformUtil.m235f(tbname);
+        String m235f = CgformUtil.sanitizeTableName(tbname);
         QueryWrapper<?> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id", json.getString("id"));
-        String obj = CgformUtil.m224a(m315a(m235f, null, queryWrapper, JSONObject.class)).get(pidField).toString();
+        String obj = CgformUtil.convertData(m315a(m235f, null, queryWrapper, JSONObject.class)).get(pidField).toString();
         LambdaQueryWrapper<OnlCgformField> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(OnlCgformField::getCgformHeadId, code);
         List<OnlCgformField> list = list(lambdaQueryWrapper);
@@ -338,7 +337,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
         LambdaQueryWrapper<OnlCgformField> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(OnlCgformField::getCgformHeadId, code);
         lambdaQueryWrapper.eq(OnlCgformField::getIsShowForm, 1);
-        return  m314a(tbname, CgformUtil.m198a( list(lambdaQueryWrapper), id), JSONObject.class);
+        return  doSelect(tbname, CgformUtil.m198a( list(lambdaQueryWrapper), id), JSONObject.class);
     }
 
     @Override // org.jeecg.modules.online.cgform.service.IOnlCgformFieldService
@@ -369,7 +368,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
                     if (str2.indexOf("@") > 0) {
                         str2 = str2.substring(0, str2.indexOf("@"));
                     }
-                    Map<String, Object> map = m314a(tableName, CgformUtil.m198a(list2, str2), JSONObject.class);
+                    Map<String, Object> map = doSelect(tableName, CgformUtil.m198a(list2, str2), JSONObject.class);
 
                     for (Map<String,String> map2 : arrayList) {
                         Object obj = map.get(map2.get("mainField").toLowerCase());
@@ -409,7 +408,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
             }
             QueryWrapper<?> queryWrapper = new QueryWrapper<>();
             queryWrapper.in(SqlInjectionUtil.getSqlInjectField(linkField), arrayList.toArray());
-            m318a(CgformUtil.m235f(tbname), queryWrapper);
+            m318a(CgformUtil.sanitizeTableName(tbname), queryWrapper);
         }
     }
 
@@ -418,7 +417,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
         String subTableStr;
         OnlCgformHead onlCgformHead = this.cgformHeadMapper.selectOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getId, code));
         List<Map<String, String>> arrayList = new ArrayList<>();
-        boolean m181a = CgformUtil.m181a(onlCgformHead);
+        boolean m181a = CgformUtil.isJoinQueryEnabled(onlCgformHead);
         int m306a = m306a(onlCgformHead, arrayList, 0, m181a);
         Integer tableType = onlCgformHead.getTableType();
         if (m181a && tableType != null && 2 == tableType && (subTableStr = onlCgformHead.getSubTableStr()) != null && !subTableStr.isEmpty()) {
@@ -470,7 +469,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
 
     @Override // org.jeecg.modules.online.cgform.service.IOnlCgformFieldService
     public Map<String, Object> queryFormData(List<OnlCgformField> fieldList, String tbname, String id) {
-        return  m314a(tbname, CgformUtil.m198a(fieldList, id), JSONObject.class);
+        return  doSelect(tbname, CgformUtil.m198a(fieldList, id), JSONObject.class);
     }
 
     @Override // org.jeecg.modules.online.cgform.service.IOnlCgformFieldService
@@ -488,7 +487,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
 
     @Override // org.jeecg.modules.online.cgform.service.IOnlCgformFieldService
     public List<Map<String, Object>> querySubFormData(List<OnlCgformField> fieldList, String tbname, String linkField, String value) {
-        Collection collection = m314a(tbname, CgformUtil.m199a(fieldList, linkField, value), Collection.class);
+        Collection collection = doSelect(tbname, CgformUtil.m199a(fieldList, linkField, value), Collection.class);
         return new ArrayList<Map<String, Object>>(collection);
     }
 
@@ -673,7 +672,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
             queryWrapper.apply(linkDown.getCondition());
         }
 
-        List<JSONObject> list = m314a(linkDown.getTable(), queryWrapper, List.class);
+        List<JSONObject> list = doSelect(linkDown.getTable(), queryWrapper, List.class);
         return list.stream().map(jSONObject -> jSONObject.toJavaObject(TreeModel.class)).collect(Collectors.toList());
     }
 
@@ -682,19 +681,27 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
         this.baseMapper.executeUpdatetSQL(CgformUtil.m233a(tableName, filed, id));
     }
 
+    /**
+     * 查询树的子节点的id集合，以逗号分隔
+     * @param head 表头
+     * @param ids 需要查询的id集合
+     * @return
+     */
     @Override // org.jeecg.modules.online.cgform.service.IOnlCgformFieldService
     public String queryTreeChildIds(OnlCgformHead head, String ids) {
-        String treeParentIdField = head.getTreeParentIdField();
-        String tableName = head.getTableName();
-        String[] split = ids.split(CgformUtil.COMMA_SEPARATOR);
+        String treeParentIdField = head.getTreeParentIdField(); //获取父表的id的字段名
+        String tableName = head.getTableName(); //表名
+        String[] idsArray = ids.split(CgformUtil.COMMA_SEPARATOR);
         StringBuffer stringBuffer = new StringBuffer();
-        for (String str : split) {
-            if (str != null && !stringBuffer.toString().contains(str)) {
+        for (String id : idsArray) {
+            if (id != null && !stringBuffer.toString().contains(id)) {
                 if (!stringBuffer.toString().isEmpty()) {
                     stringBuffer.append(CgformUtil.COMMA_SEPARATOR);
                 }
-                stringBuffer.append(str);
-                m304a(str, treeParentIdField, tableName, stringBuffer);
+                stringBuffer.append(id);
+                // 查询表为tableName是个树表，父节点的字段是treeParentIdField，
+                // 现在要查询id为id的节点的所有子节点，把所有子节点的id拼接起来到StringBuffer中
+                appendChildrenIds(id, treeParentIdField, tableName, stringBuffer);
             }
         }
         return stringBuffer.toString();
@@ -705,16 +712,20 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
         String treeParentIdField = head.getTreeParentIdField();
         String tableName = head.getTableName();
         StringBuffer stringBuffer = new StringBuffer();
+        // 分割id
         String[] split = ids.split(CgformUtil.COMMA_SEPARATOR);
-        for (String str : split) {
-            if (str != null) {
-                String m235f = CgformUtil.m235f(tableName);
+        for (String id : split) {
+            if (id != null) {
+                // 规范化后的表名
+                String realTableName = CgformUtil.sanitizeTableName(tableName);
                 QueryWrapper<?> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("id", str);
-                String obj = CgformUtil.m224a(m315a(m235f, null, queryWrapper, JSONObject.class)).get(treeParentIdField).toString();
-                List<Map<String, Object>> queryListBySql = queryListBySql(m235f, null, treeParentIdField, obj, "'" + String.join("','", split) + "'");
-                if ((queryListBySql == null || queryListBySql.isEmpty()) && !Arrays.asList(split).contains(obj) && !stringBuffer.toString().contains(obj)) {
-                    stringBuffer.append(obj).append(CgformUtil.COMMA_SEPARATOR);
+                queryWrapper.eq(CgformUtil.DEFAULT_MAIN_FIELD, id); //
+                // 转换数据 -> 获取父节点的id
+                String pid = CgformUtil.convertData(m315a(realTableName, null, queryWrapper, JSONObject.class)).
+                        get(treeParentIdField).toString();
+                List<Map<String, Object>> queryListBySql = queryListBySql(realTableName, null, treeParentIdField, pid, "'" + String.join("','", split) + "'");
+                if ((queryListBySql == null || queryListBySql.isEmpty()) && !Arrays.asList(split).contains(pid) && !stringBuffer.toString().contains(pid)) {
+                    stringBuffer.append(pid).append(CgformUtil.COMMA_SEPARATOR);
                 }
             }
         }
@@ -733,6 +744,14 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
         return null;
     }
 
+    /**
+     * @param tableName 表名
+     * @param fields 查询的字段
+     * @param pidField 父表的字段
+     * @param metaPid
+     * @param inIds in字段，id集合
+     * @return
+     */
     @Override // org.jeecg.modules.online.cgform.service.IOnlCgformFieldService
     public List<Map<String, Object>> queryListBySql(String tableName, String fields, String pidField, String metaPid, String inIds) {
         QueryWrapper<?> queryWrapper = new QueryWrapper<>();
@@ -747,16 +766,25 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
         return new ArrayList<>(collection);
     }
 
+    /**
+     * @param id id
+     * @param treeParentIdField 父表字段名
+     * @param tableName 表名
+     * @param stringBuffer 存储的id集合
+     * @return 某个树表中，id节点下的所有子节点的id。
+     */
     /* renamed from: a */
-    private StringBuffer m304a(String str, String str2, String str3, StringBuffer stringBuffer) {
-        List<Map<String, Object>> queryListBySql = queryListBySql(str3, null, str2, str, null);
+    private StringBuffer appendChildrenIds(String id, String treeParentIdField, String tableName, StringBuffer stringBuffer) {
+        // 查询数据
+        List<Map<String, Object>> queryListBySql = queryListBySql(tableName, null, treeParentIdField, id, null);
         if (queryListBySql != null && !queryListBySql.isEmpty()) {
             for (Map<String, Object> stringObjectMap : queryListBySql) {
-                Map<String, Object> m224a = CgformUtil.m224a(stringObjectMap);
-                if (!stringBuffer.toString().contains(m224a.get("id").toString())) {
-                    stringBuffer.append(CgformUtil.COMMA_SEPARATOR).append(m224a.get("id"));
+                Map<String, Object> dataMap = CgformUtil.convertData(stringObjectMap);
+                if (!stringBuffer.toString().contains(dataMap.get("id").toString())) {
+                    // 加上这个id
+                    stringBuffer.append(CgformUtil.COMMA_SEPARATOR).append(dataMap.get("id"));
                 }
-                m304a(m224a.get("id").toString(), str2, str3, stringBuffer);
+                appendChildrenIds(dataMap.get("id").toString(), treeParentIdField, tableName, stringBuffer);
             }
         }
         return stringBuffer;
@@ -919,7 +947,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
 
     @Override // org.jeecg.modules.online.cgform.service.IOnlCgformFieldService
     public void addOnlineUpdateDataLog(String tableName, String dataId, List<OnlCgformField> fieldList, JSONObject json) {
-        String m235f = CgformUtil.m235f(tableName);
+        String m235f = CgformUtil.sanitizeTableName(tableName);
         LambdaQueryWrapper<OnlCgformHead> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.select(OnlCgformHead::getTableType, OnlCgformHead::getTableTxt, OnlCgformHead::getSubTableStr);
         lambdaQueryWrapper.eq(OnlCgformHead::getTableName, m235f);
@@ -936,7 +964,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
             StringBuilder sb = new StringBuilder();
             if (!hashSet.isEmpty()) {
                 for (String s : hashSet) {
-                    String m235f2 = CgformUtil.m235f(s);
+                    String m235f2 = CgformUtil.sanitizeTableName(s);
                     String m308a = m308a(m235f2, json.getJSONArray(m235f2), m235f, dataId);
                     if (ConvertUtils.isNotEmpty(m308a)) {
                         sb.append(m308a).append("；");
@@ -1277,8 +1305,8 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
     }
 
     /* renamed from: a */
-    public <T> T m314a(String str, QueryWrapper<?> queryWrapper, Class<T> cls) {
-        String sqlInjectTableName = SqlInjectionUtil.getSqlInjectTableName(str);
+    public <T> T doSelect(String tableName, QueryWrapper<?> queryWrapper, Class<T> cls) {
+        String sqlInjectTableName = SqlInjectionUtil.getSqlInjectTableName(tableName);
         if (cls == JSONObject.class) {
             return (T) this.baseMapper.doSelect(sqlInjectTableName, queryWrapper);
         }
@@ -1286,15 +1314,16 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
     }
 
     /* renamed from: a */
-    public <T> T m315a(String str, String str2, QueryWrapper<?> queryWrapper, Class<T> cls) {
-        String str3;
-        if (ConvertUtils.isNotEmpty(str2)) {
-            str3 = SqlInjectionUtil.getSqlInjectField(str2);
+    public <T> T m315a(String realTableName, String fields, QueryWrapper<?> queryWrapper, Class<T> cls) {
+        String selectFields;
+        if (ConvertUtils.isNotEmpty(fields)) {
+            selectFields = SqlInjectionUtil.getSqlInjectField(fields);
         } else {
-            str3 = "*";
+            selectFields = "*";
         }
-        queryWrapper.select(str3);
-        return (T) m314a(str, queryWrapper, cls);
+        queryWrapper.select(selectFields);
+        //查询
+        return (T) doSelect(realTableName, queryWrapper, cls);
     }
 
     /* renamed from: a */
@@ -1314,7 +1343,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
         if (ConvertUtils.isNotEmpty(str2)) {
             queryWrapper.eq(SqlInjectionUtil.getSqlInjectField(str2), str3);
         }
-        return (Integer) m314a(str, queryWrapper, Integer.class);
+        return (Integer) doSelect(str, queryWrapper, Integer.class);
     }
 
     /* renamed from: a */

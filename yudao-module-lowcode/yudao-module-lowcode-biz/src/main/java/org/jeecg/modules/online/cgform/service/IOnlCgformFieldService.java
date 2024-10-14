@@ -68,7 +68,7 @@ public interface IOnlCgformFieldService extends IService<OnlCgformField> {
 
     void updateTreeNodeNoChild(String str, String str2, String str3);
 
-    String queryTreeChildIds(OnlCgformHead onlCgformHead, String str);
+    String queryTreeChildIds(OnlCgformHead onlCgformHead, String ids);
 
     String queryTreePids(OnlCgformHead onlCgformHead, String str);
 
