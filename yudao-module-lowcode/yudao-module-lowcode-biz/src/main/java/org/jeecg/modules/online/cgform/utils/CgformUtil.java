@@ -322,8 +322,11 @@ public class CgformUtil {
     /* renamed from: aJ */
     public static final String f267aJ = "check/onlineForm/detail";
 
+    /**
+     * 表名前缀
+     */
     /* renamed from: aK */
-    public static final String f268aK = "onl_";
+    public static final String PREFIXES = "onl_";
 
     /* renamed from: aL */
     public static final String f269aL = "jeecg_submit_form_and_flow";

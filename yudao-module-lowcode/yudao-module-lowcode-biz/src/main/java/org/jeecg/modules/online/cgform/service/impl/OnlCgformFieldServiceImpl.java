@@ -303,7 +303,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
         String m235f = CgformUtil.sanitizeTableName(tbname);
         QueryWrapper<?> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id", json.getString("id"));
-        String obj = CgformUtil.convertData(m315a(m235f, null, queryWrapper, JSONObject.class)).get(pidField).toString();
+        String obj = CgformUtil.convertData(selectByQuery(m235f, null, queryWrapper, JSONObject.class)).get(pidField).toString();
         LambdaQueryWrapper<OnlCgformField> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(OnlCgformField::getCgformHeadId, code);
         List<OnlCgformField> list = list(lambdaQueryWrapper);
@@ -721,7 +721,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
                 QueryWrapper<?> queryWrapper = new QueryWrapper<>();
                 queryWrapper.eq(CgformUtil.DEFAULT_MAIN_FIELD, id); //
                 // 转换数据 -> 获取父节点的id
-                String pid = CgformUtil.convertData(m315a(realTableName, null, queryWrapper, JSONObject.class)).
+                String pid = CgformUtil.convertData(selectByQuery(realTableName, null, queryWrapper, JSONObject.class)).
                         get(treeParentIdField).toString();
                 List<Map<String, Object>> queryListBySql = queryListBySql(realTableName, null, treeParentIdField, pid, "'" + String.join("','", split) + "'");
                 if ((queryListBySql == null || queryListBySql.isEmpty()) && !Arrays.asList(split).contains(pid) && !stringBuffer.toString().contains(pid)) {
@@ -761,7 +761,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
         if (ConvertUtils.isNotEmpty(inIds)) {
             queryWrapper.in("id", Arrays.asList(inIds.split(CgformUtil.COMMA_SEPARATOR)));
         }
-        Collection<Map<String, Object>> collection = m315a(tableName, fields, queryWrapper, Collection.class);
+        Collection<Map<String, Object>> collection = selectByQuery(tableName, fields, queryWrapper, Collection.class);
 
         return new ArrayList<>(collection);
     }
@@ -1075,7 +1075,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
         StringBuilder sb = new StringBuilder();
         QueryWrapper<?> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(onlCgformField.getDbFieldName(), str3);
-        List<Object> list2 = m315a(str, null, queryWrapper, List.class);
+        List<Object> list2 = selectByQuery(str, null, queryWrapper, List.class);
         if (list2 == null || list2.isEmpty()) {
             if (jSONArray.isEmpty()) {
                 return "";
@@ -1176,7 +1176,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
     private Map<String, Object> m309a(String str, String str2) {
         QueryWrapper<?> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id", str2);
-        return m315a(str,  null, queryWrapper, JSONObject.class);
+        return selectByQuery(str,  null, queryWrapper, JSONObject.class);
     }
 
     @Override // org.jeecg.modules.online.cgform.service.IOnlCgformFieldService
@@ -1313,8 +1313,16 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
         return (T) this.baseMapper.doSelectList(sqlInjectTableName, queryWrapper);
     }
 
+    /**
+     * @param tableName 表名
+     * @param fields 查询的字段
+     * @param queryWrapper 查询条件
+     * @param cls 返回的类型
+     * @param <T> 返回类型
+     * @return
+     */
     /* renamed from: a */
-    public <T> T m315a(String realTableName, String fields, QueryWrapper<?> queryWrapper, Class<T> cls) {
+    public <T> T selectByQuery(String tableName, String fields, QueryWrapper<?> queryWrapper, Class<T> cls) {
         String selectFields;
         if (ConvertUtils.isNotEmpty(fields)) {
             selectFields = SqlInjectionUtil.getSqlInjectField(fields);
@@ -1323,7 +1331,7 @@ public class OnlCgformFieldServiceImpl extends ServiceImpl<OnlCgformFieldMapper,
         }
         queryWrapper.select(selectFields);
         //查询
-        return (T) doSelect(realTableName, queryWrapper, cls);
+        return doSelect(tableName, queryWrapper, cls);
     }
 
     /* renamed from: a */

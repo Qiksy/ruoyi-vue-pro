@@ -434,13 +434,18 @@ public class OnlCgformApiController {
                 id = this.onlCgformFieldService.queryTreeChildIds(onlCgformHead, id);
                 pids = this.onlCgformFieldService.queryTreePids(onlCgformHead, id);
             }
+
+            // 如果是批量删除
             if (id.indexOf(CgformUtil.COMMA_SEPARATOR) > 0) {
                 if (onlCgformHead.getTableType() == 2) {
+                    // 如果是子表
                     this.onlCgformFieldService.deleteAutoListMainAndSub(onlCgformHead, id);
                 } else {
+                    // 单表、主表都自动删除
                     this.onlCgformFieldService.deleteAutoListById(onlCgformHead.getTableName(), id);
                 }
                 if ("Y".equals(onlCgformHead.getIsTree())) {
+                    // 如果是树表
                     String tableName = onlCgformHead.getTableName();
                     String treeIdField = onlCgformHead.getTreeIdField();
                     for (String pid : pids.split(CgformUtil.COMMA_SEPARATOR)) {
@@ -448,10 +453,9 @@ public class OnlCgformApiController {
                     }
                 }
             } else {
+                // 单独删除一个表
                 this.onlCgformHeadService.deleteOneTableInfo(code, id);
             }
-//            CommonResult<?> ok = Result.ok("删除成功!");
-//            ok.setOnlTable(onlCgformHead.getTableName());
             return success(true);
         } catch (Exception e) {
             logger.error("OnlCgformApiController.formEdit()发生异常：" + e.getMessage(), e);
@@ -463,11 +467,9 @@ public class OnlCgformApiController {
     @AutoLog(operateType = 4, value = "online删除数据", module = ModuleType.ONLINE)
     @Operation(summary = "online表单删除数据")
     /* renamed from: h */
-    public CommonResult<?> m92h(@PathVariable("code") String str, @PathVariable("id") String str2) {
+    public CommonResult<?> deleteDataByCodeAndId(@PathVariable("code") String code, @PathVariable("id") String id) {
         try {
-            String deleteDataByCode = this.onlCgformHeadService.deleteDataByCode(str, str2);
-//            CommonResult<?> OK = Result.OK("删除成功!", deleteDataByCode);
-//            OK.setOnlTable(deleteDataByCode);
+            String deleteDataByCode = this.onlCgformHeadService.deleteDataByCode(code, id);
             return success("删除成功！"+deleteDataByCode);
         } catch (Exception e) {
             return error(e.getMessage());
@@ -478,7 +480,7 @@ public class OnlCgformApiController {
     @GetMapping({"/getQueryInfo/{code}"})
     @Operation(summary = "获取查询信息")
     /* renamed from: a */
-    public CommonResult<?> m93a(@PathVariable("code") String str) {
+    public CommonResult<?> getQueryInfo(@PathVariable("code") String str) {
         try {
             return success(this.onlCgformFieldService.getAutoListQueryInfo(str));
         } catch (Exception e) {
@@ -503,7 +505,7 @@ public class OnlCgformApiController {
     @PreAuthorize("@ss.hasPermission('online:form:syncDb')")
     @Operation(summary = "同步数据库")
     /* renamed from: i */
-    public CommonResult<?> m95i(@PathVariable("code") String code, @PathVariable("synMethod") String synMethod) {
+    public CommonResult<?> doDbSynch(@PathVariable("code") String code, @PathVariable("synMethod") String synMethod) {
         try {
             System.currentTimeMillis();
             this.onlCgformHeadService.doDbSynch(code, synMethod);
@@ -857,6 +859,7 @@ public class OnlCgformApiController {
     }
 
     /* renamed from: a */
+    @Deprecated
     public Object m100a(OnlCgformHead onlCgformHead, DataSource dataSource, String str) throws SQLException, DBException {
         Object obj = null;
         String idType = onlCgformHead.getIdType();
@@ -934,15 +937,15 @@ public class OnlCgformApiController {
     @GetMapping({"/checkOnlyTable"})
     @Operation(summary = "校验表是否存在")
     /* renamed from: j */
-    public CommonResult<?> checkOnlyTable(@RequestParam("tbname") String str, @RequestParam("id") String str2) {
-        if (StringUtils.isEmpty(str2)) {
-            if (DbTableUtil.isTableExistsInDatabase(str).booleanValue()) {
+    public CommonResult<?> checkOnlyTable(@RequestParam("tbname") String tableName, @RequestParam("id") String id) {
+        if (StringUtils.isEmpty(id)) {
+            if (DbTableUtil.isTableExistsInDatabase(tableName)) {
                 return success(-1);
             }
-            if (this.onlCgformHeadService.getOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, str))!=null) {
+            if (this.onlCgformHeadService.getOne(new LambdaQueryWrapper<OnlCgformHead>().eq(OnlCgformHead::getTableName, tableName))!=null) {
                 return success(-1);
             }
-        } else if (!str.equals(((OnlCgformHead) this.onlCgformHeadService.getById(str2)).getTableName()) && DbTableUtil.isTableExistsInDatabase(str).booleanValue()) {
+        } else if (!tableName.equals(this.onlCgformHeadService.getById(id).getTableName()) && DbTableUtil.isTableExistsInDatabase(tableName)) {
             return success(-1);
         }
         return success(1);
@@ -1197,7 +1200,7 @@ public class OnlCgformApiController {
     @PermissionData
     @Operation(summary = "树表数据加载")
     /* renamed from: e */
-    public CommonResult<Map<String, Object>> getTreeDatatByCode(@PathVariable("code") String code, HttpServletRequest httpServletRequest) {
+    public CommonResult<Map<String, Object>> getTreeDataByCode(@PathVariable("code") String code, HttpServletRequest httpServletRequest) {
         CommonResult<Map<String, Object>> result = new CommonResult<>();
         OnlCgformHead onlCgformHead = this.onlCgformHeadService.getById(code);
         if (onlCgformHead == null) {
